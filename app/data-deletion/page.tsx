@@ -27,17 +27,16 @@ export default function DataDeletionPage() {
           <h2 className="text-xl font-bold text-[#131517] pt-4">How to request deletion</h2>
           <ol className="list-decimal pl-5 space-y-2">
             <li>
-              Email{" "}
-              <a
-                href="mailto:quotes@cohesiveinsure.com?subject=Data%20Deletion%20Request"
-                className="text-[#007395] hover:underline"
-              >
-                quotes@cohesiveinsure.com
+              Call us at{" "}
+              <a href="tel:+18573924131" className="text-[#007395] hover:underline">
+                +1 (857) 392-4131
               </a>{" "}
-              with the subject line <strong className="text-[#131517]">&quot;Data Deletion Request&quot;</strong>.
+              and state that you are making a{" "}
+              <strong className="text-[#131517]">data deletion request</strong>. You may also reply
+              to any email or text message you have received from us with the same request.
             </li>
             <li>
-              Include the name, email address, and phone number you used when contacting us, so we
+              Provide the name, email address, and phone number you used when contacting us, so we
               can locate your records.
             </li>
             <li>
@@ -45,14 +44,6 @@ export default function DataDeletionPage() {
               then send you a final confirmation.
             </li>
           </ol>
-
-          <p>
-            You may also call us at{" "}
-            <a href="tel:+18573924131" className="text-[#007395] hover:underline">
-              +1 (857) 392-4131
-            </a>{" "}
-            to make the same request.
-          </p>
 
           <h2 className="text-xl font-bold text-[#131517] pt-4">What we may need to keep</h2>
           <p>

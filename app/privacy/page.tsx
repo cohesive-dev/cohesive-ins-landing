@@ -154,11 +154,6 @@ export default function PrivacyPolicyPage() {
           <p>
             Cohesive Insurance Services
             <br />
-            Email:{" "}
-            <a href="mailto:quotes@cohesiveinsure.com" className="text-[#007395] hover:underline">
-              quotes@cohesiveinsure.com
-            </a>
-            <br />
             Phone:{" "}
             <a href="tel:+18573924131" className="text-[#007395] hover:underline">
               +1 (857) 392-4131
