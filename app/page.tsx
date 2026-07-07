@@ -151,7 +151,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
         aria-haspopup="listbox"
         aria-expanded={open}
         className="w-full flex items-center justify-between gap-2 border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] bg-white text-left focus:outline-none focus:ring-2 focus:ring-[#007395]/40">
-        <span className="truncate">{value}</span>
+        <span className={`truncate ${value ? "" : "text-slate-400"}`}>{value || "Select business type"}</span>
         <svg className={`w-4 h-4 text-slate-400 shrink-0 transition-transform ${open ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M6 8l4 4 4-4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
@@ -233,7 +233,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [businessType, setBusinessType] = useState(trades[0]);
+  const [businessType, setBusinessType] = useState("");
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
@@ -255,7 +255,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-2">Get a Quote</div>
         <h2 className="text-xl sm:text-2xl font-bold text-[#131517] mb-3">Thanks, {name.trim().split(" ")[0] || "there"}!</h2>
         <p className="text-sm text-[#6B6D71] leading-relaxed mb-6">
-          We&apos;ve got your {businessType.toLowerCase()} details for ZIP {zip}. Our team will reach out in under 30 minutes with your quote.
+          We&apos;ve got your {businessType ? `${businessType.toLowerCase()} ` : "business "}details{zip ? ` for ZIP ${zip}` : ""}. Our team will reach out in under 30 minutes with your quote.
         </p>
         <p className="text-sm font-semibold text-[#131517] mb-3">Don&apos;t want to wait? Talk to us now.</p>
         <button
@@ -303,7 +303,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
           </div>
           <label className="sm:w-36 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">ZIP code</span>
-            <input required type="text" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={zip}
+            <input type="text" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={zip}
               onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))} placeholder="00000"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
