@@ -245,7 +245,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, phone, businessType, zip }),
-    }).catch(() => {});
+    }).catch(() => { });
     setSubmitted(true);
   };
 
@@ -323,7 +323,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   );
 }
 
-function CalEmbed({ prefill, onBack }: { prefill?: Prefill; onBack: () => void }) {
+function CalEmbed({ prefill, onBack, layout = "month_view" }: { prefill?: Prefill; onBack: () => void; layout?: "month_view" | "week_view" | "column_view" }) {
   // ZIP has no dedicated booking field, so it rides along in the notes.
   // Business type + phone also go in the notes as a resilient fallback.
   const notesParts: string[] = [];
@@ -332,7 +332,7 @@ function CalEmbed({ prefill, onBack }: { prefill?: Prefill; onBack: () => void }
   if (prefill?.phone) notesParts.push(`Phone: ${prefill.phone}`);
   const notes = notesParts.join(" · ");
 
-  const bookingConfig: Record<string, string> = { layout: "month_view", theme: "light" };
+  const bookingConfig: Record<string, string> = { layout, theme: "light" };
   if (prefill?.name) bookingConfig.name = prefill.name;
   if (prefill?.email) bookingConfig.email = prefill.email;
   // Prefill the phone two ways since the visible box can bind to either the
@@ -352,7 +352,7 @@ function CalEmbed({ prefill, onBack }: { prefill?: Prefill; onBack: () => void }
       cal("ui", {
         theme: "light",
         hideEventTypeDetails: false,
-        layout: "month_view",
+        layout,
         // Drive cal.com's accent color from the Cohesive brand color.
         cssVarsPerTheme: {
           light: { "cal-brand": BRAND },
@@ -360,7 +360,7 @@ function CalEmbed({ prefill, onBack }: { prefill?: Prefill; onBack: () => void }
         },
       });
     })();
-  }, []);
+  }, [layout]);
 
   return (
     <div className="rounded-sm overflow-hidden shadow-xl border border-slate-200 bg-white">
@@ -451,30 +451,17 @@ function Hero() {
 
         {/* Overlapping quote widget */}
         <div id="quote-form" className="relative z-10 -mt-10 md:-mt-16 flex flex-col md:flex-row gap-4 md:gap-0 px-2 md:px-0 scroll-mt-24">
-          <div className="md:flex-[2] bg-white shadow-xl p-6 sm:p-8">
+          <div className="md:flex-5 bg-white shadow-xl p-6 sm:p-8">
             <QuoteForm onBookMeeting={(data) => { setPrefill(data ?? {}); setShowCal(true); }} />
           </div>
 
-          <div className="md:flex-1 bg-[#2040E7] p-6 sm:p-8 flex flex-col justify-center items-center">
-            <div className="w-fit">
-              <div className="text-[11px] font-bold text-white/70 tracking-[0.08em] uppercase mb-4">What to Expect</div>
-              <div className="w-full h-full pt-4 flex flex-col items-center justify-center">
-                <div className="flex items-center gap-8 mb-6">
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight">call back time</h3>
-                  <div className="flex items-baseline gap-1 w-48 sm:w-60">
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none ml-8">&lt;</span>
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">1</span>
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none ml-2">hr</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-8">
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight">avg. insurance cost saving</h3>
-                  <div className="flex items-baseline gap-1 w-48 sm:w-60">
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">22</span>
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">%</span>
-                  </div>
-                </div>
-              </div>
+          <div className="md:flex-2 bg-[#2040E7] p-6 flex flex-col justify-between">
+            <div className="text-[11px] font-bold text-white/70 tracking-[0.08em] uppercase mb-4">What to Expect</div>
+            <div className="lg:grid lg:grid-cols-[1fr_auto] lg:auto-rows-fr sm:flex sm:flex-col md:flex md:flex-col items-center gap-x-8 gap-y-4 lg:mb-[2%]">
+              <h3 className="text-lg sm:text-lg font-bold text-white leading-tight">call back time</h3>
+              <div className="lg:text-[80px] sm:text-5xl md:text-5xl text-6xl font-black text-white leading-none whitespace-nowrap w-full text-right py-1 lg:py-0">&lt;1 hr</div>
+              <h3 className="text-lg sm:text-lg font-bold text-white leading-tight">avg. insurance cost saving</h3>
+              <div className="lg:text-[80px] sm:text-5xl md:text-5xl text-6xl font-black text-white leading-none whitespace-nowrap w-full text-right py-1 lg:py-0">22 %</div>
             </div>
           </div>
         </div>
@@ -680,18 +667,28 @@ function Coverage() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-24 pl-10 lg:pl-8">
-          {lines.map((l) => (
-            <div key={l.title}
-              className="relative bg-white border border-slate-200 rounded-lg p-6 pt-32 hover:shadow-md hover:border-[#2040E7] transition-all group">
-              <div className={`absolute -top-20 -left-16 w-56 h-56 z-20 ${l.imgOffset ?? ""}`}>
-                <img src={l.image} alt="" aria-hidden="true"
-                  className="w-full h-full object-contain object-left-top drop-shadow-lg pointer-events-none select-none group-hover:animate-wobble" />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-24 sm:pl-10 lg:pl-8">
+          {lines.map((l) => {
+            // On mobile the illustration is centered over its tile; from `sm` up
+            // it returns to the off-corner placement, so the per-item nudges
+            // (which are desktop-tuned) only apply there.
+            const smOffset = (l.imgOffset ?? "")
+              .split(" ")
+              .filter(Boolean)
+              .map((c) => `sm:${c}`)
+              .join(" ");
+            return (
+              <div key={l.title}
+                className="relative bg-white border border-slate-200 rounded-lg p-6 pt-32 hover:shadow-md hover:border-[#2040E7] transition-all group">
+                <div className={`absolute -top-20 z-20 w-56 h-56 left-0 right-0 mx-auto sm:left-[-4rem] sm:right-auto sm:mx-0 ${smOffset}`}>
+                  <img src={l.image} alt="" aria-hidden="true"
+                    className="w-full h-full object-contain object-top sm:object-left-top drop-shadow-lg pointer-events-none select-none group-hover:animate-wobble" />
+                </div>
+                <h3 className="font-semibold text-[#131517] mb-2 group-hover:text-[#2040E7] transition-colors">{l.title}</h3>
+                <p className="text-sm text-[#6B6D71] leading-relaxed">{l.desc}</p>
               </div>
-              <h3 className="font-semibold text-[#131517] mb-2 group-hover:text-[#2040E7] transition-colors">{l.title}</h3>
-              <p className="text-sm text-[#6B6D71] leading-relaxed">{l.desc}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -998,7 +995,7 @@ function CTA() {
 
         <div className="max-w-2xl mx-auto">
           {showCal ? (
-            <CalEmbed prefill={prefill} onBack={() => setShowCal(false)} />
+            <CalEmbed prefill={prefill} onBack={() => setShowCal(false)} layout="column_view" />
           ) : (
             <div className="bg-white shadow-xl border border-slate-200 p-6 sm:p-8 text-left">
               <QuoteForm onBookMeeting={(data) => { setPrefill(data ?? {}); setShowCal(true); }} />
