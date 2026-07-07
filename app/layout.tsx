@@ -47,6 +47,20 @@ fbq('track', 'PageView');`}
           />
         </noscript>
         {/* End Meta Pixel Code */}
+        {/* LeadTruffle Widget */}
+        <Script id="leadtruffle-widget" strategy="afterInteractive">
+          {`(function () {
+  var s = document.createElement('script');
+  s.src = "https://embeds-v1.leadtruffle.com/tooldesk-widget.js";
+  s.async = true;
+  s.onload = function () {
+    window.LTWidget.initialize({
+      companyId: "54e15aec-f591-4859-9e29-a9b10f65981a"
+    });
+  };
+  document.head.appendChild(s);
+})();`}
+        </Script>
         {children}
       </body>
     </html>
