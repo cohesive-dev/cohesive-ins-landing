@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { sendIntakeNotification } from "@/lib/notify";
 
 /**
  * POST /api/intake
@@ -70,6 +71,17 @@ export async function POST(request: NextRequest) {
         ...(lastName !== undefined && { lastName }),
         ...(phone !== undefined && { primaryPhone: phone }),
       },
+    });
+
+    // Alert channel only — never blocks or fails the submission (it catches
+    // internally). Awaited because serverless may kill fire-and-forget work
+    // once the response is sent.
+    await sendIntakeNotification({
+      name: asTrimmedString(body.name),
+      email,
+      phone,
+      businessType: asTrimmedString(body.businessType),
+      zip: asTrimmedString(body.zip),
     });
 
     return NextResponse.json({ contact }, { status: 200 });
