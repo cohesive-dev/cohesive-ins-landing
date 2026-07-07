@@ -884,6 +884,17 @@ function Testimonials() {
     track.scrollTo({ left: Math.min(i * stride, maxScroll), behavior: "smooth" });
   };
 
+  // The card index the track is actually scrolled to, derived from scrollLeft.
+  // With several cards visible, scrollLeft tops out well below (N-1)*stride, so
+  // this can never reach the final indices — that's fine for stepping the
+  // buttons, and `active` handles lighting up the trailing dots separately.
+  const scrolledIndex = () => {
+    const track = trackRef.current;
+    if (!track) return active;
+    const stride = track.scrollWidth / quotes.length;
+    return Math.round(track.scrollLeft / stride);
+  };
+
   const onScroll = () => {
     const track = trackRef.current;
     if (!track) return;
@@ -895,8 +906,7 @@ function Testimonials() {
       setActive(quotes.length - 1);
       return;
     }
-    const stride = track.scrollWidth / quotes.length;
-    setActive(Math.round(track.scrollLeft / stride));
+    setActive(scrolledIndex());
   };
 
   return (
@@ -913,14 +923,14 @@ function Testimonials() {
           <button
             type="button"
             aria-label="Previous testimonials"
-            onClick={() => scrollToCard(Math.max(0, active - 1))}
+            onClick={() => scrollToCard(Math.max(0, scrolledIndex() - 1))}
             className="absolute left-1 sm:-left-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-slate-300 bg-white shadow-sm text-[#131517] flex items-center justify-center hover:border-[#2040E7] hover:text-[#2040E7] transition-colors">
             ←
           </button>
           <button
             type="button"
             aria-label="Next testimonials"
-            onClick={() => scrollToCard(Math.min(quotes.length - 1, active + 1))}
+            onClick={() => scrollToCard(Math.min(quotes.length - 1, scrolledIndex() + 1))}
             className="absolute right-1 sm:-right-5 top-1/2 -translate-y-1/2 z-10 w-11 h-11 rounded-full border border-slate-300 bg-white shadow-sm text-[#131517] flex items-center justify-center hover:border-[#2040E7] hover:text-[#2040E7] transition-colors">
             →
           </button>
