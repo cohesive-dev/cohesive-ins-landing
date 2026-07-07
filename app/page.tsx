@@ -7,6 +7,28 @@ const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
 const CAL_EMBED_LINK = "team/cohesive-insurance-services/quote";
 const CAL_NAMESPACE = "quote";
+// Identifier (slug) of the custom "Business Type (Industry)" booking question on
+// the cal.com event. Must match the field's identifier EXACTLY (verified against
+// the live event config — note the capitals and double hyphen).
+const CAL_INDUSTRY_FIELD = "Business-Type--Industry";
+
+// Progressively format a US phone number as the user types: "(555) 123-4567".
+function formatUSPhone(value: string): string {
+  const d = value.replace(/\D/g, "").slice(0, 10);
+  if (d.length <= 3) return d;
+  if (d.length <= 6) return `(${d.slice(0, 3)}) ${d.slice(3)}`;
+  return `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}`;
+}
+
+// cal.com's phone field only prefills from an E.164 value (e.g. +15551234567).
+// Normalize a US number typed as "(555) 123-4567" into that shape.
+function toE164US(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  if (phone.trim().startsWith("+")) return phone.trim();
+  return digits ? `+${digits}` : phone;
+}
 const BRAND = "#2040E7";
 
 // ─── Brand palette ──────────────────────────────────────────────────────────
@@ -98,7 +120,9 @@ function Navbar({ onOpenQuote }: { onOpenQuote: () => void }) {
 
 function TradeSelect({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -108,6 +132,16 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
+
+  // Reset the search each time the menu opens and focus the search box.
+  useEffect(() => {
+    if (open) {
+      setQuery("");
+      searchRef.current?.focus();
+    }
+  }, [open]);
+
+  const filtered = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
     <div ref={ref} className="relative">
@@ -123,33 +157,67 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
         </svg>
       </button>
       {open && (
-        <ul role="listbox" className="absolute z-30 mt-1 w-full max-h-64 overflow-auto rounded-sm border border-slate-200 bg-white py-1 shadow-lg">
-          {options.map((opt) => {
-            const selected = opt === value;
-            return (
+        <div className="absolute z-30 mt-1 w-full rounded-sm border border-slate-200 bg-white shadow-lg">
+          <div className="p-2 border-b border-slate-100">
+            <input
+              ref={searchRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  // No match falls back to "Other".
+                  onChange(filtered.length > 0 ? filtered[0] : "Other");
+                  setOpen(false);
+                } else if (e.key === "Escape") {
+                  setOpen(false);
+                }
+              }}
+              placeholder="Search business types…"
+              className="w-full border border-slate-300 rounded-sm px-3 py-2 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40"
+            />
+          </div>
+          <ul role="listbox" className="max-h-56 overflow-auto py-1">
+            {filtered.length === 0 ? (
               <li
-                key={opt}
                 role="option"
-                aria-selected={selected}
-                onClick={() => { onChange(opt); setOpen(false); }}
-                className={`flex items-center justify-between gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${selected ? "bg-[#2040E7] text-white" : "text-[#272A2D] hover:bg-[#2040E7]/10 hover:text-[#2040E7]"
-                  }`}>
-                <span>{opt}</span>
-                {selected && (
-                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M16.7 5.3a1 1 0 010 1.4l-7 7a1 1 0 01-1.4 0l-3-3a1 1 0 111.4-1.4l2.3 2.3 6.3-6.3a1 1 0 011.4 0z" />
-                  </svg>
-                )}
+                aria-selected={value === "Other"}
+                onClick={() => { onChange("Other"); setOpen(false); }}
+                className="px-3 py-2 text-sm cursor-pointer text-[#272A2D] hover:bg-[#2040E7]/10 hover:text-[#2040E7]">
+                No matches — use <span className="font-semibold">Other</span>
               </li>
-            );
-          })}
-        </ul>
+            ) : (
+              filtered.map((opt) => {
+                const selected = opt === value;
+                return (
+                  <li
+                    key={opt}
+                    role="option"
+                    aria-selected={selected}
+                    onClick={() => { onChange(opt); setOpen(false); }}
+                    className={`flex items-center justify-between gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${selected ? "bg-[#2040E7] text-white" : "text-[#272A2D] hover:bg-[#2040E7]/10 hover:text-[#2040E7]"
+                      }`}>
+                    <span>{opt}</span>
+                    {selected && (
+                      <svg className="w-4 h-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M16.7 5.3a1 1 0 010 1.4l-7 7a1 1 0 01-1.4 0l-3-3a1 1 0 111.4-1.4l2.3 2.3 6.3-6.3a1 1 0 011.4 0z" />
+                      </svg>
+                    )}
+                  </li>
+                );
+              })
+            )}
+          </ul>
+        </div>
       )}
     </div>
   );
 }
 
-function QuoteForm({ onBookMeeting }: { onBookMeeting: () => void }) {
+type Prefill = { name?: string; email?: string; phone?: string; businessType?: string; zip?: string };
+
+function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => void }) {
   const trades = [
     "Roofing", "Electrical", "Plumbing", "HVAC", "General Contracting",
     "Trucking & Logistics", "Restaurants & Bars", "Painting", "Garages", "Retail",
@@ -187,14 +255,14 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: () => void }) {
         <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-2">Get a Quote</div>
         <h2 className="text-xl sm:text-2xl font-bold text-[#131517] mb-3">Thanks, {name.trim().split(" ")[0] || "there"}!</h2>
         <p className="text-sm text-[#6B6D71] leading-relaxed mb-6">
-          We&apos;ve got your {businessType.toLowerCase()} details for ZIP {zip}. Our team will reach out within 48 hours with your quote.
+          We&apos;ve got your {businessType.toLowerCase()} details for ZIP {zip}. Our team will reach out in under 30 minutes with your quote.
         </p>
         <p className="text-sm font-semibold text-[#131517] mb-3">Don&apos;t want to wait? Talk to us now.</p>
         <button
           type="button"
-          onClick={onBookMeeting}
+          onClick={() => onBookMeeting({ name, email, phone, businessType, zip })}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors">
-          Book a meeting →
+          Schedule a phone call →
         </button>
       </div>
     );
@@ -212,12 +280,19 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: () => void }) {
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="text-[#2040E7]">*</span></span>
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="jane@company.com"
+            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}"
+              title="Enter a valid email address, e.g. jane@company.com"
+              placeholder="jane@company.com"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
           <label className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Phone <span className="text-[#2040E7]">*</span></span>
-            <input required type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(555) 123-4567"
+            <input required type="tel" inputMode="tel" value={phone}
+              onChange={(e) => setPhone(formatUSPhone(e.target.value))}
+              pattern="\(\d{3}\) \d{3}-\d{4}"
+              title="Enter a 10-digit US phone number"
+              placeholder="(555) 123-4567"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
         </div>
@@ -240,7 +315,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: () => void }) {
         </div>
       </div>
       <p className="text-sm text-[#6B6D71]">
-        <button type="button" onClick={onBookMeeting} className="text-[#2040E7] font-semibold hover:underline">Book a meeting</button>
+        <button type="button" onClick={() => onBookMeeting()} className="text-[#2040E7] font-semibold hover:underline">Schedule a phone call</button>
         {" "}or call{" "}
         <a href="tel:+18573924131" className="text-[#2040E7] font-semibold hover:underline">+1 (857) 392-4131</a>
       </p>
@@ -248,7 +323,29 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: () => void }) {
   );
 }
 
-function CalEmbed({ onBack }: { onBack: () => void }) {
+function CalEmbed({ prefill, onBack }: { prefill?: Prefill; onBack: () => void }) {
+  // ZIP has no dedicated booking field, so it rides along in the notes.
+  // Business type + phone also go in the notes as a resilient fallback.
+  const notesParts: string[] = [];
+  if (prefill?.businessType) notesParts.push(`Business type: ${prefill.businessType}`);
+  if (prefill?.zip) notesParts.push(`ZIP: ${prefill.zip}`);
+  if (prefill?.phone) notesParts.push(`Phone: ${prefill.phone}`);
+  const notes = notesParts.join(" · ");
+
+  const bookingConfig: Record<string, string> = { layout: "month_view", theme: "light" };
+  if (prefill?.name) bookingConfig.name = prefill.name;
+  if (prefill?.email) bookingConfig.email = prefill.email;
+  // Prefill the phone two ways since the visible box can bind to either the
+  // attendeePhoneNumber field or the booking *location* (this event's location
+  // is type "phone"). Both take an E.164 value; the unused one is ignored.
+  if (prefill?.phone) {
+    const e164 = toE164US(prefill.phone);
+    bookingConfig.attendeePhoneNumber = e164;
+    bookingConfig.location = JSON.stringify({ value: "phone", optionValue: e164 });
+  }
+  if (prefill?.businessType) bookingConfig[CAL_INDUSTRY_FIELD] = prefill.businessType;
+  if (notes) bookingConfig.notes = notes;
+
   useEffect(() => {
     (async () => {
       const cal = await getCalApi({ namespace: CAL_NAMESPACE });
@@ -272,7 +369,7 @@ function CalEmbed({ onBack }: { onBack: () => void }) {
         <div className="flex items-center gap-3">
           <img src="/logo.png" alt="Cohesive" className="h-8 w-auto object-contain brightness-0 invert" />
           <div className="text-left">
-            <div className="text-white font-bold text-sm leading-tight">Book a meeting</div>
+            <div className="text-white font-bold text-sm leading-tight">Schedule a phone call</div>
             <div className="text-white/70 text-xs">Pick a time — we&apos;ll bring the quote.</div>
           </div>
         </div>
@@ -288,7 +385,7 @@ function CalEmbed({ onBack }: { onBack: () => void }) {
         <Cal
           namespace={CAL_NAMESPACE}
           calLink={CAL_EMBED_LINK}
-          config={{ layout: "month_view", theme: "light" }}
+          config={bookingConfig}
           style={{ width: "100%", height: "100%", overflow: "scroll" }}
         />
       </div>
@@ -298,6 +395,7 @@ function CalEmbed({ onBack }: { onBack: () => void }) {
 
 function Hero() {
   const [showCal, setShowCal] = useState(false);
+  const [prefill, setPrefill] = useState<Prefill>({});
 
   const collage = [
     { title: "Roofing", image: "https://images.unsplash.com/photo-1632759145351-1d592919f522?w=700&q=80&auto=format&fit=crop" },
@@ -321,7 +419,7 @@ function Hero() {
         </div>
 
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
-          <CalEmbed onBack={() => setShowCal(false)} />
+          <CalEmbed prefill={prefill} onBack={() => setShowCal(false)} />
         </div>
 
         <div className="h-6 md:h-10" />
@@ -354,7 +452,7 @@ function Hero() {
         {/* Overlapping quote widget */}
         <div id="quote-form" className="relative z-10 -mt-10 md:-mt-16 flex flex-col md:flex-row gap-4 md:gap-0 px-2 md:px-0 scroll-mt-24">
           <div className="md:flex-[2] bg-white shadow-xl p-6 sm:p-8">
-            <QuoteForm onBookMeeting={() => setShowCal(true)} />
+            <QuoteForm onBookMeeting={(data) => { setPrefill(data ?? {}); setShowCal(true); }} />
           </div>
 
           <div className="md:flex-1 bg-[#2040E7] p-6 sm:p-8 flex flex-col justify-center items-center">
@@ -362,7 +460,7 @@ function Hero() {
               <div className="text-[11px] font-bold text-white/70 tracking-[0.08em] uppercase mb-4">What to Expect</div>
               <div className="w-full h-full pt-4 flex flex-col items-center justify-center">
                 <div className="flex items-center gap-8 mb-6">
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight">call back target</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight">call back time</h3>
                   <div className="flex items-baseline gap-1 w-48 sm:w-60">
                     <span className="text-5xl sm:text-6xl font-black text-white leading-none ml-8">&lt;</span>
                     <span className="text-5xl sm:text-6xl font-black text-white leading-none">1</span>
@@ -391,16 +489,15 @@ function Hero() {
 
 function SocialProof() {
   const stats = [
-    { value: "2,400+", label: "Operators Insured" },
-    { value: "$310M", label: "Premium Placed" },
+    { value: "1500+", label: "Operators Served" },
     { value: "20+", label: "Active Programs" },
-    { value: "15+", label: "A-Rated Carriers" },
+    { value: "30+", label: "Carriers" },
   ];
 
   return (
     <section className="bg-white border-t border-slate-200 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div className="grid grid-cols-3 gap-6 text-center">
           {stats.map((s) => (
             <div key={s.label}>
               <div className="text-2xl font-bold text-[#2040E7]">{s.value}</div>
@@ -579,7 +676,7 @@ function Coverage() {
             </h2>
           </div>
           <p className="text-[#6B6D71] max-w-sm">
-            We place nine major coverage lines across a panel of 15+ A-rated carriers, all in one conversation.
+            We place nine major coverage lines across a panel of 30+ A-rated carriers, all in one conversation.
           </p>
         </div>
 
@@ -645,11 +742,11 @@ function HowItWorks() {
                 {/* Connector line: runs from this box's center to the next box's center */}
                 {i < steps.length - 1 && (
                   <div
-                    className="hidden lg:block absolute top-12 left-12 h-px bg-slate-200"
+                    className="hidden lg:block absolute top-12 left-1/2 h-px bg-slate-200"
                     style={{ width: "calc(100% + 3rem)" }}
                   />
                 )}
-                <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+                <div className="flex flex-col items-center text-center">
                   <div className={`w-24 h-24 rounded-sm flex items-center justify-center text-3xl font-black mb-6 relative z-10
                     ${i === 1 ? "bg-[#2040E7] text-white" : "bg-[#F2F5F7] text-[#6B6D71]"}`}>
                     {s.step}
@@ -686,9 +783,6 @@ function Carriers() {
             <h2 className="text-3xl sm:text-4xl font-bold text-white max-w-xl">
               We work with the carriers operators trust.
             </h2>
-          </div>
-          <div className="hidden sm:block shrink-0 text-[11px] font-bold text-white/60 uppercase tracking-[0.2em] pt-1 whitespace-nowrap">
-            Subject to Appointment
           </div>
         </div>
       </div>
@@ -876,37 +970,30 @@ function Testimonials() {
 
 // ─── CTA ──────────────────────────────────────────────────────────────────────
 
-function CTA({ onOpenQuote }: { onOpenQuote: () => void }) {
+function CTA() {
+  const [showCal, setShowCal] = useState(false);
+  const [prefill, setPrefill] = useState<Prefill>({});
+
   return (
     <section id="get-quote" className="py-24 bg-white border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto text-center">
+        <div className="max-w-3xl mx-auto text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-bold text-[#131517] mb-6">
             Ready to see what a competitive market looks like?
           </h2>
-          <p className="text-[#6B6D71] text-lg mb-10 max-w-xl mx-auto">
+          <p className="text-[#6B6D71] text-lg max-w-xl mx-auto">
             Tell us about your business in 2 minutes. Our team will market your account and have options back to you in under 48 hours.
           </p>
+        </div>
 
-          <form onSubmit={(e) => { e.preventDefault(); onOpenQuote(); }}
-            className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto mb-8">
-            <input
-              required
-              type="email"
-              placeholder="Your work email"
-              className="flex-1 px-5 py-4 rounded-sm bg-white border border-slate-300 text-[#272A2D] placeholder-slate-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#007395]/40"
-            />
-            <button type="submit"
-              className="px-6 py-4 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors whitespace-nowrap">
-              Get Free Quote →
-            </button>
-          </form>
-
-          <p className="text-[#6B6D71] text-sm">
-            Or call us directly at{" "}
-            <a href="tel:+18573924131" className="text-[#2040E7] font-semibold hover:underline">+1 (857) 392-4131</a>
-            {" "}· Callback target under 1 hour
-          </p>
+        <div className="max-w-2xl mx-auto">
+          {showCal ? (
+            <CalEmbed prefill={prefill} onBack={() => setShowCal(false)} />
+          ) : (
+            <div className="bg-white shadow-xl border border-slate-200 p-6 sm:p-8 text-left">
+              <QuoteForm onBookMeeting={(data) => { setPrefill(data ?? {}); setShowCal(true); }} />
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -938,13 +1025,13 @@ function QuoteModal({ open, onClose }: { open: boolean; onClose: () => void }) {
         <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-2">Get a Quote</div>
         <h3 className="text-xl font-bold text-[#131517] mb-3">Let&apos;s get you covered.</h3>
         <p className="text-sm text-[#6B6D71] leading-relaxed mb-6">
-          Fill out our quick intake form and we&apos;ll reach out within 48 hours with your options, or skip the wait and book a time to talk with us directly.
+          Fill out our quick intake form and we&apos;ll reach out within 30 minutes with your options, or skip the wait and book a time to talk with us directly.
         </p>
 
         <div className="flex flex-col gap-3">
           <a href={CAL_LINK} target="_blank" rel="noopener noreferrer" onClick={onClose}
             className="w-full text-center px-5 py-3 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors">
-            Book a time on Cal.com
+            Schedule a phone call
           </a>
           <a href="#get-quote" onClick={onClose}
             className="w-full text-center px-5 py-3 rounded-sm border border-slate-300 text-[#272A2D] text-sm font-bold hover:bg-slate-50 transition-colors">
@@ -994,8 +1081,12 @@ function Footer() {
           <div>
             <h4 className="text-white font-semibold text-sm mb-4">Company</h4>
             <ul className="space-y-2 text-sm">
-              {["About", "How It Works", "Carriers", "FAQ", "Contact"].map((l) => (
-                <li key={l}><a href="#" className="hover:text-white transition-colors">{l}</a></li>
+              {[
+                { label: "How It Works", href: "#how-it-works" },
+                { label: "Carriers", href: "#carriers" },
+                { label: "Contact", href: "tel:+18573924131" },
+              ].map((l) => (
+                <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
               ))}
             </ul>
           </div>
@@ -1029,7 +1120,7 @@ export default function Home() {
         <HowItWorks />
         <Carriers />
         <Testimonials />
-        <CTA onOpenQuote={openQuote} />
+        <CTA />
       </main>
       <Footer />
       <QuoteModal open={quoteModalOpen} onClose={() => setQuoteModalOpen(false)} />
