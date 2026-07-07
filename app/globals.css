@@ -16,6 +16,12 @@ html {
 
 @theme {
   --animate-wobble: wobble 0.6s ease-in-out;
+  --animate-marquee: marquee 45s linear infinite;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
 }
 
 @keyframes wobble {

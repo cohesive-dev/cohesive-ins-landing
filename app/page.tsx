@@ -1,8 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import Cal, { getCalApi } from "@calcom/embed-react";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
+// The path cal.com's embed expects (everything after cal.com/).
+const CAL_EMBED_LINK = "team/cohesive-insurance-services/quote";
+const CAL_NAMESPACE = "quote";
+const BRAND = "#2040E7";
 
 // ─── Brand palette ──────────────────────────────────────────────────────────
 // highlight #2040E7 - official highlight color; primary CTA, matches the logo
@@ -32,7 +37,7 @@ function Navbar({ onOpenQuote }: { onOpenQuote: () => void }) {
           <nav className="hidden md:flex items-center gap-8">
             {links.map((l) => (
               <a key={l} href={`#${l.toLowerCase().replace(/\s+/g, "-")}`}
-                className="text-[15px] font-semibold text-[#272A2D] hover:text-[#2040E7] transition-colors">
+                className="text-[15px] font-semibold text-[#2040E7] hover:text-[#131517] transition-colors">
                 {l}
               </a>
             ))}
@@ -144,7 +149,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
   );
 }
 
-function QuoteForm() {
+function QuoteForm({ onBookMeeting }: { onBookMeeting: () => void }) {
   const trades = [
     "Roofing", "Electrical", "Plumbing", "HVAC", "General Contracting",
     "Trucking & Logistics", "Restaurants & Bars", "Painting", "Garages", "Retail",
@@ -164,26 +169,39 @@ function QuoteForm() {
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Fire-and-forget: record the submission if we can, but never block the
+    // customer or surface an error — they always see the confirmation.
+    void fetch("/api/intake", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, phone, businessType, zip }),
+    }).catch(() => {});
+    setSubmitted(true);
+  };
+
   if (submitted) {
     return (
       <div>
         <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-2">Get a Quote</div>
         <h2 className="text-xl sm:text-2xl font-bold text-[#131517] mb-3">Thanks, {name.trim().split(" ")[0] || "there"}!</h2>
-        <p className="text-sm text-[#6B6D71] leading-relaxed mb-4">
+        <p className="text-sm text-[#6B6D71] leading-relaxed mb-6">
           We&apos;ve got your {businessType.toLowerCase()} details for ZIP {zip}. Our team will reach out within 48 hours with your quote.
         </p>
-        <p className="text-sm text-[#6B6D71]">
-          Don&apos;t want to wait?{" "}
-          <a href={CAL_LINK} target="_blank" rel="noopener noreferrer" className="text-[#2040E7] font-semibold hover:underline">
-            Book a time to talk with us now.
-          </a>
-        </p>
+        <p className="text-sm font-semibold text-[#131517] mb-3">Don&apos;t want to wait? Talk to us now.</p>
+        <button
+          type="button"
+          onClick={onBookMeeting}
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors">
+          Book a meeting →
+        </button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}>
+    <form onSubmit={handleSubmit}>
       <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-4">Get a Quote</div>
       <div className="flex flex-col gap-3 mb-4">
         <label className="text-left">
@@ -222,7 +240,7 @@ function QuoteForm() {
         </div>
       </div>
       <p className="text-sm text-[#6B6D71]">
-        <a href="#" className="text-[#2040E7] font-semibold hover:underline">Continue an application</a>
+        <button type="button" onClick={onBookMeeting} className="text-[#2040E7] font-semibold hover:underline">Book a meeting</button>
         {" "}or call{" "}
         <a href="tel:+18573924131" className="text-[#2040E7] font-semibold hover:underline">+1 (857) 392-4131</a>
       </p>
@@ -230,7 +248,57 @@ function QuoteForm() {
   );
 }
 
+function CalEmbed({ onBack }: { onBack: () => void }) {
+  useEffect(() => {
+    (async () => {
+      const cal = await getCalApi({ namespace: CAL_NAMESPACE });
+      cal("ui", {
+        theme: "light",
+        hideEventTypeDetails: false,
+        layout: "month_view",
+        // Drive cal.com's accent color from the Cohesive brand color.
+        cssVarsPerTheme: {
+          light: { "cal-brand": BRAND },
+          dark: { "cal-brand": BRAND },
+        },
+      });
+    })();
+  }, []);
+
+  return (
+    <div className="rounded-sm overflow-hidden shadow-xl border border-slate-200 bg-white">
+      {/* Cohesive-branded header */}
+      <div className="flex items-center justify-between gap-4 bg-[#2040E7] px-5 sm:px-6 py-4">
+        <div className="flex items-center gap-3">
+          <img src="/logo.png" alt="Cohesive" className="h-8 w-auto object-contain brightness-0 invert" />
+          <div className="text-left">
+            <div className="text-white font-bold text-sm leading-tight">Book a meeting</div>
+            <div className="text-white/70 text-xs">Pick a time — we&apos;ll bring the quote.</div>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onBack}
+          className="shrink-0 text-white/90 text-sm font-semibold hover:text-white transition-colors">
+          ← Back
+        </button>
+      </div>
+
+      <div className="h-[640px] overflow-hidden">
+        <Cal
+          namespace={CAL_NAMESPACE}
+          calLink={CAL_EMBED_LINK}
+          config={{ layout: "month_view", theme: "light" }}
+          style={{ width: "100%", height: "100%", overflow: "scroll" }}
+        />
+      </div>
+    </div>
+  );
+}
+
 function Hero() {
+  const [showCal, setShowCal] = useState(false);
+
   const collage = [
     { title: "Roofing", image: "https://images.unsplash.com/photo-1632759145351-1d592919f522?w=700&q=80&auto=format&fit=crop" },
     { title: "Electrical", image: "https://images.unsplash.com/photo-1758101755915-462eddc23f57?w=700&q=80&auto=format&fit=crop" },
@@ -240,13 +308,34 @@ function Hero() {
     { title: "Restaurants", image: "https://images.unsplash.com/photo-1622021142947-da7dedc7c39a?w=700&q=80&auto=format&fit=crop" },
   ];
 
+  if (showCal) {
+    return (
+      <section className="pt-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-center">
+          <h1 className="text-[clamp(1rem,calc((100vw_-_2.5rem)/16.18),3rem)] font-bold text-[#2040E7] leading-tight tracking-tight mb-4 whitespace-nowrap">
+            Better business insurance for less
+          </h1>
+          <p className="hidden sm:block text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
+            Get better pricing on insurance for your business, through our proprietary network and data. Fast quotes, comprehensive coverage.
+          </p>
+        </div>
+
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+          <CalEmbed onBack={() => setShowCal(false)} />
+        </div>
+
+        <div className="h-6 md:h-10" />
+      </section>
+    );
+  }
+
   return (
     <section className="pt-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-center">
         <h1 className="text-[clamp(1rem,calc((100vw_-_2.5rem)/16.18),3rem)] font-bold text-[#2040E7] leading-tight tracking-tight mb-4 whitespace-nowrap">
           Better business insurance for less
         </h1>
-        <p className="text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
+        <p className="hidden sm:block text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
           Get better pricing on insurance for your business, through our proprietary network and data. Fast quotes, comprehensive coverage.
         </p>
       </div>
@@ -254,8 +343,9 @@ function Hero() {
       {/* Photo collage */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-0">
-          {collage.map((c) => (
-            <div key={c.title} className="relative h-44 sm:h-64 overflow-hidden">
+          {collage.map((c, i) => (
+            <div key={c.title}
+              className={`relative h-44 sm:h-64 overflow-hidden ${i >= 3 ? "hidden md:block" : ""}`}>
               <img src={c.image} alt={c.title} decoding="async" className="w-full h-full object-cover" />
             </div>
           ))}
@@ -264,7 +354,7 @@ function Hero() {
         {/* Overlapping quote widget */}
         <div id="quote-form" className="relative z-10 -mt-10 md:-mt-16 flex flex-col md:flex-row gap-4 md:gap-0 px-2 md:px-0 scroll-mt-24">
           <div className="md:flex-[2] bg-white shadow-xl p-6 sm:p-8">
-            <QuoteForm />
+            <QuoteForm onBookMeeting={() => setShowCal(true)} />
           </div>
 
           <div className="md:flex-1 bg-[#2040E7] p-6 sm:p-8 flex flex-col justify-center items-center">
@@ -280,10 +370,10 @@ function Hero() {
                   </div>
                 </div>
                 <div className="flex items-center gap-8">
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight">mean time to first quote</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight">avg. insurance cost saving</h3>
                   <div className="flex items-baseline gap-1 w-48 sm:w-60">
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">48</span>
-                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">hr</span>
+                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">22</span>
+                    <span className="text-5xl sm:text-6xl font-black text-white leading-none">%</span>
                   </div>
                 </div>
               </div>
@@ -292,7 +382,7 @@ function Hero() {
         </div>
       </div>
 
-      <div className="h-16 md:h-24" />
+      <div className="h-6 md:h-10" />
     </section>
   );
 }
@@ -305,13 +395,12 @@ function SocialProof() {
     { value: "$310M", label: "Premium Placed" },
     { value: "20+", label: "Active Programs" },
     { value: "15+", label: "A-Rated Carriers" },
-    { value: "2024", label: "Founded · YC-Backed" },
   ];
 
   return (
     <section className="bg-white border-t border-slate-200 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 text-center">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           {stats.map((s) => (
             <div key={s.label}>
               <div className="text-2xl font-bold text-[#2040E7]">{s.value}</div>
@@ -589,40 +678,33 @@ function Carriers() {
   ];
 
   return (
-    <section id="carriers" className="py-24 bg-white border-t border-slate-200">
+    <section id="carriers" className="py-20 bg-[#2040E7] text-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-14 text-center">
-          <div className="text-xs font-bold text-[#2040E7] uppercase tracking-widest mb-3">Carrier Panel</div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#131517] mb-4">
-            15+ A-rated carriers competing for your business.
-          </h2>
-          <p className="text-[#6B6D71] text-lg max-w-xl mx-auto">
-            We maintain active binding authority with the carriers that actually pay claims. All rated A- or better by AM Best.
-          </p>
+        <div className="flex items-start justify-between gap-6 mb-14">
+          <div>
+            <div className="text-[11px] font-bold text-white/60 uppercase tracking-[0.2em] mb-4">A-Rated Carrier Panel</div>
+            <h2 className="text-3xl sm:text-4xl font-bold text-white max-w-xl">
+              We work with the carriers operators trust.
+            </h2>
+          </div>
+          <div className="hidden sm:block shrink-0 text-[11px] font-bold text-white/60 uppercase tracking-[0.2em] pt-1 whitespace-nowrap">
+            Subject to Appointment
+          </div>
         </div>
+      </div>
 
-        <div className="flex flex-wrap justify-center gap-3">
-          {carriers.map((c) => (
-            <div key={c}
-              className="px-5 py-2.5 rounded-sm bg-white border border-slate-200 text-[#272A2D] text-sm font-medium hover:bg-[#27455C] hover:text-white hover:border-[#27455C] transition-all cursor-default">
-              {c}
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-14 grid sm:grid-cols-3 gap-6">
-          {[
-            { label: "AM Best Rating", value: "A− or Better", icon: "⭐" },
-            { label: "Binding Authority", value: "Direct Access", icon: "🔑" },
-            { label: "Admitted + E&S", value: "Both Markets", icon: "📊" },
-          ].map((f) => (
-            <div key={f.label} className="bg-white p-6 rounded-sm border border-slate-200 text-center">
-              <div className="text-2xl mb-3">{f.icon}</div>
-              <div className="text-[#131517] font-bold text-lg mb-1">{f.value}</div>
-              <div className="text-[#6B6D71] text-sm">{f.label}</div>
-            </div>
-          ))}
-        </div>
+      {/* Auto-flowing carrier marquee (two identical tracks for a seamless loop) */}
+      <div className="flex">
+        {[0, 1].map((track) => (
+          <ul
+            key={track}
+            aria-hidden={track === 1}
+            className="flex shrink-0 items-center gap-12 pr-12 animate-marquee whitespace-nowrap">
+            {carriers.map((c) => (
+              <li key={c} className="text-xl sm:text-2xl font-semibold text-white/90">{c}</li>
+            ))}
+          </ul>
+        ))}
       </div>
     </section>
   );
