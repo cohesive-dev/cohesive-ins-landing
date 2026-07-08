@@ -124,8 +124,8 @@ export default function TermsPage() {
             Cohesive Insurance Services
             <br />
             Phone:{" "}
-            <a href="tel:+18573924131" className="text-[#007395] hover:underline">
-              +1 (857) 392-4131
+            <a href="tel:+19295945450" className="text-[#007395] hover:underline">
+              +1 (929) 594-5450
             </a>
           </p>
         </Section>

@@ -28,8 +28,8 @@ export default function DataDeletionPage() {
           <ol className="list-decimal pl-5 space-y-2">
             <li>
               Call us at{" "}
-              <a href="tel:+18573924131" className="text-[#007395] hover:underline">
-                +1 (857) 392-4131
+              <a href="tel:+19295945450" className="text-[#007395] hover:underline">
+                +1 (929) 594-5450
               </a>{" "}
               and state that you are making a{" "}
               <strong className="text-[#131517]">data deletion request</strong>. You may also reply
