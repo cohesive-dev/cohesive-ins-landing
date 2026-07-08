@@ -291,14 +291,18 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       if (submittedRef.current || partialAlertSentRef.current) return;
       const f = fieldsRef.current;
       if (!hasContactHandle(f)) return;
-      partialAlertSentRef.current = true;
-      try { sessionStorage.setItem("quote-partial-alerted", "1"); } catch { }
-      navigator.sendBeacon(
+      // Only mark the alert as sent if the browser actually queued the beacon —
+      // otherwise a later exit event gets another chance.
+      const queued = navigator.sendBeacon(
         "/api/intake",
         new Blob([JSON.stringify({ ...f, partial: true, final: true })], {
           type: "application/json",
         }),
       );
+      if (queued) {
+        partialAlertSentRef.current = true;
+        try { sessionStorage.setItem("quote-partial-alerted", "1"); } catch { }
+      }
     };
     const onVisibility = () => {
       if (document.visibilityState === "hidden") flush();
@@ -313,6 +317,9 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Re-entry guard: a double-click must not double-POST or double-fire the
+    // Meta Pixel Lead event.
+    if (submittedRef.current) return;
     // Minimum to work a lead: at least one way to reach them.
     if (!hasContactHandle({ email, phone })) {
       setContactError(true);
