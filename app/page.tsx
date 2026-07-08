@@ -217,6 +217,17 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
 
 type Prefill = { name?: string; email?: string; phone?: string; businessType?: string; zip?: string };
 
+const PARTIAL_EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+// A partial fill is only worth capturing once there is a way to reach the
+// visitor: a parseable email or a full 10-digit US phone number.
+function hasContactHandle(f: { email: string; phone: string }): boolean {
+  return (
+    PARTIAL_EMAIL_RE.test(f.email.trim()) ||
+    f.phone.replace(/\D/g, "").length >= 10
+  );
+}
+
 function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => void }) {
   const trades = [
     "Roofing", "Electrical", "Plumbing", "HVAC", "General Contracting",
@@ -237,8 +248,71 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  // ── Partial-fill capture ──────────────────────────────────────────────────
+  // Once the visitor has typed a usable contact handle, autosave silently in
+  // the background (no email alert). If they leave the page without
+  // submitting, one final beacon flags the abandoned fill to quotes@.
+  // Disarmed permanently on submit.
+  const submittedRef = useRef(false);
+  const partialAlertSentRef = useRef(false);
+  const lastAutosaveRef = useRef("");
+  const fieldsRef = useRef({ name, email, phone, businessType, zip });
+
+  useEffect(() => {
+    fieldsRef.current = { name, email, phone, businessType, zip };
+  }, [name, email, phone, businessType, zip]);
+
+  useEffect(() => {
+    if (submitted) return;
+    const timer = setTimeout(() => {
+      const f = fieldsRef.current;
+      if (submittedRef.current || !hasContactHandle(f)) return;
+      const payload = JSON.stringify({ ...f, partial: true });
+      if (payload === lastAutosaveRef.current) return;
+      lastAutosaveRef.current = payload;
+      void fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true,
+      }).catch(() => { });
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [name, email, phone, businessType, zip, submitted]);
+
+  useEffect(() => {
+    // One abandonment alert per browser session, across tab switches too —
+    // the first hidden/pagehide with a reachable contact wins.
+    try {
+      if (sessionStorage.getItem("quote-partial-alerted")) partialAlertSentRef.current = true;
+    } catch { }
+    const flush = () => {
+      if (submittedRef.current || partialAlertSentRef.current) return;
+      const f = fieldsRef.current;
+      if (!hasContactHandle(f)) return;
+      partialAlertSentRef.current = true;
+      try { sessionStorage.setItem("quote-partial-alerted", "1"); } catch { }
+      navigator.sendBeacon(
+        "/api/intake",
+        new Blob([JSON.stringify({ ...f, partial: true, final: true })], {
+          type: "application/json",
+        }),
+      );
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    submittedRef.current = true;
     // Fire-and-forget: record the submission if we can, but never block the
     // customer or surface an error — they always see the confirmation.
     void fetch("/api/intake", {
