@@ -246,6 +246,8 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, phone, businessType, zip }),
     }).catch(() => { });
+    // Meta Pixel standard Lead event — lets ad campaigns optimize on form fills.
+    (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead");
     setSubmitted(true);
   };
 
