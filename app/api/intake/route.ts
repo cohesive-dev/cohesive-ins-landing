@@ -67,9 +67,6 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // Upsert on the unique `domain`. No company name is collected, so `name`
-      // is the domain as a placeholder (the CRM upgrades it later when a real
-      // company name is learned); `update: {}` keeps an existing Account as-is.
       const account = await tx.account.upsert({
         where: { domain },
         create: { name: domain, domain },
