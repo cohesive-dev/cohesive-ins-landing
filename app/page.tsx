@@ -217,6 +217,17 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
 
 type Prefill = { name?: string; email?: string; phone?: string; businessType?: string; zip?: string };
 
+const PARTIAL_EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+// A partial fill is only worth capturing once there is a way to reach the
+// visitor: a parseable email or a full 10-digit US phone number.
+function hasContactHandle(f: { email: string; phone: string }): boolean {
+  return (
+    PARTIAL_EMAIL_RE.test(f.email.trim()) ||
+    f.phone.replace(/\D/g, "").length >= 10
+  );
+}
+
 function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => void }) {
   const trades = [
     "Roofing", "Electrical", "Plumbing", "HVAC", "General Contracting",
@@ -236,9 +247,85 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [businessType, setBusinessType] = useState("");
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [contactError, setContactError] = useState(false);
+
+  // ── Partial-fill capture ──────────────────────────────────────────────────
+  // Once the visitor has typed a usable contact handle, autosave silently in
+  // the background (no email alert). If they leave the page without
+  // submitting, one final beacon flags the abandoned fill to quotes@.
+  // Disarmed permanently on submit.
+  const submittedRef = useRef(false);
+  const partialAlertSentRef = useRef(false);
+  const lastAutosaveRef = useRef("");
+  const fieldsRef = useRef({ name, email, phone, businessType, zip });
+
+  useEffect(() => {
+    fieldsRef.current = { name, email, phone, businessType, zip };
+  }, [name, email, phone, businessType, zip]);
+
+  useEffect(() => {
+    if (submitted) return;
+    const timer = setTimeout(() => {
+      const f = fieldsRef.current;
+      if (submittedRef.current || !hasContactHandle(f)) return;
+      const payload = JSON.stringify({ ...f, partial: true });
+      if (payload === lastAutosaveRef.current) return;
+      lastAutosaveRef.current = payload;
+      void fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+        keepalive: true,
+      }).catch(() => { });
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [name, email, phone, businessType, zip, submitted]);
+
+  useEffect(() => {
+    // One abandonment alert per browser session, across tab switches too —
+    // the first hidden/pagehide with a reachable contact wins.
+    try {
+      if (sessionStorage.getItem("quote-partial-alerted")) partialAlertSentRef.current = true;
+    } catch { }
+    const flush = () => {
+      if (submittedRef.current || partialAlertSentRef.current) return;
+      const f = fieldsRef.current;
+      if (!hasContactHandle(f)) return;
+      // Only mark the alert as sent if the browser actually queued the beacon —
+      // otherwise a later exit event gets another chance.
+      const queued = navigator.sendBeacon(
+        "/api/intake",
+        new Blob([JSON.stringify({ ...f, partial: true, final: true })], {
+          type: "application/json",
+        }),
+      );
+      if (queued) {
+        partialAlertSentRef.current = true;
+        try { sessionStorage.setItem("quote-partial-alerted", "1"); } catch { }
+      }
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Re-entry guard: a double-click must not double-POST or double-fire the
+    // Meta Pixel Lead event.
+    if (submittedRef.current) return;
+    // Minimum to work a lead: at least one way to reach them.
+    if (!hasContactHandle({ email, phone })) {
+      setContactError(true);
+      return;
+    }
+    submittedRef.current = true;
     // Fire-and-forget: record the submission if we can, but never block the
     // customer or surface an error — they always see the confirmation.
     void fetch("/api/intake", {
@@ -281,23 +368,29 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         </label>
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex-1 text-left">
-            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="text-[#2040E7]">*</span></span>
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="font-normal text-[#6B6D71]">(email or phone required)</span></span>
+            <input type="email" value={email}
+              onChange={(e) => { setEmail(e.target.value); setContactError(false); }}
               pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}"
               title="Enter a valid email address, e.g. jane@company.com"
               placeholder="jane@company.com"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
           <label className="flex-1 text-left">
-            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Phone <span className="text-[#2040E7]">*</span></span>
-            <input required type="tel" inputMode="tel" value={phone}
-              onChange={(e) => setPhone(formatUSPhone(e.target.value))}
+            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Phone</span>
+            <input type="tel" inputMode="tel" value={phone}
+              onChange={(e) => { setPhone(formatUSPhone(e.target.value)); setContactError(false); }}
               pattern="\(\d{3}\) \d{3}-\d{4}"
               title="Enter a 10-digit US phone number"
               placeholder="(555) 123-4567"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
         </div>
+        {contactError && (
+          <p className="text-sm text-red-600 text-left">
+            Please provide an email or a phone number so we can reach you with your quote.
+          </p>
+        )}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Type of business</span>

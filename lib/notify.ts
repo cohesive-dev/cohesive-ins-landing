@@ -15,10 +15,14 @@ const QUOTES_ADDRESS = "quotes@cohesiveinsure.com";
 
 export type IntakeNotification = {
   name?: string;
-  email: string;
+  // Optional because an abandoned form may only have a phone number.
+  email?: string;
   phone?: string;
   businessType?: string;
   zip?: string;
+  // True for an abandoned (partial) form fill — changes subject/body and adds
+  // a no-consent warning, since the visitor never clicked submit.
+  partial?: boolean;
 };
 
 export async function sendIntakeNotification(
@@ -39,23 +43,35 @@ export async function sendIntakeNotification(
     auth: { user: QUOTES_ADDRESS, pass: password },
   });
 
+  const source = fields.partial ? "website-form-partial" : "website-form";
   const lines = [
-    `New quote request from the website form.`,
+    fields.partial
+      ? `Abandoned quote form (visitor filled fields but did NOT submit).`
+      : `New quote request from the website form.`,
     ``,
     `Name: ${fields.name ?? "(not provided)"}`,
-    `Email: ${fields.email}`,
+    `Email: ${fields.email ?? "(not provided)"}`,
     `Phone: ${fields.phone ?? "(not provided)"}`,
     `Business type: ${fields.businessType ?? "(not provided)"}`,
     `ZIP: ${fields.zip ?? "(not provided)"}`,
+    ...(fields.partial
+      ? [
+          ``,
+          `NOTE: no contact consent was given (form never submitted). One manual,`,
+          `soft follow-up is fine; do not add to automated sequences.`,
+        ]
+      : []),
     ``,
     `--- raw payload (for future parsing/ingest) ---`,
-    JSON.stringify({ source: "website-form", ...fields }, null, 2),
+    JSON.stringify({ source, ...fields }, null, 2),
   ];
 
-  const subjectWho = fields.name || fields.email;
-  const subject = fields.businessType
-    ? `New quote request: ${subjectWho} - ${fields.businessType}`
-    : `New quote request: ${subjectWho}`;
+  const subjectWho = fields.name || fields.email || fields.phone || "unknown";
+  const subject = fields.partial
+    ? `⚠️ PARTIAL quote form (abandoned): ${subjectWho}`
+    : fields.businessType
+      ? `New quote request: ${subjectWho} - ${fields.businessType}`
+      : `New quote request: ${subjectWho}`;
 
   try {
     await transporter.sendMail({

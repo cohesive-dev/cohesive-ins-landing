@@ -1,8 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@/src/generated/prisma/client";
 
-// Prisma 7 requires a driver adapter. We use the node-postgres adapter,
-// pointing at DATABASE_URL.
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
@@ -16,9 +14,22 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+let cached: PrismaClient | undefined;
 
-// Avoid exhausting the connection pool during dev hot-reloads.
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+function getPrismaClient(): PrismaClient {
+  if (cached) return cached;
+  cached = globalForPrisma.prisma ?? createPrismaClient();
+  // Avoid exhausting the connection pool during dev hot-reloads.
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = cached;
+  }
+  return cached;
 }
+
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client as object, prop, client);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
