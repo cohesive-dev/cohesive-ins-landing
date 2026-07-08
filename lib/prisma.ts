@@ -16,9 +16,26 @@ function createPrismaClient() {
   return new PrismaClient({ adapter });
 }
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+let cached: PrismaClient | undefined;
 
-// Avoid exhausting the connection pool during dev hot-reloads.
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+function getPrismaClient(): PrismaClient {
+  if (cached) return cached;
+  cached = globalForPrisma.prisma ?? createPrismaClient();
+  // Avoid exhausting the connection pool during dev hot-reloads.
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = cached;
+  }
+  return cached;
 }
+
+// Lazy proxy: the client (and its DATABASE_URL requirement) is only created on
+// first use. Importing this module must never throw — `next build` imports
+// route modules while collecting page data, and Vercel preview builds run
+// without DATABASE_URL.
+export const prisma = new Proxy({} as PrismaClient, {
+  get(_target, prop) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client as object, prop, client);
+    return typeof value === "function" ? value.bind(client) : value;
+  },
+});
