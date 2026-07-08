@@ -8,11 +8,15 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/Campaign'
 export type * from './models/Contact'
 export type * from './models/Account'
 export type * from './models/AccountContact'
 export type * from './models/Deal'
+export type * from './models/DealAccount'
 export type * from './models/DealContact'
-export type * from './models/OutreachJob'
-export type * from './models/Policy'
+export type * from './models/CampaignContact'
+export type * from './models/SmartleadEvent'
+export type * from './models/ScheduledSequence'
+export type * from './models/ScheduledOutreach'
 export type * from './commonInputTypes'

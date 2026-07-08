@@ -216,6 +216,9 @@ export type ContactWhereInput = {
   phoneNumbers?: Prisma.StringNullableListFilter<"Contact">
   accounts?: Prisma.AccountContactListRelationFilter
   deals?: Prisma.DealContactListRelationFilter
+  scheduledOutreaches?: Prisma.ScheduledOutreachListRelationFilter
+  scheduledSequences?: Prisma.ScheduledSequenceListRelationFilter
+  campaigns?: Prisma.CampaignContactListRelationFilter
 }
 
 export type ContactOrderByWithRelationInput = {
@@ -231,6 +234,9 @@ export type ContactOrderByWithRelationInput = {
   phoneNumbers?: Prisma.SortOrder
   accounts?: Prisma.AccountContactOrderByRelationAggregateInput
   deals?: Prisma.DealContactOrderByRelationAggregateInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachOrderByRelationAggregateInput
+  scheduledSequences?: Prisma.ScheduledSequenceOrderByRelationAggregateInput
+  campaigns?: Prisma.CampaignContactOrderByRelationAggregateInput
 }
 
 export type ContactWhereUniqueInput = Prisma.AtLeast<{
@@ -249,6 +255,9 @@ export type ContactWhereUniqueInput = Prisma.AtLeast<{
   phoneNumbers?: Prisma.StringNullableListFilter<"Contact">
   accounts?: Prisma.AccountContactListRelationFilter
   deals?: Prisma.DealContactListRelationFilter
+  scheduledOutreaches?: Prisma.ScheduledOutreachListRelationFilter
+  scheduledSequences?: Prisma.ScheduledSequenceListRelationFilter
+  campaigns?: Prisma.CampaignContactListRelationFilter
 }, "id" | "primaryEmail">
 
 export type ContactOrderByWithAggregationInput = {
@@ -296,6 +305,9 @@ export type ContactCreateInput = {
   phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactCreateNestedManyWithoutContactInput
   deals?: Prisma.DealContactCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactCreateNestedManyWithoutContactInput
 }
 
 export type ContactUncheckedCreateInput = {
@@ -311,6 +323,9 @@ export type ContactUncheckedCreateInput = {
   phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutContactInput
   deals?: Prisma.DealContactUncheckedCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactUncheckedCreateNestedManyWithoutContactInput
 }
 
 export type ContactUpdateInput = {
@@ -326,6 +341,9 @@ export type ContactUpdateInput = {
   phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactUpdateManyWithoutContactNestedInput
   deals?: Prisma.DealContactUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUpdateManyWithoutContactNestedInput
 }
 
 export type ContactUncheckedUpdateInput = {
@@ -341,6 +359,9 @@ export type ContactUncheckedUpdateInput = {
   phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactUncheckedUpdateManyWithoutContactNestedInput
   deals?: Prisma.DealContactUncheckedUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUncheckedUpdateManyWithoutContactNestedInput
 }
 
 export type ContactCreateManyInput = {
@@ -438,18 +459,6 @@ export type ContactCreatephoneNumbersInput = {
   set: string[]
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
-}
-
-export type NullableStringFieldUpdateOperationsInput = {
-  set?: string | null
-}
-
 export type ContactUpdateemailsInput = {
   set?: string[]
   push?: string | string[]
@@ -488,6 +497,48 @@ export type ContactUpdateOneRequiredWithoutDealsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ContactUpdateToOneWithWhereWithoutDealsInput, Prisma.ContactUpdateWithoutDealsInput>, Prisma.ContactUncheckedUpdateWithoutDealsInput>
 }
 
+export type ContactCreateNestedOneWithoutCampaignsInput = {
+  create?: Prisma.XOR<Prisma.ContactCreateWithoutCampaignsInput, Prisma.ContactUncheckedCreateWithoutCampaignsInput>
+  connectOrCreate?: Prisma.ContactCreateOrConnectWithoutCampaignsInput
+  connect?: Prisma.ContactWhereUniqueInput
+}
+
+export type ContactUpdateOneRequiredWithoutCampaignsNestedInput = {
+  create?: Prisma.XOR<Prisma.ContactCreateWithoutCampaignsInput, Prisma.ContactUncheckedCreateWithoutCampaignsInput>
+  connectOrCreate?: Prisma.ContactCreateOrConnectWithoutCampaignsInput
+  upsert?: Prisma.ContactUpsertWithoutCampaignsInput
+  connect?: Prisma.ContactWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContactUpdateToOneWithWhereWithoutCampaignsInput, Prisma.ContactUpdateWithoutCampaignsInput>, Prisma.ContactUncheckedUpdateWithoutCampaignsInput>
+}
+
+export type ContactCreateNestedOneWithoutScheduledSequencesInput = {
+  create?: Prisma.XOR<Prisma.ContactCreateWithoutScheduledSequencesInput, Prisma.ContactUncheckedCreateWithoutScheduledSequencesInput>
+  connectOrCreate?: Prisma.ContactCreateOrConnectWithoutScheduledSequencesInput
+  connect?: Prisma.ContactWhereUniqueInput
+}
+
+export type ContactUpdateOneRequiredWithoutScheduledSequencesNestedInput = {
+  create?: Prisma.XOR<Prisma.ContactCreateWithoutScheduledSequencesInput, Prisma.ContactUncheckedCreateWithoutScheduledSequencesInput>
+  connectOrCreate?: Prisma.ContactCreateOrConnectWithoutScheduledSequencesInput
+  upsert?: Prisma.ContactUpsertWithoutScheduledSequencesInput
+  connect?: Prisma.ContactWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContactUpdateToOneWithWhereWithoutScheduledSequencesInput, Prisma.ContactUpdateWithoutScheduledSequencesInput>, Prisma.ContactUncheckedUpdateWithoutScheduledSequencesInput>
+}
+
+export type ContactCreateNestedOneWithoutScheduledOutreachesInput = {
+  create?: Prisma.XOR<Prisma.ContactCreateWithoutScheduledOutreachesInput, Prisma.ContactUncheckedCreateWithoutScheduledOutreachesInput>
+  connectOrCreate?: Prisma.ContactCreateOrConnectWithoutScheduledOutreachesInput
+  connect?: Prisma.ContactWhereUniqueInput
+}
+
+export type ContactUpdateOneRequiredWithoutScheduledOutreachesNestedInput = {
+  create?: Prisma.XOR<Prisma.ContactCreateWithoutScheduledOutreachesInput, Prisma.ContactUncheckedCreateWithoutScheduledOutreachesInput>
+  connectOrCreate?: Prisma.ContactCreateOrConnectWithoutScheduledOutreachesInput
+  upsert?: Prisma.ContactUpsertWithoutScheduledOutreachesInput
+  connect?: Prisma.ContactWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ContactUpdateToOneWithWhereWithoutScheduledOutreachesInput, Prisma.ContactUpdateWithoutScheduledOutreachesInput>, Prisma.ContactUncheckedUpdateWithoutScheduledOutreachesInput>
+}
+
 export type ContactCreateWithoutAccountsInput = {
   id?: string
   createdAt?: Date | string
@@ -500,6 +551,9 @@ export type ContactCreateWithoutAccountsInput = {
   primaryPhone?: string | null
   phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
   deals?: Prisma.DealContactCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactCreateNestedManyWithoutContactInput
 }
 
 export type ContactUncheckedCreateWithoutAccountsInput = {
@@ -514,6 +568,9 @@ export type ContactUncheckedCreateWithoutAccountsInput = {
   primaryPhone?: string | null
   phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
   deals?: Prisma.DealContactUncheckedCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactUncheckedCreateNestedManyWithoutContactInput
 }
 
 export type ContactCreateOrConnectWithoutAccountsInput = {
@@ -544,6 +601,9 @@ export type ContactUpdateWithoutAccountsInput = {
   primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
   deals?: Prisma.DealContactUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUpdateManyWithoutContactNestedInput
 }
 
 export type ContactUncheckedUpdateWithoutAccountsInput = {
@@ -558,6 +618,9 @@ export type ContactUncheckedUpdateWithoutAccountsInput = {
   primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
   deals?: Prisma.DealContactUncheckedUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUncheckedUpdateManyWithoutContactNestedInput
 }
 
 export type ContactCreateWithoutDealsInput = {
@@ -572,6 +635,9 @@ export type ContactCreateWithoutDealsInput = {
   primaryPhone?: string | null
   phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactCreateNestedManyWithoutContactInput
 }
 
 export type ContactUncheckedCreateWithoutDealsInput = {
@@ -586,6 +652,9 @@ export type ContactUncheckedCreateWithoutDealsInput = {
   primaryPhone?: string | null
   phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactUncheckedCreateNestedManyWithoutContactInput
 }
 
 export type ContactCreateOrConnectWithoutDealsInput = {
@@ -616,6 +685,9 @@ export type ContactUpdateWithoutDealsInput = {
   primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUpdateManyWithoutContactNestedInput
 }
 
 export type ContactUncheckedUpdateWithoutDealsInput = {
@@ -630,6 +702,261 @@ export type ContactUncheckedUpdateWithoutDealsInput = {
   primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
   accounts?: Prisma.AccountContactUncheckedUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUncheckedUpdateManyWithoutContactNestedInput
+}
+
+export type ContactCreateWithoutCampaignsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstName?: string | null
+  lastName?: string | null
+  title?: string | null
+  primaryEmail: string
+  emails?: Prisma.ContactCreateemailsInput | string[]
+  primaryPhone?: string | null
+  phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactCreateNestedManyWithoutContactInput
+  deals?: Prisma.DealContactCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceCreateNestedManyWithoutContactInput
+}
+
+export type ContactUncheckedCreateWithoutCampaignsInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstName?: string | null
+  lastName?: string | null
+  title?: string | null
+  primaryEmail: string
+  emails?: Prisma.ContactCreateemailsInput | string[]
+  primaryPhone?: string | null
+  phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutContactInput
+  deals?: Prisma.DealContactUncheckedCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedCreateNestedManyWithoutContactInput
+}
+
+export type ContactCreateOrConnectWithoutCampaignsInput = {
+  where: Prisma.ContactWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContactCreateWithoutCampaignsInput, Prisma.ContactUncheckedCreateWithoutCampaignsInput>
+}
+
+export type ContactUpsertWithoutCampaignsInput = {
+  update: Prisma.XOR<Prisma.ContactUpdateWithoutCampaignsInput, Prisma.ContactUncheckedUpdateWithoutCampaignsInput>
+  create: Prisma.XOR<Prisma.ContactCreateWithoutCampaignsInput, Prisma.ContactUncheckedCreateWithoutCampaignsInput>
+  where?: Prisma.ContactWhereInput
+}
+
+export type ContactUpdateToOneWithWhereWithoutCampaignsInput = {
+  where?: Prisma.ContactWhereInput
+  data: Prisma.XOR<Prisma.ContactUpdateWithoutCampaignsInput, Prisma.ContactUncheckedUpdateWithoutCampaignsInput>
+}
+
+export type ContactUpdateWithoutCampaignsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  emails?: Prisma.ContactUpdateemailsInput | string[]
+  primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUpdateManyWithoutContactNestedInput
+  deals?: Prisma.DealContactUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUpdateManyWithoutContactNestedInput
+}
+
+export type ContactUncheckedUpdateWithoutCampaignsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  emails?: Prisma.ContactUpdateemailsInput | string[]
+  primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUncheckedUpdateManyWithoutContactNestedInput
+  deals?: Prisma.DealContactUncheckedUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedUpdateManyWithoutContactNestedInput
+}
+
+export type ContactCreateWithoutScheduledSequencesInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstName?: string | null
+  lastName?: string | null
+  title?: string | null
+  primaryEmail: string
+  emails?: Prisma.ContactCreateemailsInput | string[]
+  primaryPhone?: string | null
+  phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactCreateNestedManyWithoutContactInput
+  deals?: Prisma.DealContactCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactCreateNestedManyWithoutContactInput
+}
+
+export type ContactUncheckedCreateWithoutScheduledSequencesInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstName?: string | null
+  lastName?: string | null
+  title?: string | null
+  primaryEmail: string
+  emails?: Prisma.ContactCreateemailsInput | string[]
+  primaryPhone?: string | null
+  phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutContactInput
+  deals?: Prisma.DealContactUncheckedCreateNestedManyWithoutContactInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactUncheckedCreateNestedManyWithoutContactInput
+}
+
+export type ContactCreateOrConnectWithoutScheduledSequencesInput = {
+  where: Prisma.ContactWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContactCreateWithoutScheduledSequencesInput, Prisma.ContactUncheckedCreateWithoutScheduledSequencesInput>
+}
+
+export type ContactUpsertWithoutScheduledSequencesInput = {
+  update: Prisma.XOR<Prisma.ContactUpdateWithoutScheduledSequencesInput, Prisma.ContactUncheckedUpdateWithoutScheduledSequencesInput>
+  create: Prisma.XOR<Prisma.ContactCreateWithoutScheduledSequencesInput, Prisma.ContactUncheckedCreateWithoutScheduledSequencesInput>
+  where?: Prisma.ContactWhereInput
+}
+
+export type ContactUpdateToOneWithWhereWithoutScheduledSequencesInput = {
+  where?: Prisma.ContactWhereInput
+  data: Prisma.XOR<Prisma.ContactUpdateWithoutScheduledSequencesInput, Prisma.ContactUncheckedUpdateWithoutScheduledSequencesInput>
+}
+
+export type ContactUpdateWithoutScheduledSequencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  emails?: Prisma.ContactUpdateemailsInput | string[]
+  primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUpdateManyWithoutContactNestedInput
+  deals?: Prisma.DealContactUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUpdateManyWithoutContactNestedInput
+}
+
+export type ContactUncheckedUpdateWithoutScheduledSequencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  emails?: Prisma.ContactUpdateemailsInput | string[]
+  primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUncheckedUpdateManyWithoutContactNestedInput
+  deals?: Prisma.DealContactUncheckedUpdateManyWithoutContactNestedInput
+  scheduledOutreaches?: Prisma.ScheduledOutreachUncheckedUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUncheckedUpdateManyWithoutContactNestedInput
+}
+
+export type ContactCreateWithoutScheduledOutreachesInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstName?: string | null
+  lastName?: string | null
+  title?: string | null
+  primaryEmail: string
+  emails?: Prisma.ContactCreateemailsInput | string[]
+  primaryPhone?: string | null
+  phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactCreateNestedManyWithoutContactInput
+  deals?: Prisma.DealContactCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactCreateNestedManyWithoutContactInput
+}
+
+export type ContactUncheckedCreateWithoutScheduledOutreachesInput = {
+  id?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  firstName?: string | null
+  lastName?: string | null
+  title?: string | null
+  primaryEmail: string
+  emails?: Prisma.ContactCreateemailsInput | string[]
+  primaryPhone?: string | null
+  phoneNumbers?: Prisma.ContactCreatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutContactInput
+  deals?: Prisma.DealContactUncheckedCreateNestedManyWithoutContactInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedCreateNestedManyWithoutContactInput
+  campaigns?: Prisma.CampaignContactUncheckedCreateNestedManyWithoutContactInput
+}
+
+export type ContactCreateOrConnectWithoutScheduledOutreachesInput = {
+  where: Prisma.ContactWhereUniqueInput
+  create: Prisma.XOR<Prisma.ContactCreateWithoutScheduledOutreachesInput, Prisma.ContactUncheckedCreateWithoutScheduledOutreachesInput>
+}
+
+export type ContactUpsertWithoutScheduledOutreachesInput = {
+  update: Prisma.XOR<Prisma.ContactUpdateWithoutScheduledOutreachesInput, Prisma.ContactUncheckedUpdateWithoutScheduledOutreachesInput>
+  create: Prisma.XOR<Prisma.ContactCreateWithoutScheduledOutreachesInput, Prisma.ContactUncheckedCreateWithoutScheduledOutreachesInput>
+  where?: Prisma.ContactWhereInput
+}
+
+export type ContactUpdateToOneWithWhereWithoutScheduledOutreachesInput = {
+  where?: Prisma.ContactWhereInput
+  data: Prisma.XOR<Prisma.ContactUpdateWithoutScheduledOutreachesInput, Prisma.ContactUncheckedUpdateWithoutScheduledOutreachesInput>
+}
+
+export type ContactUpdateWithoutScheduledOutreachesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  emails?: Prisma.ContactUpdateemailsInput | string[]
+  primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUpdateManyWithoutContactNestedInput
+  deals?: Prisma.DealContactUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUpdateManyWithoutContactNestedInput
+}
+
+export type ContactUncheckedUpdateWithoutScheduledOutreachesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  firstName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  primaryEmail?: Prisma.StringFieldUpdateOperationsInput | string
+  emails?: Prisma.ContactUpdateemailsInput | string[]
+  primaryPhone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phoneNumbers?: Prisma.ContactUpdatephoneNumbersInput | string[]
+  accounts?: Prisma.AccountContactUncheckedUpdateManyWithoutContactNestedInput
+  deals?: Prisma.DealContactUncheckedUpdateManyWithoutContactNestedInput
+  scheduledSequences?: Prisma.ScheduledSequenceUncheckedUpdateManyWithoutContactNestedInput
+  campaigns?: Prisma.CampaignContactUncheckedUpdateManyWithoutContactNestedInput
 }
 
 
@@ -640,11 +967,17 @@ export type ContactUncheckedUpdateWithoutDealsInput = {
 export type ContactCountOutputType = {
   accounts: number
   deals: number
+  scheduledOutreaches: number
+  scheduledSequences: number
+  campaigns: number
 }
 
 export type ContactCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | ContactCountOutputTypeCountAccountsArgs
   deals?: boolean | ContactCountOutputTypeCountDealsArgs
+  scheduledOutreaches?: boolean | ContactCountOutputTypeCountScheduledOutreachesArgs
+  scheduledSequences?: boolean | ContactCountOutputTypeCountScheduledSequencesArgs
+  campaigns?: boolean | ContactCountOutputTypeCountCampaignsArgs
 }
 
 /**
@@ -671,6 +1004,27 @@ export type ContactCountOutputTypeCountDealsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.DealContactWhereInput
 }
 
+/**
+ * ContactCountOutputType without action
+ */
+export type ContactCountOutputTypeCountScheduledOutreachesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ScheduledOutreachWhereInput
+}
+
+/**
+ * ContactCountOutputType without action
+ */
+export type ContactCountOutputTypeCountScheduledSequencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ScheduledSequenceWhereInput
+}
+
+/**
+ * ContactCountOutputType without action
+ */
+export type ContactCountOutputTypeCountCampaignsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CampaignContactWhereInput
+}
+
 
 export type ContactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -685,6 +1039,9 @@ export type ContactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   phoneNumbers?: boolean
   accounts?: boolean | Prisma.Contact$accountsArgs<ExtArgs>
   deals?: boolean | Prisma.Contact$dealsArgs<ExtArgs>
+  scheduledOutreaches?: boolean | Prisma.Contact$scheduledOutreachesArgs<ExtArgs>
+  scheduledSequences?: boolean | Prisma.Contact$scheduledSequencesArgs<ExtArgs>
+  campaigns?: boolean | Prisma.Contact$campaignsArgs<ExtArgs>
   _count?: boolean | Prisma.ContactCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["contact"]>
 
@@ -731,6 +1088,9 @@ export type ContactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type ContactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   accounts?: boolean | Prisma.Contact$accountsArgs<ExtArgs>
   deals?: boolean | Prisma.Contact$dealsArgs<ExtArgs>
+  scheduledOutreaches?: boolean | Prisma.Contact$scheduledOutreachesArgs<ExtArgs>
+  scheduledSequences?: boolean | Prisma.Contact$scheduledSequencesArgs<ExtArgs>
+  campaigns?: boolean | Prisma.Contact$campaignsArgs<ExtArgs>
   _count?: boolean | Prisma.ContactCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ContactIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -741,6 +1101,9 @@ export type $ContactPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     accounts: Prisma.$AccountContactPayload<ExtArgs>[]
     deals: Prisma.$DealContactPayload<ExtArgs>[]
+    scheduledOutreaches: Prisma.$ScheduledOutreachPayload<ExtArgs>[]
+    scheduledSequences: Prisma.$ScheduledSequencePayload<ExtArgs>[]
+    campaigns: Prisma.$CampaignContactPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1149,6 +1512,9 @@ export interface Prisma__ContactClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   accounts<T extends Prisma.Contact$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contact$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deals<T extends Prisma.Contact$dealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contact$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  scheduledOutreaches<T extends Prisma.Contact$scheduledOutreachesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contact$scheduledOutreachesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScheduledOutreachPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  scheduledSequences<T extends Prisma.Contact$scheduledSequencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contact$scheduledSequencesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ScheduledSequencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  campaigns<T extends Prisma.Contact$campaignsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Contact$campaignsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CampaignContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1626,6 +1992,78 @@ export type Contact$dealsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.DealContactScalarFieldEnum | Prisma.DealContactScalarFieldEnum[]
+}
+
+/**
+ * Contact.scheduledOutreaches
+ */
+export type Contact$scheduledOutreachesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ScheduledOutreach
+   */
+  select?: Prisma.ScheduledOutreachSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ScheduledOutreach
+   */
+  omit?: Prisma.ScheduledOutreachOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ScheduledOutreachInclude<ExtArgs> | null
+  where?: Prisma.ScheduledOutreachWhereInput
+  orderBy?: Prisma.ScheduledOutreachOrderByWithRelationInput | Prisma.ScheduledOutreachOrderByWithRelationInput[]
+  cursor?: Prisma.ScheduledOutreachWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ScheduledOutreachScalarFieldEnum | Prisma.ScheduledOutreachScalarFieldEnum[]
+}
+
+/**
+ * Contact.scheduledSequences
+ */
+export type Contact$scheduledSequencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ScheduledSequence
+   */
+  select?: Prisma.ScheduledSequenceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ScheduledSequence
+   */
+  omit?: Prisma.ScheduledSequenceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ScheduledSequenceInclude<ExtArgs> | null
+  where?: Prisma.ScheduledSequenceWhereInput
+  orderBy?: Prisma.ScheduledSequenceOrderByWithRelationInput | Prisma.ScheduledSequenceOrderByWithRelationInput[]
+  cursor?: Prisma.ScheduledSequenceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ScheduledSequenceScalarFieldEnum | Prisma.ScheduledSequenceScalarFieldEnum[]
+}
+
+/**
+ * Contact.campaigns
+ */
+export type Contact$campaignsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CampaignContact
+   */
+  select?: Prisma.CampaignContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CampaignContact
+   */
+  omit?: Prisma.CampaignContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CampaignContactInclude<ExtArgs> | null
+  where?: Prisma.CampaignContactWhereInput
+  orderBy?: Prisma.CampaignContactOrderByWithRelationInput | Prisma.CampaignContactOrderByWithRelationInput[]
+  cursor?: Prisma.CampaignContactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CampaignContactScalarFieldEnum | Prisma.CampaignContactScalarFieldEnum[]
 }
 
 /**

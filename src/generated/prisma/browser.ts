@@ -18,6 +18,11 @@ export { Prisma }
 export * as $Enums from './enums'
 export * from './enums';
 /**
+ * Model Campaign
+ * 
+ */
+export type Campaign = Prisma.CampaignModel
+/**
  * Model Contact
  * 
  */
@@ -38,17 +43,32 @@ export type AccountContact = Prisma.AccountContactModel
  */
 export type Deal = Prisma.DealModel
 /**
+ * Model DealAccount
+ * 
+ */
+export type DealAccount = Prisma.DealAccountModel
+/**
  * Model DealContact
  * 
  */
 export type DealContact = Prisma.DealContactModel
 /**
- * Model OutreachJob
+ * Model CampaignContact
  * 
  */
-export type OutreachJob = Prisma.OutreachJobModel
+export type CampaignContact = Prisma.CampaignContactModel
 /**
- * Model Policy
+ * Model SmartleadEvent
  * 
  */
-export type Policy = Prisma.PolicyModel
+export type SmartleadEvent = Prisma.SmartleadEventModel
+/**
+ * Model ScheduledSequence
+ * 
+ */
+export type ScheduledSequence = Prisma.ScheduledSequenceModel
+/**
+ * Model ScheduledOutreach
+ * 
+ */
+export type ScheduledOutreach = Prisma.ScheduledOutreachModel

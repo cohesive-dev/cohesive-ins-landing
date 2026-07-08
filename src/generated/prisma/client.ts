@@ -31,8 +31,8 @@ export * from "./enums"
  * const prisma = new PrismaClient({
  *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
  * })
- * // Fetch zero or more Contacts
- * const contacts = await prisma.contact.findMany()
+ * // Fetch zero or more Campaigns
+ * const campaigns = await prisma.campaign.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -41,6 +41,11 @@ export const PrismaClient = $Class.getPrismaClientClass()
 export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts extends Prisma.PrismaClientOptions["omit"] = Prisma.PrismaClientOptions["omit"], ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = $Class.PrismaClient<LogOpts, OmitOpts, ExtArgs>
 export { Prisma }
 
+/**
+ * Model Campaign
+ * 
+ */
+export type Campaign = Prisma.CampaignModel
 /**
  * Model Contact
  * 
@@ -62,17 +67,32 @@ export type AccountContact = Prisma.AccountContactModel
  */
 export type Deal = Prisma.DealModel
 /**
+ * Model DealAccount
+ * 
+ */
+export type DealAccount = Prisma.DealAccountModel
+/**
  * Model DealContact
  * 
  */
 export type DealContact = Prisma.DealContactModel
 /**
- * Model OutreachJob
+ * Model CampaignContact
  * 
  */
-export type OutreachJob = Prisma.OutreachJobModel
+export type CampaignContact = Prisma.CampaignContactModel
 /**
- * Model Policy
+ * Model SmartleadEvent
  * 
  */
-export type Policy = Prisma.PolicyModel
+export type SmartleadEvent = Prisma.SmartleadEventModel
+/**
+ * Model ScheduledSequence
+ * 
+ */
+export type ScheduledSequence = Prisma.ScheduledSequenceModel
+/**
+ * Model ScheduledOutreach
+ * 
+ */
+export type ScheduledOutreach = Prisma.ScheduledOutreachModel

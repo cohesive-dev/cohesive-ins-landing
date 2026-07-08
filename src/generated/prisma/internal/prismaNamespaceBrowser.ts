@@ -51,13 +51,17 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
+  Campaign: 'Campaign',
   Contact: 'Contact',
   Account: 'Account',
   AccountContact: 'AccountContact',
   Deal: 'Deal',
+  DealAccount: 'DealAccount',
   DealContact: 'DealContact',
-  OutreachJob: 'OutreachJob',
-  Policy: 'Policy'
+  CampaignContact: 'CampaignContact',
+  SmartleadEvent: 'SmartleadEvent',
+  ScheduledSequence: 'ScheduledSequence',
+  ScheduledOutreach: 'ScheduledOutreach'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -74,6 +78,19 @@ export const TransactionIsolationLevel = runtime.makeStrictEnum({
 } as const)
 
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+export const CampaignScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  smartleadCampaignId: 'smartleadCampaignId',
+  name: 'name',
+  type: 'type',
+  status: 'status'
+} as const
+
+export type CampaignScalarFieldEnum = (typeof CampaignScalarFieldEnum)[keyof typeof CampaignScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {
@@ -97,7 +114,7 @@ export const AccountScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   name: 'name',
-  website: 'website',
+  domain: 'domain',
   address: 'address'
 } as const
 
@@ -118,11 +135,20 @@ export const DealScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  name: 'name',
-  accountId: 'accountId'
+  name: 'name'
 } as const
 
 export type DealScalarFieldEnum = (typeof DealScalarFieldEnum)[keyof typeof DealScalarFieldEnum]
+
+
+export const DealAccountScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  dealId: 'dealId',
+  accountId: 'accountId'
+} as const
+
+export type DealAccountScalarFieldEnum = (typeof DealAccountScalarFieldEnum)[keyof typeof DealAccountScalarFieldEnum]
 
 
 export const DealContactScalarFieldEnum = {
@@ -135,26 +161,62 @@ export const DealContactScalarFieldEnum = {
 export type DealContactScalarFieldEnum = (typeof DealContactScalarFieldEnum)[keyof typeof DealContactScalarFieldEnum]
 
 
-export const OutreachJobScalarFieldEnum = {
+export const CampaignContactScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  name: 'name',
-  dealId: 'dealId'
+  campaignId: 'campaignId',
+  contactId: 'contactId',
+  status: 'status'
 } as const
 
-export type OutreachJobScalarFieldEnum = (typeof OutreachJobScalarFieldEnum)[keyof typeof OutreachJobScalarFieldEnum]
+export type CampaignContactScalarFieldEnum = (typeof CampaignContactScalarFieldEnum)[keyof typeof CampaignContactScalarFieldEnum]
 
 
-export const PolicyScalarFieldEnum = {
+export const SmartleadEventScalarFieldEnum = {
+  id: 'id',
+  eventType: 'eventType',
+  providerMessageId: 'providerMessageId',
+  leadEmail: 'leadEmail',
+  campaignId: 'campaignId',
+  receivedAt: 'receivedAt',
+  rawPayload: 'rawPayload'
+} as const
+
+export type SmartleadEventScalarFieldEnum = (typeof SmartleadEventScalarFieldEnum)[keyof typeof SmartleadEventScalarFieldEnum]
+
+
+export const ScheduledSequenceScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  accountId: 'accountId',
-  dealId: 'dealId'
+  contactId: 'contactId',
+  campaignId: 'campaignId',
+  status: 'status',
+  stoppedReason: 'stoppedReason',
+  lastStepId: 'lastStepId',
+  nextStepId: 'nextStepId'
 } as const
 
-export type PolicyScalarFieldEnum = (typeof PolicyScalarFieldEnum)[keyof typeof PolicyScalarFieldEnum]
+export type ScheduledSequenceScalarFieldEnum = (typeof ScheduledSequenceScalarFieldEnum)[keyof typeof ScheduledSequenceScalarFieldEnum]
+
+
+export const ScheduledOutreachScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  contactId: 'contactId',
+  campaignId: 'campaignId',
+  sequenceId: 'sequenceId',
+  scheduledAt: 'scheduledAt',
+  type: 'type',
+  status: 'status',
+  attempts: 'attempts',
+  sentAt: 'sentAt',
+  error: 'error'
+} as const
+
+export type ScheduledOutreachScalarFieldEnum = (typeof ScheduledOutreachScalarFieldEnum)[keyof typeof ScheduledOutreachScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -163,6 +225,13 @@ export const SortOrder = {
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -179,4 +248,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

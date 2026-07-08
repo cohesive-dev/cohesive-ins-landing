@@ -29,7 +29,6 @@ export type DealMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   name: string | null
-  accountId: string | null
 }
 
 export type DealMaxAggregateOutputType = {
@@ -37,7 +36,6 @@ export type DealMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   name: string | null
-  accountId: string | null
 }
 
 export type DealCountAggregateOutputType = {
@@ -45,7 +43,6 @@ export type DealCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   name: number
-  accountId: number
   _all: number
 }
 
@@ -55,7 +52,6 @@ export type DealMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   name?: true
-  accountId?: true
 }
 
 export type DealMaxAggregateInputType = {
@@ -63,7 +59,6 @@ export type DealMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   name?: true
-  accountId?: true
 }
 
 export type DealCountAggregateInputType = {
@@ -71,7 +66,6 @@ export type DealCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   name?: true
-  accountId?: true
   _all?: true
 }
 
@@ -152,7 +146,6 @@ export type DealGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   name: string
-  accountId: string
   _count: DealCountAggregateOutputType | null
   _min: DealMinAggregateOutputType | null
   _max: DealMaxAggregateOutputType | null
@@ -181,11 +174,8 @@ export type DealWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Deal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Deal"> | Date | string
   name?: Prisma.StringFilter<"Deal"> | string
-  accountId?: Prisma.StringFilter<"Deal"> | string
+  accounts?: Prisma.DealAccountListRelationFilter
   contacts?: Prisma.DealContactListRelationFilter
-  account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
-  outreachJobs?: Prisma.OutreachJobListRelationFilter
-  policies?: Prisma.PolicyListRelationFilter
 }
 
 export type DealOrderByWithRelationInput = {
@@ -193,11 +183,8 @@ export type DealOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
+  accounts?: Prisma.DealAccountOrderByRelationAggregateInput
   contacts?: Prisma.DealContactOrderByRelationAggregateInput
-  account?: Prisma.AccountOrderByWithRelationInput
-  outreachJobs?: Prisma.OutreachJobOrderByRelationAggregateInput
-  policies?: Prisma.PolicyOrderByRelationAggregateInput
 }
 
 export type DealWhereUniqueInput = Prisma.AtLeast<{
@@ -208,11 +195,8 @@ export type DealWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Deal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Deal"> | Date | string
   name?: Prisma.StringFilter<"Deal"> | string
-  accountId?: Prisma.StringFilter<"Deal"> | string
+  accounts?: Prisma.DealAccountListRelationFilter
   contacts?: Prisma.DealContactListRelationFilter
-  account?: Prisma.XOR<Prisma.AccountScalarRelationFilter, Prisma.AccountWhereInput>
-  outreachJobs?: Prisma.OutreachJobListRelationFilter
-  policies?: Prisma.PolicyListRelationFilter
 }, "id">
 
 export type DealOrderByWithAggregationInput = {
@@ -220,7 +204,6 @@ export type DealOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
   _count?: Prisma.DealCountOrderByAggregateInput
   _max?: Prisma.DealMaxOrderByAggregateInput
   _min?: Prisma.DealMinOrderByAggregateInput
@@ -234,7 +217,6 @@ export type DealScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Deal"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Deal"> | Date | string
   name?: Prisma.StringWithAggregatesFilter<"Deal"> | string
-  accountId?: Prisma.StringWithAggregatesFilter<"Deal"> | string
 }
 
 export type DealCreateInput = {
@@ -242,10 +224,8 @@ export type DealCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
+  accounts?: Prisma.DealAccountCreateNestedManyWithoutDealInput
   contacts?: Prisma.DealContactCreateNestedManyWithoutDealInput
-  account: Prisma.AccountCreateNestedOneWithoutDealsInput
-  outreachJobs?: Prisma.OutreachJobCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateInput = {
@@ -253,10 +233,8 @@ export type DealUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  accountId: string
+  accounts?: Prisma.DealAccountUncheckedCreateNestedManyWithoutDealInput
   contacts?: Prisma.DealContactUncheckedCreateNestedManyWithoutDealInput
-  outreachJobs?: Prisma.OutreachJobUncheckedCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealUpdateInput = {
@@ -264,10 +242,8 @@ export type DealUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  accounts?: Prisma.DealAccountUpdateManyWithoutDealNestedInput
   contacts?: Prisma.DealContactUpdateManyWithoutDealNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutDealsNestedInput
-  outreachJobs?: Prisma.OutreachJobUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateInput = {
@@ -275,10 +251,8 @@ export type DealUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
+  accounts?: Prisma.DealAccountUncheckedUpdateManyWithoutDealNestedInput
   contacts?: Prisma.DealContactUncheckedUpdateManyWithoutDealNestedInput
-  outreachJobs?: Prisma.OutreachJobUncheckedUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealCreateManyInput = {
@@ -286,7 +260,6 @@ export type DealCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  accountId: string
 }
 
 export type DealUpdateManyMutationInput = {
@@ -301,17 +274,6 @@ export type DealUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-}
-
-export type DealListRelationFilter = {
-  every?: Prisma.DealWhereInput
-  some?: Prisma.DealWhereInput
-  none?: Prisma.DealWhereInput
-}
-
-export type DealOrderByRelationAggregateInput = {
-  _count?: Prisma.SortOrder
 }
 
 export type DealCountOrderByAggregateInput = {
@@ -319,7 +281,6 @@ export type DealCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
 }
 
 export type DealMaxOrderByAggregateInput = {
@@ -327,7 +288,6 @@ export type DealMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
 }
 
 export type DealMinOrderByAggregateInput = {
@@ -335,7 +295,6 @@ export type DealMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  accountId?: Prisma.SortOrder
 }
 
 export type DealScalarRelationFilter = {
@@ -343,46 +302,18 @@ export type DealScalarRelationFilter = {
   isNot?: Prisma.DealWhereInput
 }
 
-export type DealCreateNestedManyWithoutAccountInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutAccountInput, Prisma.DealUncheckedCreateWithoutAccountInput> | Prisma.DealCreateWithoutAccountInput[] | Prisma.DealUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutAccountInput | Prisma.DealCreateOrConnectWithoutAccountInput[]
-  createMany?: Prisma.DealCreateManyAccountInputEnvelope
-  connect?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
+export type DealCreateNestedOneWithoutAccountsInput = {
+  create?: Prisma.XOR<Prisma.DealCreateWithoutAccountsInput, Prisma.DealUncheckedCreateWithoutAccountsInput>
+  connectOrCreate?: Prisma.DealCreateOrConnectWithoutAccountsInput
+  connect?: Prisma.DealWhereUniqueInput
 }
 
-export type DealUncheckedCreateNestedManyWithoutAccountInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutAccountInput, Prisma.DealUncheckedCreateWithoutAccountInput> | Prisma.DealCreateWithoutAccountInput[] | Prisma.DealUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutAccountInput | Prisma.DealCreateOrConnectWithoutAccountInput[]
-  createMany?: Prisma.DealCreateManyAccountInputEnvelope
-  connect?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-}
-
-export type DealUpdateManyWithoutAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutAccountInput, Prisma.DealUncheckedCreateWithoutAccountInput> | Prisma.DealCreateWithoutAccountInput[] | Prisma.DealUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutAccountInput | Prisma.DealCreateOrConnectWithoutAccountInput[]
-  upsert?: Prisma.DealUpsertWithWhereUniqueWithoutAccountInput | Prisma.DealUpsertWithWhereUniqueWithoutAccountInput[]
-  createMany?: Prisma.DealCreateManyAccountInputEnvelope
-  set?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  disconnect?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  delete?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  connect?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  update?: Prisma.DealUpdateWithWhereUniqueWithoutAccountInput | Prisma.DealUpdateWithWhereUniqueWithoutAccountInput[]
-  updateMany?: Prisma.DealUpdateManyWithWhereWithoutAccountInput | Prisma.DealUpdateManyWithWhereWithoutAccountInput[]
-  deleteMany?: Prisma.DealScalarWhereInput | Prisma.DealScalarWhereInput[]
-}
-
-export type DealUncheckedUpdateManyWithoutAccountNestedInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutAccountInput, Prisma.DealUncheckedCreateWithoutAccountInput> | Prisma.DealCreateWithoutAccountInput[] | Prisma.DealUncheckedCreateWithoutAccountInput[]
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutAccountInput | Prisma.DealCreateOrConnectWithoutAccountInput[]
-  upsert?: Prisma.DealUpsertWithWhereUniqueWithoutAccountInput | Prisma.DealUpsertWithWhereUniqueWithoutAccountInput[]
-  createMany?: Prisma.DealCreateManyAccountInputEnvelope
-  set?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  disconnect?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  delete?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  connect?: Prisma.DealWhereUniqueInput | Prisma.DealWhereUniqueInput[]
-  update?: Prisma.DealUpdateWithWhereUniqueWithoutAccountInput | Prisma.DealUpdateWithWhereUniqueWithoutAccountInput[]
-  updateMany?: Prisma.DealUpdateManyWithWhereWithoutAccountInput | Prisma.DealUpdateManyWithWhereWithoutAccountInput[]
-  deleteMany?: Prisma.DealScalarWhereInput | Prisma.DealScalarWhereInput[]
+export type DealUpdateOneRequiredWithoutAccountsNestedInput = {
+  create?: Prisma.XOR<Prisma.DealCreateWithoutAccountsInput, Prisma.DealUncheckedCreateWithoutAccountsInput>
+  connectOrCreate?: Prisma.DealCreateOrConnectWithoutAccountsInput
+  upsert?: Prisma.DealUpsertWithoutAccountsInput
+  connect?: Prisma.DealWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DealUpdateToOneWithWhereWithoutAccountsInput, Prisma.DealUpdateWithoutAccountsInput>, Prisma.DealUncheckedUpdateWithoutAccountsInput>
 }
 
 export type DealCreateNestedOneWithoutContactsInput = {
@@ -399,89 +330,52 @@ export type DealUpdateOneRequiredWithoutContactsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DealUpdateToOneWithWhereWithoutContactsInput, Prisma.DealUpdateWithoutContactsInput>, Prisma.DealUncheckedUpdateWithoutContactsInput>
 }
 
-export type DealCreateNestedOneWithoutOutreachJobsInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutOutreachJobsInput, Prisma.DealUncheckedCreateWithoutOutreachJobsInput>
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutOutreachJobsInput
-  connect?: Prisma.DealWhereUniqueInput
-}
-
-export type DealUpdateOneRequiredWithoutOutreachJobsNestedInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutOutreachJobsInput, Prisma.DealUncheckedCreateWithoutOutreachJobsInput>
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutOutreachJobsInput
-  upsert?: Prisma.DealUpsertWithoutOutreachJobsInput
-  connect?: Prisma.DealWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.DealUpdateToOneWithWhereWithoutOutreachJobsInput, Prisma.DealUpdateWithoutOutreachJobsInput>, Prisma.DealUncheckedUpdateWithoutOutreachJobsInput>
-}
-
-export type DealCreateNestedOneWithoutPoliciesInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutPoliciesInput, Prisma.DealUncheckedCreateWithoutPoliciesInput>
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutPoliciesInput
-  connect?: Prisma.DealWhereUniqueInput
-}
-
-export type DealUpdateOneRequiredWithoutPoliciesNestedInput = {
-  create?: Prisma.XOR<Prisma.DealCreateWithoutPoliciesInput, Prisma.DealUncheckedCreateWithoutPoliciesInput>
-  connectOrCreate?: Prisma.DealCreateOrConnectWithoutPoliciesInput
-  upsert?: Prisma.DealUpsertWithoutPoliciesInput
-  connect?: Prisma.DealWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.DealUpdateToOneWithWhereWithoutPoliciesInput, Prisma.DealUpdateWithoutPoliciesInput>, Prisma.DealUncheckedUpdateWithoutPoliciesInput>
-}
-
-export type DealCreateWithoutAccountInput = {
+export type DealCreateWithoutAccountsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
   contacts?: Prisma.DealContactCreateNestedManyWithoutDealInput
-  outreachJobs?: Prisma.OutreachJobCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutDealInput
 }
 
-export type DealUncheckedCreateWithoutAccountInput = {
+export type DealUncheckedCreateWithoutAccountsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
   contacts?: Prisma.DealContactUncheckedCreateNestedManyWithoutDealInput
-  outreachJobs?: Prisma.OutreachJobUncheckedCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutDealInput
 }
 
-export type DealCreateOrConnectWithoutAccountInput = {
+export type DealCreateOrConnectWithoutAccountsInput = {
   where: Prisma.DealWhereUniqueInput
-  create: Prisma.XOR<Prisma.DealCreateWithoutAccountInput, Prisma.DealUncheckedCreateWithoutAccountInput>
+  create: Prisma.XOR<Prisma.DealCreateWithoutAccountsInput, Prisma.DealUncheckedCreateWithoutAccountsInput>
 }
 
-export type DealCreateManyAccountInputEnvelope = {
-  data: Prisma.DealCreateManyAccountInput | Prisma.DealCreateManyAccountInput[]
-  skipDuplicates?: boolean
+export type DealUpsertWithoutAccountsInput = {
+  update: Prisma.XOR<Prisma.DealUpdateWithoutAccountsInput, Prisma.DealUncheckedUpdateWithoutAccountsInput>
+  create: Prisma.XOR<Prisma.DealCreateWithoutAccountsInput, Prisma.DealUncheckedCreateWithoutAccountsInput>
+  where?: Prisma.DealWhereInput
 }
 
-export type DealUpsertWithWhereUniqueWithoutAccountInput = {
-  where: Prisma.DealWhereUniqueInput
-  update: Prisma.XOR<Prisma.DealUpdateWithoutAccountInput, Prisma.DealUncheckedUpdateWithoutAccountInput>
-  create: Prisma.XOR<Prisma.DealCreateWithoutAccountInput, Prisma.DealUncheckedCreateWithoutAccountInput>
+export type DealUpdateToOneWithWhereWithoutAccountsInput = {
+  where?: Prisma.DealWhereInput
+  data: Prisma.XOR<Prisma.DealUpdateWithoutAccountsInput, Prisma.DealUncheckedUpdateWithoutAccountsInput>
 }
 
-export type DealUpdateWithWhereUniqueWithoutAccountInput = {
-  where: Prisma.DealWhereUniqueInput
-  data: Prisma.XOR<Prisma.DealUpdateWithoutAccountInput, Prisma.DealUncheckedUpdateWithoutAccountInput>
+export type DealUpdateWithoutAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contacts?: Prisma.DealContactUpdateManyWithoutDealNestedInput
 }
 
-export type DealUpdateManyWithWhereWithoutAccountInput = {
-  where: Prisma.DealScalarWhereInput
-  data: Prisma.XOR<Prisma.DealUpdateManyMutationInput, Prisma.DealUncheckedUpdateManyWithoutAccountInput>
-}
-
-export type DealScalarWhereInput = {
-  AND?: Prisma.DealScalarWhereInput | Prisma.DealScalarWhereInput[]
-  OR?: Prisma.DealScalarWhereInput[]
-  NOT?: Prisma.DealScalarWhereInput | Prisma.DealScalarWhereInput[]
-  id?: Prisma.StringFilter<"Deal"> | string
-  createdAt?: Prisma.DateTimeFilter<"Deal"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"Deal"> | Date | string
-  name?: Prisma.StringFilter<"Deal"> | string
-  accountId?: Prisma.StringFilter<"Deal"> | string
+export type DealUncheckedUpdateWithoutAccountsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  contacts?: Prisma.DealContactUncheckedUpdateManyWithoutDealNestedInput
 }
 
 export type DealCreateWithoutContactsInput = {
@@ -489,9 +383,7 @@ export type DealCreateWithoutContactsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  account: Prisma.AccountCreateNestedOneWithoutDealsInput
-  outreachJobs?: Prisma.OutreachJobCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutDealInput
+  accounts?: Prisma.DealAccountCreateNestedManyWithoutDealInput
 }
 
 export type DealUncheckedCreateWithoutContactsInput = {
@@ -499,9 +391,7 @@ export type DealUncheckedCreateWithoutContactsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  accountId: string
-  outreachJobs?: Prisma.OutreachJobUncheckedCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutDealInput
+  accounts?: Prisma.DealAccountUncheckedCreateNestedManyWithoutDealInput
 }
 
 export type DealCreateOrConnectWithoutContactsInput = {
@@ -525,9 +415,7 @@ export type DealUpdateWithoutContactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  account?: Prisma.AccountUpdateOneRequiredWithoutDealsNestedInput
-  outreachJobs?: Prisma.OutreachJobUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutDealNestedInput
+  accounts?: Prisma.DealAccountUpdateManyWithoutDealNestedInput
 }
 
 export type DealUncheckedUpdateWithoutContactsInput = {
@@ -535,155 +423,7 @@ export type DealUncheckedUpdateWithoutContactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  outreachJobs?: Prisma.OutreachJobUncheckedUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutDealNestedInput
-}
-
-export type DealCreateWithoutOutreachJobsInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-  contacts?: Prisma.DealContactCreateNestedManyWithoutDealInput
-  account: Prisma.AccountCreateNestedOneWithoutDealsInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutDealInput
-}
-
-export type DealUncheckedCreateWithoutOutreachJobsInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-  accountId: string
-  contacts?: Prisma.DealContactUncheckedCreateNestedManyWithoutDealInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutDealInput
-}
-
-export type DealCreateOrConnectWithoutOutreachJobsInput = {
-  where: Prisma.DealWhereUniqueInput
-  create: Prisma.XOR<Prisma.DealCreateWithoutOutreachJobsInput, Prisma.DealUncheckedCreateWithoutOutreachJobsInput>
-}
-
-export type DealUpsertWithoutOutreachJobsInput = {
-  update: Prisma.XOR<Prisma.DealUpdateWithoutOutreachJobsInput, Prisma.DealUncheckedUpdateWithoutOutreachJobsInput>
-  create: Prisma.XOR<Prisma.DealCreateWithoutOutreachJobsInput, Prisma.DealUncheckedCreateWithoutOutreachJobsInput>
-  where?: Prisma.DealWhereInput
-}
-
-export type DealUpdateToOneWithWhereWithoutOutreachJobsInput = {
-  where?: Prisma.DealWhereInput
-  data: Prisma.XOR<Prisma.DealUpdateWithoutOutreachJobsInput, Prisma.DealUncheckedUpdateWithoutOutreachJobsInput>
-}
-
-export type DealUpdateWithoutOutreachJobsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  contacts?: Prisma.DealContactUpdateManyWithoutDealNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutDealsNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutDealNestedInput
-}
-
-export type DealUncheckedUpdateWithoutOutreachJobsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  contacts?: Prisma.DealContactUncheckedUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutDealNestedInput
-}
-
-export type DealCreateWithoutPoliciesInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-  contacts?: Prisma.DealContactCreateNestedManyWithoutDealInput
-  account: Prisma.AccountCreateNestedOneWithoutDealsInput
-  outreachJobs?: Prisma.OutreachJobCreateNestedManyWithoutDealInput
-}
-
-export type DealUncheckedCreateWithoutPoliciesInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-  accountId: string
-  contacts?: Prisma.DealContactUncheckedCreateNestedManyWithoutDealInput
-  outreachJobs?: Prisma.OutreachJobUncheckedCreateNestedManyWithoutDealInput
-}
-
-export type DealCreateOrConnectWithoutPoliciesInput = {
-  where: Prisma.DealWhereUniqueInput
-  create: Prisma.XOR<Prisma.DealCreateWithoutPoliciesInput, Prisma.DealUncheckedCreateWithoutPoliciesInput>
-}
-
-export type DealUpsertWithoutPoliciesInput = {
-  update: Prisma.XOR<Prisma.DealUpdateWithoutPoliciesInput, Prisma.DealUncheckedUpdateWithoutPoliciesInput>
-  create: Prisma.XOR<Prisma.DealCreateWithoutPoliciesInput, Prisma.DealUncheckedCreateWithoutPoliciesInput>
-  where?: Prisma.DealWhereInput
-}
-
-export type DealUpdateToOneWithWhereWithoutPoliciesInput = {
-  where?: Prisma.DealWhereInput
-  data: Prisma.XOR<Prisma.DealUpdateWithoutPoliciesInput, Prisma.DealUncheckedUpdateWithoutPoliciesInput>
-}
-
-export type DealUpdateWithoutPoliciesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  contacts?: Prisma.DealContactUpdateManyWithoutDealNestedInput
-  account?: Prisma.AccountUpdateOneRequiredWithoutDealsNestedInput
-  outreachJobs?: Prisma.OutreachJobUpdateManyWithoutDealNestedInput
-}
-
-export type DealUncheckedUpdateWithoutPoliciesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  accountId?: Prisma.StringFieldUpdateOperationsInput | string
-  contacts?: Prisma.DealContactUncheckedUpdateManyWithoutDealNestedInput
-  outreachJobs?: Prisma.OutreachJobUncheckedUpdateManyWithoutDealNestedInput
-}
-
-export type DealCreateManyAccountInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-}
-
-export type DealUpdateWithoutAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  contacts?: Prisma.DealContactUpdateManyWithoutDealNestedInput
-  outreachJobs?: Prisma.OutreachJobUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutDealNestedInput
-}
-
-export type DealUncheckedUpdateWithoutAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  contacts?: Prisma.DealContactUncheckedUpdateManyWithoutDealNestedInput
-  outreachJobs?: Prisma.OutreachJobUncheckedUpdateManyWithoutDealNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutDealNestedInput
-}
-
-export type DealUncheckedUpdateManyWithoutAccountInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
+  accounts?: Prisma.DealAccountUncheckedUpdateManyWithoutDealNestedInput
 }
 
 
@@ -692,15 +432,13 @@ export type DealUncheckedUpdateManyWithoutAccountInput = {
  */
 
 export type DealCountOutputType = {
+  accounts: number
   contacts: number
-  outreachJobs: number
-  policies: number
 }
 
 export type DealCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  accounts?: boolean | DealCountOutputTypeCountAccountsArgs
   contacts?: boolean | DealCountOutputTypeCountContactsArgs
-  outreachJobs?: boolean | DealCountOutputTypeCountOutreachJobsArgs
-  policies?: boolean | DealCountOutputTypeCountPoliciesArgs
 }
 
 /**
@@ -716,22 +454,15 @@ export type DealCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
 /**
  * DealCountOutputType without action
  */
+export type DealCountOutputTypeCountAccountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DealAccountWhereInput
+}
+
+/**
+ * DealCountOutputType without action
+ */
 export type DealCountOutputTypeCountContactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DealContactWhereInput
-}
-
-/**
- * DealCountOutputType without action
- */
-export type DealCountOutputTypeCountOutreachJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.OutreachJobWhereInput
-}
-
-/**
- * DealCountOutputType without action
- */
-export type DealCountOutputTypeCountPoliciesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PolicyWhereInput
 }
 
 
@@ -740,11 +471,8 @@ export type DealSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  accountId?: boolean
+  accounts?: boolean | Prisma.Deal$accountsArgs<ExtArgs>
   contacts?: boolean | Prisma.Deal$contactsArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  outreachJobs?: boolean | Prisma.Deal$outreachJobsArgs<ExtArgs>
-  policies?: boolean | Prisma.Deal$policiesArgs<ExtArgs>
   _count?: boolean | Prisma.DealCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deal"]>
 
@@ -753,8 +481,6 @@ export type DealSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  accountId?: boolean
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deal"]>
 
 export type DealSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -762,8 +488,6 @@ export type DealSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  accountId?: boolean
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["deal"]>
 
 export type DealSelectScalar = {
@@ -771,38 +495,28 @@ export type DealSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  accountId?: boolean
 }
 
-export type DealOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "accountId", ExtArgs["result"]["deal"]>
+export type DealOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name", ExtArgs["result"]["deal"]>
 export type DealInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  accounts?: boolean | Prisma.Deal$accountsArgs<ExtArgs>
   contacts?: boolean | Prisma.Deal$contactsArgs<ExtArgs>
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-  outreachJobs?: boolean | Prisma.Deal$outreachJobsArgs<ExtArgs>
-  policies?: boolean | Prisma.Deal$policiesArgs<ExtArgs>
   _count?: boolean | Prisma.DealCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type DealIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-}
-export type DealIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>
-}
+export type DealIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type DealIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $DealPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Deal"
   objects: {
+    accounts: Prisma.$DealAccountPayload<ExtArgs>[]
     contacts: Prisma.$DealContactPayload<ExtArgs>[]
-    account: Prisma.$AccountPayload<ExtArgs>
-    outreachJobs: Prisma.$OutreachJobPayload<ExtArgs>[]
-    policies: Prisma.$PolicyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     createdAt: Date
     updatedAt: Date
     name: string
-    accountId: string
   }, ExtArgs["result"]["deal"]>
   composites: {}
 }
@@ -1197,10 +911,8 @@ readonly fields: DealFieldRefs;
  */
 export interface Prisma__DealClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  accounts<T extends Prisma.Deal$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   contacts<T extends Prisma.Deal$contactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  account<T extends Prisma.AccountDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.AccountDefaultArgs<ExtArgs>>): Prisma.Prisma__AccountClient<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  outreachJobs<T extends Prisma.Deal$outreachJobsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$outreachJobsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OutreachJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  policies<T extends Prisma.Deal$policiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Deal$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1234,7 +946,6 @@ export interface DealFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Deal", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Deal", 'DateTime'>
   readonly name: Prisma.FieldRef<"Deal", 'String'>
-  readonly accountId: Prisma.FieldRef<"Deal", 'String'>
 }
     
 
@@ -1489,10 +1200,6 @@ export type DealCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    */
   data: Prisma.DealCreateManyInput | Prisma.DealCreateManyInput[]
   skipDuplicates?: boolean
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DealIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1563,10 +1270,6 @@ export type DealUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions
    * Limit how many Deals to update.
    */
   limit?: number
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DealIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1636,6 +1339,30 @@ export type DealDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * Deal.accounts
+ */
+export type Deal$accountsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DealAccount
+   */
+  select?: Prisma.DealAccountSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DealAccount
+   */
+  omit?: Prisma.DealAccountOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DealAccountInclude<ExtArgs> | null
+  where?: Prisma.DealAccountWhereInput
+  orderBy?: Prisma.DealAccountOrderByWithRelationInput | Prisma.DealAccountOrderByWithRelationInput[]
+  cursor?: Prisma.DealAccountWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DealAccountScalarFieldEnum | Prisma.DealAccountScalarFieldEnum[]
+}
+
+/**
  * Deal.contacts
  */
 export type Deal$contactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1657,54 +1384,6 @@ export type Deal$contactsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.DealContactScalarFieldEnum | Prisma.DealContactScalarFieldEnum[]
-}
-
-/**
- * Deal.outreachJobs
- */
-export type Deal$outreachJobsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the OutreachJob
-   */
-  select?: Prisma.OutreachJobSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the OutreachJob
-   */
-  omit?: Prisma.OutreachJobOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.OutreachJobInclude<ExtArgs> | null
-  where?: Prisma.OutreachJobWhereInput
-  orderBy?: Prisma.OutreachJobOrderByWithRelationInput | Prisma.OutreachJobOrderByWithRelationInput[]
-  cursor?: Prisma.OutreachJobWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.OutreachJobScalarFieldEnum | Prisma.OutreachJobScalarFieldEnum[]
-}
-
-/**
- * Deal.policies
- */
-export type Deal$policiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Policy
-   */
-  select?: Prisma.PolicySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Policy
-   */
-  omit?: Prisma.PolicyOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.PolicyInclude<ExtArgs> | null
-  where?: Prisma.PolicyWhereInput
-  orderBy?: Prisma.PolicyOrderByWithRelationInput | Prisma.PolicyOrderByWithRelationInput[]
-  cursor?: Prisma.PolicyWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.PolicyScalarFieldEnum | Prisma.PolicyScalarFieldEnum[]
 }
 
 /**

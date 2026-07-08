@@ -29,7 +29,7 @@ export type AccountMinAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   name: string | null
-  website: string | null
+  domain: string | null
   address: string | null
 }
 
@@ -38,7 +38,7 @@ export type AccountMaxAggregateOutputType = {
   createdAt: Date | null
   updatedAt: Date | null
   name: string | null
-  website: string | null
+  domain: string | null
   address: string | null
 }
 
@@ -47,7 +47,7 @@ export type AccountCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   name: number
-  website: number
+  domain: number
   address: number
   _all: number
 }
@@ -58,7 +58,7 @@ export type AccountMinAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   name?: true
-  website?: true
+  domain?: true
   address?: true
 }
 
@@ -67,7 +67,7 @@ export type AccountMaxAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   name?: true
-  website?: true
+  domain?: true
   address?: true
 }
 
@@ -76,7 +76,7 @@ export type AccountCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   name?: true
-  website?: true
+  domain?: true
   address?: true
   _all?: true
 }
@@ -158,7 +158,7 @@ export type AccountGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   name: string
-  website: string | null
+  domain: string
   address: string | null
   _count: AccountCountAggregateOutputType | null
   _min: AccountMinAggregateOutputType | null
@@ -188,11 +188,10 @@ export type AccountWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   name?: Prisma.StringFilter<"Account"> | string
-  website?: Prisma.StringNullableFilter<"Account"> | string | null
+  domain?: Prisma.StringFilter<"Account"> | string
   address?: Prisma.StringNullableFilter<"Account"> | string | null
   contacts?: Prisma.AccountContactListRelationFilter
-  deals?: Prisma.DealListRelationFilter
-  policies?: Prisma.PolicyListRelationFilter
+  deals?: Prisma.DealAccountListRelationFilter
 }
 
 export type AccountOrderByWithRelationInput = {
@@ -200,34 +199,32 @@ export type AccountOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  website?: Prisma.SortOrderInput | Prisma.SortOrder
+  domain?: Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   contacts?: Prisma.AccountContactOrderByRelationAggregateInput
-  deals?: Prisma.DealOrderByRelationAggregateInput
-  policies?: Prisma.PolicyOrderByRelationAggregateInput
+  deals?: Prisma.DealAccountOrderByRelationAggregateInput
 }
 
 export type AccountWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  domain?: string
   AND?: Prisma.AccountWhereInput | Prisma.AccountWhereInput[]
   OR?: Prisma.AccountWhereInput[]
   NOT?: Prisma.AccountWhereInput | Prisma.AccountWhereInput[]
   createdAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Account"> | Date | string
   name?: Prisma.StringFilter<"Account"> | string
-  website?: Prisma.StringNullableFilter<"Account"> | string | null
   address?: Prisma.StringNullableFilter<"Account"> | string | null
   contacts?: Prisma.AccountContactListRelationFilter
-  deals?: Prisma.DealListRelationFilter
-  policies?: Prisma.PolicyListRelationFilter
-}, "id">
+  deals?: Prisma.DealAccountListRelationFilter
+}, "id" | "domain">
 
 export type AccountOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  website?: Prisma.SortOrderInput | Prisma.SortOrder
+  domain?: Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.AccountCountOrderByAggregateInput
   _max?: Prisma.AccountMaxOrderByAggregateInput
@@ -242,7 +239,7 @@ export type AccountScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Account"> | Date | string
   name?: Prisma.StringWithAggregatesFilter<"Account"> | string
-  website?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
+  domain?: Prisma.StringWithAggregatesFilter<"Account"> | string
   address?: Prisma.StringNullableWithAggregatesFilter<"Account"> | string | null
 }
 
@@ -251,11 +248,10 @@ export type AccountCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
   contacts?: Prisma.AccountContactCreateNestedManyWithoutAccountInput
-  deals?: Prisma.DealCreateNestedManyWithoutAccountInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutAccountInput
+  deals?: Prisma.DealAccountCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateInput = {
@@ -263,11 +259,10 @@ export type AccountUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
   contacts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutAccountInput
-  deals?: Prisma.DealUncheckedCreateNestedManyWithoutAccountInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutAccountInput
+  deals?: Prisma.DealAccountUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUpdateInput = {
@@ -275,11 +270,10 @@ export type AccountUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contacts?: Prisma.AccountContactUpdateManyWithoutAccountNestedInput
-  deals?: Prisma.DealUpdateManyWithoutAccountNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutAccountNestedInput
+  deals?: Prisma.DealAccountUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateInput = {
@@ -287,11 +281,10 @@ export type AccountUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contacts?: Prisma.AccountContactUncheckedUpdateManyWithoutAccountNestedInput
-  deals?: Prisma.DealUncheckedUpdateManyWithoutAccountNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutAccountNestedInput
+  deals?: Prisma.DealAccountUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateManyInput = {
@@ -299,7 +292,7 @@ export type AccountCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
 }
 
@@ -308,7 +301,7 @@ export type AccountUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -317,7 +310,7 @@ export type AccountUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
@@ -326,7 +319,7 @@ export type AccountCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  website?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
   address?: Prisma.SortOrder
 }
 
@@ -335,7 +328,7 @@ export type AccountMaxOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  website?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
   address?: Prisma.SortOrder
 }
 
@@ -344,7 +337,7 @@ export type AccountMinOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   name?: Prisma.SortOrder
-  website?: Prisma.SortOrder
+  domain?: Prisma.SortOrder
   address?: Prisma.SortOrder
 }
 
@@ -381,29 +374,14 @@ export type AccountUpdateOneRequiredWithoutDealsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.AccountUpdateToOneWithWhereWithoutDealsInput, Prisma.AccountUpdateWithoutDealsInput>, Prisma.AccountUncheckedUpdateWithoutDealsInput>
 }
 
-export type AccountCreateNestedOneWithoutPoliciesInput = {
-  create?: Prisma.XOR<Prisma.AccountCreateWithoutPoliciesInput, Prisma.AccountUncheckedCreateWithoutPoliciesInput>
-  connectOrCreate?: Prisma.AccountCreateOrConnectWithoutPoliciesInput
-  connect?: Prisma.AccountWhereUniqueInput
-}
-
-export type AccountUpdateOneRequiredWithoutPoliciesNestedInput = {
-  create?: Prisma.XOR<Prisma.AccountCreateWithoutPoliciesInput, Prisma.AccountUncheckedCreateWithoutPoliciesInput>
-  connectOrCreate?: Prisma.AccountCreateOrConnectWithoutPoliciesInput
-  upsert?: Prisma.AccountUpsertWithoutPoliciesInput
-  connect?: Prisma.AccountWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.AccountUpdateToOneWithWhereWithoutPoliciesInput, Prisma.AccountUpdateWithoutPoliciesInput>, Prisma.AccountUncheckedUpdateWithoutPoliciesInput>
-}
-
 export type AccountCreateWithoutContactsInput = {
   id?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
-  deals?: Prisma.DealCreateNestedManyWithoutAccountInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutAccountInput
+  deals?: Prisma.DealAccountCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutContactsInput = {
@@ -411,10 +389,9 @@ export type AccountUncheckedCreateWithoutContactsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
-  deals?: Prisma.DealUncheckedCreateNestedManyWithoutAccountInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutAccountInput
+  deals?: Prisma.DealAccountUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutContactsInput = {
@@ -438,10 +415,9 @@ export type AccountUpdateWithoutContactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deals?: Prisma.DealUpdateManyWithoutAccountNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutAccountNestedInput
+  deals?: Prisma.DealAccountUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutContactsInput = {
@@ -449,10 +425,9 @@ export type AccountUncheckedUpdateWithoutContactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  deals?: Prisma.DealUncheckedUpdateManyWithoutAccountNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutAccountNestedInput
+  deals?: Prisma.DealAccountUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountCreateWithoutDealsInput = {
@@ -460,10 +435,9 @@ export type AccountCreateWithoutDealsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
   contacts?: Prisma.AccountContactCreateNestedManyWithoutAccountInput
-  policies?: Prisma.PolicyCreateNestedManyWithoutAccountInput
 }
 
 export type AccountUncheckedCreateWithoutDealsInput = {
@@ -471,10 +445,9 @@ export type AccountUncheckedCreateWithoutDealsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   name: string
-  website?: string | null
+  domain: string
   address?: string | null
   contacts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutAccountInput
-  policies?: Prisma.PolicyUncheckedCreateNestedManyWithoutAccountInput
 }
 
 export type AccountCreateOrConnectWithoutDealsInput = {
@@ -498,10 +471,9 @@ export type AccountUpdateWithoutDealsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contacts?: Prisma.AccountContactUpdateManyWithoutAccountNestedInput
-  policies?: Prisma.PolicyUpdateManyWithoutAccountNestedInput
 }
 
 export type AccountUncheckedUpdateWithoutDealsInput = {
@@ -509,70 +481,9 @@ export type AccountUncheckedUpdateWithoutDealsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  domain?: Prisma.StringFieldUpdateOperationsInput | string
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   contacts?: Prisma.AccountContactUncheckedUpdateManyWithoutAccountNestedInput
-  policies?: Prisma.PolicyUncheckedUpdateManyWithoutAccountNestedInput
-}
-
-export type AccountCreateWithoutPoliciesInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-  website?: string | null
-  address?: string | null
-  contacts?: Prisma.AccountContactCreateNestedManyWithoutAccountInput
-  deals?: Prisma.DealCreateNestedManyWithoutAccountInput
-}
-
-export type AccountUncheckedCreateWithoutPoliciesInput = {
-  id?: string
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  name: string
-  website?: string | null
-  address?: string | null
-  contacts?: Prisma.AccountContactUncheckedCreateNestedManyWithoutAccountInput
-  deals?: Prisma.DealUncheckedCreateNestedManyWithoutAccountInput
-}
-
-export type AccountCreateOrConnectWithoutPoliciesInput = {
-  where: Prisma.AccountWhereUniqueInput
-  create: Prisma.XOR<Prisma.AccountCreateWithoutPoliciesInput, Prisma.AccountUncheckedCreateWithoutPoliciesInput>
-}
-
-export type AccountUpsertWithoutPoliciesInput = {
-  update: Prisma.XOR<Prisma.AccountUpdateWithoutPoliciesInput, Prisma.AccountUncheckedUpdateWithoutPoliciesInput>
-  create: Prisma.XOR<Prisma.AccountCreateWithoutPoliciesInput, Prisma.AccountUncheckedCreateWithoutPoliciesInput>
-  where?: Prisma.AccountWhereInput
-}
-
-export type AccountUpdateToOneWithWhereWithoutPoliciesInput = {
-  where?: Prisma.AccountWhereInput
-  data: Prisma.XOR<Prisma.AccountUpdateWithoutPoliciesInput, Prisma.AccountUncheckedUpdateWithoutPoliciesInput>
-}
-
-export type AccountUpdateWithoutPoliciesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  contacts?: Prisma.AccountContactUpdateManyWithoutAccountNestedInput
-  deals?: Prisma.DealUpdateManyWithoutAccountNestedInput
-}
-
-export type AccountUncheckedUpdateWithoutPoliciesInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  website?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  contacts?: Prisma.AccountContactUncheckedUpdateManyWithoutAccountNestedInput
-  deals?: Prisma.DealUncheckedUpdateManyWithoutAccountNestedInput
 }
 
 
@@ -583,13 +494,11 @@ export type AccountUncheckedUpdateWithoutPoliciesInput = {
 export type AccountCountOutputType = {
   contacts: number
   deals: number
-  policies: number
 }
 
 export type AccountCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   contacts?: boolean | AccountCountOutputTypeCountContactsArgs
   deals?: boolean | AccountCountOutputTypeCountDealsArgs
-  policies?: boolean | AccountCountOutputTypeCountPoliciesArgs
 }
 
 /**
@@ -613,14 +522,7 @@ export type AccountCountOutputTypeCountContactsArgs<ExtArgs extends runtime.Type
  * AccountCountOutputType without action
  */
 export type AccountCountOutputTypeCountDealsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.DealWhereInput
-}
-
-/**
- * AccountCountOutputType without action
- */
-export type AccountCountOutputTypeCountPoliciesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.PolicyWhereInput
+  where?: Prisma.DealAccountWhereInput
 }
 
 
@@ -629,11 +531,10 @@ export type AccountSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  website?: boolean
+  domain?: boolean
   address?: boolean
   contacts?: boolean | Prisma.Account$contactsArgs<ExtArgs>
   deals?: boolean | Prisma.Account$dealsArgs<ExtArgs>
-  policies?: boolean | Prisma.Account$policiesArgs<ExtArgs>
   _count?: boolean | Prisma.AccountCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["account"]>
 
@@ -642,7 +543,7 @@ export type AccountSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  website?: boolean
+  domain?: boolean
   address?: boolean
 }, ExtArgs["result"]["account"]>
 
@@ -651,7 +552,7 @@ export type AccountSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  website?: boolean
+  domain?: boolean
   address?: boolean
 }, ExtArgs["result"]["account"]>
 
@@ -660,15 +561,14 @@ export type AccountSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   name?: boolean
-  website?: boolean
+  domain?: boolean
   address?: boolean
 }
 
-export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "website" | "address", ExtArgs["result"]["account"]>
+export type AccountOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "createdAt" | "updatedAt" | "name" | "domain" | "address", ExtArgs["result"]["account"]>
 export type AccountInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   contacts?: boolean | Prisma.Account$contactsArgs<ExtArgs>
   deals?: boolean | Prisma.Account$dealsArgs<ExtArgs>
-  policies?: boolean | Prisma.Account$policiesArgs<ExtArgs>
   _count?: boolean | Prisma.AccountCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type AccountIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -678,15 +578,14 @@ export type $AccountPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   name: "Account"
   objects: {
     contacts: Prisma.$AccountContactPayload<ExtArgs>[]
-    deals: Prisma.$DealPayload<ExtArgs>[]
-    policies: Prisma.$PolicyPayload<ExtArgs>[]
+    deals: Prisma.$DealAccountPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     createdAt: Date
     updatedAt: Date
     name: string
-    website: string | null
+    domain: string
     address: string | null
   }, ExtArgs["result"]["account"]>
   composites: {}
@@ -1083,8 +982,7 @@ readonly fields: AccountFieldRefs;
 export interface Prisma__AccountClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   contacts<T extends Prisma.Account$contactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$contactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  deals<T extends Prisma.Account$dealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  policies<T extends Prisma.Account$policiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  deals<T extends Prisma.Account$dealsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Account$dealsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DealAccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1118,7 +1016,7 @@ export interface AccountFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Account", 'DateTime'>
   readonly name: Prisma.FieldRef<"Account", 'String'>
-  readonly website: Prisma.FieldRef<"Account", 'String'>
+  readonly domain: Prisma.FieldRef<"Account", 'String'>
   readonly address: Prisma.FieldRef<"Account", 'String'>
 }
     
@@ -1541,47 +1439,23 @@ export type Account$contactsArgs<ExtArgs extends runtime.Types.Extensions.Intern
  */
 export type Account$dealsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Deal
+   * Select specific fields to fetch from the DealAccount
    */
-  select?: Prisma.DealSelect<ExtArgs> | null
+  select?: Prisma.DealAccountSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Deal
+   * Omit specific fields from the DealAccount
    */
-  omit?: Prisma.DealOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.DealInclude<ExtArgs> | null
-  where?: Prisma.DealWhereInput
-  orderBy?: Prisma.DealOrderByWithRelationInput | Prisma.DealOrderByWithRelationInput[]
-  cursor?: Prisma.DealWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.DealScalarFieldEnum | Prisma.DealScalarFieldEnum[]
-}
-
-/**
- * Account.policies
- */
-export type Account$policiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Policy
-   */
-  select?: Prisma.PolicySelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Policy
-   */
-  omit?: Prisma.PolicyOmit<ExtArgs> | null
+  omit?: Prisma.DealAccountOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.PolicyInclude<ExtArgs> | null
-  where?: Prisma.PolicyWhereInput
-  orderBy?: Prisma.PolicyOrderByWithRelationInput | Prisma.PolicyOrderByWithRelationInput[]
-  cursor?: Prisma.PolicyWhereUniqueInput
+  include?: Prisma.DealAccountInclude<ExtArgs> | null
+  where?: Prisma.DealAccountWhereInput
+  orderBy?: Prisma.DealAccountOrderByWithRelationInput | Prisma.DealAccountOrderByWithRelationInput[]
+  cursor?: Prisma.DealAccountWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.PolicyScalarFieldEnum | Prisma.PolicyScalarFieldEnum[]
+  distinct?: Prisma.DealAccountScalarFieldEnum | Prisma.DealAccountScalarFieldEnum[]
 }
 
 /**
