@@ -3,26 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { sendIntakeNotification } from "@/lib/notify";
 import { resolveAccountWebsite } from "@/lib/domains";
 
-/**
- * POST /api/intake
- *
- * Handles a quote-form submission. Each submission is keyed by the submitter's
- * email: we upsert a Contact on `primaryEmail` (plus its Account and the
- * account-contact link) so repeat submissions update rather than duplicate.
- * Phone-only submissions are accepted as leads but skip the DB (the schema is
- * email-keyed); they live in the quotes@ alert until the CRM ingests by phone.
- *
- * The form also collects `businessType` and `zip`. The current Contact schema
- * has no columns for those, so they are accepted but not persisted yet.
- *
- * Partial (abandoned) fills: the form autosaves once the visitor has entered a
- * usable contact handle, with `partial: true`. Those upsert the Contact only
- * (no Account until they actually submit) and send no email. When the visitor
- * leaves without submitting, the form sends a last beacon with `final: true`,
- * which triggers a single "PARTIAL lead" alert to quotes@. A completed
- * submission later upgrades the same Contact row via the normal upsert path.
- */
-
 type IntakePayload = {
   name?: unknown;
   email?: unknown;
@@ -84,9 +64,6 @@ export async function POST(request: NextRequest) {
     let account = null;
 
     if (email && !isPartial) {
-      // Completed submission: full Contact + Account + link, same derivation
-      // the CRM uses (email's company domain, or the full email for
-      // consumer/gmail-style addresses).
       const domain = resolveAccountWebsite(null, email);
       const result = await prisma.$transaction(async (tx) => {
         const contact = await tx.contact.upsert({
