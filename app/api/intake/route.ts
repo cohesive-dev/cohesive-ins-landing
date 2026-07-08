@@ -69,7 +69,9 @@ export async function POST(request: NextRequest) {
   const phone = asTrimmedString(body.phone);
   const reachable = Boolean(email || phone);
 
-  // Minimum to accept a submission: some way to reach the person.
+  // Minimum to accept a submission: some way to reach the person. Phone-only
+  // submissions are valid leads — they just skip the email-keyed Contact
+  // upsert below and live in the quotes@ alert until the CRM ingests by phone.
   if (!isPartial && !reachable) {
     return NextResponse.json(
       { error: "An `email` or `phone` is required" },

@@ -247,6 +247,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [businessType, setBusinessType] = useState("");
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [contactError, setContactError] = useState(false);
 
   // ── Partial-fill capture ──────────────────────────────────────────────────
   // Once the visitor has typed a usable contact handle, autosave silently in
@@ -312,6 +313,11 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Minimum to work a lead: at least one way to reach them.
+    if (!hasContactHandle({ email, phone })) {
+      setContactError(true);
+      return;
+    }
     submittedRef.current = true;
     // Fire-and-forget: record the submission if we can, but never block the
     // customer or surface an error — they always see the confirmation.
@@ -355,23 +361,29 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         </label>
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex-1 text-left">
-            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="text-[#2040E7]">*</span></span>
-            <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="font-normal text-[#6B6D71]">(email or phone required)</span></span>
+            <input type="email" value={email}
+              onChange={(e) => { setEmail(e.target.value); setContactError(false); }}
               pattern="[^@\s]+@[^@\s]+\.[^@\s]{2,}"
               title="Enter a valid email address, e.g. jane@company.com"
               placeholder="jane@company.com"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
           <label className="flex-1 text-left">
-            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Phone <span className="text-[#2040E7]">*</span></span>
-            <input required type="tel" inputMode="tel" value={phone}
-              onChange={(e) => setPhone(formatUSPhone(e.target.value))}
+            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Phone</span>
+            <input type="tel" inputMode="tel" value={phone}
+              onChange={(e) => { setPhone(formatUSPhone(e.target.value)); setContactError(false); }}
               pattern="\(\d{3}\) \d{3}-\d{4}"
               title="Enter a 10-digit US phone number"
               placeholder="(555) 123-4567"
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
         </div>
+        {contactError && (
+          <p className="text-sm text-red-600 text-left">
+            Please provide an email or a phone number so we can reach you with your quote.
+          </p>
+        )}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Type of business</span>
