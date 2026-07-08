@@ -12,6 +12,7 @@
     "@calcom/embed-react": "^1.5.3",
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "@vercel/analytics": "^2.0.1",
     "next": "16.2.9",
     "nodemailer": "^9.0.3",
     "prisma": "^7.8.0",

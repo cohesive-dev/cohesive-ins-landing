@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
@@ -62,6 +63,7 @@ fbq('track', 'PageView');`}
 })();`}
         </Script>
         {children}
+        <Analytics />
       </body>
     </html>
   );
