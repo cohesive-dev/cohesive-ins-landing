@@ -137,12 +137,22 @@ export function isCompanyDomain(domain: string): boolean {
 }
 
 /**
- * The company domain a submitter's email identifies, or null when the email is a
- * consumer/platform address (gmail, hotmail, a wix subdomain, …) that doesn't map
- * to a business website. Used as the Account's `website` and its dedup handle.
+ * The stable handle to key an Account on (its unique `domain`), in priority:
+ *   1. the company website's domain, when it's a real company domain
+ *   2. else the email's domain, when it's a real company domain
+ *   3. else the full lowercased email, as a fallback handle
+ * Always returns a string so it can be an upsert key. Mirrors the CRM's
+ * resolveAccountWebsite (src/backend/services/domains.ts).
  */
-export function companyDomainFromEmail(email: string): string | null {
-  const domain = domainFromEmail(email);
-  if (domain && isCompanyDomain(domain)) return domain;
-  return null;
+export function resolveAccountWebsite(
+  companyWebsite: string | null | undefined,
+  email: string,
+): string {
+  const siteDomain = normalizeToDomain(companyWebsite);
+  if (siteDomain && isCompanyDomain(siteDomain)) return siteDomain;
+
+  const emailDomain = domainFromEmail(email);
+  if (emailDomain && isCompanyDomain(emailDomain)) return emailDomain;
+
+  return email.trim().toLowerCase();
 }

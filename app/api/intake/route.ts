@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { sendIntakeNotification } from "@/lib/notify";
-import { companyDomainFromEmail } from "@/lib/domains";
+import { resolveAccountWebsite } from "@/lib/domains";
 
 type IntakePayload = {
   name?: unknown;
@@ -42,8 +42,11 @@ export async function POST(request: NextRequest) {
 
   const { firstName, lastName } = splitName(asTrimmedString(body.name));
   const phone = asTrimmedString(body.phone);
-  const companyDomain = companyDomainFromEmail(email);
-  const personName = [firstName, lastName].filter(Boolean).join(" ");
+
+  // The Account's unique handle: the email's company domain, or the full email
+  // as a fallback for consumer/gmail-style addresses (no company website is
+  // collected on the form). Same derivation the CRM uses.
+  const domain = resolveAccountWebsite(null, email);
 
   try {
     const { contact, account } = await prisma.$transaction(async (tx) => {
@@ -64,23 +67,14 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      let account = companyDomain
-        ? await tx.account.findFirst({ where: { website: companyDomain } })
-        : (
-          await tx.accountContact.findFirst({
-            where: { contactId: contact.id },
-            include: { account: true },
-          })
-        )?.account ?? null;
-
-      if (!account) {
-        account = await tx.account.create({
-          data: {
-            name: companyDomain ?? (personName || email),
-            website: companyDomain ?? undefined,
-          },
-        });
-      }
+      // Upsert on the unique `domain`. No company name is collected, so `name`
+      // is the domain as a placeholder (the CRM upgrades it later when a real
+      // company name is learned); `update: {}` keeps an existing Account as-is.
+      const account = await tx.account.upsert({
+        where: { domain },
+        create: { name: domain, domain },
+        update: {},
+      });
 
       await tx.accountContact.upsert({
         where: {
