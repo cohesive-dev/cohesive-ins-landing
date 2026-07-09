@@ -59,10 +59,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  try {
-    let contact = null;
-    let account = null;
+  // ZERO-MISS RULE: the quotes@ email is the system of record — send it BEFORE
+  // any database work so a DB failure can never lose a lead. (2026-07-09
+  // incident: Account-upsert failures 500'd and silently dropped real
+  // submissions while the pixel kept counting them.)
+  if ((!isPartial || isFinal) && reachable) {
+    await sendIntakeNotification({
+      name: asTrimmedString(body.name),
+      email,
+      phone,
+      businessType: asTrimmedString(body.businessType),
+      zip: asTrimmedString(body.zip),
+      partial: isPartial,
+    });
+  }
 
+  let contact = null;
+  let account = null;
+  let dbSaved = true;
+  try {
     if (email && !isPartial) {
       const domain = resolveAccountWebsite(null, email);
       const result = await prisma.$transaction(async (tx) => {
@@ -124,28 +139,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Alert channel only — never blocks or fails the submission (it catches
-    // internally). Awaited because serverless may kill fire-and-forget work
-    // once the response is sent. Partial autosaves are silent; only the final
-    // abandonment beacon (or a completed submission) emails quotes@ — and only
-    // when there is actually a way to reach the person.
-    if ((!isPartial || isFinal) && reachable) {
-      await sendIntakeNotification({
-        name: asTrimmedString(body.name),
-        email,
-        phone,
-        businessType: asTrimmedString(body.businessType),
-        zip: asTrimmedString(body.zip),
-        partial: isPartial,
-      });
-    }
-
-    return NextResponse.json({ contact, account }, { status: 200 });
   } catch (error) {
-    console.error("Failed to upsert contact for intake submission", error);
-    return NextResponse.json(
-      { error: "Failed to process submission" },
-      { status: 500 },
-    );
+    // The lead is already safe in quotes@ — log loudly, respond 200 so the
+    // client-side flow (and partial autosaves) never treat this as fatal.
+    dbSaved = false;
+    console.error("Intake DB write failed (lead preserved via email)", error);
   }
+
+  return NextResponse.json({ contact, account, dbSaved }, { status: 200 });
 }
