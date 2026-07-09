@@ -1194,10 +1194,13 @@ function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 md:w-1/2 md:ml-auto">
+        <div className="pt-8 md:w-1/2 md:mr-auto">
           <div className="h-px w-full bg-white/20 mb-6" />
-          <p className="text-xs md:text-right">
+          <p className="text-xs md:text-left">
             © 2026 Cohesive Insurance Services. All rights reserved.
+          </p>
+          <p className="text-xs md:text-left mt-1 text-white/60">
+            NY Insurance Broker License #BR-1983645
           </p>
         </div>
       </div>
