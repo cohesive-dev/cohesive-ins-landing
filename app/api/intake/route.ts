@@ -82,7 +82,12 @@ export async function POST(request: NextRequest) {
       const domain = resolveAccountWebsite(null, email);
       const result = await prisma.$transaction(async (tx) => {
         const contact = await tx.contact.upsert({
-          where: { primaryEmail: email },
+          where: {
+            contact_primary_email_phone_idx: {
+              primaryEmail: email,
+              primaryPhone: phone ?? "",
+            },
+          },
           create: {
             primaryEmail: email,
             emails: [email],
@@ -122,7 +127,12 @@ export async function POST(request: NextRequest) {
     } else if (email) {
       // Partial autosave: Contact only — no Account until they actually submit.
       contact = await prisma.contact.upsert({
-        where: { primaryEmail: email },
+        where: {
+          contact_primary_email_phone_idx: {
+            primaryEmail: email,
+            primaryPhone: phone ?? "",
+          },
+        },
         create: {
           primaryEmail: email,
           emails: [email],
