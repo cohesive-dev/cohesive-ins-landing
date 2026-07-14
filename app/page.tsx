@@ -1163,8 +1163,16 @@ function Footer() {
           <div className="md:col-start-4">
             <h4 className="text-white font-semibold text-sm mb-4">Industries</h4>
             <ul className="space-y-2 text-sm">
-              {["Roofing", "Electrical", "Plumbing", "HVAC", "General Contracting", "Painting", "Trucking & Logistics", "Restaurants & Bars", "Retail", "Garages"].map((l) => (
-                <li key={l}><a href="#industries" className="hover:text-white transition-colors">{l}</a></li>
+              {/* Instant-quote splash pages (Next appetite verticals) */}
+              {[
+                { label: "Restaurants & Food Service", href: "/restaurants" },
+                { label: "Cleaning & Janitorial", href: "/cleaning" },
+                { label: "Salons & Beauty", href: "/beauty" },
+                { label: "Fitness & Studios", href: "/fitness" },
+                { label: "Retail Stores", href: "/retail" },
+                { label: "Landscaping & Lawn Care", href: "/landscaping" },
+              ].map((l) => (
+                <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
               ))}
             </ul>
           </div>
