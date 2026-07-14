@@ -2,14 +2,30 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// No pre-fill: Next's own work-type autocomplete handles classification
-// (it maps cafe/deli/pizzeria to the right class). If vertical ad sets ever
-// need a silent pre-fill, append &cob=<id> (ids via their /api/cobs-search;
-// Restaurant=110207) — the param survives the tracking redirect.
-const NEXT_LINK =
+// The affiliate link; params survive the track.nextinsurance.com redirect.
+// `email=` pre-fills Next's step-1 email field; `cob=` pre-selects the class
+// of business and skips their work-type question (ids from /api/cobs-search).
+const NEXT_BASE =
   "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
+
+// Optional business-type chips on our step-0 form → Next COB ids.
+const COBS = [
+  { label: "Restaurant", id: "110207" },
+  { label: "Coffee shop", id: "111666" },
+  { label: "Bakery", id: "111664" },
+  { label: "Food truck", id: "111665" },
+  { label: "Caterer", id: "100037" },
+];
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+function buildNextLink(email: string, cobId: string | null) {
+  let url = `${NEXT_BASE}&email=${encodeURIComponent(email)}`;
+  if (cobId) url += `&cob=${cobId}`;
+  return url;
+}
 
 function fbq(...args: unknown[]) {
   (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq?.(...args);
@@ -50,12 +66,21 @@ function TeamQuoteCta() {
 
 export default function RestaurantsPage() {
   const frameRef = useRef<HTMLIFrameElement>(null);
+
+  // Step-0 capture form: we take the email ourselves BEFORE handing the
+  // visitor to Next, so an abandoned Next flow is still a lead we can work.
+  const [stage, setStage] = useState<"form" | "embed">("form");
+  const [email, setEmail] = useState("");
+  const [cobId, setCobId] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState(false);
+  const [handoffLink, setHandoffLink] = useState(NEXT_BASE);
+
   // Safari (macOS + every iOS browser, incl. the Facebook in-app browser)
   // blocks third-party cookies, and Next's app hard-fails inside an iframe
   // without them ("cookies are blocked" screen — seen live on Kevin's iPhone
-  // 2026-07-14). Those visitors get a top-level link instead: Next becomes
-  // first-party, so session + affiliate attribution work.
-  const [useEmbed, setUseEmbed] = useState(true);
+  // 2026-07-14). Those visitors are handed off top-level after the step-0
+  // form instead: Next becomes first-party, so session + attribution work.
+  const useEmbedRef = useRef(true);
   useEffect(() => {
     const ua = navigator.userAgent;
     const isIOS =
@@ -63,30 +88,115 @@ export default function RestaurantsPage() {
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     const isSafari =
       /safari/i.test(ua) && !/chrome|crios|android|fxios|edgios/i.test(ua);
-    if (isIOS || isSafari) setUseEmbed(false);
+    if (isIOS || isSafari) useEmbedRef.current = false;
   }, []);
+
+  // Abandoned step-0 capture (same pattern as the homepage form): if a valid
+  // email was typed but "Start my instant quote" was never clicked, beacon it
+  // to the intake route on pagehide/tab-hide. partial+final => quotes@ gets
+  // the "⚠️ PARTIAL (abandoned)" alert; a distinct source keeps it from
+  // reading as a real Next handoff.
+  const emailRef = useRef("");
+  const cobIdRef = useRef<string | null>(null);
+  const submittedRef = useRef(false);
+  const abandonSentRef = useRef(false);
+  emailRef.current = email;
+  cobIdRef.current = cobId;
+
+  useEffect(() => {
+    const sendAbandonBeacon = () => {
+      if (submittedRef.current || abandonSentRef.current) return;
+      const cleaned = emailRef.current.trim().toLowerCase();
+      if (!EMAIL_RE.test(cleaned)) return;
+      const cobLabel = COBS.find((c) => c.id === cobIdRef.current)?.label;
+      const payload = JSON.stringify({
+        email: cleaned,
+        businessType: cobLabel ?? "Food service (unspecified)",
+        partial: true,
+        final: true,
+        source: "restaurants-splash-abandoned",
+      });
+      const queued = navigator.sendBeacon(
+        "/api/intake",
+        new Blob([payload], { type: "application/json" }),
+      );
+      if (queued) abandonSentRef.current = true;
+    };
+
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") sendAbandonBeacon();
+    };
+    window.addEventListener("pagehide", sendAbandonBeacon);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", sendAbandonBeacon);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  const handleStart = () => {
+    const cleaned = email.trim().toLowerCase();
+    if (!EMAIL_RE.test(cleaned)) {
+      setEmailError(true);
+      return;
+    }
+    setEmailError(false);
+    submittedRef.current = true;
+
+    const cobLabel = COBS.find((c) => c.id === cobId)?.label;
+
+    // Fire-and-forget: the handoff must never wait on (or break from) our
+    // backend. The intake route emails quotes@ before any DB work.
+    try {
+      fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: cleaned,
+          businessType: cobLabel ?? "Food service (unspecified)",
+          source: "restaurants-splash-next-handoff",
+        }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {
+      // ignore — never block the visitor's path to a quote
+    }
+
+    // Email in hand = the lead moment. Dwell/click events below are custom
+    // signals only, so standard Lead fires once per visitor path.
+    fbq("track", "Lead");
+    fbq("trackCustom", "QuoteStartEmail");
+
+    const link = buildNextLink(cleaned, cobId);
+    if (useEmbedRef.current) {
+      setHandoffLink(link);
+      setStage("embed");
+    } else {
+      window.location.href = link;
+    }
+  };
 
   // Next's quote flow is a cross-origin Angular SPA: no step URLs, no
   // postMessage step events (verified 2026-07-14), so real form progress is
-  // unobservable from here. Best available proxy is focus dwell time — the
-  // window blurs while the visitor works inside the iframe, and refocuses
-  // when they leave it. Ladder:
-  //   first click into the form  -> NextQuoteClick (custom, cheap signal)
-  //   45s cumulative in the form -> Lead (≈ finished step 1; what ads optimize on)
-  //   3min cumulative            -> NextQuoteDeep (custom, future optimization)
+  // unobservable from here. Focus dwell time is the best proxy — the window
+  // blurs while the visitor works inside the iframe, and refocuses when they
+  // leave. All custom events (standard Lead already fired at step-0 submit):
+  //   first click into the form  -> NextQuoteClick
+  //   45s cumulative in the form -> NextQuoteDwell
+  //   3min cumulative            -> NextQuoteDeep
   useEffect(() => {
-    const fired = { click: false, lead: false, deep: false };
+    const fired = { click: false, dwell: false, deep: false };
     let accumulatedMs = 0;
     let enteredAt: number | null = null;
     let timers: ReturnType<typeof setTimeout>[] = [];
 
-    const LEAD_AT_MS = 45_000;
+    const DWELL_AT_MS = 45_000;
     const DEEP_AT_MS = 180_000;
 
     const fireForDwell = (totalMs: number) => {
-      if (!fired.lead && totalMs >= LEAD_AT_MS) {
-        fired.lead = true;
-        fbq("track", "Lead");
+      if (!fired.dwell && totalMs >= DWELL_AT_MS) {
+        fired.dwell = true;
+        fbq("trackCustom", "NextQuoteDwell");
       }
       if (!fired.deep && totalMs >= DEEP_AT_MS) {
         fired.deep = true;
@@ -108,7 +218,7 @@ export default function RestaurantsPage() {
       }
       // Schedule threshold crossings for this in-frame session; cleared if
       // the visitor leaves the frame first.
-      for (const at of [LEAD_AT_MS, DEEP_AT_MS]) {
+      for (const at of [DWELL_AT_MS, DEEP_AT_MS]) {
         const wait = at - accumulatedMs;
         if (wait > 0) {
           timers.push(setTimeout(() => fireForDwell(at), wait));
@@ -166,15 +276,16 @@ export default function RestaurantsPage() {
             </h1>
             <p className="text-sm lg:text-base text-[#6B6D71] leading-relaxed mb-3">
               Buy online in about 10 minutes - COIs ready when your landlord
-              asks. Owners who switch save about 10-25% on average.
+              asks.
             </p>
 
-            <ul className="hidden lg:flex flex-wrap gap-2 mb-8">
+            <ul className="hidden lg:block mb-8 space-y-1.5">
               {COVERAGE.map((c) => (
                 <li
                   key={c}
-                  className="px-4 py-2 rounded-full border border-slate-300 text-sm font-semibold text-[#27455C]"
+                  className="flex items-center gap-2.5 text-[15px] text-[#27455C]"
                 >
+                  <span className="text-[#2040E7] font-bold">✓</span>
                   {c}
                 </li>
               ))}
@@ -192,17 +303,88 @@ export default function RestaurantsPage() {
             </div>
           </div>
 
-          {/* Right column: the Next quote flow (embed, or link-out where
-              third-party cookies are blocked) */}
+          {/* Right column: step-0 email capture, then the Next quote flow */}
           <div>
-            {useEmbed ? (
+            {stage === "form" ? (
+              <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <h2 className="text-xl font-extrabold text-[#131517] mb-1">
+                  Start your instant quote
+                </h2>
+                <p className="text-sm text-[#6B6D71] mb-5">
+                  Owners save about 15-25% on average.
+                </p>
+
+                <div className="text-sm font-semibold text-[#27455C] mb-2">
+                  What kind of spot do you run?{" "}
+                  <span className="font-normal text-[#6B6D71]">(optional)</span>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {COBS.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setCobId(cobId === c.id ? null : c.id)}
+                      className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
+                        cobId === c.id
+                          ? "border-[#2040E7] bg-[#2040E7] text-white"
+                          : "border-slate-300 text-[#27455C] hover:border-[#2040E7]"
+                      }`}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-[#6B6D71] mb-5">
+                  Delis, pizzerias, quick-service, dine-in, and most other food
+                  service all fall under Restaurant.
+                </p>
+
+                <label
+                  htmlFor="quote-email"
+                  className="block text-sm font-semibold text-[#27455C] mb-2"
+                >
+                  Email address
+                </label>
+                <input
+                  id="quote-email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleStart();
+                  }}
+                  placeholder="you@yourrestaurant.com"
+                  className={`w-full px-4 py-3 rounded-md border text-base text-[#131517] outline-none focus:border-[#2040E7] mb-1 ${
+                    emailError ? "border-red-500" : "border-slate-300"
+                  }`}
+                />
+                {emailError && (
+                  <p className="text-sm text-red-600 mb-1">
+                    Please enter a valid email address.
+                  </p>
+                )}
+                <p className="text-xs text-[#6B6D71] mb-4">
+                  We&apos;ll only use this to help with your quote.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={handleStart}
+                  className="w-full text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
+                >
+                  Start my instant quote →
+                </button>
+              </div>
+            ) : (
               <>
                 {/* overflow-hidden + negative top margin crops Next's co-brand
                     header bar out of view (cross-origin, so CSS can't reach in) */}
                 <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
                   <iframe
                     ref={frameRef}
-                    src={NEXT_LINK}
+                    src={handoffLink}
                     title="Get an instant restaurant insurance quote"
                     className="w-full block"
                     style={{ height: "910px", border: "0", marginTop: "-88px" }}
@@ -213,7 +395,7 @@ export default function RestaurantsPage() {
                   Instant quotes provided by Next Insurance through our
                   partnership.{" "}
                   <a
-                    href={NEXT_LINK}
+                    href={handoffLink}
                     target="_blank"
                     rel="noopener sponsored"
                     className="underline hover:text-[#2040E7]"
@@ -223,24 +405,6 @@ export default function RestaurantsPage() {
                   if the form doesn&apos;t load.
                 </p>
               </>
-            ) : (
-              <div className="flex flex-col gap-3 lg:pt-4">
-                <a
-                  href={NEXT_LINK}
-                  rel="noopener sponsored"
-                  onClick={() => {
-                    fbq("track", "Lead");
-                    fbq("trackCustom", "NextQuoteClick");
-                  }}
-                  className="w-full text-center px-8 py-5 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
-                >
-                  Get an instant online quote →
-                </a>
-                <p className="text-sm text-[#6B6D71] text-center">
-                  About 10 minutes, online. Instant quotes provided by Next
-                  Insurance through our partnership.
-                </p>
-              </div>
             )}
           </div>
 

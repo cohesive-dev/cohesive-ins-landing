@@ -11,6 +11,7 @@ type IntakePayload = {
   zip?: unknown;
   partial?: unknown;
   final?: unknown;
+  source?: unknown;
 };
 
 const asTrimmedString = (value: unknown): string | undefined =>
@@ -97,6 +98,7 @@ export async function POST(request: NextRequest) {
       businessType: asTrimmedString(body.businessType),
       zip: asTrimmedString(body.zip),
       partial: isPartial,
+      source: asTrimmedString(body.source),
     });
   }
 

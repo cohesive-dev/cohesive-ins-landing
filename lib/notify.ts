@@ -23,6 +23,9 @@ export type IntakeNotification = {
   // True for an abandoned (partial) form fill — changes subject/body and adds
   // a no-consent warning, since the visitor never clicked submit.
   partial?: boolean;
+  // Where the lead came from; "next-handoff" = the /restaurants step-0 form
+  // that hands the visitor to Next Insurance's self-serve flow.
+  source?: string;
 };
 
 export async function sendIntakeNotification(
@@ -43,11 +46,21 @@ export async function sendIntakeNotification(
     auth: { user: QUOTES_ADDRESS, pass: password },
   });
 
-  const source = fields.partial ? "website-form-partial" : "website-form";
+  const isNextHandoff = fields.source === "restaurants-splash-next-handoff";
+  const isSplashAbandon = fields.source === "restaurants-splash-abandoned";
+  const source =
+    fields.source ?? (fields.partial ? "website-form-partial" : "website-form");
   const lines = [
-    fields.partial
-      ? `Abandoned quote form (visitor filled fields but did NOT submit).`
-      : `New quote request from the website form.`,
+    isNextHandoff
+      ? `Visitor started an instant quote on /restaurants (restaurant splash ` +
+        `page) and was handed to Next Insurance's self-serve flow (email ` +
+        `pre-filled). Follow up if no bind shows in the Next affiliate dashboard.`
+      : isSplashAbandon
+        ? `Visitor typed their email on the /restaurants splash page but left ` +
+          `WITHOUT starting the Next quote flow.`
+        : fields.partial
+        ? `Abandoned quote form (visitor filled fields but did NOT submit).`
+        : `New quote request from the website form.`,
     ``,
     `Name: ${fields.name ?? "(not provided)"}`,
     `Email: ${fields.email ?? "(not provided)"}`,
@@ -67,11 +80,17 @@ export async function sendIntakeNotification(
   ];
 
   const subjectWho = fields.name || fields.email || fields.phone || "unknown";
-  const subject = fields.partial
-    ? `⚠️ PARTIAL quote form (abandoned): ${subjectWho}`
-    : fields.businessType
-      ? `New quote request: ${subjectWho} - ${fields.businessType}`
-      : `New quote request: ${subjectWho}`;
+  const subject = isNextHandoff
+    ? fields.businessType
+      ? `Next quote started (/restaurants): ${subjectWho} - ${fields.businessType}`
+      : `Next quote started (/restaurants): ${subjectWho}`
+    : isSplashAbandon
+      ? `⚠️ PARTIAL (/restaurants abandoned): ${subjectWho}`
+      : fields.partial
+      ? `⚠️ PARTIAL quote form (abandoned): ${subjectWho}`
+      : fields.businessType
+        ? `New quote request: ${subjectWho} - ${fields.businessType}`
+        : `New quote request: ${subjectWho}`;
 
   try {
     await transporter.sendMail({
