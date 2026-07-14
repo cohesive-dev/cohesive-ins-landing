@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // No pre-fill: Next's own work-type autocomplete handles classification
 // (it maps cafe/deli/pizzeria to the right class). If vertical ad sets ever
@@ -50,6 +50,21 @@ function TeamQuoteCta() {
 
 export default function RestaurantsPage() {
   const frameRef = useRef<HTMLIFrameElement>(null);
+  // Safari (macOS + every iOS browser, incl. the Facebook in-app browser)
+  // blocks third-party cookies, and Next's app hard-fails inside an iframe
+  // without them ("cookies are blocked" screen — seen live on Kevin's iPhone
+  // 2026-07-14). Those visitors get a top-level link instead: Next becomes
+  // first-party, so session + affiliate attribution work.
+  const [useEmbed, setUseEmbed] = useState(true);
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    const isIOS =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isSafari =
+      /safari/i.test(ua) && !/chrome|crios|android|fxios|edgios/i.test(ua);
+    if (isIOS || isSafari) setUseEmbed(false);
+  }, []);
 
   // Next's quote flow is a cross-origin Angular SPA: no step URLs, no
   // postMessage step events (verified 2026-07-14), so real form progress is
@@ -177,33 +192,56 @@ export default function RestaurantsPage() {
             </div>
           </div>
 
-          {/* Right column: the embedded Next quote flow */}
+          {/* Right column: the Next quote flow (embed, or link-out where
+              third-party cookies are blocked) */}
           <div>
-            {/* overflow-hidden + negative top margin crops Next's co-brand
-                header bar out of view (cross-origin, so CSS can't reach in) */}
-            <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
-              <iframe
-                ref={frameRef}
-                src={NEXT_LINK}
-                title="Get an instant restaurant insurance quote"
-                className="w-full block"
-                style={{ height: "910px", border: "0", marginTop: "-88px" }}
-                allow="payment"
-              />
-            </div>
-            <p className="text-sm text-[#6B6D71]">
-              Instant quotes provided by Next Insurance through our
-              partnership.{" "}
-              <a
-                href={NEXT_LINK}
-                target="_blank"
-                rel="noopener sponsored"
-                className="underline hover:text-[#2040E7]"
-              >
-                Open in a new window
-              </a>{" "}
-              if the form doesn&apos;t load.
-            </p>
+            {useEmbed ? (
+              <>
+                {/* overflow-hidden + negative top margin crops Next's co-brand
+                    header bar out of view (cross-origin, so CSS can't reach in) */}
+                <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
+                  <iframe
+                    ref={frameRef}
+                    src={NEXT_LINK}
+                    title="Get an instant restaurant insurance quote"
+                    className="w-full block"
+                    style={{ height: "910px", border: "0", marginTop: "-88px" }}
+                    allow="payment"
+                  />
+                </div>
+                <p className="text-sm text-[#6B6D71]">
+                  Instant quotes provided by Next Insurance through our
+                  partnership.{" "}
+                  <a
+                    href={NEXT_LINK}
+                    target="_blank"
+                    rel="noopener sponsored"
+                    className="underline hover:text-[#2040E7]"
+                  >
+                    Open in a new window
+                  </a>{" "}
+                  if the form doesn&apos;t load.
+                </p>
+              </>
+            ) : (
+              <div className="flex flex-col gap-3 lg:pt-4">
+                <a
+                  href={NEXT_LINK}
+                  rel="noopener sponsored"
+                  onClick={() => {
+                    fbq("track", "Lead");
+                    fbq("trackCustom", "NextQuoteClick");
+                  }}
+                  className="w-full text-center px-8 py-5 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
+                >
+                  Get an instant online quote →
+                </a>
+                <p className="text-sm text-[#6B6D71] text-center">
+                  About 10 minutes, online. Instant quotes provided by Next
+                  Insurance through our partnership.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Mobile-only team path below the form */}
