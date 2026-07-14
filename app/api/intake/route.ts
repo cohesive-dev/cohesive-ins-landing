@@ -28,6 +28,21 @@ function splitName(name: string | undefined) {
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
+// Store phones in E.164 so the (email, phone) upsert key can't fragment on
+// formatting and downstream tools (OpenPhone, Smartlead, CRM) match exactly.
+// US-biased: bare 10 digits get +1. Falls back to the raw string when the
+// digits don't form a plausible number — a half-typed partial is still a lead.
+function toE164(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length === 10 && !raw.startsWith("+")) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1") && !raw.startsWith("+"))
+    return `+${digits}`;
+  if (raw.startsWith("+") && digits.length >= 8 && digits.length <= 15)
+    return `+${digits}`;
+  return raw;
+}
+
 export async function POST(request: NextRequest) {
   let body: IntakePayload;
   try {
@@ -46,7 +61,7 @@ export async function POST(request: NextRequest) {
   const email = rawEmail && EMAIL_RE.test(rawEmail) ? rawEmail : undefined;
 
   const { firstName, lastName } = splitName(asTrimmedString(body.name));
-  const phone = asTrimmedString(body.phone);
+  const phone = toE164(asTrimmedString(body.phone));
   const reachable = Boolean(email || phone);
 
   // Minimum to accept a submission: some way to reach the person. Phone-only
