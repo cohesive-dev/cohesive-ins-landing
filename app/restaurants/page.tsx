@@ -2,8 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
+// cob=110207 pre-selects "Restaurant" (Next's class-of-business id, via their
+// /api/cobs-search) — the work-type question is skipped and step 1 collapses
+// to State + Email. The param survives the track.nextinsurance.com redirect
+// alongside the affiliate attribution.
 const NEXT_LINK =
-  "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation";
+  "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation&cob=110207";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 
