@@ -46,17 +46,23 @@ export async function sendIntakeNotification(
     auth: { user: QUOTES_ADDRESS, pass: password },
   });
 
-  const isNextHandoff = fields.source === "restaurants-splash-next-handoff";
-  const isSplashAbandon = fields.source === "restaurants-splash-abandoned";
+  // Vertical splash pages send "<slug>-splash-next-handoff" (visitor handed
+  // to Next's self-serve flow) or "<slug>-splash-abandoned" (typed email but
+  // never started). Slug = the page, e.g. restaurants, cleaning, beauty.
+  const handoffMatch = fields.source?.match(/^(.+)-splash-next-handoff$/);
+  const abandonMatch = fields.source?.match(/^(.+)-splash-abandoned$/);
+  const isNextHandoff = Boolean(handoffMatch);
+  const isSplashAbandon = Boolean(abandonMatch);
+  const splashPage = `/${handoffMatch?.[1] ?? abandonMatch?.[1] ?? ""}`;
   const source =
     fields.source ?? (fields.partial ? "website-form-partial" : "website-form");
   const lines = [
     isNextHandoff
-      ? `Visitor started an instant quote on /restaurants (restaurant splash ` +
-        `page) and was handed to Next Insurance's self-serve flow (email ` +
-        `pre-filled). Follow up if no bind shows in the Next affiliate dashboard.`
+      ? `Visitor started an instant quote on ${splashPage} and was handed to ` +
+        `Next Insurance's self-serve flow (email pre-filled). Follow up if no ` +
+        `bind shows in the Next affiliate dashboard.`
       : isSplashAbandon
-        ? `Visitor typed their email on the /restaurants splash page but left ` +
+        ? `Visitor typed their email on the ${splashPage} splash page but left ` +
           `WITHOUT starting the Next quote flow.`
         : fields.partial
         ? `Abandoned quote form (visitor filled fields but did NOT submit).`
@@ -82,10 +88,10 @@ export async function sendIntakeNotification(
   const subjectWho = fields.name || fields.email || fields.phone || "unknown";
   const subject = isNextHandoff
     ? fields.businessType
-      ? `Next quote started (/restaurants): ${subjectWho} - ${fields.businessType}`
-      : `Next quote started (/restaurants): ${subjectWho}`
+      ? `Next quote started (${splashPage}): ${subjectWho} - ${fields.businessType}`
+      : `Next quote started (${splashPage}): ${subjectWho}`
     : isSplashAbandon
-      ? `⚠️ PARTIAL (/restaurants abandoned): ${subjectWho}`
+      ? `⚠️ PARTIAL (${splashPage} abandoned): ${subjectWho}`
       : fields.partial
       ? `⚠️ PARTIAL quote form (abandoned): ${subjectWho}`
       : fields.businessType

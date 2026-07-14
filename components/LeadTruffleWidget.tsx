@@ -3,11 +3,21 @@
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 
-// The chat bubble competes with the embedded Next quote flow on /restaurants
-// (it auto-opens on top of the form fields on mobile), so skip it there.
+// The chat bubble competes with the embedded Next quote flow on the vertical
+// splash pages (it auto-opens on top of the form fields on mobile), so skip
+// it there.
+const SPLASH_ROUTES = [
+  "/restaurants",
+  "/cleaning",
+  "/beauty",
+  "/fitness",
+  "/retail",
+  "/landscaping",
+];
+
 export default function LeadTruffleWidget() {
   const pathname = usePathname();
-  if (pathname?.startsWith("/restaurants")) return null;
+  if (pathname && SPLASH_ROUTES.some((r) => pathname.startsWith(r))) return null;
 
   return (
     <Script id="leadtruffle-widget" strategy="afterInteractive">
