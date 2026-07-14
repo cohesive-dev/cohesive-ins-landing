@@ -197,13 +197,15 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     fbq("track", "Lead");
     fbq("trackCustom", "QuoteStartEmail");
 
-    if (config.provider === "foxquilt") {
-      // For Foxquilt pages, chip ids ARE their profession labels.
-      window.location.href = buildFoxquiltLink(cobId);
-      return;
-    }
-
-    const link = buildNextLink(cleaned, cobId);
+    // For Foxquilt pages, chip ids ARE their profession labels. NOTE: the
+    // Foxquilt embed works only because their frame-ancestors header is
+    // malformed and browsers ignore it (Kevin's call 2026-07-14: embed
+    // anyway). If their frames ever go blank, they fixed the header — flip
+    // Foxquilt pages back to always-link-out.
+    const link =
+      config.provider === "foxquilt"
+        ? buildFoxquiltLink(cobId)
+        : buildNextLink(cleaned, cobId);
     if (useEmbedRef.current) {
       setHandoffLink(link);
       setStage("embed");
@@ -405,21 +407,28 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
               </div>
             ) : (
               <>
-                {/* overflow-hidden + negative top margin crops Next's co-brand
-                    header bar out of view (cross-origin, so CSS can't reach in) */}
+                {/* overflow-hidden + negative top margin crops the carrier's
+                    header bar out of view (cross-origin, so CSS can't reach
+                    in). Next's co-brand bar is ~88px; Foxquilt's header is
+                    left uncropped. */}
                 <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
                   <iframe
                     ref={frameRef}
                     src={handoffLink}
                     title="Get an instant business insurance quote"
                     className="w-full block"
-                    style={{ height: "910px", border: "0", marginTop: "-88px" }}
+                    style={
+                      config.provider === "foxquilt"
+                        ? { height: "822px", border: "0" }
+                        : { height: "910px", border: "0", marginTop: "-88px" }
+                    }
                     allow="payment"
                   />
                 </div>
                 <p className="text-sm text-[#6B6D71]">
-                  Instant quotes provided by Next Insurance through our
-                  partnership.{" "}
+                  Instant quotes provided by{" "}
+                  {config.provider === "foxquilt" ? "Foxquilt" : "Next Insurance"}{" "}
+                  through our partnership.{" "}
                   <a
                     href={handoffLink}
                     target="_blank"
