@@ -30,8 +30,8 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 // Store phones in E.164 so the (email, phone) upsert key can't fragment on
 // formatting and downstream tools (OpenPhone, Smartlead, CRM) match exactly.
-// US-biased: bare 10 digits get +1. Falls back to the raw string when the
-// digits don't form a plausible number — a half-typed partial is still a lead.
+// US-biased: bare 10 digits get +1. Invalid or partial values are omitted so a
+// non-E.164 phone can never reach the database.
 function toE164(raw: string | undefined): string | undefined {
   if (!raw) return undefined;
   const digits = raw.replace(/\D/g, "");
@@ -40,7 +40,7 @@ function toE164(raw: string | undefined): string | undefined {
     return `+${digits}`;
   if (raw.startsWith("+") && digits.length >= 8 && digits.length <= 15)
     return `+${digits}`;
-  return raw;
+  return undefined;
 }
 
 export async function POST(request: NextRequest) {
