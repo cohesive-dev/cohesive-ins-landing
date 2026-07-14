@@ -68,8 +68,12 @@ export async function POST(request: NextRequest) {
   const email = rawEmail && EMAIL_RE.test(rawEmail) ? rawEmail : undefined;
 
   const { firstName, lastName } = splitName(asTrimmedString(body.name));
-  const phone = toE164(asTrimmedString(body.phone));
-  const reachable = Boolean(email || phone);
+  const rawPhone = asTrimmedString(body.phone);
+  // DB writes only ever get the E.164 value; the raw string still counts as
+  // reachable and rides along in the quotes@ alert so a typo'd-but-real
+  // number is never silently dropped (zero-miss rule below).
+  const phone = toE164(rawPhone);
+  const reachable = Boolean(email || phone || rawPhone);
 
   // Minimum to accept a submission: some way to reach the person. Phone-only
   // submissions are valid leads — they just skip the email-keyed Contact
@@ -89,7 +93,7 @@ export async function POST(request: NextRequest) {
     await sendIntakeNotification({
       name: asTrimmedString(body.name),
       email,
-      phone,
+      phone: phone ?? rawPhone,
       businessType: asTrimmedString(body.businessType),
       zip: asTrimmedString(body.zip),
       partial: isPartial,
