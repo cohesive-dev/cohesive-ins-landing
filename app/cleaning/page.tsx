@@ -2,6 +2,7 @@ import QuoteSplash, { type SplashConfig } from "@/components/QuoteSplash";
 
 const config: SplashConfig = {
   "slug": "cleaning",
+  "provider": "foxquilt",
   "eyebrow": "For cleaning & janitorial businesses",
   "headline": "Cleaning business insurance, in minutes.",
   "pitch": "Buy online in about 10 minutes - COIs ready when your clients ask.",

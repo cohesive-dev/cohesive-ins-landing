@@ -14,12 +14,32 @@ const NEXT_BASE =
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 
+// Foxquilt broker-attributed self-serve link (agencyBrokerId/partnercode =
+// Kevin's book). Their CSP blocks framing on our domain (frame-ancestors
+// allowlist), so Foxquilt pages ALWAYS hand off top-level — no embed on any
+// device. Page-1 fields ride in the URL (effectiveDate/country/state), so
+// visitors land effectively on page 2.
+const FOXQUILT_BASE =
+  "https://join.foxquilt.com/2022-06-30/?agencyBrokerId=6a4d7c5f03e2e937813ffbf1&partnercode=FC+-+Kevin+Zhang&brokerCode=FQAGT&agencyId=6a4d7c5f03e2e937813ffbef";
+
+function buildFoxquiltLink() {
+  // Attribution params only — visitors fill Foxquilt's page 1 (state,
+  // effective date) themselves. Page-1 prefill via &effectiveDate=/&state=
+  // works if we ever want it (Kevin undecided 2026-07-14).
+  return FOXQUILT_BASE;
+}
+
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 export type SplashConfig = {
   // Short slug used in intake `source` labels, e.g. "restaurants" =>
   // "restaurants-splash-next-handoff" / "restaurants-splash-abandoned".
   slug: string;
+  // Which carrier self-serve flow the page hands off to. "next" (default)
+  // embeds where cookies allow; "foxquilt" always redirects top-level
+  // (their CSP forbids framing) and ignores cob ids (chips still label the
+  // intake record).
+  provider?: "next" | "foxquilt";
   eyebrow: string;
   headline: string;
   // One-liner under the headline (left column).
@@ -161,7 +181,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
         body: JSON.stringify({
           email: cleaned,
           businessType: cobLabel ?? `${config.slug} (unspecified)`,
-          source: `${config.slug}-splash-next-handoff`,
+          source: `${config.slug}-splash-${config.provider ?? "next"}-handoff`,
         }),
         keepalive: true,
       }).catch(() => {});
@@ -173,6 +193,11 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     // signals only, so standard Lead fires once per visitor path.
     fbq("track", "Lead");
     fbq("trackCustom", "QuoteStartEmail");
+
+    if (config.provider === "foxquilt") {
+      window.location.href = buildFoxquiltLink();
+      return;
+    }
 
     const link = buildNextLink(cleaned, cobId);
     if (useEmbedRef.current) {

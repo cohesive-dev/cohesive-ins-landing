@@ -1171,6 +1171,7 @@ function Footer() {
                 { label: "Fitness & Studios", href: "/fitness" },
                 { label: "Retail Stores", href: "/retail" },
                 { label: "Landscaping & Lawn Care", href: "/landscaping" },
+                { label: "Painting", href: "/painting" },
               ].map((l) => (
                 <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
               ))}

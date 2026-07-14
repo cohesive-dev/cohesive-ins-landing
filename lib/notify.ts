@@ -49,18 +49,23 @@ export async function sendIntakeNotification(
   // Vertical splash pages send "<slug>-splash-next-handoff" (visitor handed
   // to Next's self-serve flow) or "<slug>-splash-abandoned" (typed email but
   // never started). Slug = the page, e.g. restaurants, cleaning, beauty.
-  const handoffMatch = fields.source?.match(/^(.+)-splash-next-handoff$/);
+  const handoffMatch = fields.source?.match(/^(.+)-splash-(\w+)-handoff$/);
   const abandonMatch = fields.source?.match(/^(.+)-splash-abandoned$/);
   const isNextHandoff = Boolean(handoffMatch);
   const isSplashAbandon = Boolean(abandonMatch);
   const splashPage = `/${handoffMatch?.[1] ?? abandonMatch?.[1] ?? ""}`;
+  const providerNames: Record<string, string> = {
+    next: "Next Insurance",
+    foxquilt: "Foxquilt",
+  };
+  const provider = providerNames[handoffMatch?.[2] ?? ""] ?? "the carrier";
   const source =
     fields.source ?? (fields.partial ? "website-form-partial" : "website-form");
   const lines = [
     isNextHandoff
       ? `Visitor started an instant quote on ${splashPage} and was handed to ` +
-        `Next Insurance's self-serve flow (email pre-filled). Follow up if no ` +
-        `bind shows in the Next affiliate dashboard.`
+        `${provider}'s self-serve flow. Follow up if no bind shows in the ` +
+        `${provider} dashboard.`
       : isSplashAbandon
         ? `Visitor typed their email on the ${splashPage} splash page but left ` +
           `WITHOUT starting the Next quote flow.`
@@ -88,8 +93,8 @@ export async function sendIntakeNotification(
   const subjectWho = fields.name || fields.email || fields.phone || "unknown";
   const subject = isNextHandoff
     ? fields.businessType
-      ? `Next quote started (${splashPage}): ${subjectWho} - ${fields.businessType}`
-      : `Next quote started (${splashPage}): ${subjectWho}`
+      ? `${provider} quote started (${splashPage}): ${subjectWho} - ${fields.businessType}`
+      : `${provider} quote started (${splashPage}): ${subjectWho}`
     : isSplashAbandon
       ? `⚠️ PARTIAL (${splashPage} abandoned): ${subjectWho}`
       : fields.partial
