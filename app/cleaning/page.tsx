@@ -15,15 +15,15 @@ const config: SplashConfig = {
   "cobs": [
     {
       "label": "House cleaning",
-      "id": "100003"
+      "id": "Maid Services"
     },
     {
       "label": "Janitorial",
-      "id": "100002"
+      "id": "Janitorial Services"
     },
     {
-      "label": "Pressure washing",
-      "id": "100004"
+      "label": "Carpet cleaning",
+      "id": "Carpet Cleaning Service"
     }
   ],
   "chipsNote": "Residential and commercial cleaning both work - large building contracts may fit better with our team below.",

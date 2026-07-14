@@ -13,12 +13,12 @@ const config: SplashConfig = {
   ],
   "cobs": [
     {
-      "label": "Residential painting",
-      "id": "res-painting"
+      "label": "House painting",
+      "id": "House Painting"
     },
     {
       "label": "Commercial painting",
-      "id": "com-painting"
+      "id": "Residential & Commercial Paintings"
     }
   ],
   "chipsNote": "Interior and exterior painters both work - large commercial or high-rise exterior jobs fit better with our team below.",
