@@ -1,13 +1,26 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-// cob=110207 pre-selects "Restaurant" (Next's class-of-business id, via their
+// The cob param pre-selects the class of business (ids from Next's
 // /api/cobs-search) — the work-type question is skipped and step 1 collapses
-// to State + Email. The param survives the track.nextinsurance.com redirect
+// to State + Email. It survives the track.nextinsurance.com redirect
 // alongside the affiliate attribution.
-const NEXT_LINK =
-  "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation&cob=110207";
+const NEXT_BASE =
+  "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation";
+
+const COBS = [
+  { label: "Restaurant", id: "110207" },
+  { label: "Coffee shop", id: "111666" },
+  { label: "Bakery", id: "111664" },
+  { label: "Food truck", id: "111665" },
+  { label: "Caterer", id: "100037" },
+];
+
+// No default pre-fill (Kevin's call): Next asks "What type of work do you
+// do?" unless the visitor taps a chip; tapping the active chip clears it.
+const nextLink = (cobId: string | null) =>
+  cobId ? `${NEXT_BASE}&cob=${cobId}` : NEXT_BASE;
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 
@@ -50,6 +63,7 @@ function TeamQuoteCta() {
 
 export default function RestaurantsPage() {
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const [cobId, setCobId] = useState<string | null>(null);
 
   // Next's quote flow is a cross-origin Angular SPA: no step URLs, no
   // postMessage step events (verified 2026-07-14), so real form progress is
@@ -179,12 +193,31 @@ export default function RestaurantsPage() {
 
           {/* Right column: the embedded Next quote flow */}
           <div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="text-xs font-semibold text-[#6B6D71] uppercase tracking-wide">
+                Quoting for:
+              </span>
+              {COBS.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => setCobId(cobId === c.id ? null : c.id)}
+                  className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
+                    cobId === c.id
+                      ? "border-[#2040E7] bg-[#2040E7] text-white"
+                      : "border-slate-300 text-[#27455C] hover:border-[#2040E7]"
+                  }`}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
             {/* overflow-hidden + negative top margin crops Next's co-brand
                 header bar out of view (cross-origin, so CSS can't reach in) */}
             <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
               <iframe
                 ref={frameRef}
-                src={NEXT_LINK}
+                src={nextLink(cobId)}
                 title="Get an instant restaurant insurance quote"
                 className="w-full block"
                 style={{ height: "910px", border: "0", marginTop: "-88px" }}
@@ -195,7 +228,7 @@ export default function RestaurantsPage() {
               Instant quotes provided by Next Insurance through our
               partnership.{" "}
               <a
-                href={NEXT_LINK}
+                href={nextLink(cobId)}
                 target="_blank"
                 rel="noopener sponsored"
                 className="underline hover:text-[#2040E7]"
