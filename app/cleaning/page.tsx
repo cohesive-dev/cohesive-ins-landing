@@ -27,7 +27,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Residential and commercial cleaning both work - large building contracts may fit better with our team below.",
-  "savingsLine": "Cleaning businesses typically save 10–25%. 94% of the businesses we quote beat their current rate."
+  "savingsLine": "Cleaning businesses typically save 10–25%."
 };
 
 export default function Page() {

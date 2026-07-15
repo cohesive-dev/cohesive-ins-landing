@@ -22,7 +22,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Interior and exterior painters both work - large commercial or high-rise exterior jobs fit better with our team below.",
-  "savingsLine": "Painters typically save 10–25%. 94% of the businesses we quote beat their current rate."
+  "savingsLine": "Painters typically save 10–25%."
 };
 
 export default function Page() {
