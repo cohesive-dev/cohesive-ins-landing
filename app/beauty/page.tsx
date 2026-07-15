@@ -14,16 +14,18 @@ const config: SplashConfig = {
   "cobs": [
     {
       "label": "Nail technician",
-      "id": "100027"
+      "id": "100027",
+      "recentBind": { "label": "Nail Technician GL", "price": "$11/mo" }
     },
     {
       "label": "Hair stylist",
-      "id": "100025"
+      "id": "100025",
+      "recentBind": { "label": "Hair Stylist GL", "price": "$12/mo" }
     },
     {
       "label": "Barber",
       "id": "100024",
-      "recentBind": { "label": "Barber GL", "price": "$140/yr" }
+      "recentBind": { "label": "Barber GL", "price": "$12/mo" }
     },
     {
       "label": "Beauty salon",
