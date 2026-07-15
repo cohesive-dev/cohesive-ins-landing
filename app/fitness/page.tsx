@@ -13,7 +13,8 @@ const config: SplashConfig = {
   "cobs": [
     {
       "label": "Personal trainer",
-      "id": "1000"
+      "id": "1000",
+      "recentBind": { "label": "Personal Trainer GL", "price": "$16/mo" }
     },
     {
       "label": "Fitness studio",
