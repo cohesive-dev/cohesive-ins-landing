@@ -34,7 +34,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Booth renters and salon owners both work - pick whichever is closest.",
-  "savingsLine": "Salons typically save 10–25%. 94% of the businesses we quote beat their current rate."
+  "savingsLine": "Salons typically save 10–25%."
 };
 
 export default function Page() {

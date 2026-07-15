@@ -42,14 +42,19 @@ export type SplashConfig = {
   headline: string;
   pitch: string;
   coverage: string[];
-  cobs: { label: string; id: string }[];
+  // Each chip carries its own per-industry savings line + optional real
+  // recently-bound policy — both revealed when the chip is picked (the reveal
+  // is the interaction). recentBind is a genuine bind through our Next link
+  // (factual, §349-substantiated); only set where we have real data.
+  cobs: {
+    label: string;
+    id: string;
+    savings?: string;
+    recentBind?: { label: string; price: string };
+  }[];
   chipsNote: string;
-  // Substantiated value line shown in the action card (Kevin-approved; the 94%
-  // is a real quote-record stat — keep the receipts for §349 substantiation).
+  // Default savings line for chips that don't carry their own.
   savingsLine: string;
-  // Real recently-bound policies (social proof). Each is a genuine bind through
-  // our Next link — factual, not extrapolated. Only set where we have real data.
-  recentBinds?: { label: string; price: string }[];
 };
 
 function fbq(...args: unknown[]) {
@@ -200,6 +205,9 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
   const carrierName =
     config.provider === "foxquilt" ? "Foxquilt" : "Next Insurance";
 
+  // The picked business type — its savings + recentBind are revealed on select.
+  const selected = config.cobs.find((c) => c.id === cobId) ?? null;
+
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-slate-200">
@@ -252,40 +260,12 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
           <div>
             {stage === "bridge" ? (
               <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <h2 className="text-xl font-extrabold text-[#131517] mb-3">
+                <h2 className="text-xl font-extrabold text-[#131517] mb-4">
                   Get your instant quote
                 </h2>
 
-                <div className="rounded-lg bg-[#EEF1FF] px-4 py-3 mb-4">
-                  <p className="text-[15px] font-semibold text-[#27455C] leading-snug">
-                    {config.savingsLine}
-                  </p>
-                </div>
-
-                {config.recentBinds && config.recentBinds.length > 0 && (
-                  <div className="mb-6">
-                    <div className="text-xs font-bold text-[#6B6D71] uppercase tracking-wide mb-2">
-                      Recently bound in NY
-                    </div>
-                    <ul className="space-y-1.5">
-                      {config.recentBinds.map((b) => (
-                        <li
-                          key={b.label}
-                          className="flex items-center justify-between text-sm border-b border-slate-100 pb-1.5"
-                        >
-                          <span className="text-[#27455C] font-medium">{b.label}</span>
-                          <span className="text-[#131517] font-bold">{b.price}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 <div className="text-sm font-semibold text-[#27455C] mb-2">
-                  What kind of business do you run?{" "}
-                  <span className="font-normal text-[#6B6D71]">
-                    (helps us tailor your quote)
-                  </span>
+                  What kind of business do you run?
                 </div>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {config.cobs.map((c) => (
@@ -303,7 +283,38 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-[#6B6D71] mb-6">{config.chipsNote}</p>
+                <p className="text-xs text-[#6B6D71] mb-5">{config.chipsNote}</p>
+
+                {/* Reveal-on-select: savings + the matching real bind. The act
+                    of picking is the interaction (value + light sunk-cost). */}
+                {selected ? (
+                  <div className="mb-6">
+                    <div className="rounded-lg bg-[#EEF1FF] px-4 py-3 mb-3">
+                      <p className="text-[15px] font-semibold text-[#27455C] leading-snug">
+                        {selected.savings ?? config.savingsLine}
+                      </p>
+                    </div>
+                    {selected.recentBind && (
+                      <div className="flex items-center justify-between text-sm px-1">
+                        <span className="text-[#6B6D71]">
+                          Recently bound in NY -{" "}
+                          <span className="font-medium text-[#27455C]">
+                            {selected.recentBind.label}
+                          </span>
+                        </span>
+                        <span className="text-[#131517] font-bold">
+                          {selected.recentBind.price}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-slate-300 px-4 py-3 mb-6 text-center">
+                    <p className="text-sm text-[#6B6D71]">
+                      Pick your business above to see typical savings.
+                    </p>
+                  </div>
+                )}
 
                 <button
                   type="button"
@@ -313,8 +324,8 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                   Get my instant quote →
                 </button>
                 <p className="text-xs text-[#6B6D71] text-center mt-3">
-                  About 10 minutes, online. No obligation - instant quote
-                  through our partner {carrierName}.
+                  Instant quote in under 10 minutes - we compare our insurance
+                  partners to find you the lowest rate and the right coverage.
                 </p>
               </div>
             ) : (
