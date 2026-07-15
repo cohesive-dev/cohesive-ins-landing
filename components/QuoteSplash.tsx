@@ -57,6 +57,14 @@ export type SplashConfig = {
 };
 
 function fbq(...args: unknown[]) {
+  // Never fire pixel events from localhost/LAN/preview — dev and automated
+  // testing must not pollute ad metrics (Kevin, 2026-07-14).
+  if (
+    typeof window !== "undefined" &&
+    !/(^|\.)cohesiveinsure\.com$/.test(window.location.hostname)
+  ) {
+    return;
+  }
   (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq?.(...args);
 }
 
