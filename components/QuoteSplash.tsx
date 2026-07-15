@@ -80,8 +80,7 @@ function TeamQuoteCta() {
   // was training ads toward non-converters. Custom event only now.
   return (
     <p className="text-sm text-[#6B6D71] text-center">
-      Need comprehensive coverage (workers&apos; comp, umbrella) or prefer a
-      person?{" "}
+      Need more comprehensive coverage or prefer a person?{" "}
       <a
         href={CAL_LINK}
         onClick={() => fbq("trackCustom", "CalBookingClick")}
