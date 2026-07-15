@@ -553,10 +553,10 @@ function Hero() {
           <div className="md:flex-2 bg-[#2040E7] p-6 flex flex-col justify-between">
             <div className="text-[11px] font-bold text-white/70 tracking-[0.08em] uppercase mb-4">What to Expect</div>
             <div className="lg:grid lg:grid-cols-[1fr_auto] lg:auto-rows-fr sm:flex sm:flex-col md:flex md:flex-col items-center gap-x-8 gap-y-4 lg:mb-[2%]">
-              <h3 className="text-lg sm:text-lg font-bold text-white leading-tight">call back time</h3>
-              <div className="lg:text-[80px] sm:text-5xl md:text-5xl text-6xl font-black text-white leading-none whitespace-nowrap w-full text-right py-1 lg:py-0">&lt;1 hr</div>
               <h3 className="text-lg sm:text-lg font-bold text-white leading-tight">avg. insurance cost saving</h3>
               <div className="lg:text-[80px] sm:text-5xl md:text-5xl text-6xl font-black text-white leading-none whitespace-nowrap w-full text-right py-1 lg:py-0">22 %</div>
+              <h3 className="text-lg sm:text-lg font-bold text-white leading-tight">call back time</h3>
+              <div className="lg:text-[80px] sm:text-5xl md:text-5xl text-6xl font-black text-white leading-none whitespace-nowrap w-full text-right py-1 lg:py-0">&lt;1 hr</div>
             </div>
           </div>
         </div>
