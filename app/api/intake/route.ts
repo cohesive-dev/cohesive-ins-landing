@@ -11,6 +11,7 @@ type IntakePayload = {
   zip?: unknown;
   partial?: unknown;
   final?: unknown;
+  source?: unknown;
 };
 
 const asTrimmedString = (value: unknown): string | undefined =>
@@ -27,6 +28,28 @@ function splitName(name: string | undefined) {
 }
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+const E164_RE = /^\+[1-9]\d{7,14}$/;
+
+// Store phones in E.164 so the (email, phone) upsert key can't fragment on
+// formatting and downstream tools (OpenPhone, Smartlead, CRM) match exactly.
+// US-biased: bare 10 digits get +1. Invalid or partial values are omitted so a
+// non-E.164 phone can never reach the database.
+function toE164(raw: string | undefined): string | undefined {
+  if (!raw) return undefined;
+  const digits = raw.replace(/\D/g, "");
+  let candidate: string | undefined;
+
+  if (digits.length === 10 && !raw.startsWith("+")) candidate = `+1${digits}`;
+  else if (
+    digits.length === 11 &&
+    digits.startsWith("1") &&
+    !raw.startsWith("+")
+  )
+    candidate = `+${digits}`;
+  else if (raw.startsWith("+")) candidate = `+${digits}`;
+
+  return candidate && E164_RE.test(candidate) ? candidate : undefined;
+}
 
 export async function POST(request: NextRequest) {
   let body: IntakePayload;
@@ -46,8 +69,12 @@ export async function POST(request: NextRequest) {
   const email = rawEmail && EMAIL_RE.test(rawEmail) ? rawEmail : undefined;
 
   const { firstName, lastName } = splitName(asTrimmedString(body.name));
-  const phone = asTrimmedString(body.phone);
-  const reachable = Boolean(email || phone);
+  const rawPhone = asTrimmedString(body.phone);
+  // DB writes only ever get the E.164 value; the raw string still counts as
+  // reachable and rides along in the quotes@ alert so a typo'd-but-real
+  // number is never silently dropped (zero-miss rule below).
+  const phone = toE164(rawPhone);
+  const reachable = Boolean(email || phone || rawPhone);
 
   // Minimum to accept a submission: some way to reach the person. Phone-only
   // submissions are valid leads — they just skip the email-keyed Contact
@@ -67,10 +94,11 @@ export async function POST(request: NextRequest) {
     await sendIntakeNotification({
       name: asTrimmedString(body.name),
       email,
-      phone,
+      phone: phone ?? rawPhone,
       businessType: asTrimmedString(body.businessType),
       zip: asTrimmedString(body.zip),
       partial: isPartial,
+      source: asTrimmedString(body.source),
     });
   }
 

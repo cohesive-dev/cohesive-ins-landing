@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import LeadTruffleWidget from "@/components/LeadTruffleWidget";
 import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
@@ -48,20 +49,8 @@ fbq('track', 'PageView');`}
           />
         </noscript>
         {/* End Meta Pixel Code */}
-        {/* LeadTruffle Widget */}
-        <Script id="leadtruffle-widget" strategy="afterInteractive">
-          {`(function () {
-  var s = document.createElement('script');
-  s.src = "https://embeds-v1.leadtruffle.com/tooldesk-widget.js";
-  s.async = true;
-  s.onload = function () {
-    window.LTWidget.initialize({
-      companyId: "54e15aec-f591-4859-9e29-a9b10f65981a"
-    });
-  };
-  document.head.appendChild(s);
-})();`}
-        </Script>
+        {/* LeadTruffle Widget (hidden on /restaurants — see component) */}
+        <LeadTruffleWidget />
         {children}
         <Analytics />
       </body>
