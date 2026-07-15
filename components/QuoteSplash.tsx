@@ -103,6 +103,11 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
   const [cobId, setCobId] = useState<string | null>(null);
   const [emailError, setEmailError] = useState(false);
   const [handoffLink, setHandoffLink] = useState(NEXT_BASE);
+  // Multi-step card: 0 = business type, 1 = ZIP, 2 = email. Reframes the
+  // email ask as the last step of an in-progress application instead of a
+  // gate (bench variant for the 2pm 2026-07-15 checkpoint).
+  const [step, setStep] = useState(0);
+  const [zip, setZip] = useState("");
 
   // Safari (macOS + every iOS browser, incl. the Facebook in-app browser)
   // blocks third-party cookies, and Next's app hard-fails inside an iframe
@@ -185,6 +190,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
         body: JSON.stringify({
           email: cleaned,
           businessType: cobLabel ?? `${config.slug} (unspecified)`,
+          zip: zip.trim() || undefined,
           source: `${config.slug}-splash-${config.provider ?? "next"}-handoff`,
         }),
         keepalive: true,
@@ -339,72 +345,140 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
           <div>
             {stage === "form" ? (
               <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <h2 className="text-xl font-extrabold text-[#131517] mb-1">
-                  Start your instant quote
-                </h2>
+                <div className="flex items-baseline justify-between mb-1">
+                  <h2 className="text-xl font-extrabold text-[#131517]">
+                    Start your instant quote
+                  </h2>
+                  <span className="text-xs font-semibold text-[#6B6D71]">
+                    Step {step + 1} of 3
+                  </span>
+                </div>
                 <p className="text-sm text-[#6B6D71] mb-5">
                   Owners save about 15-25% on average.
                 </p>
 
-                <div className="text-sm font-semibold text-[#27455C] mb-2">
-                  What kind of business do you run?{" "}
-                  <span className="font-normal text-[#6B6D71]">(optional)</span>
-                </div>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {config.cobs.map((c) => (
+                {step === 0 && (
+                  <>
+                    <div className="text-sm font-semibold text-[#27455C] mb-2">
+                      What kind of business do you run?
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-2">
+                      {config.cobs.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => {
+                            setCobId(c.id);
+                            setStep(1);
+                          }}
+                          className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
+                            cobId === c.id
+                              ? "border-[#2040E7] bg-[#2040E7] text-white"
+                              : "border-slate-300 text-[#27455C] hover:border-[#2040E7]"
+                          }`}
+                        >
+                          {c.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-[#6B6D71] mb-5">{config.chipsNote}</p>
                     <button
-                      key={c.id}
                       type="button"
-                      onClick={() => setCobId(cobId === c.id ? null : c.id)}
-                      className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
-                        cobId === c.id
-                          ? "border-[#2040E7] bg-[#2040E7] text-white"
-                          : "border-slate-300 text-[#27455C] hover:border-[#2040E7]"
-                      }`}
+                      onClick={() => setStep(1)}
+                      className="w-full text-center px-8 py-3.5 rounded-md border-2 border-slate-300 text-[#6B6D71] text-base font-semibold hover:border-[#2040E7] hover:text-[#2040E7] transition-colors"
                     >
-                      {c.label}
+                      Skip - not sure yet
                     </button>
-                  ))}
-                </div>
-                <p className="text-xs text-[#6B6D71] mb-5">{config.chipsNote}</p>
-
-                <label
-                  htmlFor="quote-email"
-                  className="block text-sm font-semibold text-[#27455C] mb-2"
-                >
-                  Email address
-                </label>
-                <input
-                  id="quote-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleStart();
-                  }}
-                  placeholder={config.emailPlaceholder}
-                  className={`w-full px-4 py-3 rounded-md border text-base text-[#131517] outline-none focus:border-[#2040E7] mb-1 ${
-                    emailError ? "border-red-500" : "border-slate-300"
-                  }`}
-                />
-                {emailError && (
-                  <p className="text-sm text-red-600 mb-1">
-                    Please enter a valid email address.
-                  </p>
+                  </>
                 )}
-                <p className="text-xs text-[#6B6D71] mb-4">
-                  We&apos;ll only use this to help with your quote.
-                </p>
 
-                <button
-                  type="button"
-                  onClick={handleStart}
-                  className="w-full text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
-                >
-                  Start my instant quote →
-                </button>
+                {step === 1 && (
+                  <>
+                    <label
+                      htmlFor="quote-zip"
+                      className="block text-sm font-semibold text-[#27455C] mb-2"
+                    >
+                      Business ZIP code{" "}
+                      <span className="font-normal text-[#6B6D71]">(optional)</span>
+                    </label>
+                    <input
+                      id="quote-zip"
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      maxLength={5}
+                      value={zip}
+                      onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") setStep(2);
+                      }}
+                      placeholder="e.g. 11215"
+                      className="w-full px-4 py-3 rounded-md border border-slate-300 text-base text-[#131517] outline-none focus:border-[#2040E7] mb-4"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="w-full text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
+                    >
+                      Continue →
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep(0)}
+                      className="w-full text-center mt-2 text-sm text-[#6B6D71] hover:text-[#2040E7]"
+                    >
+                      ← Back
+                    </button>
+                  </>
+                )}
+
+                {step === 2 && (
+                  <>
+                    <label
+                      htmlFor="quote-email"
+                      className="block text-sm font-semibold text-[#27455C] mb-2"
+                    >
+                      Email address
+                    </label>
+                    <input
+                      id="quote-email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleStart();
+                      }}
+                      placeholder={config.emailPlaceholder}
+                      className={`w-full px-4 py-3 rounded-md border text-base text-[#131517] outline-none focus:border-[#2040E7] mb-1 ${
+                        emailError ? "border-red-500" : "border-slate-300"
+                      }`}
+                    />
+                    {emailError && (
+                      <p className="text-sm text-red-600 mb-1">
+                        Please enter a valid email address.
+                      </p>
+                    )}
+                    <p className="text-xs text-[#6B6D71] mb-4">
+                      We&apos;ll only use this to help with your quote.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleStart}
+                      className="w-full text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
+                    >
+                      Start my instant quote →
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setStep(1)}
+                      className="w-full text-center mt-2 text-sm text-[#6B6D71] hover:text-[#2040E7]"
+                    >
+                      ← Back
+                    </button>
+                  </>
+                )}
               </div>
             ) : (
               <>
