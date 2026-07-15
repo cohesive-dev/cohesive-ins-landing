@@ -383,7 +383,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                             {selected.recentBind.price}
                           </div>
                           <div className="text-xs text-[#6B6D71] mt-1.5">
-                            Recently bound - NY {selected.recentBind.label}
+                            Recently bound - {selected.recentBind.label}
                           </div>
                         </div>
                         <p className="text-[13px] text-[#27455C] text-center px-2">
