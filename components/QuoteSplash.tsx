@@ -47,6 +47,9 @@ export type SplashConfig = {
   // Substantiated value line shown in the action card (Kevin-approved; the 94%
   // is a real quote-record stat — keep the receipts for §349 substantiation).
   savingsLine: string;
+  // Real recently-bound policies (social proof). Each is a genuine bind through
+  // our Next link — factual, not extrapolated. Only set where we have real data.
+  recentBinds?: { label: string; price: string }[];
 };
 
 function fbq(...args: unknown[]) {
@@ -253,11 +256,30 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                   Get your instant quote
                 </h2>
 
-                <div className="rounded-lg bg-[#EEF1FF] px-4 py-3 mb-6">
+                <div className="rounded-lg bg-[#EEF1FF] px-4 py-3 mb-4">
                   <p className="text-[15px] font-semibold text-[#27455C] leading-snug">
                     {config.savingsLine}
                   </p>
                 </div>
+
+                {config.recentBinds && config.recentBinds.length > 0 && (
+                  <div className="mb-6">
+                    <div className="text-xs font-bold text-[#6B6D71] uppercase tracking-wide mb-2">
+                      Recently bound in NY
+                    </div>
+                    <ul className="space-y-1.5">
+                      {config.recentBinds.map((b) => (
+                        <li
+                          key={b.label}
+                          className="flex items-center justify-between text-sm border-b border-slate-100 pb-1.5"
+                        >
+                          <span className="text-[#27455C] font-medium">{b.label}</span>
+                          <span className="text-[#131517] font-bold">{b.price}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 <div className="text-sm font-semibold text-[#27455C] mb-2">
                   What kind of business do you run?{" "}

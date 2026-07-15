@@ -34,7 +34,8 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Delis, pizzerias, quick-service, dine-in, and most other food service all fall under Restaurant.",
-  "savingsLine": "Restaurants typically save 10–25%. 94% of the businesses we quote beat their current rate."
+  "savingsLine": "Restaurants typically save 10–25%. 94% of the businesses we quote beat their current rate.",
+  "recentBinds": [{"label": "Restaurant BOP", "price": "$1,153/yr"}, {"label": "Bakery GL", "price": "$849/yr"}, {"label": "Caterer GL", "price": "$597/yr"}]
 };
 
 export default function Page() {
