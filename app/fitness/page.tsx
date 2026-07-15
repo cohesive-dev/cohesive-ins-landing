@@ -21,7 +21,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Yoga, pilates, and most instructors fall under Personal Trainer.",
-  "emailPlaceholder": "you@yourstudio.com"
+  "savingsLine": "Fitness businesses typically save 10–25%. 94% of the businesses we quote beat their current rate."
 };
 
 export default function Page() {

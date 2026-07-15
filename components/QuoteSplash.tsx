@@ -2,58 +2,51 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Vertical splash template: step-0 email capture → pre-filled Next Insurance
-// handoff. First built as /restaurants (2026-07-14); every vertical page is a
-// thin config wrapper around this component.
+// Vertical splash template: a value BRIDGE (no email gate) → carrier self-serve
+// handoff. Rebuilt gate-free 2026-07-15 — the email-first gate killed
+// conversion (research + 2 days of ~0 captures). Next's Agent Copilot captures
+// partial quote-starters on its side, so we hand off frictionlessly and recover
+// via Copilot + follow-up instead of gating.
 //
-// The affiliate link; params survive the track.nextinsurance.com redirect.
-// `email=` pre-fills Next's step-1 email field; `cob=` pre-selects the class
-// of business and skips their work-type question (ids from /api/cobs-search).
+// `cob` pre-selects the class of business and skips Next's work-type question
+// (ids from /api/cobs-search); it survives the track.nextinsurance.com redirect.
 const NEXT_BASE =
   "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 
 // Foxquilt broker-attributed self-serve link (agencyBrokerId/partnercode =
-// Kevin's book). Their CSP blocks framing on our domain (frame-ancestors
-// allowlist), so Foxquilt pages ALWAYS hand off top-level — no embed on any
-// device. Page-1 fields ride in the URL (effectiveDate/country/state), so
-// visitors land effectively on page 2.
+// Kevin's book). `&profession=<exact option label>` pre-fills their page-2
+// profession field. Embed works today only because their frame-ancestors CSP
+// header is malformed and browsers ignore it (Kevin's call: embed anyway).
 const FOXQUILT_BASE =
   "https://join.foxquilt.com/2022-06-30/?agencyBrokerId=6a4d7c5f03e2e937813ffbf1&partnercode=FC+-+Kevin+Zhang&brokerCode=FQAGT&agencyId=6a4d7c5f03e2e937813ffbef";
 
 function buildFoxquiltLink(professionLabel: string | null) {
-  // Attribution params always; &profession=<their exact option label>
-  // pre-fills the page-2 profession field (verified 2026-07-14). Page-1
-  // prefill via &effectiveDate=/&state= also works but is deliberately NOT
-  // used — visitors pick their own state/date (Kevin undecided).
   return professionLabel
     ? `${FOXQUILT_BASE}&profession=${encodeURIComponent(professionLabel)}`
     : FOXQUILT_BASE;
 }
 
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+function buildNextLink(cobId: string | null) {
+  return cobId ? `${NEXT_BASE}&cob=${cobId}` : NEXT_BASE;
+}
 
 export type SplashConfig = {
-  // Short slug used in intake `source` labels, e.g. "restaurants" =>
-  // "restaurants-splash-next-handoff" / "restaurants-splash-abandoned".
+  // Short slug used in intake `source` labels + custom pixel context.
   slug: string;
-  // Which carrier self-serve flow the page hands off to. "next" (default)
-  // embeds where cookies allow; "foxquilt" always redirects top-level
-  // (their CSP forbids framing) and ignores cob ids (chips still label the
-  // intake record).
+  // "next" (default) embeds where cookies allow; "foxquilt" too (both redirect
+  // top-level on iOS/Safari). Foxquilt chip ids ARE profession labels.
   provider?: "next" | "foxquilt";
   eyebrow: string;
   headline: string;
-  // One-liner under the headline (left column).
   pitch: string;
-  // Checkmark list, left column (desktop only).
   coverage: string[];
-  // Business-type chips -> Next COB ids (optional for the visitor).
   cobs: { label: string; id: string }[];
-  // Small helper line under the chips.
   chipsNote: string;
-  emailPlaceholder: string;
+  // Substantiated value line shown in the action card (Kevin-approved; the 94%
+  // is a real quote-record stat — keep the receipts for §349 substantiation).
+  savingsLine: string;
 };
 
 function fbq(...args: unknown[]) {
@@ -68,16 +61,7 @@ function fbq(...args: unknown[]) {
   (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq?.(...args);
 }
 
-function buildNextLink(email: string, cobId: string | null) {
-  let url = `${NEXT_BASE}&email=${encodeURIComponent(email)}`;
-  if (cobId) url += `&cob=${cobId}`;
-  return url;
-}
-
 function TeamQuoteCta() {
-  // Demoted from a big bordered button 2026-07-14 night: it out-competed the
-  // quote form for clicks (25 clicks, 0 bookings day one) and its Lead event
-  // was training ads toward non-converters. Custom event only now.
   return (
     <p className="text-sm text-[#6B6D71] text-center">
       Need more comprehensive coverage or prefer a person?{" "}
@@ -96,18 +80,16 @@ function TeamQuoteCta() {
 export default function QuoteSplash({ config }: { config: SplashConfig }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
 
-  // Step-0 capture form: we take the email ourselves BEFORE handing the
-  // visitor to Next, so an abandoned Next flow is still a lead we can work.
-  const [stage, setStage] = useState<"form" | "embed">("form");
-  const [email, setEmail] = useState("");
+  // Gate-free bridge: pick an (optional) business type, see the value, click
+  // through to the carrier. No email captured here — Next Copilot handles it.
+  const [stage, setStage] = useState<"bridge" | "embed">("bridge");
   const [cobId, setCobId] = useState<string | null>(null);
-  const [emailError, setEmailError] = useState(false);
   const [handoffLink, setHandoffLink] = useState(NEXT_BASE);
 
   // Safari (macOS + every iOS browser, incl. the Facebook in-app browser)
-  // blocks third-party cookies, and Next's app hard-fails inside an iframe
-  // without them. Those visitors are handed off top-level after the step-0
-  // form instead: Next becomes first-party, so session + attribution work.
+  // blocks third-party cookies, and the carrier apps hard-fail inside an
+  // iframe without them. Those visitors are handed off top-level instead:
+  // the carrier becomes first-party, so session + attribution work.
   const useEmbedRef = useRef(true);
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -119,94 +101,23 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     if (isIOS || isSafari) useEmbedRef.current = false;
   }, []);
 
-  // Abandoned step-0 capture: if a valid email was typed but the start button
-  // was never clicked, beacon it to the intake route on pagehide/tab-hide.
-  const emailRef = useRef("");
-  const cobIdRef = useRef<string | null>(null);
-  const submittedRef = useRef(false);
-  const abandonSentRef = useRef(false);
-  emailRef.current = email;
-  cobIdRef.current = cobId;
+  const selectChip = (id: string) => {
+    const next = cobId === id ? null : id;
+    setCobId(next);
+    if (next) fbq("trackCustom", "ChipSelect");
+  };
 
-  useEffect(() => {
-    const sendAbandonBeacon = () => {
-      if (submittedRef.current || abandonSentRef.current) return;
-      const cleaned = emailRef.current.trim().toLowerCase();
-      if (!EMAIL_RE.test(cleaned)) return;
-      const cobLabel = config.cobs.find((c) => c.id === cobIdRef.current)?.label;
-      const payload = JSON.stringify({
-        email: cleaned,
-        businessType: cobLabel ?? `${config.slug} (unspecified)`,
-        partial: true,
-        final: true,
-        source: `${config.slug}-splash-abandoned`,
-      });
-      const queued = navigator.sendBeacon(
-        "/api/intake",
-        new Blob([payload], { type: "application/json" }),
-      );
-      if (queued) {
-        abandonSentRef.current = true;
-        // Custom pixel event only — abandons stay OUT of the Lead signal so
-        // ads keep optimizing on intentional quote-starts. This builds the
-        // retargeting pool of typed-but-didn't-start visitors.
-        fbq("trackCustom", "SplashAbandonEmail");
-      }
-    };
-
-    const onVisibility = () => {
-      if (document.visibilityState === "hidden") sendAbandonBeacon();
-    };
-    window.addEventListener("pagehide", sendAbandonBeacon);
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => {
-      window.removeEventListener("pagehide", sendAbandonBeacon);
-      document.removeEventListener("visibilitychange", onVisibility);
-    };
-  }, [config.slug, config.cobs]);
-
-  const handleStart = () => {
-    const cleaned = email.trim().toLowerCase();
-    if (!EMAIL_RE.test(cleaned)) {
-      setEmailError(true);
-      return;
-    }
-    setEmailError(false);
-    submittedRef.current = true;
-
-    const cobLabel = config.cobs.find((c) => c.id === cobId)?.label;
-
-    // Fire-and-forget: the handoff must never wait on (or break from) our
-    // backend. The intake route emails quotes@ before any DB work.
-    try {
-      fetch("/api/intake", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: cleaned,
-          businessType: cobLabel ?? `${config.slug} (unspecified)`,
-          source: `${config.slug}-splash-${config.provider ?? "next"}-handoff`,
-        }),
-        keepalive: true,
-      }).catch(() => {});
-    } catch {
-      // ignore — never block the visitor's path to a quote
-    }
-
-    // Email in hand = the lead moment. Dwell/click events below are custom
-    // signals only, so standard Lead fires once per visitor path.
+  const handleGetQuote = () => {
+    // The handoff click IS the conversion now (no email gate). Standard Lead
+    // fires here so ads optimize on intent-to-quote; QuoteHandoffClick is the
+    // named custom mirror for reporting.
     fbq("track", "Lead");
-    fbq("trackCustom", "QuoteStartEmail");
+    fbq("trackCustom", "QuoteHandoffClick");
 
-    // For Foxquilt pages, chip ids ARE their profession labels. NOTE: the
-    // Foxquilt embed works only because their frame-ancestors header is
-    // malformed and browsers ignore it (Kevin's call 2026-07-14: embed
-    // anyway). If their frames ever go blank, they fixed the header — flip
-    // Foxquilt pages back to always-link-out.
     const link =
       config.provider === "foxquilt"
         ? buildFoxquiltLink(cobId)
-        : buildNextLink(cleaned, cobId);
+        : buildNextLink(cobId);
     if (useEmbedRef.current) {
       setHandoffLink(link);
       setStage("embed");
@@ -215,11 +126,9 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     }
   };
 
-  // Next's quote flow is a cross-origin Angular SPA: no step URLs, no
-  // postMessage step events, so real form progress is unobservable. Focus
-  // dwell time is the proxy. All custom events (standard Lead already fired
-  // at step-0 submit): first click -> NextQuoteClick, 45s -> NextQuoteDwell,
-  // 3min -> NextQuoteDeep.
+  // Carrier flows are cross-origin SPAs: no step URLs, no postMessage step
+  // events, so real form progress is unobservable. Focus dwell time is the
+  // proxy: first click -> NextQuoteClick, 45s -> NextQuoteDwell, 3min -> Deep.
   useEffect(() => {
     const fired = { click: false, dwell: false, deep: false };
     let accumulatedMs = 0;
@@ -254,9 +163,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
       }
       for (const at of [DWELL_AT_MS, DEEP_AT_MS]) {
         const wait = at - accumulatedMs;
-        if (wait > 0) {
-          timers.push(setTimeout(() => fireForDwell(at), wait));
-        }
+        if (wait > 0) timers.push(setTimeout(() => fireForDwell(at), wait));
       }
     };
 
@@ -287,6 +194,9 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     };
   }, []);
 
+  const carrierName =
+    config.provider === "foxquilt" ? "Foxquilt" : "Next Insurance";
+
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-slate-200">
@@ -299,7 +209,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
 
       <section className="flex-1">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 lg:py-8 grid lg:grid-cols-[2fr_3fr] gap-x-10 gap-y-4 items-start">
-          {/* Left column: pitch (beside the form on desktop, above on mobile) */}
+          {/* Left column: pitch (beside the card on desktop, above on mobile) */}
           <div className="lg:pt-4">
             <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-1.5">
               {config.eyebrow}
@@ -335,27 +245,32 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
             </div>
           </div>
 
-          {/* Right column: step-0 email capture, then the Next quote flow */}
+          {/* Right column: value bridge card, then the carrier quote flow */}
           <div>
-            {stage === "form" ? (
+            {stage === "bridge" ? (
               <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <h2 className="text-xl font-extrabold text-[#131517] mb-1">
-                  Start your instant quote
+                <h2 className="text-xl font-extrabold text-[#131517] mb-3">
+                  Get your instant quote
                 </h2>
-                <p className="text-sm text-[#6B6D71] mb-5">
-                  Owners save about 15-25% on average.
-                </p>
+
+                <div className="rounded-lg bg-[#EEF1FF] px-4 py-3 mb-6">
+                  <p className="text-[15px] font-semibold text-[#27455C] leading-snug">
+                    {config.savingsLine}
+                  </p>
+                </div>
 
                 <div className="text-sm font-semibold text-[#27455C] mb-2">
                   What kind of business do you run?{" "}
-                  <span className="font-normal text-[#6B6D71]">(optional)</span>
+                  <span className="font-normal text-[#6B6D71]">
+                    (helps us tailor your quote)
+                  </span>
                 </div>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {config.cobs.map((c) => (
                     <button
                       key={c.id}
                       type="button"
-                      onClick={() => setCobId(cobId === c.id ? null : c.id)}
+                      onClick={() => selectChip(c.id)}
                       className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
                         cobId === c.id
                           ? "border-[#2040E7] bg-[#2040E7] text-white"
@@ -366,52 +281,25 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-[#6B6D71] mb-5">{config.chipsNote}</p>
-
-                <label
-                  htmlFor="quote-email"
-                  className="block text-sm font-semibold text-[#27455C] mb-2"
-                >
-                  Email address
-                </label>
-                <input
-                  id="quote-email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleStart();
-                  }}
-                  placeholder={config.emailPlaceholder}
-                  className={`w-full px-4 py-3 rounded-md border text-base text-[#131517] outline-none focus:border-[#2040E7] mb-1 ${
-                    emailError ? "border-red-500" : "border-slate-300"
-                  }`}
-                />
-                {emailError && (
-                  <p className="text-sm text-red-600 mb-1">
-                    Please enter a valid email address.
-                  </p>
-                )}
-                <p className="text-xs text-[#6B6D71] mb-4">
-                  We&apos;ll only use this to help with your quote.
-                </p>
+                <p className="text-xs text-[#6B6D71] mb-6">{config.chipsNote}</p>
 
                 <button
                   type="button"
-                  onClick={handleStart}
+                  onClick={handleGetQuote}
                   className="w-full text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
                 >
-                  Start my instant quote →
+                  Get my instant quote →
                 </button>
+                <p className="text-xs text-[#6B6D71] text-center mt-3">
+                  About 10 minutes, online. No obligation - instant quote
+                  through our partner {carrierName}.
+                </p>
               </div>
             ) : (
               <>
                 {/* overflow-hidden + negative top margin crops the carrier's
                     header bar out of view (cross-origin, so CSS can't reach
-                    in). Next's co-brand bar is ~88px; Foxquilt's header is
-                    left uncropped. */}
+                    in). Next's co-brand bar is ~88px; Foxquilt's is uncropped. */}
                 <div className="rounded-xl border border-slate-200 shadow-sm overflow-hidden mb-2">
                   <iframe
                     ref={frameRef}
@@ -427,9 +315,8 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                   />
                 </div>
                 <p className="text-sm text-[#6B6D71]">
-                  Instant quotes provided by{" "}
-                  {config.provider === "foxquilt" ? "Foxquilt" : "Next Insurance"}{" "}
-                  through our partnership.{" "}
+                  Instant quotes provided by {carrierName} through our
+                  partnership.{" "}
                   <a
                     href={handoffLink}
                     target="_blank"
@@ -444,7 +331,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
             )}
           </div>
 
-          {/* Mobile-only team path below the form */}
+          {/* Mobile-only team path below the card */}
           <div className="lg:hidden mt-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 h-px bg-slate-200" />

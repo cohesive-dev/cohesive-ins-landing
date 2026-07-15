@@ -21,7 +21,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Lawn care, grounds maintenance, and snow removal all work.",
-  "emailPlaceholder": "you@yourcompany.com"
+  "savingsLine": "Landscaping businesses typically save 10–25%. 94% of the businesses we quote beat their current rate."
 };
 
 export default function Page() {

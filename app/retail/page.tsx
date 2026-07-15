@@ -25,7 +25,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Most shops fall under Retail Store - pick whichever is closest.",
-  "emailPlaceholder": "you@yourshop.com"
+  "savingsLine": "Retail shops typically save 10–25%. 94% of the businesses we quote beat their current rate."
 };
 
 export default function Page() {

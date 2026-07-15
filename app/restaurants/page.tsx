@@ -34,7 +34,7 @@ const config: SplashConfig = {
     }
   ],
   "chipsNote": "Delis, pizzerias, quick-service, dine-in, and most other food service all fall under Restaurant.",
-  "emailPlaceholder": "you@yourrestaurant.com"
+  "savingsLine": "Restaurants typically save 10–25%. 94% of the businesses we quote beat their current rate."
 };
 
 export default function Page() {
