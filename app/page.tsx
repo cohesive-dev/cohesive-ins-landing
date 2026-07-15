@@ -1155,7 +1155,7 @@ function Footer() {
         src="/logo.png"
         alt=""
         aria-hidden="true"
-        className="absolute pointer-events-none select-none inset-y-0 -left-10 -top-5 h-[calc(100%+40px)] w-auto object-contain brightness-0 invert opacity-[0.07]"
+        className="absolute pointer-events-none select-none inset-y-0 left-1/2 -translate-x-1/2 -top-5 md:left-[-2.5rem] md:translate-x-0 h-[calc(100%+40px)] w-auto object-contain brightness-0 invert opacity-[0.07]"
       />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
@@ -1194,12 +1194,12 @@ function Footer() {
           </div>
         </div>
 
-        <div className="pt-8 md:w-1/2 md:mr-auto">
+        <div className="pt-8 md:w-1/2 md:ml-auto">
           <div className="h-px w-full bg-white/20 mb-6" />
-          <p className="text-xs md:text-left">
+          <p className="text-xs md:text-right">
             © 2026 Cohesive Insurance Services. All rights reserved.
           </p>
-          <p className="text-xs md:text-left mt-1 text-white/60">
+          <p className="text-xs md:text-right mt-1 text-white/60">
             NY Insurance Broker License #BR-1983645
           </p>
         </div>
