@@ -18,7 +18,7 @@ const config: SplashConfig = {
     {
       "label": "Fitness studio",
       "id": "111700",
-      "recentBind": { "label": "Fitness Studio BOP", "price": "$2,863/yr" }
+      "recentBind": { "label": "Gym / Fitness Studio", "price": "$86/mo" }
     }
   ],
   "chipsNote": "Yoga, pilates, and most instructors fall under Personal Trainer.",
