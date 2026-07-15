@@ -347,7 +347,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
           <div className="order-1 lg:order-2">
             {stage === "bridge" ? (
               <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <h2 className="text-xl font-extrabold text-[#2040E7] mb-4">
+                <h2 className="text-xl font-extrabold text-[#131517] mb-4">
                   Are you overpaying? See your price.
                 </h2>
 
