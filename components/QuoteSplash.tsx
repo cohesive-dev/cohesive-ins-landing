@@ -75,28 +75,22 @@ function buildNextLink(email: string, cobId: string | null) {
 }
 
 function TeamQuoteCta() {
+  // Demoted from a big bordered button 2026-07-14 night: it out-competed the
+  // quote form for clicks (25 clicks, 0 bookings day one) and its Lead event
+  // was training ads toward non-converters. Custom event only now.
   return (
-    <div className="flex flex-col gap-3">
+    <p className="text-sm text-[#6B6D71] text-center">
+      Need comprehensive coverage (workers&apos; comp, umbrella) or prefer a
+      person?{" "}
       <a
         href={CAL_LINK}
-        onClick={() => {
-          fbq("track", "Lead");
-          fbq("trackCustom", "CalBookingClick");
-        }}
-        className="w-full text-center px-6 py-4 rounded-md border-2 border-[#2040E7] text-[#2040E7] text-base font-bold hover:bg-[#EEF1FF] transition-colors"
+        onClick={() => fbq("trackCustom", "CalBookingClick")}
+        className="underline font-semibold text-[#2040E7] hover:text-[#1A33B9]"
       >
-        Need comprehensive coverage? Book a time with our team
+        Book a time with our team
       </a>
-      <p className="text-sm text-[#6B6D71] text-center">
-        Workers&apos; comp, disability, umbrella, and everything else your
-        business needs - we shop multiple carriers and a real person picks up.
-      </p>
-      <p className="text-sm text-[#6B6D71] text-center">
-        Renewal months away? Ask about switching early - most policies refund
-        the unused premium, and we time the move so you&apos;re never
-        double-covered or exposed.
-      </p>
-    </div>
+      .
+    </p>
   );
 }
 
