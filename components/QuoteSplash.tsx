@@ -312,10 +312,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
           {/* Left column: pitch. On mobile it drops BELOW the card (order-2) so
               the interactive chips are the first thing seen; desktop restores. */}
           <div className="order-2 lg:order-1 lg:pt-4">
-            <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-1.5">
-              {config.eyebrow}
-            </div>
-            <h1 className="text-2xl lg:text-4xl font-extrabold text-[#131517] leading-tight mb-2">
+            <h1 className="text-2xl lg:text-4xl font-extrabold text-[#2040E7] leading-tight mb-2">
               {config.headline}
             </h1>
             <p className="text-sm lg:text-base text-[#6B6D71] leading-relaxed mb-3">
@@ -350,7 +347,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
           <div className="order-1 lg:order-2">
             {stage === "bridge" ? (
               <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <h2 className="text-xl font-extrabold text-[#131517] mb-4">
+                <h2 className="text-xl font-extrabold text-[#2040E7] mb-4">
                   Are you overpaying? See your price.
                 </h2>
 
