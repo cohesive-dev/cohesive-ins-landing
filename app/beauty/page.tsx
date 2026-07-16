@@ -32,7 +32,7 @@ const config: SplashConfig = {
       "id": "100021"
     }
   ],
-  "chipsNote": "Booth renters and salon owners both work - pick whichever is closest.",
+  "chipsNote": "Own a salon? Choose Hair stylist or Nail technician - whichever fits best. Booth renters and owners both work.",
   "savingsLine": "Salons typically save 10–25%."
 };
 
