@@ -28,10 +28,6 @@ const config: SplashConfig = {
       "recentBind": { "label": "Barber GL", "price": "$12/mo" }
     },
     {
-      "label": "Beauty salon",
-      "id": "111715"
-    },
-    {
       "label": "Esthetician",
       "id": "100021"
     }
