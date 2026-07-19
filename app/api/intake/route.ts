@@ -1,7 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { sendIntakeNotification } from "@/lib/notify";
-import { resolveAccountWebsite } from "@/lib/domains";
+
+// This route no longer owns lead storage. A completed submission is forwarded to the CRM's
+// inbound-lead webhook, which is the single fan-out point for every lead source (FB Lead Ads,
+// SmartFinancial, Benepath, and this form): it upserts Contact/Account/Policy, posts the Slack
+// lead card, enrolls the lead in the Smartlead inbound campaign, and sends the first-touch SMS.
+//
+// Partial autosaves and the abandonment beacon deliberately do NOT go to the CRM — that fan-out
+// texts and emails the lead, which must not happen to someone who is still typing or who never
+// submitted. Those keep the local quotes@ alert as their only signal.
+
+const CRM_BASE_URL = process.env.CRM_BASE_URL ?? "https://crm.cohesiveinsure.com";
+const CRM_INBOUND_LEAD_URL = `${CRM_BASE_URL}/api/webhooks/inbound-lead`;
 
 type IntakePayload = {
   name?: unknown;
@@ -19,21 +29,13 @@ const asTrimmedString = (value: unknown): string | undefined =>
     ? value.trim()
     : undefined;
 
-function splitName(name: string | undefined) {
-  if (!name) return { firstName: undefined, lastName: undefined };
-  const parts = name.split(/\s+/);
-  const firstName = parts.shift();
-  const lastName = parts.length > 0 ? parts.join(" ") : undefined;
-  return { firstName, lastName };
-}
-
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 const E164_RE = /^\+[1-9]\d{7,14}$/;
 
-// Store phones in E.164 so the (email, phone) upsert key can't fragment on
-// formatting and downstream tools (OpenPhone, Smartlead, CRM) match exactly.
-// US-biased: bare 10 digits get +1. Invalid or partial values are omitted so a
-// non-E.164 phone can never reach the database.
+// Normalize to E.164 so the CRM's (email, phone) upsert key can't fragment on formatting and
+// downstream tools (OpenPhone, Smartlead) match exactly. US-biased: bare 10 digits get +1.
+// A value that won't normalize is still forwarded raw — the CRM standardizes again on its side,
+// and a typo'd-but-real number must never be silently dropped.
 function toE164(raw: string | undefined): string | undefined {
   if (!raw) return undefined;
   const digits = raw.replace(/\D/g, "");
@@ -49,6 +51,31 @@ function toE164(raw: string | undefined): string | undefined {
   else if (raw.startsWith("+")) candidate = `+${digits}`;
 
   return candidate && E164_RE.test(candidate) ? candidate : undefined;
+}
+
+async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
+  try {
+    const response = await fetch(CRM_INBOUND_LEAD_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "webform", ...payload }),
+      // The browser call is fire-and-forget, so a hung CRM would otherwise pin this
+      // function open until the platform timeout.
+      signal: AbortSignal.timeout(10_000),
+    });
+    if (!response.ok) {
+      console.error(
+        "CRM inbound-lead rejected the submission",
+        response.status,
+        await response.text().catch(() => ""),
+      );
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error("CRM inbound-lead request failed", error);
+    return false;
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -68,17 +95,16 @@ export async function POST(request: NextRequest) {
   // Partial saves may carry a half-typed email; only use it once it parses.
   const email = rawEmail && EMAIL_RE.test(rawEmail) ? rawEmail : undefined;
 
-  const { firstName, lastName } = splitName(asTrimmedString(body.name));
+  const name = asTrimmedString(body.name);
   const rawPhone = asTrimmedString(body.phone);
-  // DB writes only ever get the E.164 value; the raw string still counts as
-  // reachable and rides along in the quotes@ alert so a typo'd-but-real
-  // number is never silently dropped (zero-miss rule below).
-  const phone = toE164(rawPhone);
-  const reachable = Boolean(email || phone || rawPhone);
+  const phone = toE164(rawPhone) ?? rawPhone;
+  const businessType = asTrimmedString(body.businessType);
+  const zip = asTrimmedString(body.zip);
+  const source = asTrimmedString(body.source);
 
-  // Minimum to accept a submission: some way to reach the person. Phone-only
-  // submissions are valid leads — they just skip the email-keyed Contact
-  // upsert below and live in the quotes@ alert until the CRM ingests by phone.
+  // Minimum to accept a submission: some way to reach the person. Phone-only submissions are
+  // valid leads — the CRM keys those on phone alone.
+  const reachable = Boolean(email || phone);
   if (!isPartial && !reachable) {
     return NextResponse.json(
       { error: "An `email` or `phone` is required" },
@@ -86,103 +112,58 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // ZERO-MISS RULE: the quotes@ email is the system of record — send it BEFORE
-  // any database work so a DB failure can never lose a lead. (2026-07-09
-  // incident: Account-upsert failures 500'd and silently dropped real
-  // submissions while the pixel kept counting them.)
-  if ((!isPartial || isFinal) && reachable) {
+  // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
+  if (isPartial) {
+    if (isFinal && reachable) {
+      await sendIntakeNotification({
+        name,
+        email,
+        phone,
+        businessType,
+        zip,
+        partial: true,
+        source,
+      });
+    }
+    return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
+  }
+
+  // `source` is a page label (e.g. "restaurants-splash-next-handoff"), not a per-lead id, so it
+  // must not go through as providerId — the CRM builds its Activity dedupe key from it, and a
+  // shared value would collapse every lead from that page into one Activity. Omitting it lets the
+  // CRM fall back to contact.id; the label rides along in the description instead, where it shows
+  // up in the Activity notes and the Slack lead card.
+  const description = [businessType, source ? `via ${source}` : undefined]
+    .filter(Boolean)
+    .join(" — ");
+
+  const forwarded = await forwardToCrm({
+    ...(name ? { name } : {}),
+    ...(email ? { email } : {}),
+    ...(phone ? { phone } : {}),
+    ...(description ? { business_type: description } : {}),
+    ...(zip ? { zip } : {}),
+  });
+
+  // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
+  // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
+  // fall back to the quotes@ alert so a real lead still lands somewhere a human reads.
+  // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
+  // the pixel kept counting them.)
+  if (!forwarded) {
     await sendIntakeNotification({
-      name: asTrimmedString(body.name),
+      name,
       email,
-      phone: phone ?? rawPhone,
-      businessType: asTrimmedString(body.businessType),
-      zip: asTrimmedString(body.zip),
-      partial: isPartial,
-      source: asTrimmedString(body.source),
+      phone,
+      businessType,
+      zip,
+      partial: false,
+      source,
     });
   }
 
-  let contact = null;
-  let account = null;
-  let dbSaved = true;
-  try {
-    if (email && !isPartial) {
-      const domain = resolveAccountWebsite(null, email);
-      const result = await prisma.$transaction(async (tx) => {
-        const contact = await tx.contact.upsert({
-          where: {
-            contact_primary_email_phone_idx: {
-              primaryEmail: email,
-              primaryPhone: phone ?? "",
-            },
-          },
-          create: {
-            primaryEmail: email,
-            emails: [email],
-            firstName,
-            lastName,
-            primaryPhone: phone,
-            phoneNumbers: phone ? [phone] : [],
-          },
-          update: {
-            ...(firstName !== undefined && { firstName }),
-            ...(lastName !== undefined && { lastName }),
-            ...(phone !== undefined && { primaryPhone: phone }),
-          },
-        });
-
-        const account = await tx.account.upsert({
-          where: { domain },
-          create: { name: domain, domain },
-          update: {},
-        });
-
-        await tx.accountContact.upsert({
-          where: {
-            accountId_contactId: {
-              accountId: account.id,
-              contactId: contact.id,
-            },
-          },
-          create: { accountId: account.id, contactId: contact.id },
-          update: {},
-        });
-
-        return { contact, account };
-      });
-      contact = result.contact;
-      account = result.account;
-    } else if (email) {
-      // Partial autosave: Contact only — no Account until they actually submit.
-      contact = await prisma.contact.upsert({
-        where: {
-          contact_primary_email_phone_idx: {
-            primaryEmail: email,
-            primaryPhone: phone ?? "",
-          },
-        },
-        create: {
-          primaryEmail: email,
-          emails: [email],
-          firstName,
-          lastName,
-          primaryPhone: phone,
-          phoneNumbers: phone ? [phone] : [],
-        },
-        update: {
-          ...(firstName !== undefined && { firstName }),
-          ...(lastName !== undefined && { lastName }),
-          ...(phone !== undefined && { primaryPhone: phone }),
-        },
-      });
-    }
-
-  } catch (error) {
-    // The lead is already safe in quotes@ — log loudly, respond 200 so the
-    // client-side flow (and partial autosaves) never treat this as fatal.
-    dbSaved = false;
-    console.error("Intake DB write failed (lead preserved via email)", error);
-  }
-
-  return NextResponse.json({ contact, account, dbSaved }, { status: 200 });
+  return NextResponse.json(
+    { ok: true, crm: forwarded ? "sent" : "failed" },
+    { status: 200 },
+  );
 }

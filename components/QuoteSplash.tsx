@@ -2,23 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Vertical splash template: a value BRIDGE (no email gate) → carrier self-serve
-// handoff. Rebuilt gate-free 2026-07-15 — the email-first gate killed
-// conversion (research + 2 days of ~0 captures). Next's Agent Copilot captures
-// partial quote-starters on its side, so we hand off frictionlessly and recover
-// via Copilot + follow-up instead of gating.
-//
-// `cob` pre-selects the class of business and skips Next's work-type question
-// (ids from /api/cobs-search); it survives the track.nextinsurance.com redirect.
 const NEXT_BASE =
   "https://track.nextinsurance.com/links?agent_affiliation=OUqiHM5BPdbYGtN6&serial=992855993&channel=affiliation";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 
-// Foxquilt broker-attributed self-serve link (agencyBrokerId/partnercode =
-// Kevin's book). `&profession=<exact option label>` pre-fills their page-2
-// profession field. Embed works today only because their frame-ancestors CSP
-// header is malformed and browsers ignore it (Kevin's call: embed anyway).
 const FOXQUILT_BASE =
   "https://join.foxquilt.com/2022-06-30/?agencyBrokerId=6a4d7c5f03e2e937813ffbf1&partnercode=FC+-+Kevin+Zhang&brokerCode=FQAGT&agencyId=6a4d7c5f03e2e937813ffbef";
 
@@ -44,19 +32,11 @@ export type SplashConfig = {
   coverage: string[];
   cobs: { label: string; id: string }[];
   chipsNote: string;
-  // Substantiated value line shown in the action card (Kevin-approved; the 94%
-  // is a real quote-record stat — keep the receipts for §349 substantiation).
   savingsLine: string;
-  // Real recently-bound policies (social proof). Each is a genuine bind through
-  // our Next link — factual, not extrapolated. Only set where we have real data.
   recentBinds?: { label: string; price: string }[];
 };
 
 function fbq(...args: unknown[]) {
-  // Never fire pixel events from localhost/LAN/preview, or from automated
-  // browsers (Playwright/Selenium set navigator.webdriver) — dev and testing
-  // must not pollute ad metrics. Meta attributes via IP matching too, so even
-  // fresh automated browsers on PROD polluted the campaign (2026-07-14).
   if (typeof window !== "undefined") {
     if (!/(^|\.)cohesiveinsure\.com$/.test(window.location.hostname)) return;
     if (navigator.webdriver) return;
@@ -82,17 +62,10 @@ function TeamQuoteCta() {
 
 export default function QuoteSplash({ config }: { config: SplashConfig }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
-
-  // Gate-free bridge: pick an (optional) business type, see the value, click
-  // through to the carrier. No email captured here — Next Copilot handles it.
   const [stage, setStage] = useState<"bridge" | "embed">("bridge");
   const [cobId, setCobId] = useState<string | null>(null);
   const [handoffLink, setHandoffLink] = useState(NEXT_BASE);
 
-  // Safari (macOS + every iOS browser, incl. the Facebook in-app browser)
-  // blocks third-party cookies, and the carrier apps hard-fail inside an
-  // iframe without them. Those visitors are handed off top-level instead:
-  // the carrier becomes first-party, so session + attribution work.
   const useEmbedRef = useRef(true);
   useEffect(() => {
     const ua = navigator.userAgent;
@@ -129,9 +102,6 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     }
   };
 
-  // Carrier flows are cross-origin SPAs: no step URLs, no postMessage step
-  // events, so real form progress is unobservable. Focus dwell time is the
-  // proxy: first click -> NextQuoteClick, 45s -> NextQuoteDwell, 3min -> Deep.
   useEffect(() => {
     const fired = { click: false, dwell: false, deep: false };
     let accumulatedMs = 0;
@@ -293,11 +263,10 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                       key={c.id}
                       type="button"
                       onClick={() => selectChip(c.id)}
-                      className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${
-                        cobId === c.id
-                          ? "border-[#2040E7] bg-[#2040E7] text-white"
-                          : "border-slate-300 text-[#27455C] hover:border-[#2040E7]"
-                      }`}
+                      className={`px-3 py-1.5 rounded-full border text-sm font-semibold transition-colors ${cobId === c.id
+                        ? "border-[#2040E7] bg-[#2040E7] text-white"
+                        : "border-slate-300 text-[#27455C] hover:border-[#2040E7]"
+                        }`}
                     >
                       {c.label}
                     </button>
