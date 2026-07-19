@@ -14,27 +14,26 @@ const config: SplashConfig = {
   "cobs": [
     {
       "label": "Nail technician",
-      "id": "100027"
+      "id": "100027",
+      "recentBind": { "label": "Nail Technician GL", "price": "$11/mo" }
     },
     {
       "label": "Hair stylist",
-      "id": "100025"
+      "id": "100025",
+      "recentBind": { "label": "Hair Stylist GL", "price": "$12/mo" }
     },
     {
       "label": "Barber",
-      "id": "100024"
-    },
-    {
-      "label": "Beauty salon",
-      "id": "111715"
+      "id": "100024",
+      "recentBind": { "label": "Barber GL", "price": "$12/mo" }
     },
     {
       "label": "Esthetician",
       "id": "100021"
     }
   ],
-  "chipsNote": "Booth renters and salon owners both work - pick whichever is closest.",
-  "savingsLine": "Salons typically save 10–25%. 94% of the businesses we quote beat their current rate."
+  "chipsNote": "Own a salon? Choose Hair stylist or Nail technician - whichever fits best. Booth renters and owners both work.",
+  "savingsLine": "Salons typically save 10–25%."
 };
 
 export default function Page() {

@@ -16,8 +16,13 @@ function buildFoxquiltLink(professionLabel: string | null) {
     : FOXQUILT_BASE;
 }
 
-function buildNextLink(cobId: string | null) {
-  return cobId ? `${NEXT_BASE}&cob=${cobId}` : NEXT_BASE;
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+function buildNextLink(cobId: string | null, email?: string) {
+  let url = NEXT_BASE;
+  if (email) url += `&email=${encodeURIComponent(email)}`;
+  if (cobId) url += `&cob=${cobId}`;
+  return url;
 }
 
 export type SplashConfig = {
@@ -30,10 +35,23 @@ export type SplashConfig = {
   headline: string;
   pitch: string;
   coverage: string[];
-  cobs: { label: string; id: string }[];
+  // Each chip carries its own per-industry savings line + optional real
+  // recently-bound policy — both revealed when the chip is picked (the reveal
+  // is the interaction). recentBind is a genuine bind through our Next link
+  // (factual, §349-substantiated); only set where we have real data.
+  cobs: {
+    label: string;
+    id: string;
+    savings?: string;
+    recentBind?: { label: string; price: string };
+  }[];
   chipsNote: string;
-  savingsLine: string;
   recentBinds?: { label: string; price: string }[];
+  // Default savings line for chips that don't carry their own.
+  savingsLine: string;
+  // A/B: when true, capture the visitor's email before handoff (the "gate"
+  // arm). Default/false = frictionless gate-free handoff.
+  captureEmail?: boolean;
 };
 
 function fbq(...args: unknown[]) {
@@ -65,6 +83,10 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
   const [stage, setStage] = useState<"bridge" | "embed">("bridge");
   const [cobId, setCobId] = useState<string | null>(null);
   const [handoffLink, setHandoffLink] = useState(NEXT_BASE);
+  // Email-capture mode (config.captureEmail = the A/B "gate" arm). Unused when
+  // gate-free.
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState(false);
 
   const useEmbedRef = useRef(true);
   useEffect(() => {
@@ -83,9 +105,86 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     if (next) fbq("trackCustom", "ChipSelect");
   };
 
+  // Abandoned-capture beacon (gate arm only): a valid email typed but the
+  // handoff never clicked → beacon to intake on pagehide/tab-hide so the lead
+  // isn't lost.
+  const emailRef = useRef("");
+  const cobIdRef = useRef<string | null>(null);
+  const submittedRef = useRef(false);
+  const abandonSentRef = useRef(false);
+  emailRef.current = email;
+  cobIdRef.current = cobId;
+
+  useEffect(() => {
+    if (!config.captureEmail) return;
+    const sendAbandon = () => {
+      if (submittedRef.current || abandonSentRef.current) return;
+      const cleaned = emailRef.current.trim().toLowerCase();
+      if (!EMAIL_RE.test(cleaned)) return;
+      const cobLabel = config.cobs.find((c) => c.id === cobIdRef.current)?.label;
+      const ok = navigator.sendBeacon(
+        "/api/intake",
+        new Blob(
+          [
+            JSON.stringify({
+              email: cleaned,
+              businessType: cobLabel ?? `${config.slug} (unspecified)`,
+              partial: true,
+              final: true,
+              source: `${config.slug}-splash-abandoned`,
+            }),
+          ],
+          { type: "application/json" },
+        ),
+      );
+      if (ok) {
+        abandonSentRef.current = true;
+        fbq("trackCustom", "SplashAbandonEmail");
+      }
+    };
+    const onVis = () => {
+      if (document.visibilityState === "hidden") sendAbandon();
+    };
+    window.addEventListener("pagehide", sendAbandon);
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener("pagehide", sendAbandon);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, [config.captureEmail, config.slug, config.cobs]);
+
   const handleGetQuote = () => {
-    // The handoff click IS the conversion now (no email gate). Standard Lead
-    // fires here so ads optimize on intent-to-quote; QuoteHandoffClick is the
+    let captured: string | undefined;
+
+    // A/B "gate" arm: require + capture the email before handoff (we OWN the
+    // lead — quotes@ + CRM + follow-up). Only when config.captureEmail.
+    if (config.captureEmail) {
+      const cleaned = email.trim().toLowerCase();
+      if (!EMAIL_RE.test(cleaned)) {
+        setEmailError(true);
+        return;
+      }
+      setEmailError(false);
+      submittedRef.current = true;
+      captured = cleaned;
+      const cobLabel = config.cobs.find((c) => c.id === cobId)?.label;
+      try {
+        fetch("/api/intake", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: cleaned,
+            businessType: cobLabel ?? `${config.slug} (unspecified)`,
+            source: `${config.slug}-splash-${config.provider ?? "next"}-handoff`,
+          }),
+          keepalive: true,
+        }).catch(() => { });
+      } catch {
+        // never block the handoff on our backend
+      }
+    }
+
+    // Standard Lead fires on handoff either way; QuoteHandoffClick is the
     // named custom mirror for reporting.
     fbq("track", "Lead");
     fbq("trackCustom", "QuoteHandoffClick");
@@ -93,7 +192,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
     const link =
       config.provider === "foxquilt"
         ? buildFoxquiltLink(cobId)
-        : buildNextLink(cobId);
+        : buildNextLink(cobId, captured);
     if (useEmbedRef.current) {
       setHandoffLink(link);
       setStage("embed");
@@ -170,6 +269,9 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
   const carrierName =
     config.provider === "foxquilt" ? "Foxquilt" : "Next Insurance";
 
+  // The picked business type — its savings + recentBind are revealed on select.
+  const selected = config.cobs.find((c) => c.id === cobId) ?? null;
+
   return (
     <main className="min-h-screen bg-white flex flex-col">
       <header className="border-b border-slate-200">
@@ -182,12 +284,10 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
 
       <section className="flex-1">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 lg:py-8 grid lg:grid-cols-[2fr_3fr] gap-x-10 gap-y-4 items-start">
-          {/* Left column: pitch (beside the card on desktop, above on mobile) */}
-          <div className="lg:pt-4">
-            <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-1.5">
-              {config.eyebrow}
-            </div>
-            <h1 className="text-2xl lg:text-4xl font-extrabold text-[#131517] leading-tight mb-2">
+          {/* Left column: pitch. On mobile it drops BELOW the card (order-2) so
+              the interactive chips are the first thing seen; desktop restores. */}
+          <div className="order-2 lg:order-1 lg:pt-4">
+            <h1 className="text-2xl lg:text-4xl font-extrabold text-[#2040E7] leading-tight mb-2">
               {config.headline}
             </h1>
             <p className="text-sm lg:text-base text-[#6B6D71] leading-relaxed mb-3">
@@ -218,44 +318,16 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
             </div>
           </div>
 
-          {/* Right column: value bridge card, then the carrier quote flow */}
-          <div>
+          {/* Right column: value bridge card. order-1 on mobile = shown first. */}
+          <div className="order-1 lg:order-2">
             {stage === "bridge" ? (
               <div className="rounded-xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <h2 className="text-xl font-extrabold text-[#131517] mb-3">
-                  Get your instant quote
+                <h2 className="text-xl font-extrabold text-[#131517] mb-4">
+                  Are you overpaying? See your price.
                 </h2>
 
-                <div className="rounded-lg bg-[#EEF1FF] px-4 py-3 mb-4">
-                  <p className="text-[15px] font-semibold text-[#27455C] leading-snug">
-                    {config.savingsLine}
-                  </p>
-                </div>
-
-                {config.recentBinds && config.recentBinds.length > 0 && (
-                  <div className="mb-6">
-                    <div className="text-xs font-bold text-[#6B6D71] uppercase tracking-wide mb-2">
-                      Recently bound in NY
-                    </div>
-                    <ul className="space-y-1.5">
-                      {config.recentBinds.map((b) => (
-                        <li
-                          key={b.label}
-                          className="flex items-center justify-between text-sm border-b border-slate-100 pb-1.5"
-                        >
-                          <span className="text-[#27455C] font-medium">{b.label}</span>
-                          <span className="text-[#131517] font-bold">{b.price}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 <div className="text-sm font-semibold text-[#27455C] mb-2">
-                  What kind of business do you run?{" "}
-                  <span className="font-normal text-[#6B6D71]">
-                    (helps us tailor your quote)
-                  </span>
+                  What kind of business do you run?
                 </div>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {config.cobs.map((c) => (
@@ -272,18 +344,76 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                     </button>
                   ))}
                 </div>
-                <p className="text-xs text-[#6B6D71] mb-6">{config.chipsNote}</p>
+                <p className="text-xs text-[#6B6D71] mb-5">{config.chipsNote}</p>
+
+                {/* Reveal-on-select: a real recent bind price is the hero (the
+                    reward for engaging); the savings line supports it. */}
+                {selected ? (
+                  <div className="mb-6">
+                    {selected.recentBind ? (
+                      <>
+                        <div className="rounded-lg bg-[#EEF1FF] px-4 py-4 text-center mb-2">
+                          <div className="text-3xl font-extrabold text-[#2040E7] leading-none">
+                            {selected.recentBind.price}
+                          </div>
+                          <div className="text-xs text-[#6B6D71] mt-1.5">
+                            Recently bound - {selected.recentBind.label}
+                          </div>
+                        </div>
+                        <p className="text-[13px] text-[#27455C] text-center px-2">
+                          {selected.savings ?? config.savingsLine}
+                        </p>
+                      </>
+                    ) : (
+                      <div className="rounded-lg bg-[#EEF1FF] px-4 py-3">
+                        <p className="text-[15px] font-semibold text-[#27455C] leading-snug">
+                          {selected.savings ?? config.savingsLine}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-slate-300 px-4 py-3 mb-6 text-center">
+                    <p className="text-sm text-[#6B6D71]">
+                      Pick your business above to see your price.
+                    </p>
+                  </div>
+                )}
+
+                {config.captureEmail && (
+                  <div className="mb-3">
+                    <input
+                      id="quote-email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleGetQuote();
+                      }}
+                      placeholder="Email to see your price"
+                      className={`w-full px-4 py-3 rounded-md border text-base text-[#131517] outline-none focus:border-[#2040E7] ${emailError ? "border-red-500" : "border-slate-300"
+                        }`}
+                    />
+                    {emailError && (
+                      <p className="text-sm text-red-600 mt-1">
+                        Please enter a valid email address.
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 <button
                   type="button"
                   onClick={handleGetQuote}
                   className="w-full text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
                 >
-                  Get my instant quote →
+                  See your price →
                 </button>
-                <p className="text-xs text-[#6B6D71] text-center mt-3">
-                  About 10 minutes, online. No obligation - instant quote
-                  through our partner {carrierName}.
+                <p className="hidden lg:block text-xs text-[#6B6D71] text-center mt-3">
+                  Free to check - we compare our insurance partners to find you
+                  the lowest rate and the right coverage, in under 10 minutes.
                 </p>
               </div>
             ) : (
@@ -323,7 +453,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
           </div>
 
           {/* Mobile-only team path below the card */}
-          <div className="lg:hidden mt-4">
+          <div className="order-3 lg:hidden mt-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 h-px bg-slate-200" />
               <span className="text-xs font-semibold text-[#6B6D71] uppercase tracking-wide">

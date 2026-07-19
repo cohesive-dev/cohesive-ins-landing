@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation";
 // it there.
 const SPLASH_ROUTES = [
   "/restaurants",
+  "/restaurants-quote",
   "/cleaning",
   "/beauty",
   "/fitness",

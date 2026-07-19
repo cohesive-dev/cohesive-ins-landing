@@ -2,6 +2,7 @@ import QuoteSplash, { type SplashConfig } from "@/components/QuoteSplash";
 
 const config: SplashConfig = {
   "slug": "restaurants",
+  "captureEmail": true,
   "eyebrow": "For restaurants & food service",
   "headline": "Restaurant insurance, in minutes.",
   "pitch": "Buy online in about 10 minutes - COIs ready when your landlord asks.",
