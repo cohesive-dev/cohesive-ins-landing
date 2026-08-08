@@ -22,7 +22,24 @@ type IntakePayload = {
   partial?: unknown;
   final?: unknown;
   source?: unknown;
+  // Ordered [{label, value}] answers from a deep intake form (e.g. /church).
+  details?: unknown;
 };
+
+// Coerce an unknown `details` payload into a safe ordered [{label, value}].
+function sanitizeDetails(
+  raw: unknown,
+): Array<{ label: string; value: string }> | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: Array<{ label: string; value: string }> = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const label = asTrimmedString((item as Record<string, unknown>).label);
+    const value = asTrimmedString((item as Record<string, unknown>).value);
+    if (label && value) out.push({ label, value: value.slice(0, 500) });
+  }
+  return out.length > 0 ? out.slice(0, 40) : undefined;
+}
 
 const asTrimmedString = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim().length > 0
@@ -137,6 +154,10 @@ export async function POST(request: NextRequest) {
     .filter(Boolean)
     .join(" — ");
 
+  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
+  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
+  const details = sanitizeDetails(body.details);
+
   const forwarded = await forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
@@ -150,7 +171,10 @@ export async function POST(request: NextRequest) {
   // fall back to the quotes@ alert so a real lead still lands somewhere a human reads.
   // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
   // the pixel kept counting them.)
-  if (!forwarded) {
+  // Send quotes@ when the CRM forward failed (zero-miss) OR whenever a deep-form detail block
+  // exists — the CRM webhook only carries flat contact fields, so quotes@ is how the agent gets
+  // the quote-ready building answers even on a successful forward.
+  if (!forwarded || details) {
     await sendIntakeNotification({
       name,
       email,
@@ -159,6 +183,7 @@ export async function POST(request: NextRequest) {
       zip,
       partial: false,
       source,
+      details,
     });
   }
 

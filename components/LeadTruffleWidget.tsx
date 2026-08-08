@@ -15,6 +15,7 @@ const SPLASH_ROUTES = [
   "/retail",
   "/landscaping",
   "/painting",
+  "/religious",
 ];
 
 export default function LeadTruffleWidget() {

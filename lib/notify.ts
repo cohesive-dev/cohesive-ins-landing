@@ -26,6 +26,10 @@ export type IntakeNotification = {
   // Where the lead came from; "next-handoff" = the /restaurants step-0 form
   // that hands the visitor to Next Insurance's self-serve flow.
   source?: string;
+  // Extra structured answers from a deep intake form (e.g. the /church landing
+  // page's conditional questionnaire). Rendered as a readable block in the
+  // quotes@ email so the agent gets a quote-ready lead. Order-preserving.
+  details?: Array<{ label: string; value: string }>;
 };
 
 export async function sendIntakeNotification(
@@ -78,6 +82,13 @@ export async function sendIntakeNotification(
     `Phone: ${fields.phone ?? "(not provided)"}`,
     `Business type: ${fields.businessType ?? "(not provided)"}`,
     `ZIP: ${fields.zip ?? "(not provided)"}`,
+    ...(fields.details && fields.details.length > 0
+      ? [
+          ``,
+          `--- quote details ---`,
+          ...fields.details.map((d) => `${d.label}: ${d.value}`),
+        ]
+      : []),
     ...(fields.partial
       ? [
           ``,
