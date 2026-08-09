@@ -1,6 +1,13 @@
 "use client";
 
-import { cloneElement, isValidElement, useMemo, useState } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 /**
  * /religious — deep intake landing page for houses of worship (all faiths:
@@ -61,14 +68,30 @@ const HEATING: Option[] = [
   { label: "Not sure", value: "Not sure" },
 ];
 
+// Pathpoint rates construction class heavily (frame vs. masonry) and doesn't
+// derive it from the address — so we ask instead of assuming Joisted Masonry.
+const CONSTRUCTION: Option[] = [
+  { label: "Brick / stone / masonry", value: "Brick / stone / masonry" },
+  { label: "Wood frame", value: "Wood frame" },
+  { label: "Steel / metal", value: "Steel / metal" },
+  { label: "Mixed / not sure", value: "Mixed / not sure" },
+];
+
+const YES_NO: Option[] = [
+  { label: "Yes", value: "Yes" },
+  { label: "No", value: "No" },
+  { label: "Not sure", value: "Not sure" },
+];
+
 const WIND: Option[] = [
   { label: "Yes", value: "Yes" },
   { label: "No", value: "No" },
   { label: "Not sure", value: "Not sure" },
 ];
 
+// "Sprinklered" is asked as its own Y/N below (Pathpoint wants it explicit) so
+// it's intentionally not in this multi-select.
 const FIRE_SECURITY: string[] = [
-  "Sprinklers",
   "Monitored fire alarm",
   "Burglar alarm",
   "Fire extinguishers",
@@ -127,6 +150,7 @@ export default function ReligiousLandingPage() {
     }
     if (wantsProperty) {
       push("Own or rent", f.ownRent);
+      push("Construction type", f.construction);
       push("Year built", f.yearBuilt);
       push("Roof last replaced", f.roofYear);
       push("Updates (electrical/plumbing/HVAC)", f.updates);
@@ -134,11 +158,71 @@ export default function ReligiousLandingPage() {
       push("Heating type", f.heating);
       push("Coverage limit / building value", f.value);
       push("Wind / hurricane coverage", f.wind);
+      push("Sprinklered", f.sprinklered);
       if (fireSec.length) push("Fire & security", fireSec.join(", "));
     }
     push("Claims (last 5 yrs)", f.claims);
     return d;
   }, [f, coverage, optCov, fireSec, wantsGL, wantsProperty]);
+
+  // Keep a live snapshot for the abandon beacon (event listeners otherwise
+  // capture a stale render closure).
+  const latest = useRef({ f, details, status });
+  latest.current = { f, details, status };
+
+  // Partial capture: if a visitor gives us a reachable contact + org name but
+  // leaves this long form without submitting, fire a partial (final) beacon so
+  // quotes@ still gets a follow-up-able alert. The intake route routes partials
+  // to quotes@ ONLY (no CRM/SMS) with a no-consent note — right for abandoners.
+  useEffect(() => {
+    let sent = false;
+    const maybeSend = () => {
+      if (sent) return;
+      const { f: cur, details: det, status: st } = latest.current;
+      if (st === "done" || st === "sending") return;
+      const email = (cur.email ?? "").trim();
+      const phone = (cur.phone ?? "").trim();
+      const org = (cur.orgName ?? "").trim();
+      const validEmail = EMAIL_RE.test(email) ? email : undefined;
+      if (!(validEmail || phone) || !org) return;
+      sent = true;
+      const body = JSON.stringify({
+        name: cur.fullName,
+        email: validEmail,
+        phone: phone || undefined,
+        businessType: "House of worship",
+        zip: extractZip(cur.address),
+        source: "religious-landing",
+        partial: true,
+        final: true,
+        details: det,
+      });
+      try {
+        const ok = navigator.sendBeacon(
+          "/api/intake",
+          new Blob([body], { type: "application/json" }),
+        );
+        if (!ok) throw new Error("beacon refused");
+      } catch {
+        fetch("/api/intake", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    };
+    const onPageHide = () => maybeSend();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") maybeSend();
+    };
+    window.addEventListener("pagehide", onPageHide);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", onPageHide);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -289,6 +373,9 @@ export default function ReligiousLandingPage() {
                   ]}
                 />
               </Field>
+              <Field label="Building construction type">
+                <Select value={f.construction} onChange={(v) => set("construction", v)} options={CONSTRUCTION} placeholder="Select one" />
+              </Field>
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Year the building was built" hint="Best guess is fine.">
                   <Input value={f.yearBuilt} onChange={(v) => set("yearBuilt", v)} placeholder="1978" />
@@ -313,6 +400,9 @@ export default function ReligiousLandingPage() {
               </Field>
               <Field label="Do you want wind / hurricane coverage included?">
                 <Radio name="wind" value={f.wind} onChange={(v) => set("wind", v)} options={WIND} />
+              </Field>
+              <Field label="Is the building sprinklered?">
+                <Radio name="sprinklered" value={f.sprinklered} onChange={(v) => set("sprinklered", v)} options={YES_NO} />
               </Field>
               <Field label="Fire & security on site" hint="Select all that apply.">
                 <CheckGroup options={FIRE_SECURITY} selected={fireSec} onToggle={toggle(setFireSec)} />
