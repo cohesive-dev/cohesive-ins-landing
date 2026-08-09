@@ -28,6 +28,10 @@ function fbq(...args: unknown[]) {
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
+// Google Places autocomplete on the address field. Public, build-time-inlined
+// key; when unset the address field is just a plain input (dark-safe).
+const GMAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
 type Option = { label: string; value: string };
 
 const EXPIRATION: Option[] = [
@@ -350,7 +354,7 @@ export default function ReligiousLandingPage() {
             <Input value={f.orgName} onChange={(v) => set("orgName", v)} placeholder="First Baptist Church" autoComplete="organization" />
           </Field>
           <Field label="Building address" hint="Street, city, state, ZIP">
-            <Input value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" autoComplete="street-address" />
+            <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" />
           </Field>
           <Field label="When does your current policy expire?">
             <Select value={f.expiration} onChange={(v) => set("expiration", v)} options={EXPIRATION} placeholder="Select one" />
@@ -546,6 +550,101 @@ function Input({
       autoComplete={autoComplete}
       aria-label={ariaLabel}
       inputMode={inputMode}
+      className={inputClasses}
+    />
+  );
+}
+
+// ---- Google Places address autocomplete -----------------------------------
+
+type GPlace = { formatted_address?: string };
+type GAutocomplete = {
+  addListener: (event: string, cb: () => void) => void;
+  getPlace: () => GPlace;
+};
+type GMaps = {
+  maps: {
+    places: {
+      Autocomplete: new (
+        input: HTMLInputElement,
+        opts: Record<string, unknown>,
+      ) => GAutocomplete;
+    };
+    event: { clearInstanceListeners: (o: unknown) => void };
+  };
+};
+const getGoogle = () => (window as unknown as { google?: GMaps }).google;
+
+function loadGoogleMaps(key: string): Promise<void> {
+  const w = window as unknown as {
+    google?: GMaps;
+    __gmapsPromise?: Promise<void>;
+  };
+  if (w.google?.maps?.places) return Promise.resolve();
+  if (w.__gmapsPromise) return w.__gmapsPromise;
+  w.__gmapsPromise = new Promise<void>((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
+      key,
+    )}&libraries=places&loading=async`;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Google Maps failed to load"));
+    document.head.appendChild(s);
+  });
+  return w.__gmapsPromise;
+}
+
+// A styled text input that, when a Maps key is present, gets Google Places
+// autocomplete attached. Falls back to a plain input otherwise (dark-safe).
+function AddressAutocomplete({
+  value,
+  onChange,
+  placeholder,
+  ariaLabel,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (!GMAPS_KEY || !ref.current) return;
+    let ac: GAutocomplete | undefined;
+    let cancelled = false;
+    loadGoogleMaps(GMAPS_KEY)
+      .then(() => {
+        const g = getGoogle();
+        if (cancelled || !g?.maps?.places || !ref.current) return;
+        ac = new g.maps.places.Autocomplete(ref.current, {
+          types: ["address"],
+          componentRestrictions: { country: "us" },
+          fields: ["formatted_address"],
+        });
+        ac.addListener("place_changed", () => {
+          const addr = ac?.getPlace()?.formatted_address;
+          if (addr) onChange(addr);
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      const g = getGoogle();
+      if (ac && g?.maps?.event) g.maps.event.clearInstanceListeners(ac);
+    };
+    // onChange is a stable state setter wrapper; attach the widget once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return (
+    <input
+      ref={ref}
+      type="text"
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      aria-label={ariaLabel}
+      autoComplete="street-address"
       className={inputClasses}
     />
   );
