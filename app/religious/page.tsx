@@ -75,6 +75,14 @@ const CONSTRUCTION: Option[] = [
   { label: "Mixed / not sure", value: "Mixed / not sure" },
 ];
 
+const ROOF_TYPE: Option[] = [
+  { label: "Asphalt shingle", value: "Asphalt shingle" },
+  { label: "Metal", value: "Metal" },
+  { label: "Tile / slate", value: "Tile / slate" },
+  { label: "Flat (rubber / membrane / tar)", value: "Flat (rubber/membrane/tar)" },
+  { label: "Other / not sure", value: "Other / not sure" },
+];
+
 const YES_NO: Option[] = [
   { label: "Yes", value: "Yes" },
   { label: "No", value: "No" },
@@ -144,6 +152,7 @@ export default function ReligiousLandingPage() {
     if (wantsGL) {
       push("Weekly attendance", f.attendance);
       push("Clergy / pastors", f.clergy);
+      push("Paid staff", f.paidStaff);
       if (optCov.length) push("Optional coverages", optCov.join(", "));
     }
     if (wantsProperty) {
@@ -151,6 +160,7 @@ export default function ReligiousLandingPage() {
       push("Construction type", f.construction);
       push("Year built", f.yearBuilt);
       push("Roof last replaced", f.roofYear);
+      push("Roof type", f.roofType);
       push("Updates (electrical/plumbing/HVAC)", f.updates);
       push("Square footage", f.sqft);
       push("Heating type", f.heating);
@@ -365,6 +375,9 @@ export default function ReligiousLandingPage() {
               <Field label="Number of clergy / pastors">
                 <Input type="number" value={f.clergy} onChange={(v) => set("clergy", v)} placeholder="2" />
               </Field>
+              <Field label="Number of paid staff" hint="Enter 0 if everyone is a volunteer.">
+                <Input type="number" value={f.paidStaff} onChange={(v) => set("paidStaff", v)} placeholder="0" />
+              </Field>
               <Field label="Any optional coverages you want?" hint="Select all that apply.">
                 <CheckGroup options={OPTIONAL_COVERAGES} selected={optCov} onToggle={toggle(setOptCov)} />
               </Field>
@@ -398,6 +411,9 @@ export default function ReligiousLandingPage() {
                   <Input value={f.roofYear} onChange={(v) => set("roofYear", v)} placeholder="2015" />
                 </Field>
               </div>
+              <Field label="Roof type">
+                <Select value={f.roofType} onChange={(v) => set("roofType", v)} options={ROOF_TYPE} placeholder="Select one" />
+              </Field>
               <Field label="Update years — electrical / plumbing / HVAC" hint="The more recent, the lower your premium.">
                 <Input value={f.updates} onChange={(v) => set("updates", v)} placeholder="electrical 2010, plumbing original, HVAC 2019" />
               </Field>
