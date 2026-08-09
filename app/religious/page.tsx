@@ -595,7 +595,18 @@ function loadGoogleMaps(key: string): Promise<void> {
       key,
     )}&libraries=places&loading=async`;
     s.async = true;
-    s.onload = () => resolve();
+    // With loading=async, onload fires before google.maps.places is populated,
+    // so poll for it before resolving — otherwise consumers init too early.
+    s.onload = () => {
+      const ready = () => {
+        if ((window as unknown as { google?: GMaps }).google?.maps?.places) {
+          resolve();
+        } else {
+          setTimeout(ready, 50);
+        }
+      };
+      ready();
+    };
     s.onerror = () => reject(new Error("Google Maps failed to load"));
     document.head.appendChild(s);
   });
