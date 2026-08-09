@@ -557,20 +557,27 @@ function Input({
 
 // ---- Google Places address autocomplete -----------------------------------
 
-type GPlace = { formatted_address?: string };
-type GAutocomplete = {
-  addListener: (event: string, cb: () => void) => void;
-  getPlace: () => GPlace;
+type GPrediction = { description: string; place_id: string };
+type GPlaceResult = { formatted_address?: string };
+type GAutocompleteService = {
+  getPlacePredictions: (
+    req: Record<string, unknown>,
+    cb: (preds: GPrediction[] | null, status: string) => void,
+  ) => void;
+};
+type GPlacesService = {
+  getDetails: (
+    req: Record<string, unknown>,
+    cb: (place: GPlaceResult | null, status: string) => void,
+  ) => void;
 };
 type GMaps = {
   maps: {
     places: {
-      Autocomplete: new (
-        input: HTMLInputElement,
-        opts: Record<string, unknown>,
-      ) => GAutocomplete;
+      AutocompleteService: new () => GAutocompleteService;
+      PlacesService: new (attrContainer: HTMLElement) => GPlacesService;
+      AutocompleteSessionToken: new () => object;
     };
-    event: { clearInstanceListeners: (o: unknown) => void };
   };
 };
 const getGoogle = () => (window as unknown as { google?: GMaps }).google;
@@ -595,8 +602,11 @@ function loadGoogleMaps(key: string): Promise<void> {
   return w.__gmapsPromise;
 }
 
-// A styled text input that, when a Maps key is present, gets Google Places
-// autocomplete attached. Falls back to a plain input otherwise (dark-safe).
+// A styled address input backed by Google Places. Drives a custom suggestions
+// dropdown off AutocompleteService (the classic Autocomplete widget doesn't
+// bind cleanly to a React-controlled input) + a session token so a whole
+// type-then-select counts as one billed session. Dark-safe: with no key it's
+// just a plain input.
 function AddressAutocomplete({
   value,
   onChange,
@@ -608,45 +618,113 @@ function AddressAutocomplete({
   placeholder?: string;
   ariaLabel?: string;
 }) {
-  const ref = useRef<HTMLInputElement>(null);
+  const [suggestions, setSuggestions] = useState<GPrediction[]>([]);
+  const [open, setOpen] = useState(false);
+  const svc = useRef<GAutocompleteService | null>(null);
+  const places = useRef<GPlacesService | null>(null);
+  const token = useRef<object | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    if (!GMAPS_KEY || !ref.current) return;
-    let ac: GAutocomplete | undefined;
-    let cancelled = false;
+    if (!GMAPS_KEY) return;
     loadGoogleMaps(GMAPS_KEY)
       .then(() => {
         const g = getGoogle();
-        if (cancelled || !g?.maps?.places || !ref.current) return;
-        ac = new g.maps.places.Autocomplete(ref.current, {
-          types: ["address"],
-          componentRestrictions: { country: "us" },
-          fields: ["formatted_address"],
-        });
-        ac.addListener("place_changed", () => {
-          const addr = ac?.getPlace()?.formatted_address;
-          if (addr) onChange(addr);
-        });
+        if (!g?.maps?.places) return;
+        svc.current = new g.maps.places.AutocompleteService();
+        places.current = new g.maps.places.PlacesService(
+          document.createElement("div"),
+        );
+        token.current = new g.maps.places.AutocompleteSessionToken();
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-      const g = getGoogle();
-      if (ac && g?.maps?.event) g.maps.event.clearInstanceListeners(ac);
-    };
-    // onChange is a stable state setter wrapper; attach the widget once.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const query = (input: string) => {
+    if (timer.current) clearTimeout(timer.current);
+    if (!svc.current || input.trim().length < 4) {
+      setSuggestions([]);
+      return;
+    }
+    timer.current = setTimeout(() => {
+      svc.current?.getPlacePredictions(
+        {
+          input,
+          componentRestrictions: { country: "us" },
+          types: ["address"],
+          sessionToken: token.current,
+        },
+        (preds, status) => {
+          if (status === "OK" && preds) {
+            setSuggestions(preds.slice(0, 5));
+            setOpen(true);
+          } else {
+            setSuggestions([]);
+          }
+        },
+      );
+    }, 300);
+  };
+
+  // On select, show the prediction immediately, then upgrade to the full
+  // formatted address (with ZIP) via Place Details. Rotate the session token.
+  const choose = (p: GPrediction) => {
+    setSuggestions([]);
+    setOpen(false);
+    onChange(p.description);
+    places.current?.getDetails(
+      {
+        placeId: p.place_id,
+        fields: ["formatted_address"],
+        sessionToken: token.current,
+      },
+      (place, status) => {
+        if (status === "OK" && place?.formatted_address) {
+          onChange(place.formatted_address);
+        }
+        const g = getGoogle();
+        if (g?.maps?.places) {
+          token.current = new g.maps.places.AutocompleteSessionToken();
+        }
+      },
+    );
+  };
+
   return (
-    <input
-      ref={ref}
-      type="text"
-      value={value ?? ""}
-      onChange={(e) => onChange(e.target.value)}
-      placeholder={placeholder}
-      aria-label={ariaLabel}
-      autoComplete="street-address"
-      className={inputClasses}
-    />
+    <div className="relative">
+      <input
+        type="text"
+        value={value ?? ""}
+        onChange={(e) => {
+          onChange(e.target.value);
+          query(e.target.value);
+        }}
+        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        placeholder={placeholder}
+        aria-label={ariaLabel}
+        autoComplete="off"
+        className={inputClasses}
+      />
+      {open && suggestions.length > 0 && (
+        <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-[#D8DEF5] bg-white shadow-lg">
+          {suggestions.map((s) => (
+            <li key={s.place_id}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  choose(s);
+                }}
+                className="block w-full px-4 py-3 text-left text-[15px] text-[#131517] hover:bg-[#EEF1FF]"
+              >
+                {s.description}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
