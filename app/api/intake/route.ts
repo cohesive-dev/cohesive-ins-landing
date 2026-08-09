@@ -114,11 +114,11 @@ async function sendCapiLead(
   eventId: string,
   email?: string,
   phone?: string,
-): Promise<void> {
+): Promise<"sent" | "skipped" | "failed"> {
   const token = process.env.META_CAPI_TOKEN;
   if (!token) {
     console.error("META_CAPI_TOKEN not set — skipping CAPI Lead");
-    return;
+    return "skipped";
   }
 
   const userData: Record<string, unknown> = {};
@@ -166,9 +166,12 @@ async function sendCapiLead(
         res.status,
         await res.text().catch(() => ""),
       );
+      return "failed";
     }
+    return "sent";
   } catch (error) {
     console.error("CAPI Lead request failed", error);
+    return "failed";
   }
 }
 
@@ -268,12 +271,13 @@ export async function POST(request: NextRequest) {
   // id. Real submissions only — partials returned above, so they never count as
   // a Lead (and thus never train ad optimization on non-submitters).
   const eventId = asTrimmedString(body.eventId);
-  if (eventId && reachable) {
-    await sendCapiLead(request, eventId, email, phone);
-  }
+  const capi =
+    eventId && reachable
+      ? await sendCapiLead(request, eventId, email, phone)
+      : "skipped";
 
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed" },
+    { ok: true, crm: forwarded ? "sent" : "failed", capi },
     { status: 200 },
   );
 }
