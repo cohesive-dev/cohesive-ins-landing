@@ -56,8 +56,6 @@ const ATTENDANCE: Option[] = [
 const OPTIONAL_COVERAGES: string[] = [
   "Abuse & Molestation",
   "Clergy professional (counseling E&O)",
-  "Directors & Officers",
-  "Van / auto liability",
 ];
 
 const HEATING: Option[] = [
@@ -165,64 +163,74 @@ export default function ReligiousLandingPage() {
     return d;
   }, [f, coverage, optCov, fireSec, wantsGL, wantsProperty]);
 
-  // Keep a live snapshot for the abandon beacon (event listeners otherwise
-  // capture a stale render closure).
+  // Keep a live snapshot so the capture handlers don't read a stale closure.
   const latest = useRef({ f, details, status });
   latest.current = { f, details, status };
+  const sentPartial = useRef(false);
 
-  // Partial capture: if a visitor gives us a reachable contact + org name but
-  // leaves this long form without submitting, fire a partial (final) beacon so
-  // quotes@ still gets a follow-up-able alert. The intake route routes partials
-  // to quotes@ ONLY (no CRM/SMS) with a no-consent note — right for abandoners.
+  // Partial capture: once a visitor gives us a reachable contact + org name,
+  // capture them as a partial (final) lead so a mid-form abandoner is never
+  // lost. Fires at most once, on whichever comes first — leaving/backgrounding
+  // the page OR 120s of inactivity (covers mobile WebViews that never emit a
+  // clean unload). The intake route routes partials to quotes@ ONLY (no
+  // CRM/SMS), with a no-consent note — correct for someone who didn't submit.
+  const firePartial = useRef(() => {});
+  firePartial.current = () => {
+    if (sentPartial.current) return;
+    const { f: cur, details: det, status: st } = latest.current;
+    if (st === "done" || st === "sending") return;
+    const email = (cur.email ?? "").trim();
+    const phone = (cur.phone ?? "").trim();
+    const org = (cur.orgName ?? "").trim();
+    const validEmail = EMAIL_RE.test(email) ? email : undefined;
+    if (!(validEmail || phone) || !org) return;
+    sentPartial.current = true;
+    const body = JSON.stringify({
+      name: cur.fullName,
+      email: validEmail,
+      phone: phone || undefined,
+      businessType: "House of worship",
+      zip: extractZip(cur.address),
+      source: "religious-landing",
+      partial: true,
+      final: true,
+      details: det,
+    });
+    try {
+      const ok = navigator.sendBeacon(
+        "/api/intake",
+        new Blob([body], { type: "application/json" }),
+      );
+      if (!ok) throw new Error("beacon refused");
+    } catch {
+      fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true,
+      }).catch(() => {});
+    }
+  };
+
+  // Leave / background the page.
   useEffect(() => {
-    let sent = false;
-    const maybeSend = () => {
-      if (sent) return;
-      const { f: cur, details: det, status: st } = latest.current;
-      if (st === "done" || st === "sending") return;
-      const email = (cur.email ?? "").trim();
-      const phone = (cur.phone ?? "").trim();
-      const org = (cur.orgName ?? "").trim();
-      const validEmail = EMAIL_RE.test(email) ? email : undefined;
-      if (!(validEmail || phone) || !org) return;
-      sent = true;
-      const body = JSON.stringify({
-        name: cur.fullName,
-        email: validEmail,
-        phone: phone || undefined,
-        businessType: "House of worship",
-        zip: extractZip(cur.address),
-        source: "religious-landing",
-        partial: true,
-        final: true,
-        details: det,
-      });
-      try {
-        const ok = navigator.sendBeacon(
-          "/api/intake",
-          new Blob([body], { type: "application/json" }),
-        );
-        if (!ok) throw new Error("beacon refused");
-      } catch {
-        fetch("/api/intake", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body,
-          keepalive: true,
-        }).catch(() => {});
-      }
+    const onHide = () => firePartial.current();
+    const onVis = () => {
+      if (document.visibilityState === "hidden") firePartial.current();
     };
-    const onPageHide = () => maybeSend();
-    const onVisibility = () => {
-      if (document.visibilityState === "hidden") maybeSend();
-    };
-    window.addEventListener("pagehide", onPageHide);
-    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVis);
     return () => {
-      window.removeEventListener("pagehide", onPageHide);
-      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", onHide);
+      document.removeEventListener("visibilitychange", onVis);
     };
   }, []);
+
+  // Idle backup: reset on every field change; 120s of no input captures them.
+  useEffect(() => {
+    const t = setTimeout(() => firePartial.current(), 120_000);
+    return () => clearTimeout(t);
+  }, [f]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
