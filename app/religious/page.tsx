@@ -3,6 +3,7 @@
 import {
   cloneElement,
   isValidElement,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -117,6 +118,22 @@ const CLAIMS: Option[] = [
 
 type FormState = Record<string, string>;
 
+// Fields in the property block — touching one fires the "PropertyStarted"
+// funnel milestone.
+const PROPERTY_SET_FIELDS = new Set([
+  "ownRent",
+  "construction",
+  "yearBuilt",
+  "roofYear",
+  "roofType",
+  "updates",
+  "sqft",
+  "heating",
+  "value",
+  "wind",
+  "sprinklered",
+]);
+
 export default function ReligiousLandingPage() {
   // Claims defaults to "None" — the common case for a house of worship, and it
   // means the detail block always carries a claims answer even if untouched.
@@ -129,11 +146,27 @@ export default function ReligiousLandingPage() {
   );
   const [errMsg, setErrMsg] = useState("");
 
-  const set = (k: string, v: string) => setF((p) => ({ ...p, [k]: v }));
+  // Funnel instrumentation: fire each milestone once per session so we can
+  // measure abandonment (FormStart -> ContactDone -> CoverageSelected ->
+  // PropertyStarted -> Lead) and see exactly where people drop off.
+  const fired = useRef<Set<string>>(new Set());
+  const track = useCallback((name: string) => {
+    if (fired.current.has(name)) return;
+    fired.current.add(name);
+    fbq("trackCustom", name);
+  }, []);
+
+  const set = (k: string, v: string) => {
+    track("FormStart");
+    if (PROPERTY_SET_FIELDS.has(k)) track("PropertyStarted");
+    setF((p) => ({ ...p, [k]: v }));
+  };
   const toggle =
     (setter: React.Dispatch<React.SetStateAction<string[]>>) =>
-    (v: string) =>
+    (v: string) => {
+      track("FormStart");
       setter((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
+    };
 
   const wantsGL = coverage.includes("General liability");
   const wantsProperty = coverage.includes("Property / building");
@@ -178,6 +211,16 @@ export default function ReligiousLandingPage() {
     push("Claims (last 5 yrs)", f.claims);
     return d;
   }, [f, coverage, optCov, fireSec, wantsGL, wantsProperty]);
+
+  // Funnel milestones driven by state.
+  useEffect(() => {
+    if (coverage.length > 0) track("CoverageSelected");
+  }, [coverage, track]);
+  useEffect(() => {
+    if (f.fullName?.trim() && emailValid && f.phone?.trim()) {
+      track("ContactDone");
+    }
+  }, [f.fullName, f.phone, emailValid, track]);
 
   // Keep a live snapshot so the capture handlers don't read a stale closure.
   const latest = useRef({ f, details, status });
@@ -280,6 +323,7 @@ export default function ReligiousLandingPage() {
       setStatus("done");
     } catch (err) {
       setStatus("error");
+      fbq("trackCustom", "SubmitError");
       setErrMsg(
         err instanceof Error ? err.message : "Something went wrong. Please try again.",
       );
