@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { sendIntakeNotification } from "@/lib/notify";
 
@@ -13,6 +14,13 @@ import { sendIntakeNotification } from "@/lib/notify";
 const CRM_BASE_URL = process.env.CRM_BASE_URL ?? "https://crm.cohesiveinsure.com";
 const CRM_INBOUND_LEAD_URL = `${CRM_BASE_URL}/api/webhooks/inbound-lead`;
 
+// Meta Conversions API (server-side Lead, deduped with the browser pixel via a
+// shared event_id). Dark-safe: if META_CAPI_TOKEN isn't set it no-ops, exactly
+// like the quotes@ mailer without a password — so deploying this is harmless
+// until the token is added to the environment.
+const CAPI_PIXEL_ID = process.env.META_PIXEL_ID ?? "831179966599677";
+const sha256 = (v: string) => createHash("sha256").update(v).digest("hex");
+
 type IntakePayload = {
   name?: unknown;
   email?: unknown;
@@ -24,6 +32,8 @@ type IntakePayload = {
   source?: unknown;
   // Ordered [{label, value}] answers from a deep intake form (e.g. /church).
   details?: unknown;
+  // Browser-pixel Lead event id, forwarded so the CAPI Lead can dedupe to it.
+  eventId?: unknown;
 };
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -92,6 +102,73 @@ async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
     return false;
+  }
+}
+
+// Fire a server-side "Lead" to the Conversions API. event_id MUST match the
+// browser pixel's eventID so Meta dedupes the two into a single conversion.
+// Hashes PII (email/phone) per Meta's spec; pulls fbp/fbc/ip/ua from the request
+// for match quality. Never throws into the route — logs and returns on failure.
+async function sendCapiLead(
+  request: NextRequest,
+  eventId: string,
+  email?: string,
+  phone?: string,
+): Promise<void> {
+  const token = process.env.META_CAPI_TOKEN;
+  if (!token) {
+    console.error("META_CAPI_TOKEN not set — skipping CAPI Lead");
+    return;
+  }
+
+  const userData: Record<string, unknown> = {};
+  if (email) userData.em = [sha256(email.trim().toLowerCase())];
+  if (phone) userData.ph = [sha256(phone.replace(/\D/g, ""))];
+  const fbp = request.cookies.get("_fbp")?.value;
+  const fbc = request.cookies.get("_fbc")?.value;
+  if (fbp) userData.fbp = fbp;
+  if (fbc) userData.fbc = fbc;
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (ip) userData.client_ip_address = ip;
+  const ua = request.headers.get("user-agent");
+  if (ua) userData.client_user_agent = ua;
+
+  const payload = {
+    data: [
+      {
+        event_name: "Lead",
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: eventId,
+        action_source: "website",
+        event_source_url:
+          request.headers.get("referer") ??
+          "https://cohesiveinsure.com/religious",
+        user_data: userData,
+      },
+    ],
+  };
+
+  try {
+    const res = await fetch(
+      `https://graph.facebook.com/v21.0/${CAPI_PIXEL_ID}/events?access_token=${encodeURIComponent(
+        token,
+      )}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(8000),
+      },
+    );
+    if (!res.ok) {
+      console.error(
+        "CAPI Lead rejected",
+        res.status,
+        await res.text().catch(() => ""),
+      );
+    }
+  } catch (error) {
+    console.error("CAPI Lead request failed", error);
   }
 }
 
@@ -185,6 +262,14 @@ export async function POST(request: NextRequest) {
       source,
       details,
     });
+  }
+
+  // Server-side CAPI Lead, deduped with the browser pixel via the shared event
+  // id. Real submissions only — partials returned above, so they never count as
+  // a Lead (and thus never train ad optimization on non-submitters).
+  const eventId = asTrimmedString(body.eventId);
+  if (eventId && reachable) {
+    await sendCapiLead(request, eventId, email, phone);
   }
 
   return NextResponse.json(

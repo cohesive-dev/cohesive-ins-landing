@@ -237,8 +237,13 @@ export default function ReligiousLandingPage() {
     if (!canSubmit) return;
     setStatus("sending");
     setErrMsg("");
-    // Standard Lead pixel on submit (form is fire-and-forget, matches site).
-    fbq("track", "Lead");
+    // Standard Lead pixel on submit, tagged with a shared event id so the
+    // server-side CAPI Lead (POST /api/intake) dedupes to a single conversion.
+    const eventId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    fbq("track", "Lead", {}, { eventID: eventId });
     fbq("trackCustom", "ReligiousQuoteSubmit");
     try {
       const res = await fetch("/api/intake", {
@@ -252,6 +257,7 @@ export default function ReligiousLandingPage() {
           zip: extractZip(f.address),
           source: "religious-landing",
           details,
+          eventId,
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
