@@ -114,7 +114,9 @@ const CLAIMS: Option[] = [
 type FormState = Record<string, string>;
 
 export default function ReligiousLandingPage() {
-  const [f, setF] = useState<FormState>({});
+  // Claims defaults to "None" — the common case for a house of worship, and it
+  // means the detail block always carries a claims answer even if untouched.
+  const [f, setF] = useState<FormState>({ claims: "None" });
   const [coverage, setCoverage] = useState<string[]>([]);
   const [optCov, setOptCov] = useState<string[]>([]);
   const [fireSec, setFireSec] = useState<string[]>([]);
