@@ -14,8 +14,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  // Required so relative Open Graph image URLs (e.g. the church /religious card)
+  // resolve to the live domain in the rendered <meta> tags instead of localhost.
+  metadataBase: new URL("https://www.cohesiveinsure.com"),
   title: "Cohesive Insurance: Coverage for the Businesses That Keep America Running",
   description: "Data-driven commercial insurance for contractors, trucking, manufacturing, and hospitality. A-rated carriers, fast quotes, plain-English guidance.",
+  // Default social/link-preview card. Per-vertical routes (e.g. /religious)
+  // override this with their own openGraph block.
+  openGraph: {
+    type: "website",
+    siteName: "Cohesive Insurance",
+    title: "Cohesive Insurance: Coverage for the Businesses That Keep America Running",
+    description: "Data-driven commercial insurance. A-rated carriers, fast quotes, plain-English guidance.",
+    images: [{ url: "/og/default.png", width: 1200, height: 630, alt: "Cohesive Insurance" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Cohesive Insurance",
+    description: "Data-driven commercial insurance. A-rated carriers, fast quotes, plain-English guidance.",
+    images: ["/og/default.png"],
+  },
 };
 
 export default function RootLayout({

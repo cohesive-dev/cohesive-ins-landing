@@ -615,8 +615,9 @@ function Industries() {
       { title: "Trucking & Logistics", image: "/industries/trucking-logistics.jpg", desc: "Fleet, cargo, and liability coverage for owner-operators and small fleets.", ratio: 0.25 },
     ],
     [
-      { title: "Retail", image: "/industries/retail.jpg", desc: "Property, liability, and business income coverage for storefronts and retail teams.", ratio: 0.55 },
-      { title: "Garages", image: "/industries/garages.jpg", desc: "Garagekeepers liability and equipment coverage for auto repair shops.", ratio: 0.45 },
+      { title: "Retail", image: "/industries/retail.jpg", desc: "Property, liability, and business income coverage for storefronts and retail teams.", ratio: 0.4 },
+      { title: "Churches & Worship", image: "/industries/churches.jpg", desc: "General liability and property coverage for churches, synagogues, mosques, and temples.", ratio: 0.32 },
+      { title: "Garages", image: "/industries/garages.jpg", desc: "Garagekeepers liability and equipment coverage for auto repair shops.", ratio: 0.28 },
     ],
   ];
 
@@ -1172,6 +1173,7 @@ function Footer() {
                 { label: "Retail Stores", href: "/retail" },
                 { label: "Landscaping & Lawn Care", href: "/landscaping" },
                 { label: "Painting", href: "/painting" },
+                { label: "Churches & Houses of Worship", href: "/religious" },
               ].map((l) => (
                 <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
               ))}
