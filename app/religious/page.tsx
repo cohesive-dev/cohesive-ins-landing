@@ -168,12 +168,13 @@ export default function ReligiousLandingPage() {
   latest.current = { f, details, status };
   const sentPartial = useRef(false);
 
-  // Partial capture: once a visitor gives us a reachable contact + org name,
-  // capture them as a partial (final) lead so a mid-form abandoner is never
-  // lost. Fires at most once, on whichever comes first — leaving/backgrounding
-  // the page OR 120s of inactivity (covers mobile WebViews that never emit a
-  // clean unload). The intake route routes partials to quotes@ ONLY (no
-  // CRM/SMS), with a no-consent note — correct for someone who didn't submit.
+  // Partial capture: the moment a visitor gives us ANY way to reach them (a
+  // valid email or a phone), capture them as a partial (final) lead so a
+  // mid-form abandoner is never lost — org name and the rest are a bonus, not a
+  // requirement. Fires at most once, on whichever comes first: leaving/
+  // backgrounding the page OR 120s of inactivity (covers mobile WebViews that
+  // never emit a clean unload). The intake route routes partials to quotes@
+  // ONLY (no CRM/SMS), with a no-consent note — correct for a non-submitter.
   const firePartial = useRef(() => {});
   firePartial.current = () => {
     if (sentPartial.current) return;
@@ -181,9 +182,8 @@ export default function ReligiousLandingPage() {
     if (st === "done" || st === "sending") return;
     const email = (cur.email ?? "").trim();
     const phone = (cur.phone ?? "").trim();
-    const org = (cur.orgName ?? "").trim();
     const validEmail = EMAIL_RE.test(email) ? email : undefined;
-    if (!(validEmail || phone) || !org) return;
+    if (!(validEmail || phone)) return;
     sentPartial.current = true;
     const body = JSON.stringify({
       name: cur.fullName,
