@@ -34,6 +34,13 @@ type IntakePayload = {
   details?: unknown;
   // Browser-pixel Lead event id, forwarded so the CAPI Lead can dedupe to it.
   eventId?: unknown;
+  // OPTIONAL server-side CAPI event name. Absent => "Lead" (today's behavior,
+  // so /religious and every existing caller are unchanged). Present => fire the
+  // CAPI event under THIS name (used by /restaurant to fire a non-Lead signal
+  // for E&S and disqualified/bar outcomes, so the ad optimizer only trains on
+  // instant-quotable restaurants). "RestaurantDisqualified" is special-cased
+  // below: it fires the custom event but NEVER forwards to the CRM.
+  capiEventName?: unknown;
 };
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -105,19 +112,23 @@ async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
   }
 }
 
-// Fire a server-side "Lead" to the Conversions API. event_id MUST match the
-// browser pixel's eventID so Meta dedupes the two into a single conversion.
-// Hashes PII (email/phone) per Meta's spec; pulls fbp/fbc/ip/ua from the request
-// for match quality. Never throws into the route — logs and returns on failure.
-async function sendCapiLead(
+// Fire a server-side conversion event to the Conversions API. event_id MUST
+// match the browser pixel's eventID so Meta dedupes the two into a single
+// conversion. `eventName` defaults to "Lead" (the only value the church /
+// religious lane ever uses); /restaurant passes "RestaurantLeadES" or
+// "RestaurantDisqualified" to emit a NON-Lead signal. Hashes PII (email/phone)
+// per Meta's spec; pulls fbp/fbc/ip/ua from the request for match quality.
+// Never throws into the route — logs and returns on failure.
+async function sendCapiEvent(
   request: NextRequest,
+  eventName: string,
   eventId: string,
   email?: string,
   phone?: string,
 ): Promise<"sent" | "skipped" | "failed"> {
   const token = process.env.META_CAPI_TOKEN;
   if (!token) {
-    console.error("META_CAPI_TOKEN not set — skipping CAPI Lead");
+    console.error("META_CAPI_TOKEN not set — skipping CAPI event");
     return "skipped";
   }
 
@@ -136,7 +147,7 @@ async function sendCapiLead(
   const payload = {
     data: [
       {
-        event_name: "Lead",
+        event_name: eventName,
         event_time: Math.floor(Date.now() / 1000),
         event_id: eventId,
         action_source: "website",
@@ -162,7 +173,7 @@ async function sendCapiLead(
     );
     if (!res.ok) {
       console.error(
-        "CAPI Lead rejected",
+        "CAPI event rejected",
         res.status,
         await res.text().catch(() => ""),
       );
@@ -170,7 +181,7 @@ async function sendCapiLead(
     }
     return "sent";
   } catch (error) {
-    console.error("CAPI Lead request failed", error);
+    console.error("CAPI event request failed", error);
     return "failed";
   }
 }
@@ -225,6 +236,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
 
+  // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
+  // and every other caller are untouched).
+  const capiEventName = asTrimmedString(body.capiEventName);
+
+  // Disqualified outcome (e.g. a bar from /restaurant): fire the NON-Lead CAPI
+  // signal so Meta's optimizer learns to stop serving this segment, but do NOT
+  // forward to the CRM (that fan-out would text/email a prospect we can't help)
+  // and do NOT alert quotes@ — a disqualified bar is intentionally low-noise.
+  if (capiEventName === "RestaurantDisqualified") {
+    const disqEventId = asTrimmedString(body.eventId);
+    const capi =
+      disqEventId && reachable
+        ? await sendCapiEvent(
+            request,
+            "RestaurantDisqualified",
+            disqEventId,
+            email,
+            phone,
+          )
+        : "skipped";
+    return NextResponse.json(
+      { ok: true, crm: "skipped", capi },
+      { status: 200 },
+    );
+  }
+
   // `source` is a page label (e.g. "restaurants-splash-next-handoff"), not a per-lead id, so it
   // must not go through as providerId — the CRM builds its Activity dedupe key from it, and a
   // shared value would collapse every lead from that page into one Activity. Omitting it lets the
@@ -267,13 +304,17 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // Server-side CAPI Lead, deduped with the browser pixel via the shared event
+  // Server-side CAPI event, deduped with the browser pixel via the shared event
   // id. Real submissions only — partials returned above, so they never count as
-  // a Lead (and thus never train ad optimization on non-submitters).
+  // a conversion (and thus never train ad optimization on non-submitters).
+  // eventName defaults to "Lead" (church/religious + any legacy caller); the
+  // /restaurant lane sends "Lead" for instant-quotable and "RestaurantLeadES"
+  // for the E&S lane so Meta captures the lead without optimizing toward it.
   const eventId = asTrimmedString(body.eventId);
+  const eventName = capiEventName ?? "Lead";
   const capi =
     eventId && reachable
-      ? await sendCapiLead(request, eventId, email, phone)
+      ? await sendCapiEvent(request, eventName, eventId, email, phone)
       : "skipped";
 
   return NextResponse.json(
