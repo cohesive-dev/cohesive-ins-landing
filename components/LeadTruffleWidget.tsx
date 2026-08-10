@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 // splash pages (it auto-opens on top of the form fields on mobile), so skip
 // it there.
 const SPLASH_ROUTES = [
+  "/restaurant",
   "/restaurants",
   "/restaurants-quote",
   "/cleaning",
