@@ -237,8 +237,10 @@ export default function RestaurantLandingPage() {
     push("Rainbow class", rainbowClassFor(f.businessType));
     push("Building address", f.address);
     push("Policy expiration", f.expiration);
-    // Revenue + alcohol are asked on both lanes now (routing/class/qualification).
+    // Revenue + employees + alcohol are asked on both lanes now (routing / class
+    // / qualification; Next rates on employees/payroll).
     push("Approximate annual revenue", f.revenue);
+    push("Employees", f.employees);
     push("Alcohol as % of sales", f.alcohol);
     push("Coverage needed", f.coverage === "BOP" ? "BOP (liability + property)" : f.coverage === "GL" ? "GL only" : f.coverage);
     if (wantsProperty) {
@@ -604,6 +606,18 @@ export default function RestaurantLandingPage() {
               value={f.revenue}
               onChange={(v) => set("revenue", v)}
               placeholder="$750,000"
+              inputMode="numeric"
+            />
+          </Field>
+          <Field
+            label="Approximate number of employees"
+            hint="Full and part-time, your best estimate is fine."
+          >
+            <Input
+              value={f.employees}
+              onChange={(v) => set("employees", v)}
+              placeholder="8"
+              type="number"
               inputMode="numeric"
             />
           </Field>
