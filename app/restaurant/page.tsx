@@ -23,10 +23,10 @@ import {
  * from the answers fires DIFFERENT Meta events so the ad optimizer learns which
  * restaurants are instant-quotable under our admitted carriers (Rainbow/Next):
  *   - QUALIFIED  (not a bar, alcohol None/Under 30%) -> standard `Lead`.
- *   - E&S        (restaurant, alcohol 30-75%)        -> `RestaurantLeadES`
+ *   - E&S        (restaurant, alcohol 30-50%)        -> `RestaurantLeadES`
  *                 (a real lead to CRM/quotes@, but NOT a `Lead` conversion, so
  *                 Meta captures it without optimizing toward it).
- *   - DISQUALIFIED (bar, alcohol Over 75%, or not a food business)
+ *   - DISQUALIFIED (bar, alcohol Over 50%, or not a food business)
  *                 -> `RestaurantDisqualified` + a polite not-a-fit end screen,
  *                 no `Lead` and no CRM forward, so the optimizer stops serving
  *                 bar owners.
@@ -102,13 +102,14 @@ const EXPIRATION: Option[] = [
   { label: "No coverage right now", value: "No coverage now" },
 ];
 
-// Q7 alcohol tier — the master routing driver. None/Under 30% = admitted
-// (Rainbow/Next); 30-75% = E&S; Over 75% = true bar (disqualify).
+// Alcohol tier — the master routing driver, at Rainbow's real break points.
+// None/Under 30% = admitted (Rainbow/Next); 30-50% = E&S; Over 50% = true bar
+// (disqualify).
 const ALCOHOL: Option[] = [
   { label: "None", value: "None" },
   { label: "Under 30%", value: "Under 30%" },
-  { label: "30-75%", value: "30-75%" },
-  { label: "Over 75%", value: "Over 75%" },
+  { label: "30-50%", value: "30-50%" },
+  { label: "Over 50%", value: "Over 50%" },
 ];
 
 const HEATING: Option[] = [
@@ -146,15 +147,15 @@ type FormState = Record<string, string>;
 type Qualification = "qualified" | "es" | "disqualified";
 
 // Three-way qualification from the answers (see file header):
-//   - disqualified: bar/tavern/brewery, alcohol Over 75%, or not a food business.
-//   - es:           restaurant (not bar), alcohol 30-75%.
+//   - disqualified: bar/tavern/brewery, alcohol Over 50%, or not a food business.
+//   - es:           restaurant (not bar), alcohol 30-50%.
 //   - qualified:    everything else (not a bar, alcohol None/Under 30%).
 function qualify(businessType?: string, alcohol?: string): Qualification {
   if (businessType === BAR_TYPE || businessType === NOT_FOOD_TYPE) {
     return "disqualified";
   }
-  if (alcohol === "Over 75%") return "disqualified";
-  if (alcohol === "30-75%") return "es";
+  if (alcohol === "Over 50%") return "disqualified";
+  if (alcohol === "30-50%") return "es";
   return "qualified";
 }
 
@@ -707,16 +708,20 @@ export default function RestaurantLandingPage() {
                   />
                 </Field>
               </div>
-              <Field
-                label="Desired coverage limit — building (if owned) + contents / build-out"
-                hint="How much you'd want it insured for - roughly the rebuild cost or current value. Best guess is fine."
-              >
-                <Input
-                  value={f.value}
-                  onChange={(v) => set("value", v)}
-                  placeholder="$500,000"
-                />
-              </Field>
+              {/* Building value — owners only. Renters skip it; we assume a
+                  typical BPP/contents value downstream. */}
+              {owns && (
+                <Field
+                  label="Desired coverage limit — building + contents / build-out"
+                  hint="How much you'd want it insured for - roughly the rebuild cost or current value. Best guess is fine."
+                >
+                  <Input
+                    value={f.value}
+                    onChange={(v) => set("value", v)}
+                    placeholder="$500,000"
+                  />
+                </Field>
+              )}
               <Field label="Do you want wind / hurricane coverage included?">
                 <Radio
                   name="wind"
