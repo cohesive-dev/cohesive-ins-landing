@@ -50,15 +50,47 @@ type Option = { label: string; value: string };
 
 // Q2 gate. "Bar / lounge / tavern" and "Not a food business" drive the
 // qualification below; "Not a food business" is an immediate hard disqualify.
-const BUSINESS_TYPE = "Restaurant with cooking";
-const BAR_TYPE = "Bar / lounge / tavern";
+const BAR_TYPE = "Bar / tavern / brewery";
 const NOT_FOOD_TYPE = "Not a food business";
-const BUSINESS_TYPES: Option[] = [
-  { label: "Restaurant with cooking", value: BUSINESS_TYPE },
-  { label: "Bar / lounge / tavern", value: BAR_TYPE },
-  { label: "Café / bakery (no cooking)", value: "Café / bakery (no cooking)" },
-  { label: "Food truck", value: "Food truck" },
+// Each valid type maps STRAIGHT to a Rainbow `type_of_restaurant` class code so
+// the quoter needs zero inference; the code rides into /api/intake details as
+// "Rainbow class" for the qualified + E&S outcomes. Bar (Rainbow G/H) and
+// not-a-food-business are out of appetite -> no class, disqualify.
+type BizType = Option & { rainbowClass?: string };
+const BUSINESS_TYPES: BizType[] = [
+  {
+    label: "Coffee / café / bakery (little or no cooking)",
+    value: "Coffee / café / bakery (little or no cooking)",
+    rainbowClass: "E",
+  },
+  {
+    label: "Fast food / counter service (grill or fryer)",
+    value: "Fast food / counter service (grill or fryer)",
+    rainbowClass: "A",
+  },
+  {
+    label: "Full-service / sit-down restaurant",
+    value: "Full-service / sit-down restaurant",
+    rainbowClass: "Z",
+  },
+  { label: "Fine dining", value: "Fine dining", rainbowClass: "D" },
+  { label: "Food truck / cart", value: "Food truck / cart", rainbowClass: "J" },
+  { label: "Bar / tavern / brewery", value: BAR_TYPE },
   { label: "Not a food business", value: NOT_FOOD_TYPE },
+];
+
+const rainbowClassFor = (businessType?: string): string | undefined =>
+  BUSINESS_TYPES.find((o) => o.value === businessType)?.rainbowClass;
+
+// Q7-equivalent coverage product. GL only = liability, skips the property
+// block; BOP = the instant-quote product (liability + building & contents),
+// reveals the property block.
+const COVERAGE: Option[] = [
+  { label: "General Liability only (GL)", value: "GL" },
+  {
+    label: "Business Owner's Policy (BOP - liability + building & contents)",
+    value: "BOP",
+  },
 ];
 
 const EXPIRATION: Option[] = [
@@ -114,10 +146,9 @@ type FormState = Record<string, string>;
 type Qualification = "qualified" | "es" | "disqualified";
 
 // Three-way qualification from the answers (see file header):
-//   - disqualified: bar, alcohol Over 75%, or not a food business.
+//   - disqualified: bar/tavern/brewery, alcohol Over 75%, or not a food business.
 //   - es:           restaurant (not bar), alcohol 30-75%.
-//   - qualified:    everything else (not a bar, alcohol None/Under 30%, OR the
-//                   property-only lane where alcohol is never asked).
+//   - qualified:    everything else (not a bar, alcohol None/Under 30%).
 function qualify(businessType?: string, alcohol?: string): Qualification {
   if (businessType === BAR_TYPE || businessType === NOT_FOOD_TYPE) {
     return "disqualified";
@@ -172,14 +203,16 @@ export default function RestaurantLandingPage() {
       setter((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
     };
 
-  const wantsGL = f.needGL === "Yes";
-  const wantsProperty = f.insureProperty === "Yes";
+  // Single coverage gate: BOP (the instant-quote product) reveals the property
+  // block; GL only skips it. Revenue + alcohol are always asked now (both lanes
+  // need them for routing/class/qualification).
+  const wantsProperty = f.coverage === "BOP";
   const owns = f.ownRent === "Own";
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
   const notFood = f.businessType === NOT_FOOD_TYPE;
 
-  // "Coverage selected" here = a gate has been answered.
-  const gatesAnswered = Boolean(f.needGL) || Boolean(f.insureProperty);
+  // "Coverage selected" here = the coverage product has been chosen.
+  const gatesAnswered = Boolean(f.coverage);
 
   const canSubmit =
     !notFood &&
@@ -198,14 +231,15 @@ export default function RestaurantLandingPage() {
     };
     push("Business name", f.businessName);
     push("Business type", f.businessType);
+    // Rainbow class code (only the in-appetite types carry one) so the quoter
+    // needs zero inference. Absent for bar / not-a-food-business (disqualified).
+    push("Rainbow class", rainbowClassFor(f.businessType));
     push("Building address", f.address);
     push("Policy expiration", f.expiration);
-    push("Needs GL / liability", f.needGL);
-    if (wantsGL) {
-      push("Approximate annual revenue", f.revenue);
-      push("Alcohol as % of sales", f.alcohol);
-    }
-    push("Insure building / property", f.insureProperty);
+    // Revenue + alcohol are asked on both lanes now (routing/class/qualification).
+    push("Approximate annual revenue", f.revenue);
+    push("Alcohol as % of sales", f.alcohol);
+    push("Coverage needed", f.coverage === "BOP" ? "BOP (liability + property)" : f.coverage === "GL" ? "GL only" : f.coverage);
     if (wantsProperty) {
       push("Own or rent", f.ownRent);
       if (owns) {
@@ -221,7 +255,7 @@ export default function RestaurantLandingPage() {
     }
     push("Claims (last 5 yrs)", f.claims);
     return d;
-  }, [f, fireSec, wantsGL, wantsProperty, owns]);
+  }, [f, fireSec, wantsProperty, owns]);
 
   // Funnel milestones driven by state.
   useEffect(() => {
@@ -559,66 +593,44 @@ export default function RestaurantLandingPage() {
           </Field>
         </Section>
 
-        {/* Gate 1 — liability / GL */}
-        <Section title="Liability coverage">
+        {/* Revenue + alcohol — always asked (routing / class / qualification) */}
+        <Section title="Your business volume">
           <Field
-            label="Do you need liability (GL) coverage?"
-            required
-            hint="Covers customer injuries and lawsuits. We'll ask about your building/property next."
+            label="Approximate annual revenue"
+            hint="A dollar figure. Best estimate is fine."
           >
-            <Radio
-              name="needGL"
-              value={f.needGL}
-              onChange={(v) => set("needGL", v)}
-              options={[
-                { label: "Yes", value: "Yes" },
-                { label: "No, property only", value: "No" },
-              ]}
+            <Input
+              value={f.revenue}
+              onChange={(v) => set("revenue", v)}
+              placeholder="$750,000"
+              inputMode="numeric"
             />
           </Field>
-          {wantsGL && (
-            <div className="space-y-4 rounded-xl border border-[#EEF1FF] bg-[#FBFCFF] p-4">
-              <Field
-                label="Approximate annual revenue"
-                hint="A dollar figure. Best estimate is fine."
-              >
-                <Input
-                  value={f.revenue}
-                  onChange={(v) => set("revenue", v)}
-                  placeholder="$750,000"
-                  inputMode="numeric"
-                />
-              </Field>
-              <Field
-                label="Alcohol as % of sales"
-                hint="Roughly what share of your sales is alcohol."
-              >
-                <Radio
-                  name="alcohol"
-                  value={f.alcohol}
-                  onChange={(v) => set("alcohol", v)}
-                  options={ALCOHOL}
-                />
-              </Field>
-            </div>
-          )}
-        </Section>
-
-        {/* Gate 2 — property */}
-        <Section title="Building & property">
           <Field
-            label="Do you want to insure your building / property?"
-            required
-            hint="Covers your building and contents - fire, theft, storm damage. Pick this even if you rent and just want your equipment/build-out covered."
+            label="Alcohol as % of sales"
+            hint="Roughly what share of your sales is alcohol."
           >
             <Radio
-              name="insureProperty"
-              value={f.insureProperty}
-              onChange={(v) => set("insureProperty", v)}
-              options={[
-                { label: "Yes", value: "Yes" },
-                { label: "No, liability only", value: "No" },
-              ]}
+              name="alcohol"
+              value={f.alcohol}
+              onChange={(v) => set("alcohol", v)}
+              options={ALCOHOL}
+            />
+          </Field>
+        </Section>
+
+        {/* Single coverage gate — GL vs BOP */}
+        <Section title="Coverage you need">
+          <Field
+            label="What coverage do you need?"
+            required
+            hint="BOP bundles liability with your building and contents (fire, theft, storm) and is our fastest instant quote. Pick BOP even if you rent and just want your equipment/build-out covered."
+          >
+            <Radio
+              name="coverage"
+              value={f.coverage}
+              onChange={(v) => set("coverage", v)}
+              options={COVERAGE}
             />
           </Field>
 
