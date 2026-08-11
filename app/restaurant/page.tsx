@@ -501,12 +501,11 @@ export default function RestaurantLandingPage() {
             For restaurants, bars, cafes &amp; food businesses
           </span>
           <h1 className="mt-2 text-3xl font-bold leading-tight text-[#131517] sm:text-4xl">
-            Free restaurant insurance quote
+            Insurance quote for your restaurant
           </h1>
           <p className="mt-3 text-[#27455C]">
-            A few quick questions and we&rsquo;ll shop your GL and property
-            across our carriers. We know you&rsquo;re busy, so we&rsquo;ll get you a
-            quote over text and email, no call needed.
+            No spam, no obligation. We know you&rsquo;re busy - we can get you a
+            quote without needing hours of your time.
           </p>
         </div>
       </section>
