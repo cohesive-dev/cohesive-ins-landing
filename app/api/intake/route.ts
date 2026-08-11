@@ -275,13 +275,21 @@ export async function POST(request: NextRequest) {
   // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
   const details = sanitizeDetails(body.details);
 
-  const forwarded = await forwardToCrm({
-    ...(name ? { name } : {}),
-    ...(email ? { email } : {}),
-    ...(phone ? { phone } : {}),
-    ...(description ? { business_type: description } : {}),
-    ...(zip ? { zip } : {}),
-  });
+  // The restaurant lane BYPASSES the CRM inbound-lead webhook — exactly like the Foxquilt FB lane.
+  // upsertInboundLead fires an automated first-touch SMS, and we must NOT auto-text these leads: the
+  // supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE itself as the only
+  // outbound touch. So restaurant submissions go to quotes@ (+ CAPI) only, never the CRM. Church and
+  // every other lane are unchanged.
+  const isRestaurantLane = source === "restaurant-landing";
+  const forwarded = isRestaurantLane
+    ? false
+    : await forwardToCrm({
+        ...(name ? { name } : {}),
+        ...(email ? { email } : {}),
+        ...(phone ? { phone } : {}),
+        ...(description ? { business_type: description } : {}),
+        ...(zip ? { zip } : {}),
+      });
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
   // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
