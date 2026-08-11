@@ -82,17 +82,6 @@ const BUSINESS_TYPES: BizType[] = [
 const rainbowClassFor = (businessType?: string): string | undefined =>
   BUSINESS_TYPES.find((o) => o.value === businessType)?.rainbowClass;
 
-// Q7-equivalent coverage product. GL only = liability, skips the property
-// block; BOP = the instant-quote product (liability + building & contents),
-// reveals the property block.
-const COVERAGE: Option[] = [
-  { label: "General Liability only (GL)", value: "GL" },
-  {
-    label: "Business Owner's Policy (BOP - liability + building & contents)",
-    value: "BOP",
-  },
-];
-
 const EXPIRATION: Option[] = [
   { label: "This month", value: "This month" },
   { label: "In 1-3 months", value: "In 1-3 months" },
@@ -110,36 +99,6 @@ const ALCOHOL: Option[] = [
   { label: "Under 30%", value: "Under 30%" },
   { label: "30-50%", value: "30-50%" },
   { label: "Over 50%", value: "Over 50%" },
-];
-
-const HEATING: Option[] = [
-  { label: "Forced air (gas)", value: "Forced air (gas)" },
-  { label: "Electric", value: "Electric" },
-  { label: "Space heaters", value: "Space heaters" },
-  { label: "Wood stove", value: "Wood stove" },
-  { label: "Not sure", value: "Not sure" },
-];
-
-const WIND: Option[] = [
-  { label: "Yes", value: "Yes" },
-  { label: "No", value: "No" },
-  { label: "Not sure", value: "Not sure" },
-];
-
-const FIRE_SECURITY: string[] = [
-  "Sprinklers",
-  "Monitored fire alarm",
-  "Burglar alarm",
-  "Fire extinguishers",
-  "Hood suppression (Ansul)",
-  "None",
-];
-
-const CLAIMS: Option[] = [
-  { label: "None", value: "None" },
-  { label: "One", value: "One" },
-  { label: "Two or more", value: "Two or more" },
-  { label: "Prefer to discuss", value: "Prefer to discuss" },
 ];
 
 // Business structure = the policy's named insured type (a sole prop's named
@@ -169,24 +128,13 @@ function qualify(businessType?: string, alcohol?: string): Qualification {
   return "qualified";
 }
 
-// Fields in the property block — touching one fires the "PropertyStarted"
-// funnel milestone.
-const PROPERTY_SET_FIELDS = new Set([
-  "ownRent",
-  "yearBuilt",
-  "roofYear",
-  "updates",
-  "sqft",
-  "heating",
-  "value",
-  "wind",
-]);
+// Touching own/rent fires the "PropertyStarted" funnel milestone.
+const PROPERTY_SET_FIELDS = new Set(["ownRent"]);
 
 export default function RestaurantLandingPage() {
   // Claims defaults to "None" — the common case, and it means the detail block
   // always carries a claims answer even if untouched.
   const [f, setF] = useState<FormState>({ claims: "None" });
-  const [fireSec, setFireSec] = useState<string[]>([]);
   const [status, setStatus] = useState<
     "idle" | "sending" | "done" | "es-done" | "disqualified" | "error"
   >("idle");
@@ -207,23 +155,12 @@ export default function RestaurantLandingPage() {
     if (PROPERTY_SET_FIELDS.has(k)) track("PropertyStarted");
     setF((p) => ({ ...p, [k]: v }));
   };
-  const toggle =
-    (setter: React.Dispatch<React.SetStateAction<string[]>>) =>
-    (v: string) => {
-      track("FormStart");
-      setter((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
-    };
 
   // Single coverage gate: BOP (the instant-quote product) reveals the property
   // block; GL only skips it. Revenue + alcohol are always asked now (both lanes
   // need them for routing/class/qualification).
-  const wantsProperty = f.coverage === "BOP";
-  const owns = f.ownRent === "Own";
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
   const notFood = f.businessType === NOT_FOOD_TYPE;
-
-  // "Coverage selected" here = the coverage product has been chosen.
-  const gatesAnswered = Boolean(f.coverage);
 
   const canSubmit =
     !notFood &&
@@ -233,7 +170,6 @@ export default function RestaurantLandingPage() {
     f.businessName?.trim() &&
     f.entityType?.trim() &&
     f.businessType?.trim() &&
-    gatesAnswered &&
     status !== "sending";
 
   const details = useMemo(() => {
@@ -249,33 +185,15 @@ export default function RestaurantLandingPage() {
     push("Rainbow class", rainbowClassFor(f.businessType));
     push("Building address", f.address);
     push("Policy expiration", f.expiration);
-    // Revenue + employees + alcohol are asked on both lanes now (routing / class
-    // / qualification; Next rates on employees/payroll).
+    // Rainbow writes BOP only and auto-derives property, so the quote needs just
+    // class + sales + address + alcohol. own/rent captured for bind-time building coverage.
     push("Approximate annual revenue", f.revenue);
-    push("Employees", f.employees);
     push("Alcohol as % of sales", f.alcohol);
-    push("Coverage needed", f.coverage === "BOP" ? "BOP (liability + property)" : f.coverage === "GL" ? "GL only" : f.coverage);
-    if (wantsProperty) {
-      push("Own or rent", f.ownRent);
-      if (owns) {
-        push("Year built", f.yearBuilt);
-        push("Roof last replaced", f.roofYear);
-        push("Updates (electrical/plumbing/HVAC)", f.updates);
-      }
-      push("Square footage", f.sqft);
-      push("Heating type", f.heating);
-      push("Desired coverage limit (building + contents)", f.value);
-      push("Wind / hurricane coverage", f.wind);
-      if (fireSec.length) push("Fire & security", fireSec.join(", "));
-    }
-    push("Claims (last 5 yrs)", f.claims);
+    push("Own or rent", f.ownRent);
     return d;
-  }, [f, fireSec, wantsProperty, owns]);
+  }, [f]);
 
   // Funnel milestones driven by state.
-  useEffect(() => {
-    if (gatesAnswered) track("CoverageSelected");
-  }, [gatesAnswered, track]);
   useEffect(() => {
     if (f.fullName?.trim() && emailValid && f.phone?.trim()) {
       track("ContactDone");
@@ -630,18 +548,6 @@ export default function RestaurantLandingPage() {
             />
           </Field>
           <Field
-            label="Approximate number of employees"
-            hint="Full and part-time, your best estimate is fine."
-          >
-            <Input
-              value={f.employees}
-              onChange={(v) => set("employees", v)}
-              placeholder="8"
-              type="number"
-              inputMode="numeric"
-            />
-          </Field>
-          <Field
             label="Alcohol as % of sales"
             hint="Roughly what share of your sales is alcohol."
           >
@@ -652,137 +558,15 @@ export default function RestaurantLandingPage() {
               options={ALCOHOL}
             />
           </Field>
-        </Section>
-
-        {/* Single coverage gate — GL vs BOP */}
-        <Section title="Coverage you need">
-          <Field
-            label="What coverage do you need?"
-            required
-            hint="BOP bundles liability with your building and contents (fire, theft, storm) and is our fastest instant quote. Pick BOP even if you rent and just want your equipment/build-out covered."
-          >
+          <Field label="Do you own or rent your space?">
             <Radio
-              name="coverage"
-              value={f.coverage}
-              onChange={(v) => set("coverage", v)}
-              options={COVERAGE}
-            />
-          </Field>
-
-          {wantsProperty && (
-            <div className="space-y-4 rounded-xl border border-[#EEF1FF] bg-[#FBFCFF] p-4">
-              <Field label="Do you own or rent the space?">
-                <Radio
-                  name="ownRent"
-                  value={f.ownRent}
-                  onChange={(v) => set("ownRent", v)}
-                  options={[
-                    { label: "Own", value: "Own" },
-                    { label: "Rent (tenant)", value: "Rent" },
-                  ]}
-                />
-              </Field>
-
-              {/* Structure questions the landlord owns — Own only. */}
-              {owns && (
-                <>
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <Field
-                      label="Year the building was built"
-                      hint="Best guess is fine."
-                    >
-                      <Input
-                        value={f.yearBuilt}
-                        onChange={(v) => set("yearBuilt", v)}
-                        placeholder="1978"
-                      />
-                    </Field>
-                    <Field
-                      label="Year the roof was last replaced"
-                      hint="Or type 'original'."
-                    >
-                      <Input
-                        value={f.roofYear}
-                        onChange={(v) => set("roofYear", v)}
-                        placeholder="2015"
-                      />
-                    </Field>
-                  </div>
-                  <Field
-                    label="Update years — electrical / plumbing / HVAC"
-                    hint="The more recent, the lower your premium."
-                  >
-                    <Input
-                      value={f.updates}
-                      onChange={(v) => set("updates", v)}
-                      placeholder="electrical 2010, plumbing original, HVAC 2019"
-                    />
-                  </Field>
-                </>
-              )}
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Field
-                  label="Building square footage"
-                  hint="Best estimate is fine."
-                >
-                  <Input
-                    value={f.sqft}
-                    onChange={(v) => set("sqft", v)}
-                    placeholder="3,000"
-                    inputMode="numeric"
-                  />
-                </Field>
-                <Field label="Heating type">
-                  <Select
-                    value={f.heating}
-                    onChange={(v) => set("heating", v)}
-                    options={HEATING}
-                    placeholder="Select one"
-                  />
-                </Field>
-              </div>
-              {/* Building value — owners only. Renters skip it; we assume a
-                  typical BPP/contents value downstream. */}
-              {owns && (
-                <Field
-                  label="Desired coverage limit — building + contents / build-out"
-                  hint="How much you'd want it insured for - roughly the rebuild cost or current value. Best guess is fine."
-                >
-                  <Input
-                    value={f.value}
-                    onChange={(v) => set("value", v)}
-                    placeholder="$500,000"
-                  />
-                </Field>
-              )}
-              <Field label="Do you want wind / hurricane coverage included?">
-                <Radio
-                  name="wind"
-                  value={f.wind}
-                  onChange={(v) => set("wind", v)}
-                  options={WIND}
-                />
-              </Field>
-              <Field label="Fire & security on site" hint="Select all that apply.">
-                <CheckGroup
-                  options={FIRE_SECURITY}
-                  selected={fireSec}
-                  onToggle={toggle(setFireSec)}
-                />
-              </Field>
-            </div>
-          )}
-        </Section>
-
-        {/* Claims */}
-        <Section title="Claims history">
-          <Field label="Any property or liability claims in the last 5 years?">
-            <Select
-              value={f.claims}
-              onChange={(v) => set("claims", v)}
-              options={CLAIMS}
-              placeholder="Select one"
+              name="ownRent"
+              value={f.ownRent}
+              onChange={(v) => set("ownRent", v)}
+              options={[
+                { label: "Own", value: "Own" },
+                { label: "Rent (tenant)", value: "Rent" },
+              ]}
             />
           </Field>
         </Section>
