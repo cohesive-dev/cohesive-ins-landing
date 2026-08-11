@@ -142,6 +142,16 @@ const CLAIMS: Option[] = [
   { label: "Prefer to discuss", value: "Prefer to discuss" },
 ];
 
+// Business structure = the policy's named insured type (a sole prop's named
+// insured is a person, an LLC's is the entity). Captured so bind needs no
+// follow-up on who the policy is issued to.
+const ENTITY_TYPES: Option[] = [
+  { label: "LLC", value: "LLC" },
+  { label: "Corporation", value: "Corporation" },
+  { label: "Sole proprietorship", value: "Sole proprietorship" },
+  { label: "Partnership", value: "Partnership" },
+];
+
 type FormState = Record<string, string>;
 
 type Qualification = "qualified" | "es" | "disqualified";
@@ -221,6 +231,7 @@ export default function RestaurantLandingPage() {
     emailValid &&
     f.phone?.trim() &&
     f.businessName?.trim() &&
+    f.entityType?.trim() &&
     f.businessType?.trim() &&
     gatesAnswered &&
     status !== "sending";
@@ -231,6 +242,7 @@ export default function RestaurantLandingPage() {
       if (value && value.trim()) d.push({ label, value: value.trim() });
     };
     push("Business name", f.businessName);
+    push("Business structure", f.entityType);
     push("Business type", f.businessType);
     // Rainbow class code (only the in-appetite types carry one) so the quoter
     // needs zero inference. Absent for bar / not-a-food-business (disqualified).
@@ -557,12 +569,20 @@ export default function RestaurantLandingPage() {
 
         {/* Business basics */}
         <Section title="About your business">
-          <Field label="Business name" required>
+          <Field label="Legal business name" required hint="As registered - e.g., Glenwood Grill LLC">
             <Input
               value={f.businessName}
               onChange={(v) => set("businessName", v)}
-              placeholder="Joe's Diner"
+              placeholder="Glenwood Grill LLC"
               autoComplete="organization"
+            />
+          </Field>
+          <Field label="How is your business structured?" required>
+            <Radio
+              name="entityType"
+              value={f.entityType}
+              onChange={(v) => set("entityType", v)}
+              options={ENTITY_TYPES}
             />
           </Field>
           <Field label="Which best describes your business?" required>
