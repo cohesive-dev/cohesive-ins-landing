@@ -505,7 +505,8 @@ export default function RestaurantLandingPage() {
           </h1>
           <p className="mt-3 text-[#27455C]">
             A few quick questions and we&rsquo;ll shop your GL and property
-            across our carriers. No spam, no obligation.
+            across our carriers. We know you&rsquo;re busy, so we&rsquo;ll get you a
+            quote over text and email, no call needed.
           </p>
         </div>
       </section>
