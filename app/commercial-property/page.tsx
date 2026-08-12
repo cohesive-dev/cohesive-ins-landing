@@ -117,6 +117,22 @@ const YES_NO: Option[] = [
   { label: "Not sure", value: "Not sure" },
 ];
 
+const HEATING: Option[] = [
+  { label: "Forced air (gas)", value: "Forced air (gas)" },
+  { label: "Electric", value: "Electric" },
+  { label: "Boiler / radiator", value: "Boiler / radiator" },
+  { label: "Space heaters", value: "Space heaters" },
+  { label: "None / not sure", value: "None / not sure" },
+];
+
+// Ranges that imply a real update happened — these reveal the optional
+// exact-year input (carriers rate on the actual year, not the range).
+const UPDATED_RANGES = new Set([
+  "Within last 10 years",
+  "10-20 years ago",
+  "20+ years ago",
+]);
+
 // "Sprinklered" is asked as its own Y/N below (carriers want it explicit) so
 // it's intentionally not in this multi-select.
 const FIRE_SECURITY: string[] = [
@@ -143,9 +159,15 @@ const PROPERTY_SET_FIELDS = new Set([
   "yearBuilt",
   "roofType",
   "roofUpdated",
+  "roofYear",
   "electricalUpdated",
+  "electricalYear",
   "plumbingUpdated",
+  "plumbingYear",
   "heatingUpdated",
+  "heatingYear",
+  "heatingType",
+  "wind",
   "sqft",
   "value",
   "rentalIncome",
@@ -242,9 +264,15 @@ export default function CommercialPropertyLandingPage() {
     push("Square footage", f.sqft);
     push("Roof type", f.roofType);
     push("Roof replaced", f.roofUpdated);
+    push("Roof year (exact)", f.roofYear);
     push("Electrical updated", f.electricalUpdated);
+    push("Electrical year (exact)", f.electricalYear);
     push("Plumbing updated", f.plumbingUpdated);
+    push("Plumbing year (exact)", f.plumbingYear);
     push("Heating / HVAC updated", f.heatingUpdated);
+    push("Heating / HVAC year (exact)", f.heatingYear);
+    push("Heating type", f.heatingType);
+    push("Wind / hail coverage wanted", f.wind);
     push("Sprinklered", f.sprinklered);
     if (fireSec.length) push("Fire & security", fireSec.join(", "));
     push("Building value / coverage limit", f.value);
@@ -522,14 +550,40 @@ export default function CommercialPropertyLandingPage() {
               <Field label="When was the roof last replaced?" required>
                 <Select value={f.roofUpdated} onChange={(v) => set("roofUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
               </Field>
+              {UPDATED_RANGES.has(f.roofUpdated ?? "") && (
+                <Field label="Roof replacement year" hint="Best guess is fine — the exact year gets you a sharper rate.">
+                  <Input value={f.roofYear} onChange={(v) => set("roofYear", v)} placeholder="2015" inputMode="numeric" />
+                </Field>
+              )}
               <Field label="When was the electrical last updated?" required>
                 <Select value={f.electricalUpdated} onChange={(v) => set("electricalUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
               </Field>
+              {UPDATED_RANGES.has(f.electricalUpdated ?? "") && (
+                <Field label="Electrical update year" hint="Best guess is fine.">
+                  <Input value={f.electricalYear} onChange={(v) => set("electricalYear", v)} placeholder="2010" inputMode="numeric" />
+                </Field>
+              )}
               <Field label="When was the plumbing last updated?" required>
                 <Select value={f.plumbingUpdated} onChange={(v) => set("plumbingUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
               </Field>
+              {UPDATED_RANGES.has(f.plumbingUpdated ?? "") && (
+                <Field label="Plumbing update year" hint="Best guess is fine.">
+                  <Input value={f.plumbingYear} onChange={(v) => set("plumbingYear", v)} placeholder="2010" inputMode="numeric" />
+                </Field>
+              )}
               <Field label="When was the heating / HVAC last updated?" required>
                 <Select value={f.heatingUpdated} onChange={(v) => set("heatingUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
+              </Field>
+              {UPDATED_RANGES.has(f.heatingUpdated ?? "") && (
+                <Field label="Heating / HVAC update year" hint="Best guess is fine.">
+                  <Input value={f.heatingYear} onChange={(v) => set("heatingYear", v)} placeholder="2019" inputMode="numeric" />
+                </Field>
+              )}
+              <Field label="Heating type">
+                <Select value={f.heatingType} onChange={(v) => set("heatingType", v)} options={HEATING} placeholder="Select one" />
+              </Field>
+              <Field label="Do you want wind / hail coverage included?">
+                <Radio name="wind" value={f.wind} onChange={(v) => set("wind", v)} options={YES_NO} />
               </Field>
               <Field label="Is the building sprinklered?">
                 <Radio name="sprinklered" value={f.sprinklered} onChange={(v) => set("sprinklered", v)} options={YES_NO} />
