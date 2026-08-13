@@ -91,12 +91,7 @@ function toE164(raw: string | undefined): string | undefined {
   return candidate && E164_RE.test(candidate) ? candidate : undefined;
 }
 
-// TEMP DIAGNOSTIC (2026-08-13): the forward has been failing in prod with no reachable logs, so
-// the failure detail (HTTP status + body, or the thrown error incl. cause) is returned to the
-// caller alongside ok=false. Remove the detail plumbing once the root cause is fixed.
-async function forwardToCrm(
-  payload: Record<string, string>,
-): Promise<{ ok: boolean; detail?: string }> {
+async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
       method: "POST",
@@ -107,22 +102,17 @@ async function forwardToCrm(
       signal: AbortSignal.timeout(10_000),
     });
     if (!response.ok) {
-      const text = await response.text().catch(() => "");
-      console.error("CRM inbound-lead rejected the submission", response.status, text);
-      return {
-        ok: false,
-        detail: `HTTP ${response.status} from ${CRM_INBOUND_LEAD_URL}: ${text.slice(0, 300)}`,
-      };
+      console.error(
+        "CRM inbound-lead rejected the submission",
+        response.status,
+        await response.text().catch(() => ""),
+      );
+      return false;
     }
-    return { ok: true };
+    return true;
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
-    const cause =
-      error instanceof Error && error.cause !== undefined ? ` cause=${String(error.cause)}` : "";
-    return {
-      ok: false,
-      detail: `fetch to ${CRM_INBOUND_LEAD_URL} threw: ${String(error)}${cause}`,
-    };
+    return false;
   }
 }
 
@@ -295,8 +285,8 @@ export async function POST(request: NextRequest) {
   // outbound touch. So restaurant submissions go to quotes@ (+ CAPI) only, never the CRM. Church and
   // every other lane are unchanged.
   const isRestaurantLane = source === "restaurant-landing";
-  const forward = isRestaurantLane
-    ? { ok: false, detail: "restaurant lane bypasses the CRM by design" }
+  const forwarded = isRestaurantLane
+    ? false
     : await forwardToCrm({
         ...(name ? { name } : {}),
         ...(email ? { email } : {}),
@@ -304,7 +294,6 @@ export async function POST(request: NextRequest) {
         ...(description ? { business_type: description } : {}),
         ...(zip ? { zip } : {}),
       });
-  const forwarded = forward.ok;
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
   // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
@@ -341,14 +330,7 @@ export async function POST(request: NextRequest) {
       : "skipped";
 
   return NextResponse.json(
-    {
-      ok: true,
-      crm: forwarded ? "sent" : "failed",
-      // TEMP DIAGNOSTIC (2026-08-13): surface the forward failure so it can be read without
-      // Vercel log access. Remove with the forwardToCrm detail plumbing once fixed.
-      ...(forward.detail ? { crm_detail: forward.detail } : {}),
-      capi,
-    },
+    { ok: true, crm: forwarded ? "sent" : "failed", capi },
     { status: 200 },
   );
 }
