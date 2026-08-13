@@ -11,8 +11,12 @@ import { sendIntakeNotification } from "@/lib/notify";
 // texts and emails the lead, which must not happen to someone who is still typing or who never
 // submitted. Those keep the local quotes@ alert as their only signal.
 
-const CRM_BASE_URL = process.env.CRM_BASE_URL ?? "https://crm.cohesiveinsure.com";
-const CRM_INBOUND_LEAD_URL = `${CRM_BASE_URL}/api/webhooks/inbound-lead`;
+// Deliberately NOT env-configurable. The Vercel env had CRM_BASE_URL=https://www.cohesiveinsure.com
+// (this site), so every forward POSTed to itself, got its own 404 page, and silently dropped the
+// CRM handoff for weeks (2026-08-13 diagnosis — 4 church fills that day alone survived only via
+// the quotes@ fallback). The CRM host changes ~never; a hard-coded constant fails loudly in code
+// review instead of silently in a dashboard. Delete the stale CRM_BASE_URL var from Vercel.
+const CRM_INBOUND_LEAD_URL = "https://crm.cohesiveinsure.com/api/webhooks/inbound-lead";
 
 // Meta Conversions API (server-side Lead, deduped with the browser pixel via a
 // shared event_id). Dark-safe: if META_CAPI_TOKEN isn't set it no-ops, exactly
