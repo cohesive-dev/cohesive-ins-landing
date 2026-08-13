@@ -304,6 +304,28 @@ export default function ReligiousLandingPage() {
         : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     fbq("track", "Lead", {}, { eventID: eventId });
     fbq("trackCustom", "ReligiousQuoteSubmit");
+    // Redundant direct handoff to the CRM inbound-lead webhook. The server-side forward inside
+    // /api/intake has been failing from Vercel (2026-08-13: 4 church fills with no CRM row), so the
+    // browser also posts the flat contact fields straight to the CRM. no-cors keeps it
+    // preflight-free (the webhook sets no CORS headers; text/plain body is parsed fine) at the cost
+    // of an opaque response — acceptable, it's fire-and-forget redundancy. upsertInboundLead is
+    // idempotent, so intake-forward + this both landing cannot duplicate the contact or re-text.
+    // Mirrors the forward's mapping ("<businessType> — via <source>"); `details` stays out (the
+    // webhook only takes flat fields — the deep answers reach quotes@ via /api/intake). FINAL
+    // submits only — partials/abandons must never reach the CRM (its fan-out texts the lead).
+    fetch("https://crm.cohesiveinsure.com/api/webhooks/inbound-lead", {
+      method: "POST",
+      mode: "no-cors",
+      keepalive: true,
+      body: JSON.stringify({
+        source: "webform",
+        name: f.fullName,
+        email: f.email,
+        phone: f.phone,
+        business_type: "House of worship — via religious-landing",
+        zip: extractZip(f.address),
+      }),
+    }).catch(() => {});
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
