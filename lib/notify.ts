@@ -125,3 +125,61 @@ export async function sendIntakeNotification(
     console.error("Failed to send intake notification email", error);
   }
 }
+
+// ---- /rate-check policy upload ---------------------------------------------
+
+export type PolicyUploadAttachment = {
+  filename: string;
+  content: Buffer;
+  contentType?: string;
+};
+
+/**
+ * quotes@ handoff for the /rate-check policy-upload lane. Unlike
+ * sendIntakeNotification this RETURNS success/failure: the attachment email is
+ * the only place the uploaded policy lands, so the route must surface a
+ * delivery failure to the visitor instead of swallowing it.
+ */
+export async function sendPolicyUploadNotification(
+  fields: { name?: string; email?: string; phone?: string },
+  attachments: PolicyUploadAttachment[],
+): Promise<boolean> {
+  const password = process.env.QUOTES_SMTP_PASSWORD;
+  if (!password) {
+    console.error(
+      "QUOTES_SMTP_PASSWORD is not set — cannot deliver policy upload",
+    );
+    return false;
+  }
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: { user: QUOTES_ADDRESS, pass: password },
+  });
+  const who = fields.name || fields.email || fields.phone || "unknown";
+  const lines = [
+    `Policy upload from /rate-check (contractor rate-check lane).`,
+    ``,
+    `Name: ${fields.name ?? "(not provided)"}`,
+    `Email: ${fields.email ?? "(not provided)"}`,
+    `Phone: ${fields.phone ?? "(not provided)"}`,
+    `Files: ${attachments.map((a) => a.filename).join(", ")}`,
+    ``,
+    `Quote from the attached incumbent policy (dec page has carrier, limits,`,
+    `premium, expiration). HIGH-PREMIUM lane: human call relay, no auto-SMS.`,
+  ];
+  try {
+    await transporter.sendMail({
+      from: `Cohesive Insurance Services <${QUOTES_ADDRESS}>`,
+      to: QUOTES_ADDRESS,
+      subject: `📎 POLICY UPLOAD (rate-check): ${who}`,
+      text: lines.join("\n"),
+      attachments,
+    });
+    return true;
+  } catch (error) {
+    console.error("Failed to send policy upload email", error);
+    return false;
+  }
+}
