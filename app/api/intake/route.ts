@@ -126,12 +126,41 @@ async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
 // "RestaurantDisqualified" to emit a NON-Lead signal. Hashes PII (email/phone)
 // per Meta's spec; pulls fbp/fbc/ip/ua from the request for match quality.
 // Never throws into the route — logs and returns on failure.
+// Contractor lane: expected-premium weight per trade (Kevin 2026-08-14).
+// Multi-trade leads take the MAX weight (e.g. roofing+carpentry => 100 —
+// exactly how the $8.9k roofing deal looked at intake). Values are relative
+// premium-quality signals for Meta's value optimization, not dollars.
+const CONTRACTOR_TRADE_VALUES: Array<[RegExp, number]> = [
+  [/roof|restoration|excavation|demolition|waterproof|foundation/i, 100],
+  [/general contractor|remodel|renovation|masonry|concrete/i, 60],
+  [/siding|gutter|floor|tile|paint|carpentry|framing|paving|asphalt|pool/i, 40],
+  [/tree/i, 15],
+];
+
+function contractorLeadValue(
+  details: Array<{ label: string; value: string }> | undefined,
+  businessType: string | undefined,
+): number | undefined {
+  const tradeAnswers = (details ?? [])
+    .filter((d) => /trade/i.test(d.label))
+    .map((d) => d.value)
+    .concat(businessType ? [businessType] : [])
+    .join(", ");
+  if (!tradeAnswers) return undefined;
+  let best: number | undefined;
+  for (const [re, weight] of CONTRACTOR_TRADE_VALUES) {
+    if (re.test(tradeAnswers) && (best === undefined || weight > best)) best = weight;
+  }
+  return best;
+}
+
 async function sendCapiEvent(
   request: NextRequest,
   eventName: string,
   eventId: string,
   email?: string,
   phone?: string,
+  value?: number,
 ): Promise<"sent" | "skipped" | "failed"> {
   const token = process.env.META_CAPI_TOKEN;
   if (!token) {
@@ -162,6 +191,11 @@ async function sendCapiEvent(
           request.headers.get("referer") ??
           "https://cohesiveinsure.com/religious",
         user_data: userData,
+        // Trade-weighted lead value (contractor lane): lets Meta learn premium
+        // QUALITY, not just lead count. Mirrors the church urgency-value curve.
+        ...(value !== undefined
+          ? { custom_data: { value, currency: "USD" } }
+          : {}),
       },
     ],
   };
@@ -334,9 +368,13 @@ export async function POST(request: NextRequest) {
   // for the E&S lane so Meta captures the lead without optimizing toward it.
   const eventId = asTrimmedString(body.eventId);
   const eventName = capiEventName ?? "Lead";
+  const capiValue =
+    source === "contractors-landing"
+      ? contractorLeadValue(details, businessType)
+      : undefined;
   const capi =
     eventId && reachable
-      ? await sendCapiEvent(request, eventName, eventId, email, phone)
+      ? await sendCapiEvent(request, eventName, eventId, email, phone, capiValue)
       : "skipped";
 
   return NextResponse.json(
