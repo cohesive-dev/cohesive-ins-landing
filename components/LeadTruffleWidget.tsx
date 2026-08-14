@@ -3,25 +3,16 @@
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 
-// The chat bubble competes with the embedded Next quote flow on the vertical
-// splash pages (it auto-opens on top of the form fields on mobile), so skip
-// it there.
-const SPLASH_ROUTES = [
-  "/restaurant",
-  "/restaurants",
-  "/restaurants-quote",
-  "/cleaning",
-  "/beauty",
-  "/fitness",
-  "/retail",
-  "/landscaping",
-  "/painting",
-  "/religious",
-];
+// Kevin 2026-08-13: LeadTruffle shows ONLY on the homepage and the /insurance
+// pSEO pages. Every other page (vertical splash pages, /religious,
+// /commercial-property, /contractors, /rate-check, ...) hides it - the bubble
+// competes with the pages' own quote forms, especially on mobile.
+const ALLOWED = (pathname: string) =>
+  pathname === "/" || pathname.startsWith("/insurance");
 
 export default function LeadTruffleWidget() {
   const pathname = usePathname();
-  if (pathname && SPLASH_ROUTES.some((r) => pathname.startsWith(r))) return null;
+  if (!pathname || !ALLOWED(pathname)) return null;
 
   return (
     <Script id="leadtruffle-widget" strategy="afterInteractive">
