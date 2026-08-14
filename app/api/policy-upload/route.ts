@@ -156,6 +156,28 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Record the contact in the CRM with the automated first touch suppressed —
+  // the rate-check lane's quote loop (shop the uploaded policy, then call/text
+  // with the result) owns the first outbound touch. Non-fatal: quotes@ already
+  // has the policy, so a CRM hiccup must not fail the upload.
+  try {
+    await fetch("https://crm.cohesiveinsure.com/api/webhooks/inbound-lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source: "webform",
+        ...(name ? { name } : {}),
+        ...(email ? { email } : {}),
+        ...(phone ? { phone } : {}),
+        business_type: "Contractor - rate check (policy upload) — via contractor-upload",
+        suppress_first_touch: "true",
+      }),
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (error) {
+    console.error("CRM forward for policy upload failed", error);
+  }
+
   const capi = eventId
     ? await sendCapiLead(request, eventId, email, phone)
     : "skipped";

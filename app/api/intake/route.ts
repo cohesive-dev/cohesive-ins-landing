@@ -285,6 +285,10 @@ export async function POST(request: NextRequest) {
   // outbound touch. So restaurant submissions go to quotes@ (+ CAPI) only, never the CRM. Church and
   // every other lane are unchanged.
   const isRestaurantLane = source === "restaurant-landing";
+  // The contractor lane records the contact in the CRM but suppresses the automated
+  // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
+  // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
+  const isContractorLane = source === "contractors-landing";
   const forwarded = isRestaurantLane
     ? false
     : await forwardToCrm({
@@ -293,6 +297,7 @@ export async function POST(request: NextRequest) {
         ...(phone ? { phone } : {}),
         ...(description ? { business_type: description } : {}),
         ...(zip ? { zip } : {}),
+        ...(isContractorLane ? { suppress_first_touch: "true" } : {}),
       });
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
