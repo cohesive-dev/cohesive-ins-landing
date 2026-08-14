@@ -230,8 +230,7 @@ export default function RateCheckPage() {
           <p className="mt-3 text-[#27455C]">
             Upload your current policy (or just snap a photo of it). We use AI
             to automatically shop it and find you a better rate - a licensed
-            agent reviews everything before it reaches you. That&rsquo;s it -
-            no forms, no spam.
+            agent reviews everything before it reaches you.
           </p>
         </div>
       </section>
