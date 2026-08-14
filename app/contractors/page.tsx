@@ -37,37 +37,45 @@ const GMAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 type Option = { label: string; value: string };
 
+// Mirrors the FB instant form v5 exactly (Kevin's final 14-trade list).
 const TRADES: Option[] = [
   { label: "General contractor", value: "General contractor" },
   { label: "Remodeling / renovations", value: "Remodeling / renovations" },
   { label: "Roofing", value: "Roofing" },
   { label: "Painting", value: "Painting" },
-  { label: "Electrical / plumbing / HVAC", value: "Electrical / plumbing / HVAC" },
-  { label: "Framing / masonry / concrete", value: "Framing / masonry / concrete" },
-  { label: "Siding / exterior", value: "Siding / exterior" },
+  { label: "Carpentry / framing", value: "Carpentry / framing" },
+  { label: "Masonry / concrete", value: "Masonry / concrete" },
+  { label: "Siding / gutters", value: "Siding / gutters" },
+  { label: "Flooring / tile", value: "Flooring / tile" },
   { label: "Excavation / demolition", value: "Excavation / demolition" },
-  { label: "Tree work / landscaping", value: "Tree work / landscaping" },
+  { label: "Paving / asphalt", value: "Paving / asphalt" },
+  { label: "Tree service", value: "Tree service" },
+  { label: "Restoration (water / fire damage)", value: "Restoration (water / fire damage)" },
+  { label: "Waterproofing / foundation repair", value: "Waterproofing / foundation repair" },
+  { label: "Pool construction / service", value: "Pool construction / service" },
   { label: "Other trade", value: "Other trade" },
 ];
 
-const ROOFING_PCT: Option[] = [
-  { label: "Under 25%", value: "Under 25%" },
-  { label: "25% - 50%", value: "25% - 50%" },
-  { label: "Over 50%", value: "Over 50%" },
+const OTHER_TRADES: Option[] = [
+  { label: "None - just my primary trade", value: "None" },
+  ...TRADES,
 ];
 
-const HOT_WORK: Option[] = [
-  { label: "No - shingle / mechanically fastened only", value: "No - shingle/mechanical only" },
-  { label: "Yes", value: "Yes" },
-  { label: "Not sure", value: "Not sure" },
+const PRIMARY_PCT: Option[] = [
+  { label: "All of it (100%)", value: "All of it (100%)" },
+  { label: "75% - 99%", value: "75% - 99%" },
+  { label: "50% - 75%", value: "50% - 75%" },
+  { label: "Under 50%", value: "Under 50%" },
 ];
 
 const REVENUE: Option[] = [
   { label: "Under $250k", value: "Under $250k" },
-  { label: "$250k - $1M", value: "$250k - $1M" },
-  { label: "$1M - $5M", value: "$1M - $5M" },
-  { label: "$5M - $15M", value: "$5M - $15M" },
-  { label: "Over $15M", value: "Over $15M" },
+  { label: "$250k - $500k", value: "$250k - $500k" },
+  { label: "$500k - $1M", value: "$500k - $1M" },
+  { label: "$1M - $2M", value: "$1M - $2M" },
+  { label: "$2M - $4M", value: "$2M - $4M" },
+  { label: "$4M - $8M", value: "$4M - $8M" },
+  { label: "Over $8M", value: "Over $8M" },
 ];
 
 const EMPLOYEES: Option[] = [
@@ -134,16 +142,11 @@ export default function ContractorsLandingPage() {
 
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
 
-  // Disqualifier: personal/home coverage seekers. The form collapses to a
-  // polite "not a fit" message and nothing submits.
-  const disqualified = f.coverageFor === "Personal";
-  useEffect(() => {
-    if (disqualified) track("ContractorDisqualified");
-  }, [disqualified, track]);
-
-  const qualified = f.coverageFor === "Business";
-
-  const doesRoofing = f.anyRoofing === "Yes";
+  // No qualifier gate on the landing page (Kevin 2026-08-13): ad traffic is
+  // business owners; the personal-DQ mechanic only pays on the FB form where
+  // Meta trains on it. The "commercial policies only" hero line is the filter.
+  const disqualified = false;
+  const qualified = true;
 
   const canSubmit =
     f.fullName?.trim() &&
@@ -151,12 +154,11 @@ export default function ContractorsLandingPage() {
     f.phone?.trim() &&
     f.legalName?.trim() &&
     f.address?.trim() &&
-    qualified &&
     !!f.trade &&
+    !!f.otherTrades &&
+    !!f.primaryPct &&
     !!f.revenue &&
     !!f.employees &&
-    !!f.anyRoofing &&
-    (!doesRoofing || !!f.roofingPct) &&
     status !== "sending";
 
   const details = useMemo(() => {
@@ -166,10 +168,9 @@ export default function ContractorsLandingPage() {
     };
     push("Legal business name", f.legalName);
     push("Business address", f.address);
-    push("Main trade", f.trade);
-    push("Does roofing work", f.anyRoofing);
-    push("Roofing % of work", f.roofingPct);
-    push("Torch-down / hot-tar roofing", f.hotWork);
+    push("Primary trade", f.trade);
+    push("Other trades", f.otherTrades);
+    push("Primary trade % of work", f.primaryPct);
     push("Annual revenue", f.revenue);
     push("W2 employees", f.employees);
     push("Annual W2 payroll", f.payroll);
@@ -319,20 +320,18 @@ export default function ContractorsLandingPage() {
     <main className="min-h-screen bg-white">
       {/* Hero */}
       <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
-        <div className="mx-auto max-w-2xl px-5 py-8 sm:px-6 sm:py-10">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[#2040E7]">
+        <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 sm:py-7">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
             For contractors &amp; construction businesses
           </span>
-          <h1 className="mt-2 text-3xl font-bold leading-tight text-[#131517] sm:text-4xl">
+          <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
             General liability built for contractors
           </h1>
-          <p className="mt-3 text-[#27455C]">
-            GCs, remodelers, roofers, painters, trades with crews - we use AI
-            to automatically shop your coverage and find you a better rate,
-            reviewed by a licensed agent. Most quotes come back within a day.
-            No spam, no obligation.
+          <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
+            We use AI to automatically shop your coverage and find you a
+            better rate, reviewed by a licensed agent.
           </p>
-          <p className="mt-2 text-sm text-[#6B6D71]">
+          <p className="mt-1.5 text-xs text-[#6B6D71]">
             Commercial policies only - we don&rsquo;t quote personal or
             homeowner coverage.
           </p>
@@ -360,23 +359,6 @@ export default function ContractorsLandingPage() {
               <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="(929) 594-5450" autoComplete="tel" inputMode="tel" />
             </Field>
           </div>
-          <Field label="What do you need coverage for?" required>
-            <Radio
-              name="coverageFor"
-              value={f.coverageFor}
-              onChange={(v) => set("coverageFor", v)}
-              options={[
-                { label: "My business (commercial)", value: "Business" },
-                { label: "Personal / my home", value: "Personal" },
-              ]}
-            />
-          </Field>
-          {disqualified && (
-            <Notice>
-              Sorry - we only quote commercial insurance for businesses, not
-              personal or homeowner coverage.
-            </Notice>
-          )}
         </Section>
 
         {/* Business */}
@@ -388,30 +370,17 @@ export default function ContractorsLandingPage() {
             <Field label="Business address" required hint="Street, city, state, ZIP">
               <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, San Antonio, TX 78216" />
             </Field>
-            <Field label="What kind of work do you do? (main trade)" required>
+            <Field label="What's your primary trade?" required>
               <Select value={f.trade} onChange={(v) => set("trade", v)} options={TRADES} placeholder="Select one" />
             </Field>
-            <Field label="Do you do any roofing work?" required>
-              <Radio
-                name="anyRoofing"
-                value={f.anyRoofing}
-                onChange={(v) => set("anyRoofing", v)}
-                options={[
-                  { label: "Yes", value: "Yes" },
-                  { label: "No", value: "No" },
-                ]}
-              />
-            </Field>
-            {doesRoofing && (
-              <>
-                <Field label="How much of your work is roofing?" required>
-                  <Select value={f.roofingPct} onChange={(v) => set("roofingPct", v)} options={ROOFING_PCT} placeholder="Select one" />
-                </Field>
-                <Field label="Any torch-down, hot-tar, or open-flame roofing?">
-                  <Select value={f.hotWork} onChange={(v) => set("hotWork", v)} options={HOT_WORK} placeholder="Select one" />
-                </Field>
-              </>
-            )}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Any other trades?" required>
+                <Select value={f.otherTrades} onChange={(v) => set("otherTrades", v)} options={OTHER_TRADES} placeholder="Select one" />
+              </Field>
+              <Field label="How much of your work is your primary trade?" required>
+                <Select value={f.primaryPct} onChange={(v) => set("primaryPct", v)} options={PRIMARY_PCT} placeholder="Select one" />
+              </Field>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Annual revenue (roughly)" required>
                 <Select value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} placeholder="Select one" />
