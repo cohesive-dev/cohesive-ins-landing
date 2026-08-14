@@ -324,10 +324,6 @@ export default function ContractorsLandingPage() {
             We use AI to automatically shop your coverage and find you a
             better rate, reviewed by a licensed agent.
           </p>
-          <p className="mt-1.5 text-xs text-[#6B6D71]">
-            Commercial policies only - we don&rsquo;t quote personal or
-            homeowner coverage.
-          </p>
         </div>
       </section>
 
