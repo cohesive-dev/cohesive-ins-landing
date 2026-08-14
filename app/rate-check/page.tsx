@@ -3,9 +3,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
- * /rate-check — MOBILE-FIRST policy-upload page (cell 3 of the contractor
+ * /rate-check - MOBILE-FIRST policy-upload page (cell 3 of the contractor
  * 3-way capture test). Deliberately minimal: name + phone + email + upload
- * your current policy / dec page. No questions — the dec page carries the
+ * your current policy / dec page. No questions - the dec page carries the
  * carrier, limits, premium, and expiration, which feeds the
  * quote-from-incumbent method directly.
  *
@@ -89,7 +89,7 @@ export default function RateCheckPage() {
       const file = await compressImage(raw);
       if (file.size > MAX_TOTAL_BYTES) {
         setErrMsg(
-          "That file is too large even after compression — try photos of the pages instead of a scan.",
+          "That file is too large even after compression - try photos of the pages instead of a scan.",
         );
         continue;
       }
@@ -202,11 +202,11 @@ export default function RateCheckPage() {
           ✅
         </div>
         <h1 className="mt-6 text-3xl font-bold text-[#131517]">
-          Got it — we&rsquo;re on it.
+          Got it - we&rsquo;re on it.
         </h1>
         <p className="mt-3 max-w-md text-[#6B6D71]">
           A licensed agent will review your policy and call or text you with
-          what we find — usually within a day. Want to talk now? Call{" "}
+          what we find - usually within a day. Want to talk now? Call{" "}
           <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
             (929) 594-5450
           </a>
@@ -221,17 +221,17 @@ export default function RateCheckPage() {
       <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
         <div className="mx-auto max-w-xl px-5 py-8 sm:py-10">
           <span className="text-xs font-semibold uppercase tracking-wide text-[#2040E7]">
-            Free contractor insurance rate check
+            Free business insurance rate check
           </span>
           <h1 className="mt-2 text-3xl font-bold leading-tight text-[#131517] sm:text-4xl">
-            Upload your policy. We&rsquo;ll beat it — or tell you it&rsquo;s
+            Upload your policy. We&rsquo;ll beat it - or tell you it&rsquo;s
             already good.
           </h1>
           <p className="mt-3 text-[#27455C]">
-            Snap photos of your current policy&rsquo;s declarations page (the
-            first page with your premium). A licensed agent shops it against
-            construction markets most local agents can&rsquo;t access. That&rsquo;s
-            it — no forms, no spam.
+            Upload your current policy (or just snap a photo of it). We use AI
+            to automatically shop it and find you a better rate - a licensed
+            agent reviews everything before it reaches you. That&rsquo;s it -
+            no forms, no spam.
           </p>
         </div>
       </section>
@@ -289,7 +289,6 @@ export default function RateCheckPage() {
           ref={inputRef}
           type="file"
           accept="image/*,application/pdf"
-          capture="environment"
           multiple
           className="hidden"
           onChange={(e) => {
@@ -302,14 +301,14 @@ export default function RateCheckPage() {
           onClick={() => inputRef.current?.click()}
           className="flex min-h-[110px] w-full touch-manipulation flex-col items-center justify-center gap-1 rounded-2xl border-2 border-dashed border-[#2040E7]/40 bg-[#F7F9FF] px-6 py-6 text-center transition hover:border-[#2040E7] active:bg-[#EEF1FF]"
         >
-          <span className="text-3xl">📸</span>
+          <span className="text-3xl">📄</span>
           <span className="text-base font-semibold text-[#1A33B9]">
             {files.length === 0
-              ? "Snap or upload your policy"
-              : "Add another page"}
+              ? "Upload your policy (or snap a photo)"
+              : "Add another file or page"}
           </span>
           <span className="text-xs text-[#6B6D71]">
-            Photos or PDF — the declarations page is all we need
+            PDF or photos - the declarations page is all we need
           </span>
         </button>
 
@@ -337,7 +336,7 @@ export default function RateCheckPage() {
         )}
         {totalBytes > MAX_TOTAL_BYTES && (
           <p className="text-xs text-red-600">
-            Those files are too large together — remove one, or use photos
+            Those files are too large together - remove one, or use photos
             instead of full scans.
           </p>
         )}
@@ -360,7 +359,7 @@ export default function RateCheckPage() {
         </button>
         <p className="text-center text-xs text-[#6B6D71]">
           Commercial policies only. We&rsquo;ll only use your policy to check
-          your rate — nothing else.
+          your rate - nothing else.
         </p>
       </form>
     </main>

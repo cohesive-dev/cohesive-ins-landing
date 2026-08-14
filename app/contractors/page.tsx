@@ -11,7 +11,7 @@ import {
 } from "react";
 
 /**
- * /contractors — deep intake landing page for the high-value contractor GL
+ * /contractors - deep intake landing page for the high-value contractor GL
  * lane (cell 2 of the 3-way capture test; cell 1 is the Meta Instant Form,
  * cell 3 is /rate-check policy upload).
  *
@@ -57,7 +57,7 @@ const ROOFING_PCT: Option[] = [
 ];
 
 const HOT_WORK: Option[] = [
-  { label: "No — shingle / mechanically fastened only", value: "No - shingle/mechanical only" },
+  { label: "No - shingle / mechanically fastened only", value: "No - shingle/mechanical only" },
   { label: "Yes", value: "Yes" },
   { label: "Not sure", value: "Not sure" },
 ];
@@ -71,7 +71,7 @@ const REVENUE: Option[] = [
 ];
 
 const EMPLOYEES: Option[] = [
-  { label: "0 — just me / subs only", value: "0 - just me / subs only" },
+  { label: "0 - just me / subs only", value: "0 - just me / subs only" },
   { label: "1 - 5", value: "1 - 5" },
   { label: "6 - 10", value: "6 - 10" },
   { label: "11 - 20", value: "11 - 20" },
@@ -95,9 +95,9 @@ const STRUCTURE: Option[] = [
 ];
 
 const CURRENT_GL: Option[] = [
-  { label: "Yes — renews within 30 days", value: "Yes - renews within 30 days" },
-  { label: "Yes — renews later", value: "Yes - renews later" },
-  { label: "No — I need coverage ASAP", value: "No - need coverage ASAP" },
+  { label: "Yes - renews within 30 days", value: "Yes - renews within 30 days" },
+  { label: "Yes - renews later", value: "Yes - renews later" },
+  { label: "No - I need coverage ASAP", value: "No - need coverage ASAP" },
 ];
 
 const CURRENT_PREMIUM: Option[] = [
@@ -301,10 +301,10 @@ export default function ContractorsLandingPage() {
           🛠️
         </div>
         <h1 className="mt-6 text-3xl font-bold text-[#131517]">
-          Thanks — we&rsquo;ve got it.
+          Thanks - we&rsquo;ve got it.
         </h1>
         <p className="mt-3 max-w-md text-[#6B6D71]">
-          A licensed agent will run your quote and reach out shortly — most
+          A licensed agent will run your quote and reach out shortly - most
           come back within a day. Want to talk now? Call{" "}
           <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
             (929) 594-5450
@@ -327,12 +327,13 @@ export default function ContractorsLandingPage() {
             General liability built for contractors
           </h1>
           <p className="mt-3 text-[#27455C]">
-            GCs, remodelers, roofers, painters, trades with crews — we quote
-            construction markets most local agents can&rsquo;t access. Most
-            quotes come back within a day. No spam, no obligation.
+            GCs, remodelers, roofers, painters, trades with crews - we use AI
+            to automatically shop your coverage and find you a better rate,
+            reviewed by a licensed agent. Most quotes come back within a day.
+            No spam, no obligation.
           </p>
           <p className="mt-2 text-sm text-[#6B6D71]">
-            Commercial policies only — we don&rsquo;t quote personal or
+            Commercial policies only - we don&rsquo;t quote personal or
             homeowner coverage.
           </p>
         </div>
@@ -372,7 +373,7 @@ export default function ContractorsLandingPage() {
           </Field>
           {disqualified && (
             <Notice>
-              Sorry — we only quote commercial insurance for businesses, not
+              Sorry - we only quote commercial insurance for businesses, not
               personal or homeowner coverage.
             </Notice>
           )}
