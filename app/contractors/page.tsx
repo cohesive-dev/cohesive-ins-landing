@@ -267,6 +267,7 @@ export default function ContractorsLandingPage() {
           email: f.email,
           phone: f.phone,
           businessType: `Contractor - ${trades[0] ?? "trades"}`,
+          company: f.legalName,
           zip: extractZip(f.address),
           source: "contractors-landing",
           details,

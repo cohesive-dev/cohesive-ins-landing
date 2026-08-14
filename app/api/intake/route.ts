@@ -29,6 +29,9 @@ type IntakePayload = {
   name?: unknown;
   email?: unknown;
   phone?: unknown;
+  // Legal business name — forwarded to the CRM as business_name so the
+  // Account gets named after the business, not the person.
+  company?: unknown;
   businessType?: unknown;
   zip?: unknown;
   partial?: unknown;
@@ -211,6 +214,7 @@ export async function POST(request: NextRequest) {
   const rawPhone = asTrimmedString(body.phone);
   const phone = toE164(rawPhone) ?? rawPhone;
   const businessType = asTrimmedString(body.businessType);
+  const company = asTrimmedString(body.company);
   const zip = asTrimmedString(body.zip);
   const source = asTrimmedString(body.source);
 
@@ -296,6 +300,7 @@ export async function POST(request: NextRequest) {
         ...(email ? { email } : {}),
         ...(phone ? { phone } : {}),
         ...(description ? { business_type: description } : {}),
+        ...(company ? { business_name: company } : {}),
         ...(zip ? { zip } : {}),
         ...(isContractorLane ? { suppress_first_touch: "true" } : {}),
       });
