@@ -31,7 +31,7 @@ export const VERTICALS: Vertical[] = [
 // Only these verticals fan out to per-state pages.
 export const STATE_VERTICALS = ["restaurant", "bar"];
 
-type Fact = { title: string; body: string };
+export type Fact = { title: string; body: string };
 
 export type StateProfile = {
   slug: string;
