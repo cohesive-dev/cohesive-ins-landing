@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
+import { TRADES } from "@/lib/seo/contractors";
 
 // /insurance — index hub for the SEO pages. Links every vertical page and
 // every state page so crawlers have a full path to all of them.
@@ -7,7 +8,7 @@ import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data"
 export const metadata: Metadata = {
   title: "Business Insurance Guides by Industry & State",
   description:
-    "What food and beverage business insurance costs by industry and state - restaurants, bars, food trucks, caterers, and bakeries. Licensed in 24 states.",
+    "What business insurance costs by trade and state - contractors, restaurants, bars, and more. Costs, licensing, and quotes from a licensed agency.",
   alternates: { canonical: "/insurance" },
 };
 
@@ -60,6 +61,21 @@ export default function Page() {
           ))}
         </div>
 
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">
+          Contractors &amp; trades
+        </h2>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm mb-12">
+          {TRADES.map((t) => (
+            <a
+              key={t.slug}
+              href={`/insurance/${t.slug}`}
+              className="text-[#2040E7] hover:underline"
+            >
+              {t.name}
+            </a>
+          ))}
+        </div>
+
         {STATE_VERTICALS.map((vs) => {
           const v = getVertical(vs)!;
           return (
@@ -86,6 +102,9 @@ export default function Page() {
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
           <span>Cohesive Insurance Services - licensed insurance agency</span>
+          <a href="/about" className="hover:underline">
+            About &amp; licensing
+          </a>
           <a href="/privacy" className="hover:underline">
             Privacy
           </a>

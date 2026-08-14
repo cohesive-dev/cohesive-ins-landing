@@ -1,4 +1,5 @@
 import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
+import ContractorQuoteForm from "@/components/ContractorQuoteForm";
 import type { PageContent } from "@/lib/seo/data";
 
 // Shared layout for the /insurance SEO pages (state pages + national vertical
@@ -10,6 +11,7 @@ export default function SeoPage({
   source,
   areaServed,
   formMode,
+  tradeLabel,
   costHeading,
   coverageHeading,
   stateFactsHeading,
@@ -20,7 +22,10 @@ export default function SeoPage({
   eyebrow: string;
   source: string;
   areaServed: string;
-  formMode: "restaurant" | "bar";
+  // "restaurant"/"bar" render the deep restaurant intake; "contractor" renders
+  // the trades intake (tradeLabel required in that case).
+  formMode: "restaurant" | "bar" | "contractor";
+  tradeLabel?: string;
   costHeading: string;
   coverageHeading: string;
   stateFactsHeading?: string;
@@ -257,11 +262,15 @@ export default function SeoPage({
             Get your quote
           </h2>
           <p className="text-sm text-[#6B6D71]">
-            No spam, no obligation. We know you&apos;re busy - we can get you a
-            quote without needing hours of your time.
+            We know you&apos;re busy - we can get you a quote without needing
+            hours of your time.
           </p>
         </div>
-        <RestaurantIntakeForm embedded source={source} mode={formMode} />
+        {formMode === "contractor" ? (
+          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} />
+        ) : (
+          <RestaurantIntakeForm embedded source={source} mode={formMode} />
+        )}
       </section>
 
       {/* Cross-links */}
@@ -289,6 +298,9 @@ export default function SeoPage({
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
           <span>Cohesive Insurance Services - licensed insurance agency</span>
+          <a href="/about" className="hover:underline">
+            About &amp; licensing
+          </a>
           <a href="/insurance" className="hover:underline">
             Insurance guides
           </a>
