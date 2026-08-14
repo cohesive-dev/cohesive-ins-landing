@@ -137,6 +137,16 @@ const CONTRACTOR_TRADE_VALUES: Array<[RegExp, number]> = [
   [/tree/i, 15],
 ];
 
+// Urgency multiplier (Kevin 2026-08-14: "heavily weight those that need it
+// ASAP"). Applied to the trade weight, from the form's "Current GL / renewal"
+// answer: uninsured/ASAP buyers are the real prize; renews-later leads are
+// renewal-calendar plays, not near-term premium.
+const CONTRACTOR_URGENCY_MULTIPLIERS: Array<[RegExp, number]> = [
+  [/asap|not insured|no coverage|uninsured/i, 1.0],
+  [/soon|this month|30 days/i, 0.5],
+  [/later|renews/i, 0.15],
+];
+
 function contractorLeadValue(
   details: Array<{ label: string; value: string }> | undefined,
   businessType: string | undefined,
@@ -151,7 +161,16 @@ function contractorLeadValue(
   for (const [re, weight] of CONTRACTOR_TRADE_VALUES) {
     if (re.test(tradeAnswers) && (best === undefined || weight > best)) best = weight;
   }
-  return best;
+  if (best === undefined) return undefined;
+  const urgencyAnswer = (details ?? [])
+    .filter((d) => /current gl|renewal/i.test(d.label))
+    .map((d) => d.value)
+    .join(", ");
+  let mult = 0.5; // unknown urgency: middle of the road
+  for (const [re, m] of CONTRACTOR_URGENCY_MULTIPLIERS) {
+    if (re.test(urgencyAnswer)) { mult = m; break; }
+  }
+  return Math.max(1, Math.round(best * mult));
 }
 
 async function sendCapiEvent(
