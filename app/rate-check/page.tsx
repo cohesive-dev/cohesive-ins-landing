@@ -219,15 +219,15 @@ export default function RateCheckPage() {
   return (
     <main className="min-h-screen bg-white">
       <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
-        <div className="mx-auto max-w-xl px-5 py-8 sm:py-10">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[#2040E7]">
+        <div className="mx-auto max-w-xl px-5 py-5 sm:py-7">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
             Free business insurance rate check
           </span>
-          <h1 className="mt-2 text-3xl font-bold leading-tight text-[#131517] sm:text-4xl">
+          <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
             Upload your policy. We&rsquo;ll beat it - or tell you it&rsquo;s
             already good.
           </h1>
-          <p className="mt-3 text-[#27455C]">
+          <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
             Upload your current policy (or just snap a photo of it). We use AI
             to automatically shop it and find you a better rate - a licensed
             agent reviews everything before it reaches you.
@@ -235,7 +235,7 @@ export default function RateCheckPage() {
         </div>
       </section>
 
-      <form onSubmit={submit} className="mx-auto max-w-xl space-y-5 px-5 py-8">
+      <form onSubmit={submit} className="mx-auto max-w-xl space-y-4 px-5 py-6">
         <div className="grid gap-4">
           <input
             value={name}
