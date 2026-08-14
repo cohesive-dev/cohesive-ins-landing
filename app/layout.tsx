@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import LeadTruffleWidget from "@/components/LeadTruffleWidget";
 import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
@@ -66,6 +67,8 @@ fbq('track', 'PageView');`}
           />
         </noscript>
         {/* End Meta Pixel Code */}
+        {/* LeadTruffle Widget (hidden on /restaurants — see component) */}
+        <LeadTruffleWidget />
         {children}
         <Analytics />
       </body>
