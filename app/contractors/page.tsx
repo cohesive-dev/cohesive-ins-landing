@@ -37,24 +37,35 @@ const GMAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 type Option = { label: string; value: string };
 
-// Kevin's final 14-trade list (mirrors the FB form v5), as one multiselect
-// chip question on the web - no primary/other/pct split, no Other-DQ.
-const TRADE_CHIPS: string[] = [
-  "General contractor",
-  "Remodeling / renovations",
-  "Roofing",
-  "Painting",
-  "Carpentry / framing",
-  "Masonry / concrete",
-  "Siding / gutters",
-  "Flooring / tile",
-  "Excavation / demolition",
-  "Paving / asphalt",
-  "Tree service",
-  "Restoration (water / fire)",
-  "Waterproofing / foundation",
-  "Pool construction / service",
-  "Other",
+// Mirrors the FB instant form v5 exactly (Kevin's final 14-trade list).
+const TRADES: Option[] = [
+  { label: "General contractor", value: "General contractor" },
+  { label: "Remodeling / renovations", value: "Remodeling / renovations" },
+  { label: "Roofing", value: "Roofing" },
+  { label: "Painting", value: "Painting" },
+  { label: "Carpentry / framing", value: "Carpentry / framing" },
+  { label: "Masonry / concrete", value: "Masonry / concrete" },
+  { label: "Siding / gutters", value: "Siding / gutters" },
+  { label: "Flooring / tile", value: "Flooring / tile" },
+  { label: "Excavation / demolition", value: "Excavation / demolition" },
+  { label: "Paving / asphalt", value: "Paving / asphalt" },
+  { label: "Tree service", value: "Tree service" },
+  { label: "Restoration (water / fire damage)", value: "Restoration (water / fire damage)" },
+  { label: "Waterproofing / foundation repair", value: "Waterproofing / foundation repair" },
+  { label: "Pool construction / service", value: "Pool construction / service" },
+  { label: "Other trade", value: "Other trade" },
+];
+
+const OTHER_TRADES: Option[] = [
+  { label: "None - just my primary trade", value: "None" },
+  ...TRADES,
+];
+
+const PRIMARY_PCT: Option[] = [
+  { label: "All of it (100%)", value: "All of it (100%)" },
+  { label: "75% - 99%", value: "75% - 99%" },
+  { label: "50% - 75%", value: "50% - 75%" },
+  { label: "Under 50%", value: "Under 50%" },
 ];
 
 const REVENUE: Option[] = [
@@ -109,7 +120,6 @@ type FormState = Record<string, string>;
 
 export default function ContractorsLandingPage() {
   const [f, setF] = useState<FormState>({});
-  const [trades, setTrades] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
     "idle",
   );
@@ -126,12 +136,8 @@ export default function ContractorsLandingPage() {
 
   const set = (k: string, v: string) => {
     track("FormStart");
+    if (k === "trade") track("TradeSelected");
     setF((p) => ({ ...p, [k]: v }));
-  };
-  const toggleTrade = (v: string) => {
-    track("FormStart");
-    track("TradeSelected");
-    setTrades((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
   };
 
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
@@ -148,7 +154,9 @@ export default function ContractorsLandingPage() {
     f.phone?.trim() &&
     f.legalName?.trim() &&
     f.address?.trim() &&
-    trades.length > 0 &&
+    !!f.trade &&
+    !!f.otherTrades &&
+    !!f.primaryPct &&
     !!f.revenue &&
     !!f.employees &&
     status !== "sending";
@@ -160,8 +168,9 @@ export default function ContractorsLandingPage() {
     };
     push("Legal business name", f.legalName);
     push("Business address", f.address);
-    if (trades.length) push("Trades", trades.join(", "));
-    push("Other trade (text)", f.otherText);
+    push("Primary trade", f.trade);
+    push("Other trades", f.otherTrades);
+    push("Primary trade % of work", f.primaryPct);
     push("Annual revenue", f.revenue);
     push("W2 employees", f.employees);
     push("Annual W2 payroll", f.payroll);
@@ -170,7 +179,7 @@ export default function ContractorsLandingPage() {
     push("Current GL / renewal", f.currentGl);
     push("Current annual GL premium", f.currentPremium);
     return d;
-  }, [f, trades]);
+  }, [f]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
@@ -180,8 +189,8 @@ export default function ContractorsLandingPage() {
   }, [f.fullName, f.phone, emailValid, track]);
 
   // Keep a live snapshot so the capture handlers don't read a stale closure.
-  const latest = useRef({ f, details, status, disqualified, trades });
-  latest.current = { f, details, status, disqualified, trades };
+  const latest = useRef({ f, details, status, disqualified });
+  latest.current = { f, details, status, disqualified };
   const sentPartial = useRef(false);
 
   // Partial capture: the moment a visitor gives us ANY way to reach them,
@@ -193,7 +202,6 @@ export default function ContractorsLandingPage() {
   firePartial.current = () => {
     if (sentPartial.current) return;
     const { f: cur, details: det, status: st, disqualified: dq } = latest.current;
-    void cur;
     if (st === "done" || st === "sending" || dq) return;
     const email = (cur.email ?? "").trim();
     const phone = (cur.phone ?? "").trim();
@@ -204,7 +212,7 @@ export default function ContractorsLandingPage() {
       name: cur.fullName,
       email: validEmail,
       phone: phone || undefined,
-      businessType: "Contractor" + (latest.current.trades[0] ? ` - ${latest.current.trades[0]}` : ""),
+      businessType: cur.trade ? `Contractor - ${cur.trade}` : "Contractor",
       zip: extractZip(cur.address),
       source: "contractors-landing",
       partial: true,
@@ -266,7 +274,7 @@ export default function ContractorsLandingPage() {
           name: f.fullName,
           email: f.email,
           phone: f.phone,
-          businessType: `Contractor - ${trades[0] ?? "trades"}`,
+          businessType: `Contractor - ${f.trade}`,
           company: f.legalName,
           zip: extractZip(f.address),
           source: "contractors-landing",
@@ -359,14 +367,17 @@ export default function ContractorsLandingPage() {
             <Field label="Business address" required hint="Street, city, state, ZIP">
               <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, San Antonio, TX 78216" />
             </Field>
-            <Field label="What work do you do?" required hint="Select all that apply.">
-              <CheckGroup options={TRADE_CHIPS} selected={trades} onToggle={toggleTrade} />
+            <Field label="What's your primary trade?" required>
+              <Select value={f.trade} onChange={(v) => set("trade", v)} options={TRADES} placeholder="Select one" />
             </Field>
-            {trades.includes("Other") && (
-              <Field label="What else do you do?">
-                <Input value={f.otherText} onChange={(v) => set("otherText", v)} placeholder="e.g. welding, insulation" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Any other trades?" required>
+                <Select value={f.otherTrades} onChange={(v) => set("otherTrades", v)} options={OTHER_TRADES} placeholder="Select one" />
               </Field>
-            )}
+              <Field label="How much of your work is your primary trade?" required>
+                <Select value={f.primaryPct} onChange={(v) => set("primaryPct", v)} options={PRIMARY_PCT} placeholder="Select one" />
+              </Field>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Annual revenue (roughly)" required>
                 <Select value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} placeholder="Select one" />
@@ -762,42 +773,6 @@ function Radio({
         );
       })}
       <input type="hidden" name={name} value={value ?? ""} readOnly />
-    </div>
-  );
-}
-
-function CheckGroup({
-  options,
-  selected,
-  onToggle,
-  ariaLabel,
-}: {
-  options: string[];
-  selected: string[];
-  onToggle: (v: string) => void;
-  ariaLabel?: string;
-}) {
-  return (
-    <div className="flex flex-wrap gap-2" role="group" aria-label={ariaLabel}>
-      {options.map((o) => {
-        const active = selected.includes(o);
-        return (
-          <button
-            type="button"
-            key={o}
-            onClick={() => onToggle(o)}
-            aria-pressed={active}
-            className={
-              "min-h-[44px] touch-manipulation rounded-lg border px-3.5 py-2.5 text-[14px] font-medium transition " +
-              (active
-                ? "border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]"
-                : "border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]")
-            }
-          >
-            {o}
-          </button>
-        );
-      })}
     </div>
   );
 }
