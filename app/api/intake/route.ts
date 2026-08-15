@@ -55,6 +55,9 @@ type IntakePayload = {
   // Optional 3rd event id: "UninsuredLead" - the yellow-flag tier (buying, but no incumbent
   // premium to beat). Kept separable from QualifiedLead so the adset can chase only the primary.
   uninsuredEventId?: unknown;
+  // Optional: restaurant landing sends this for qualified + now/30d leads; server ALSO
+  // fires "LeadUrgentQuoted" (deduped with the page's fbq by shared id).
+  urgentEventId?: unknown;
 };
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -372,8 +375,14 @@ export async function POST(request: NextRequest) {
       ? await sendCapiEvent(request, "UninsuredLead", uninsuredEventId, email, phone)
       : "skipped";
 
+  const urgentEventId = asTrimmedString(body.urgentEventId);
+  const capiUrgent =
+    urgentEventId && reachable
+      ? await sendCapiEvent(request, "LeadUrgentQuoted", urgentEventId, email, phone)
+      : "skipped";
+
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured },
+    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured, capiUrgent },
     { status: 200 },
   );
 }
