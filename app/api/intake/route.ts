@@ -288,6 +288,8 @@ export async function POST(request: NextRequest) {
   // supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE itself as the only
   // outbound touch. So restaurant submissions go to quotes@ (+ CAPI) only, never the CRM. Church and
   // every other lane are unchanged.
+  const fbc = request.cookies.get("_fbc")?.value;
+  const fbp = request.cookies.get("_fbp")?.value;
   const isRestaurantLane = source === "restaurant-landing";
   // The contractor lane records the contact in the CRM but suppresses the automated
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
@@ -303,6 +305,12 @@ export async function POST(request: NextRequest) {
         ...(company ? { business_name: company } : {}),
         ...(zip ? { zip } : {}),
         ...(isContractorLane ? { suppress_first_touch: "true" } : {}),
+        // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
+        // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
+        // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
+        // the ids die with the request and every value event is a weak match.
+        ...(fbc ? { fbc } : {}),
+        ...(fbp ? { fbp } : {}),
       });
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
