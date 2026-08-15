@@ -114,6 +114,11 @@ const QUALIFIED_PREMIUM_VALUES = new Set(["$5K - $20K", "$20K+"]);
 // often ASAP - but there is no incumbent premium, so it is NOT the winnability signal and must
 // not be folded into QualifiedLead. It gets its own event so it stays separable and trackable.
 const UNINSURED_PREMIUM_VALUE = "Not insured yet";
+// Urgency, from the EXISTING current-GL question (no new question asked). Renewing within 30
+// days or uninsured-and-ASAP = urgent. Fires LeadUrgentQuoted (any premium) and, stacked on the
+// $5K+ self-report, QualifiedUrgentLead - the tightest, most winnable slice. Primary optimisation
+// stays QualifiedLead; QualifiedUrgentLead accumulates history until its volume can steer.
+const URGENT_GL_VALUES = new Set(["Yes - renews within 30 days", "No - need coverage ASAP"]);
 
 const CURRENT_PREMIUM: Option[] = [
   { label: "Under $2,000", value: "Under $2K" },
@@ -281,6 +286,9 @@ export default function ContractorsLandingPage() {
     const qualifiedEventId = isQualified ? `${eventId}-q` : undefined;
     const isUninsured = f.currentPremium === UNINSURED_PREMIUM_VALUE;
     const uninsuredEventId = isUninsured ? `${eventId}-u` : undefined;
+    const isUrgent = URGENT_GL_VALUES.has(f.currentGl);
+    const urgentEventId = isUrgent ? `${eventId}-ur` : undefined;
+    const qualifiedUrgentEventId = isUrgent && isQualified ? `${eventId}-qu` : undefined;
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -297,6 +305,8 @@ export default function ContractorsLandingPage() {
           eventId,
           ...(qualifiedEventId ? { qualifiedEventId } : {}),
           ...(uninsuredEventId ? { uninsuredEventId } : {}),
+          ...(urgentEventId ? { urgentEventId } : {}),
+          ...(qualifiedUrgentEventId ? { qualifiedUrgentEventId } : {}),
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -305,6 +315,8 @@ export default function ContractorsLandingPage() {
       fbq("trackCustom", "ContractorSubmit");
       if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
       if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: uninsuredEventId });
+      if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
+      if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
       setStatus("done");
     } catch (err) {
       setStatus("error");
