@@ -108,6 +108,9 @@ const CURRENT_GL: Option[] = [
   { label: "No - I need coverage ASAP", value: "No - need coverage ASAP" },
 ];
 
+// The two CURRENT_PREMIUM buckets that make a lead a QualifiedLead (self-reported $5K+).
+const QUALIFIED_PREMIUM_VALUES = new Set(["$5K - $20K", "$20K+"]);
+
 const CURRENT_PREMIUM: Option[] = [
   { label: "Under $2,000", value: "Under $2K" },
   { label: "$2,000 - $5,000", value: "$2K - $5K" },
@@ -266,6 +269,12 @@ export default function ContractorsLandingPage() {
       typeof crypto !== "undefined" && crypto.randomUUID
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    // ★ QualifiedLead = self-reported current GL premium of $5K+ (Kevin 2026-08-15).
+    // The one field that measures WINNABILITY (what their incumbent already charges),
+    // as opposed to what we'd quote. Optimising ads on this finds people we can beat.
+    // Uninsured leads deliberately do NOT qualify here - no incumbent, no gap to measure.
+    const isQualified = QUALIFIED_PREMIUM_VALUES.has(f.currentPremium);
+    const qualifiedEventId = isQualified ? `${eventId}-q` : undefined;
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -280,12 +289,14 @@ export default function ContractorsLandingPage() {
           source: "contractors-landing",
           details,
           eventId,
+          ...(qualifiedEventId ? { qualifiedEventId } : {}),
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
       // Fire the pixel ONLY after the intake POST succeeds.
       fbq("track", "Lead", {}, { eventID: eventId });
       fbq("trackCustom", "ContractorSubmit");
+      if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
       setStatus("done");
     } catch (err) {
       setStatus("error");

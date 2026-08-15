@@ -48,6 +48,10 @@ type IntakePayload = {
   // instant-quotable restaurants). "RestaurantDisqualified" is special-cased
   // below: it fires the custom event but NEVER forwards to the CRM.
   capiEventName?: unknown;
+  // Optional 2nd browser+server event id: when present, the server ALSO sends
+  // "QualifiedLead" (deduped with the page's matching fbq call). Set by lanes
+  // whose form can tell a high-value lead apart at submit time (see /contractors).
+  qualifiedEventId?: unknown;
 };
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -346,9 +350,21 @@ export async function POST(request: NextRequest) {
     eventId && reachable
       ? await sendCapiEvent(request, eventName, eventId, email, phone)
       : "skipped";
+  // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead
+  // self-reports a current GL premium of $5K+ ("$5K - $20K" / "$20K+"). That is the
+  // winnability signal - what the market already extracts from them - not what we would
+  // quote (a big quote can just be an uncompetitive market; ARGC said $26K and closed,
+  // Steve said $2-5K and was unwinnable at our $8-16K). Sent server-side with the same
+  // fbc/fbp/ip/ua match quality as Lead, deduped with the browser fbq by shared event id.
+  // The plain Lead above still fires for EVERY submit - this is additive, never a filter.
+  const qualifiedEventId = asTrimmedString(body.qualifiedEventId);
+  const capiQualified =
+    qualifiedEventId && reachable
+      ? await sendCapiEvent(request, "QualifiedLead", qualifiedEventId, email, phone)
+      : "skipped";
 
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed", capi },
+    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified },
     { status: 200 },
   );
 }
