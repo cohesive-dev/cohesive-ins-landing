@@ -58,6 +58,8 @@ type IntakePayload = {
   // Optional: restaurant landing sends this for qualified + now/30d leads; server ALSO
   // fires "LeadUrgentQuoted" (deduped with the page's fbq by shared id).
   urgentEventId?: unknown;
+  // Contractors: urgent AND self-reported $5K+ -> "QualifiedUrgentLead" (phase-2 stage).
+  qualifiedUrgentEventId?: unknown;
 };
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -381,8 +383,14 @@ export async function POST(request: NextRequest) {
       ? await sendCapiEvent(request, "LeadUrgentQuoted", urgentEventId, email, phone)
       : "skipped";
 
+  const qualifiedUrgentEventId = asTrimmedString(body.qualifiedUrgentEventId);
+  const capiQualifiedUrgent =
+    qualifiedUrgentEventId && reachable
+      ? await sendCapiEvent(request, "QualifiedUrgentLead", qualifiedUrgentEventId, email, phone)
+      : "skipped";
+
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured, capiUrgent },
+    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured, capiUrgent, capiQualifiedUrgent },
     { status: 200 },
   );
 }
