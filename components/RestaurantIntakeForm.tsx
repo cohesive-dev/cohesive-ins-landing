@@ -103,6 +103,19 @@ const ALCOHOL: Option[] = [
   { label: "Over 50%", value: "Over 50%" },
 ];
 
+// Coverage timeline — mirrors the Instant Form's `coverage_timeline` buckets so the
+// website lane and the form lane are comparable. now/30d = URGENT. On a qualified
+// (instant-quotable) lead this fires the pixel event `LeadUrgentQuoted`, which a
+// website adset can optimise on directly today (a form adset cannot until the CRM
+// data source exists - see the restaurant skill).
+const TIMELINE: Option[] = [
+  { label: "I need coverage now", value: "now" },
+  { label: "Within 30 days", value: "30d" },
+  { label: "1 to 3 months", value: "1_3mo" },
+  { label: "Just exploring", value: "exploring" },
+];
+const URGENT_TIMELINES = new Set(["now", "30d"]);
+
 // Business structure = the policy's named insured type (a sole prop's named
 // insured is a person, an LLC's is the entity). Captured so bind needs no
 // follow-up on who the policy is issued to.
@@ -213,6 +226,7 @@ export default function RestaurantIntakeForm({
     push("Rainbow class", rainbowClassFor(f.businessType));
     push("Building address", f.address);
     push("Policy expiration", f.expiration);
+    push("Coverage timeline", f.timeline);
     // Rainbow writes BOP only and auto-derives property, so the quote needs just
     // class + sales + address + alcohol. own/rent captured for bind-time building coverage.
     push("Approximate annual revenue", f.revenue);
@@ -323,6 +337,11 @@ export default function RestaurantIntakeForm({
         : qualification === "es"
           ? "RestaurantLeadES"
           : "RestaurantDisqualified";
+    // Urgent AND instant-quotable = the stage the lane optimises toward.
+    const urgentEventId =
+      qualification === "qualified" && URGENT_TIMELINES.has(f.timeline ?? "")
+        ? `${eventId}-u`
+        : undefined;
 
     try {
       const res = await fetch("/api/intake", {
@@ -338,6 +357,7 @@ export default function RestaurantIntakeForm({
           details,
           eventId,
           capiEventName,
+          ...(urgentEventId ? { urgentEventId } : {}),
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -348,6 +368,7 @@ export default function RestaurantIntakeForm({
       if (qualification === "qualified") {
         fbq("track", "Lead", {}, { eventID: eventId });
         fbq("trackCustom", "RestaurantQuoteSubmit");
+        if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
         setStatus("done");
       } else if (qualification === "es") {
         // A real lead, but NOT a `Lead` conversion — Meta captures it without
@@ -621,6 +642,14 @@ export default function RestaurantIntakeForm({
               value={f.alcohol}
               onChange={(v) => set("alcohol", v)}
               options={ALCOHOL}
+            />
+          </Field>
+          <Field label="When do you need coverage?">
+            <Radio
+              name="timeline"
+              value={f.timeline}
+              onChange={(v) => set("timeline", v)}
+              options={TIMELINE}
             />
           </Field>
           <Field label="Do you own or rent your space?">
