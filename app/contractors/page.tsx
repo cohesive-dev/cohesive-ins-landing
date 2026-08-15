@@ -110,6 +110,10 @@ const CURRENT_GL: Option[] = [
 
 // The two CURRENT_PREMIUM buckets that make a lead a QualifiedLead (self-reported $5K+).
 const QUALIFIED_PREMIUM_VALUES = new Set(["$5K - $20K", "$20K+"]);
+// "Not insured yet" is a YELLOW flag (Kevin 2026-08-15): a real, kept lead - they are buying,
+// often ASAP - but there is no incumbent premium, so it is NOT the winnability signal and must
+// not be folded into QualifiedLead. It gets its own event so it stays separable and trackable.
+const UNINSURED_PREMIUM_VALUE = "Not insured yet";
 
 const CURRENT_PREMIUM: Option[] = [
   { label: "Under $2,000", value: "Under $2K" },
@@ -275,6 +279,8 @@ export default function ContractorsLandingPage() {
     // Uninsured leads deliberately do NOT qualify here - no incumbent, no gap to measure.
     const isQualified = QUALIFIED_PREMIUM_VALUES.has(f.currentPremium);
     const qualifiedEventId = isQualified ? `${eventId}-q` : undefined;
+    const isUninsured = f.currentPremium === UNINSURED_PREMIUM_VALUE;
+    const uninsuredEventId = isUninsured ? `${eventId}-u` : undefined;
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -290,6 +296,7 @@ export default function ContractorsLandingPage() {
           details,
           eventId,
           ...(qualifiedEventId ? { qualifiedEventId } : {}),
+          ...(uninsuredEventId ? { uninsuredEventId } : {}),
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -297,6 +304,7 @@ export default function ContractorsLandingPage() {
       fbq("track", "Lead", {}, { eventID: eventId });
       fbq("trackCustom", "ContractorSubmit");
       if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
+      if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: uninsuredEventId });
       setStatus("done");
     } catch (err) {
       setStatus("error");
