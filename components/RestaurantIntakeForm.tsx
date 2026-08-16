@@ -579,7 +579,10 @@ export default function RestaurantIntakeForm({
           <div className="space-y-6" onKeyDown={onStepKey}>
             {/* progress */}
             <div className="flex items-center justify-between text-xs text-[#6B6D71]">
-              <span>Step {step + 1} of {visibleSteps.length}</span>
+              <span>
+                Step {step + 1} of {visibleSteps.length}
+                {step === 0 && <span className="ml-2 text-[#2040E7]">· takes about 1 minute</span>}
+              </span>
               <div className="ml-4 h-1.5 flex-1 overflow-hidden rounded-full bg-[#EEF1FF]">
                 <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{ width: `${((step + 1) / visibleSteps.length) * 100}%` }} />
               </div>
