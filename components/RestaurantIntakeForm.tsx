@@ -84,15 +84,29 @@ const BUSINESS_TYPES: BizType[] = [
 const rainbowClassFor = (businessType?: string): string | undefined =>
   BUSINESS_TYPES.find((o) => o.value === businessType)?.rainbowClass;
 
+// Founding year — matches the v6 Instant Form. Without it Rainbow defaults every restaurant to
+// "established 2015"; a real new venture (<1yr / 1-3yr) needs three extra material answers.
+const FOUNDING_YEAR: Option[] = [
+  { label: "Less than 1 year ago", value: "Less than 1 year ago" },
+  { label: "1-3 years ago", value: "1-3 years ago" },
+  { label: "3-10 years ago", value: "3-10 years ago" },
+  { label: "10+ years ago", value: "10+ years ago" },
+];
+
 // Alcohol tier — the master routing driver, at Rainbow's real break points.
 // None/Under 30% = admitted (Rainbow/Next); 30-50% = E&S; Over 50% = true bar
 // (disqualify).
+// Buckets match the v6 Instant Form (comparable data) and Rainbow's real breakpoints:
+// <=35% instant / 35-50% refer (E&S) / >50% bar (disqualify).
 const ALCOHOL: Option[] = [
   { label: "None", value: "None" },
-  { label: "Under 30%", value: "Under 30%" },
-  { label: "30-50%", value: "30-50%" },
+  { label: "Under 10%", value: "Under 10%" },
+  { label: "10-20%", value: "10-20%" },
+  { label: "20-35%", value: "20-35%" },
+  { label: "35-50%", value: "35-50%" },
   { label: "Over 50%", value: "Over 50%" },
 ];
+const ES_ALCOHOL = new Set(["35-50%", "30-50%"]);  // 30-50% kept for any in-flight sessions
 
 // Coverage timeline — mirrors the Instant Form's `coverage_timeline` buckets so the
 // website lane and the form lane are comparable. now/30d = URGENT. On a qualified
@@ -136,7 +150,7 @@ function qualify(
   if (businessType === NOT_FOOD_TYPE) return "disqualified";
   if (businessType === BAR_TYPE) return barOk ? "es" : "disqualified";
   if (alcohol === "Over 50%") return barOk ? "es" : "disqualified";
-  if (alcohol === "30-50%") return "es";
+  if (alcohol && ES_ALCOHOL.has(alcohol)) return "es";
   return "qualified";
 }
 
@@ -222,6 +236,8 @@ export default function RestaurantIntakeForm({
     push("Approximate annual revenue", f.revenue);
     push("Alcohol as % of sales", f.alcohol);
     push("Own or rent", f.ownRent);
+    push("When did you open", f.foundingYear);
+    if (f.ownRent === "Own") push("Building replacement value (owner-stated)", f.buildingValue);
     return d;
   }, [f]);
 
@@ -643,6 +659,27 @@ export default function RestaurantIntakeForm({
                 { label: "Own", value: "Own" },
                 { label: "Rent (tenant)", value: "Rent" },
               ]}
+            />
+          </Field>
+          {f.ownRent === "Own" && (
+            <Field
+              label="Estimated building replacement value"
+              hint="Rough rebuild cost is fine - what it would take to rebuild, not what you paid."
+            >
+              <Input
+                value={f.buildingValue}
+                onChange={(v) => set("buildingValue", v)}
+                placeholder="e.g. 350,000"
+                inputMode="numeric"
+              />
+            </Field>
+          )}
+          <Field label="When did you open?">
+            <Radio
+              name="foundingYear"
+              value={f.foundingYear}
+              onChange={(v) => set("foundingYear", v)}
+              options={FOUNDING_YEAR}
             />
           </Field>
         </Section>
