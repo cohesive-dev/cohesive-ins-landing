@@ -87,6 +87,7 @@ const rainbowClassFor = (businessType?: string): string | undefined =>
 // Founding year — matches the v6 Instant Form. Without it Rainbow defaults every restaurant to
 // "established 2015"; a real new venture (<1yr / 1-3yr) needs three extra material answers.
 const FOUNDING_YEAR: Option[] = [
+  { label: "Not opened yet", value: "Not opened yet" },
   { label: "Less than 1 year ago", value: "Less than 1 year ago" },
   { label: "1-3 years ago", value: "1-3 years ago" },
   { label: "3-10 years ago", value: "3-10 years ago" },
@@ -209,7 +210,6 @@ export default function RestaurantIntakeForm({
   const notFood = f.businessType === NOT_FOOD_TYPE;
 
   const canSubmit =
-    !notFood &&
     f.fullName?.trim() &&
     emailValid &&
     f.phone?.trim() &&
@@ -237,6 +237,8 @@ export default function RestaurantIntakeForm({
     push("Alcohol as % of sales", f.alcohol);
     push("Own or rent", f.ownRent);
     push("When did you open", f.foundingYear);
+    if (f.foundingYear === "Not opened yet" || f.foundingYear === "Less than 1 year ago")
+      push("New venture", "YES - Rainbow needs opening date, latest hour, website (websearch/ask)");
     if (f.ownRent === "Own") push("Building replacement value (owner-stated)", f.buildingValue);
     return d;
   }, [f]);
@@ -397,42 +399,10 @@ export default function RestaurantIntakeForm({
     }
   }
 
-  // "Not a food business" is an immediate hard disqualify (Close-style): the
-  // moment it's picked, fire the non-Lead signal + show the not-a-fit screen.
-  // No contact info is required — the custom event still matches on fbp/ip/ua.
-  const disqualifiedFired = useRef(false);
-  useEffect(() => {
-    if (!notFood || disqualifiedFired.current) return;
-    disqualifiedFired.current = true;
-    const eventId =
-      typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    fbq("trackCustom", "RestaurantDisqualified", {}, { eventID: eventId });
-    const email = (f.email ?? "").trim();
-    const phone = (f.phone ?? "").trim();
-    const validEmail = EMAIL_RE.test(email) ? email : undefined;
-    // Only POST when we have something to match on; a bare disqualify still
-    // gets the browser pixel above.
-    if (validEmail || phone) {
-      fetch("/api/intake", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        keepalive: true,
-        body: JSON.stringify({
-          name: f.fullName,
-          email: validEmail,
-          phone: phone || undefined,
-          businessType: NOT_FOOD_TYPE,
-          zip: extractZip(f.address),
-          source,
-          eventId,
-          capiEventName: "RestaurantDisqualified",
-        }),
-      }).catch(() => {});
-    }
-    setStatus("disqualified");
-  }, [notFood, f.email, f.phone, f.fullName, f.address]);
+  // "Not a food business" is NO LONGER an instant disqualify (Kevin 2026-08-15: "I worry people
+  // misclick. Just only turn them down if they submit with that"). Picking the chip shows a note
+  // and keeps the form live; the disqualify (RestaurantDisqualified event + not-a-fit screen)
+  // fires ONLY on submit, via the normal qualification path below.
 
   if (status === "done" || status === "es-done") {
     if (embedded) {
@@ -608,8 +578,8 @@ export default function RestaurantIntakeForm({
           </Field>
           {notFood && (
             <p className="rounded-lg bg-[#F1F3F5] px-4 py-3 text-sm text-[#6B6D71]">
-              We focus on food and hospitality businesses, so this likely
-              isn&rsquo;t the right fit.
+              This form is for restaurants, cafes, bars and other food
+              businesses. If that was a misclick, just change your answer above.
             </p>
           )}
           <Field label="Exact building address" hint="Street, city, state, ZIP">
