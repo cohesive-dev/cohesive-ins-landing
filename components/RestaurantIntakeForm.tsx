@@ -43,6 +43,9 @@ function fbq(...args: unknown[]) {
 }
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+// US phone: 10 digits, or 11 with a leading country code 1. Formatting chars ignored.
+const phoneDigits = (v: string) => (v ?? "").replace(/\D/g, "");
+const PHONE_OK = (v: string) => { const d = phoneDigits(v); return d.length === 10 || (d.length === 11 && d.startsWith("1")); };
 
 // Google Places autocomplete on the address field. Public, build-time-inlined
 // key; when unset the address field is just a plain input (dark-safe).
@@ -224,12 +227,13 @@ export default function RestaurantIntakeForm({
   // block; GL only skips it. Revenue + alcohol are always asked now (both lanes
   // need them for routing/class/qualification).
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
+  const phoneValid = PHONE_OK(f.phone ?? "");
   const notFood = f.businessType === NOT_FOOD_TYPE;
 
   const canSubmit =
     f.fullName?.trim() &&
     emailValid &&
-    f.phone?.trim() &&
+    phoneValid &&
     f.businessName?.trim() &&
     f.entityType?.trim() &&
     f.businessType?.trim() &&
@@ -254,7 +258,7 @@ export default function RestaurantIntakeForm({
     { key: "businessName", label: "Legal business name", hint: "As registered - e.g., Glenwood Grill LLC", ok: () => !!f.businessName?.trim() },
     { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
     { key: "email", label: "Email", ok: () => emailValid },
-    { key: "phone", label: "Phone", ok: () => !!f.phone?.trim() },
+    { key: "phone", label: "Phone", ok: () => phoneValid },
   ];
   const visibleSteps = STEPS.filter((st) => !(st.skip && st.skip()));
   const cur = visibleSteps[Math.min(step, visibleSteps.length - 1)];
@@ -311,10 +315,10 @@ export default function RestaurantIntakeForm({
 
   // Funnel milestones driven by state.
   useEffect(() => {
-    if (f.fullName?.trim() && emailValid && f.phone?.trim()) {
+    if (f.fullName?.trim() && emailValid && phoneValid) {
       track("ContactDone");
     }
-  }, [f.fullName, f.phone, emailValid, track]);
+  }, [f.fullName, phoneValid, emailValid, track]);
 
   // Keep a live snapshot so the capture handlers don't read a stale closure.
   const latest = useRef({ f, details, status });
@@ -630,7 +634,12 @@ export default function RestaurantIntakeForm({
                 <Input value={f.email} onChange={(v) => set("email", v)} placeholder="you@restaurant.com" type="email" autoComplete="email" inputMode="email" />
               )}
               {cur.key === "phone" && (
-                <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
+                <>
+                  <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
+                  {!!f.phone?.trim() && !phoneValid && (
+                    <p className="mt-2 text-xs text-[#B42318]">Please enter a 10-digit US phone number.</p>
+                  )}
+                </>
               )}
             </Field>
             <div className="flex flex-col items-center gap-3">
