@@ -576,9 +576,9 @@ export default function RestaurantIntakeForm({
             Thanks for reaching out.
           </h3>
           <p className="mx-auto mt-3 max-w-md text-[#6B6D71]">
-            Based on your answers, this isn&rsquo;t a risk we&rsquo;re the best
-            fit for right now. If your business changes or you&rsquo;d like a
-            second opinion, call us at{" "}
+            Based on your answers, this is a risk we&rsquo;ll need to take a bit
+            longer on to get you the best possible quote. We will be in touch.
+            Want to talk now? Call{" "}
             <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
               (929) 594-5450
             </a>
@@ -596,9 +596,9 @@ export default function RestaurantIntakeForm({
           Thanks for reaching out.
         </h1>
         <p className="mt-3 max-w-md text-[#6B6D71]">
-          Based on your answers, this isn&rsquo;t a risk we&rsquo;re the best fit
-          for right now. If your business changes or you&rsquo;d like a second
-          opinion, call us at{" "}
+          Based on your answers, this is a risk we&rsquo;ll need to take a bit
+          longer on to get you the best possible quote. We will be in touch.
+          Want to talk now? Call{" "}
           <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
             (929) 594-5450
           </a>

@@ -261,11 +261,30 @@ export async function POST(request: NextRequest) {
   const capiEventName = asTrimmedString(body.capiEventName);
 
   // Disqualified outcome (e.g. a bar from /restaurant): fire the NON-Lead CAPI
-  // signal so Meta's optimizer learns to stop serving this segment, but do NOT
-  // forward to the CRM (that fan-out would text/email a prospect we can't help)
-  // and do NOT alert quotes@ — a disqualified bar is intentionally low-noise.
+  // signal so Meta's optimizer learns to stop serving this segment, and do NOT
+  // forward to the CRM (that fan-out would text/email the prospect).
+  // ★ Kevin 2026-08-16: "disqualified" is a CAPI signal ONLY, not a dead lead - the page
+  // now tells them "we'll need a bit longer ... we will be in touch", so bar / high-alcohol
+  // fills MUST still reach quotes@ (route to Hedge + ask for the existing policy). Only a
+  // literal "Not a food business" is dropped.
   if (capiEventName === "RestaurantDisqualified") {
     const disqEventId = asTrimmedString(body.eventId);
+    if (businessType && businessType !== "Not a food business") {
+      const disqDetails = sanitizeDetails(body.details) ?? [];
+      await sendIntakeNotification({
+        name,
+        email,
+        phone,
+        businessType,
+        zip,
+        partial: false,
+        source,
+        details: [
+          { label: "⚠️ NOT INSTANT-QUOTABLE", value: "Bar / high-alcohol - CAPI marked disqualified. Route to Hedge (E&S) + ask for the existing policy. Page told them we need a bit longer and will be in touch." },
+          ...disqDetails,
+        ],
+      });
+    }
     const capi =
       disqEventId && reachable
         ? await sendCapiEvent(
