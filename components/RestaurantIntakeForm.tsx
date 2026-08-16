@@ -155,6 +155,8 @@ const TIMELINE: Option[] = [
   { label: "Just exploring", value: "exploring" },
 ];
 const URGENT_TIMELINES = new Set(["now", "30d"]);
+// Step-form section split: business questions vs. contact fields (label above the progress bar).
+const CONTACT_KEYS = new Set(["businessName", "fullName", "email", "phone"]);
 
 // Business structure = the policy's named insured type (a sole prop's named
 // insured is a person, an LLC's is the entity). Captured so bind needs no
@@ -627,12 +629,15 @@ export default function RestaurantIntakeForm({
         {layout === "steps" ? (
           <div className="space-y-6" onKeyDown={onStepKey}>
             {/* progress */}
-            <div className="flex items-center justify-between text-xs text-[#6B6D71]">
-              <span>
-                Step {step + 1} of {visibleSteps.length}
-                {step === 0 && <span className="ml-2 text-[#2040E7]">· takes about 1 minute</span>}
-              </span>
-              <div className="ml-4 h-1.5 flex-1 overflow-hidden rounded-full bg-[#EEF1FF]">
+            {/* No "N of 12" - a big denominator reads as work. Section label + bar only. */}
+            <div className="space-y-2 text-xs text-[#6B6D71]">
+              <div className="flex items-center justify-between">
+                <span className="font-medium uppercase tracking-wide text-[#27455C]">
+                  {CONTACT_KEYS.has(cur.key) ? "Where to send your quote" : "About your business"}
+                </span>
+                <span className="text-[#2040E7]">{step === 0 ? "Takes about 1 minute" : isLast ? "Last one" : ""}</span>
+              </div>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#EEF1FF]">
                 <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{ width: `${((step + 1) / visibleSteps.length) * 100}%` }} />
               </div>
             </div>
