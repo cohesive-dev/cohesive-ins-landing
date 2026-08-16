@@ -253,12 +253,16 @@ export default function RestaurantIntakeForm({
   // need them for routing/class/qualification).
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
   const phoneValid = PHONE_OK(f.phone ?? "");
+  // Address is REQUIRED on the step form (Kevin 2026-08-16) - Rainbow rates on the exact
+  // location; a lead without it can't be instant-quoted. Long form unchanged.
+  const addressValid = (f.address ?? "").trim().length >= 8;
   const notFood = f.businessType === NOT_FOOD_TYPE;
 
   const canSubmit =
     f.fullName?.trim() &&
     emailValid &&
     phoneValid &&
+    (layout !== "steps" || addressValid) &&
     f.businessName?.trim() &&
     f.entityType?.trim() &&
     f.businessType?.trim() &&
@@ -279,7 +283,7 @@ export default function RestaurantIntakeForm({
     { key: "entityType", label: "How is your business structured?", ok: () => !!f.entityType },
     { key: "foundingYear", label: "When did you open?", ok: () => !!f.foundingYear },
     { key: "timeline", label: "When do you need coverage?", ok: () => !!f.timeline },
-    { key: "address", label: "Exact building address", hint: "Start typing and pick the match.", ok: () => true },
+    { key: "address", label: "Exact building address", hint: "Start typing and pick the match.", ok: () => addressValid },
     { key: "businessName", label: "Legal business name", hint: "As registered - e.g., Glenwood Grill LLC", ok: () => !!f.businessName?.trim() },
     { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
     { key: "email", label: "Email", ok: () => emailValid },
@@ -290,6 +294,11 @@ export default function RestaurantIntakeForm({
   const isLast = step >= visibleSteps.length - 1;
   const goNext = () => { if (cur.ok()) setStep((n) => Math.min(n + 1, visibleSteps.length - 1)); };
   const goBack = () => setStep((n) => Math.max(n - 1, 0));
+  // Required screens that aren't satisfied (excluding the one on screen) - shown on the last
+  // screen with jump links, so a disabled "Get my quote" always explains itself.
+  const missingSteps = visibleSteps
+    .map((st, idx) => ({ ...st, idx }))
+    .filter((st) => st.idx !== step && st.key !== "buildingValue" && !st.ok());
   // Enter on a tap question advances; on the last screen it submits (form onSubmit).
   const onStepKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !isLast) { e.preventDefault(); goNext(); }
@@ -641,7 +650,7 @@ export default function RestaurantIntakeForm({
                 <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{ width: `${((step + 1) / visibleSteps.length) * 100}%` }} />
               </div>
             </div>
-            <Field label={cur.label} hint={cur.hint} required={cur.key !== "buildingValue" && cur.key !== "address"}>
+            <Field label={cur.label} hint={cur.hint} required={cur.key !== "buildingValue"}>
               {cur.key === "businessType" && (
                 <Radio name="businessType" value={f.businessType} onChange={(v) => { set("businessType", v); }} options={businessTypes} />
               )}
@@ -706,6 +715,20 @@ export default function RestaurantIntakeForm({
                 </>
               )}
             </Field>
+            {isLast && missingSteps.length > 0 && (
+              <div className="rounded-xl border border-[#F5C2BD] bg-[#FEF3F2] p-3 text-sm text-[#7A271A]">
+                <p className="font-medium">Almost there - a couple of answers are missing:</p>
+                <ul className="mt-1 space-y-1">
+                  {missingSteps.map((m) => (
+                    <li key={m.key}>
+                      <button type="button" className="underline underline-offset-2" onClick={() => setStep(m.idx)}>
+                        {m.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="flex flex-col items-center gap-3">
               {!isLast ? (
                 <button type="button" onClick={goNext} disabled={!cur.ok()} className="min-h-[52px] w-full touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
