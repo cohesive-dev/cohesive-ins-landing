@@ -525,11 +525,11 @@ export default function RestaurantIntakeForm({
               For restaurants, bars, cafes &amp; food businesses
             </span>
             <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
-              Insurance quote for your restaurant
+              Business insurance built for restaurants
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
-              No obligation. We know you&rsquo;re busy - we can get you a quote
-              without needing hours of your time.
+              We use AI to automatically shop your coverage and find you a
+              better rate, reviewed by a licensed agent.
             </p>
           </div>
         </section>
