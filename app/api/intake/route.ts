@@ -265,11 +265,12 @@ export async function POST(request: NextRequest) {
   // forward to the CRM (that fan-out would text/email the prospect).
   // ★ Kevin 2026-08-16: "disqualified" is a CAPI signal ONLY, not a dead lead - the page
   // now tells them "we'll need a bit longer ... we will be in touch", so bar / high-alcohol
-  // fills MUST still reach quotes@ (route to Hedge + ask for the existing policy). Only a
-  // literal "Not a food business" is dropped.
+  // fills MUST still reach quotes@ (route to Hedge + ask for the existing policy). Nothing is
+  // dropped - "we can technically quote anything through Hedge" - so even a "Not a food
+  // business" pick (often a misclick) lands in quotes@ for a human to triage.
   if (capiEventName === "RestaurantDisqualified") {
     const disqEventId = asTrimmedString(body.eventId);
-    if (businessType && businessType !== "Not a food business") {
+    {
       const disqDetails = sanitizeDetails(body.details) ?? [];
       await sendIntakeNotification({
         name,
@@ -280,7 +281,10 @@ export async function POST(request: NextRequest) {
         partial: false,
         source,
         details: [
-          { label: "⚠️ NOT INSTANT-QUOTABLE", value: "Bar / high-alcohol - CAPI marked disqualified. Route to Hedge (E&S) + ask for the existing policy. Page told them we need a bit longer and will be in touch." },
+          {
+            label: "⚠️ NOT INSTANT-QUOTABLE",
+            value: `${businessType === "Not a food business" ? "Picked 'Not a food business' (verify - may be a misclick)" : "Bar / high-alcohol"} - CAPI marked disqualified (non-Lead). Route to Hedge (E&S) + ask for the existing policy. Page told them we need a bit longer and will be in touch.`,
+          },
           ...disqDetails,
         ],
       });
