@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { isValidPhoneNumber } from "libphonenumber-js/min";
 
 /**
  * The restaurant deep-intake form — shared by /restaurant (full-page lane,
@@ -43,9 +44,10 @@ function fbq(...args: unknown[]) {
 }
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
-// US phone: 10 digits, or 11 with a leading country code 1. Formatting chars ignored.
-const phoneDigits = (v: string) => (v ?? "").replace(/\D/g, "");
-const PHONE_OK = (v: string) => { const d = phoneDigits(v); return d.length === 10 || (d.length === 11 && d.startsWith("1")); };
+// Phone validation = Google libphonenumber (US default region): real NANP rules (area code /
+// exchange can't start with 0 or 1, unassigned 555 area code rejected, +1 / spaces / dashes /
+// parens accepted). Not a length check.
+const PHONE_OK = (v: string) => isValidPhoneNumber((v ?? "").trim(), "US");
 
 // Google Places autocomplete on the address field. Public, build-time-inlined
 // key; when unset the address field is just a plain input (dark-safe).
@@ -637,7 +639,7 @@ export default function RestaurantIntakeForm({
                 <>
                   <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
                   {!!f.phone?.trim() && !phoneValid && (
-                    <p className="mt-2 text-xs text-[#B42318]">Please enter a 10-digit US phone number.</p>
+                    <p className="mt-2 text-xs text-[#B42318]">Please enter a valid US phone number.</p>
                   )}
                 </>
               )}
