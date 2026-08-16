@@ -7,5 +7,7 @@ import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
 // /insurance/[vertical]/[geo]. Defaults preserve this page's exact behavior
 // (source "restaurant-landing", full-page hero + terminal screens).
 export default function Page() {
-  return <RestaurantIntakeForm />;
+  // layout="steps": one question per screen, Instant-Form order (Kevin 2026-08-16). The SEO
+  // pages under /insurance/[vertical]/[geo] keep the long layout as the control.
+  return <RestaurantIntakeForm layout="steps" />;
 }
