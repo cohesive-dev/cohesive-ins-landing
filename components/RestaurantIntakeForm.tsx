@@ -517,16 +517,19 @@ export default function RestaurantIntakeForm({
     <Root className={embedded ? undefined : "min-h-screen bg-white"}>
       {!embedded && (
         <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
-          <div className="mx-auto max-w-2xl px-5 py-8 sm:px-6 sm:py-10">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[#2040E7]">
+          {/* Sizing matches the /contractors hero (Kevin 2026-08-15: "make the font size match
+              what we have for contractors page (smaller)"). "No spam" removed per the standing
+              copy rule (never say "no spam" - it adds nothing). */}
+          <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 sm:py-7">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
               For restaurants, bars, cafes &amp; food businesses
             </span>
-            <h1 className="mt-2 text-3xl font-bold leading-tight text-[#131517] sm:text-4xl">
+            <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
               Insurance quote for your restaurant
             </h1>
-            <p className="mt-3 text-[#27455C]">
-              No spam, no obligation. We know you&rsquo;re busy - we can get you
-              a quote without needing hours of your time.
+            <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
+              No obligation. We know you&rsquo;re busy - we can get you a quote
+              without needing hours of your time.
             </p>
           </div>
         </section>
