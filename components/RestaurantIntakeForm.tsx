@@ -188,7 +188,6 @@ export default function RestaurantIntakeForm({
   // "bar" (SEO bar pages): bar/high-alcohol answers are captured as E&S leads
   // instead of disqualified, and the bar chip is listed first.
   mode?: "restaurant" | "bar";
-  layout?: "long" | "steps";
 }) {
   const barOk = mode === "bar";
   const businessTypes = barOk
@@ -266,6 +265,20 @@ export default function RestaurantIntakeForm({
   const onStepKey = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !isLast) { e.preventDefault(); goNext(); }
   };
+  // Step-funnel analytics: RestStepFormView once on load, then RestStep_<key> the first
+  // time each screen is REACHED (Back doesn't re-fire). Events Manager then shows the
+  // drop-off curve screen by screen, comparable against the long form's FormStart /
+  // ContactDone / Lead milestones. furthestStep rides along in `details` for quotes@/CRM.
+  const [furthestStep, setFurthestStep] = useState(0);
+  useEffect(() => {
+    if (layout !== "steps") return;
+    track("RestStepFormView");
+  }, [layout, track]);
+  useEffect(() => {
+    if (layout !== "steps" || !cur) return;
+    track(`RestStep_${cur.key}`);
+    setFurthestStep((n) => Math.max(n, step));
+  }, [layout, step, cur?.key, track]);
 
   const details = useMemo(() => {
     const d: Array<{ label: string; value: string }> = [];
@@ -289,8 +302,12 @@ export default function RestaurantIntakeForm({
     if (f.foundingYear === "Not opened yet" || f.foundingYear === "Less than 1 year ago")
       push("New venture", "YES - Rainbow needs opening date, latest hour, website (websearch/ask)");
     if (f.ownRent === "Own") push("Building replacement value (owner-stated)", f.buildingValue);
+    // Layout A/B marker so quotes@ / CRM can split long-form vs step-form
+    // completions and partials without a pixel lookup.
+    push("Form layout", layout);
+    if (layout === "steps") push("Furthest step", `${furthestStep + 1} of ${visibleSteps.length} (${visibleSteps[furthestStep]?.key ?? "?"})`);
     return d;
-  }, [f]);
+  }, [f, layout, furthestStep, visibleSteps]);
 
   // Funnel milestones driven by state.
   useEffect(() => {
@@ -613,19 +630,19 @@ export default function RestaurantIntakeForm({
                 <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
               )}
             </Field>
-            <div className="flex gap-3">
-              {step > 0 && (
-                <button type="button" onClick={goBack} className="min-h-[52px] rounded-xl border border-[#D6DBE6] px-5 py-4 text-base font-semibold text-[#27455C]">
-                  Back
-                </button>
-              )}
+            <div className="flex flex-col items-center gap-3">
               {!isLast ? (
-                <button type="button" onClick={goNext} disabled={!cur.ok()} className="min-h-[52px] flex-1 touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="button" onClick={goNext} disabled={!cur.ok()} className="min-h-[52px] w-full touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
                   Next
                 </button>
               ) : (
-                <button type="submit" disabled={!canSubmit} className="min-h-[52px] flex-1 touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
+                <button type="submit" disabled={!canSubmit} className="min-h-[52px] w-full touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
                   {status === "sending" ? "Sending…" : "Get my quote"}
+                </button>
+              )}
+              {step > 0 && (
+                <button type="button" onClick={goBack} className="min-h-[44px] px-4 text-sm font-medium text-[#6B7A90] underline-offset-4 hover:text-[#27455C] hover:underline">
+                  ← Back
                 </button>
               )}
             </div>
