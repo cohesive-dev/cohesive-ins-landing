@@ -44,6 +44,11 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-[var(--font-sans)]">
         {/* Meta Pixel Code */}
+        {/* Pixel is PRODUCTION-ONLY: localhost / preview runs must never write to the real
+            dataset (2026-08-16: a day of local Playwright walks put ~40 fake funnel events +
+            7 fake Leads into pixel 831179966599677). Non-prod gets a no-op fbq so callers
+            don't need guards. */}
+        {process.env.NODE_ENV === "production" ? (
         <Script id="meta-pixel" strategy="afterInteractive">
           {`!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -56,6 +61,12 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 fbq('init', '${META_PIXEL_ID}');
 fbq('track', 'PageView');`}
         </Script>
+        ) : (
+        <Script id="meta-pixel-noop" strategy="afterInteractive">
+          {`window.fbq = window.fbq || function(){ if (window.__FBQ_DEBUG) console.debug('[fbq noop]', arguments); };`}
+        </Script>
+        )}
+        {process.env.NODE_ENV === "production" && (
         <noscript>
           <img
             height="1"
@@ -65,6 +76,7 @@ fbq('track', 'PageView');`}
             alt=""
           />
         </noscript>
+        )}
         {/* End Meta Pixel Code */}
         {children}
         <Analytics />
