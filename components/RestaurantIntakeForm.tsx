@@ -84,6 +84,17 @@ const BUSINESS_TYPES: BizType[] = [
 const rainbowClassFor = (businessType?: string): string | undefined =>
   BUSINESS_TYPES.find((o) => o.value === businessType)?.rainbowClass;
 
+// Revenue buckets for the STEP layout (a tap, not a typed figure - the whole point of the early
+// screens). Matches the v6 Instant Form's bands. The long layout keeps its typed dollar field.
+const REVENUE: Option[] = [
+  { label: "Under $250K", value: "Under $250K" },
+  { label: "$250K - $500K", value: "$250K - $500K" },
+  { label: "$500K - $1M", value: "$500K - $1M" },
+  { label: "$1M - $2M", value: "$1M - $2M" },
+  { label: "$2M - $4M", value: "$2M - $4M" },
+  { label: "Over $4M", value: "Over $4M" },
+];
+
 // Founding year — matches the v6 Instant Form. Without it Rainbow defaults every restaurant to
 // "established 2015"; a real new venture (<1yr / 1-3yr) needs three extra material answers.
 const FOUNDING_YEAR: Option[] = [
@@ -162,7 +173,13 @@ export default function RestaurantIntakeForm({
   source = "restaurant-landing",
   embedded = false,
   mode = "restaurant",
+  layout = "long",
 }: {
+  // "steps" = one question per screen with Next/Back (Kevin 2026-08-16: mirror the FB Instant
+  // Form - taps first, typing last, sunk cost before the contact fields). Same state, same
+  // qualify(), same submit and CAPI events as "long"; ONLY the rendering differs. Restaurant
+  // /restaurant uses "steps"; SEO pages keep "long" as the control.
+  layout?: "long" | "steps";
   // CRM attribution label for this placement (e.g. "seo-restaurant-new-york").
   source?: string;
   // true = render just the form (no hero, terminal states as inline cards)
@@ -171,6 +188,7 @@ export default function RestaurantIntakeForm({
   // "bar" (SEO bar pages): bar/high-alcohol answers are captured as E&S leads
   // instead of disqualified, and the bar chip is listed first.
   mode?: "restaurant" | "bar";
+  layout?: "long" | "steps";
 }) {
   const barOk = mode === "bar";
   const businessTypes = barOk
@@ -217,6 +235,37 @@ export default function RestaurantIntakeForm({
     f.entityType?.trim() &&
     f.businessType?.trim() &&
     status !== "sending";
+
+  // ---- STEP LAYOUT (Kevin 2026-08-16) -------------------------------------------------
+  // Order = the v6 Instant Form: taps first (business type, revenue, alcohol, own/rent
+  // [+building value if own], structure, founding year, timeline), then typing (address,
+  // business name, full name, email, phone). Sunk cost is built before the contact fields.
+  const [step, setStep] = useState(0);
+  const isOwner = f.ownRent === "Own";
+  const STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean }> = [
+    { key: "businessType", label: "Which best describes your business?", ok: () => !!f.businessType },
+    { key: "revenue", label: "Approximate annual revenue", hint: "Best guess is fine.", ok: () => !!f.revenue },
+    { key: "alcohol", label: "Alcohol as % of sales", hint: "Roughly what share of your sales is alcohol.", ok: () => !!f.alcohol },
+    { key: "ownRent", label: "Do you own or rent your space?", ok: () => !!f.ownRent },
+    { key: "buildingValue", label: "Estimated building replacement value", hint: "Rough rebuild cost is fine - what it would take to rebuild, not what you paid.", ok: () => true, skip: () => !isOwner },
+    { key: "entityType", label: "How is your business structured?", ok: () => !!f.entityType },
+    { key: "foundingYear", label: "When did you open?", ok: () => !!f.foundingYear },
+    { key: "timeline", label: "When do you need coverage?", ok: () => !!f.timeline },
+    { key: "address", label: "Exact building address", hint: "Start typing and pick the match.", ok: () => true },
+    { key: "businessName", label: "Legal business name", hint: "As registered - e.g., Glenwood Grill LLC", ok: () => !!f.businessName?.trim() },
+    { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
+    { key: "email", label: "Email", ok: () => emailValid },
+    { key: "phone", label: "Phone", ok: () => !!f.phone?.trim() },
+  ];
+  const visibleSteps = STEPS.filter((st) => !(st.skip && st.skip()));
+  const cur = visibleSteps[Math.min(step, visibleSteps.length - 1)];
+  const isLast = step >= visibleSteps.length - 1;
+  const goNext = () => { if (cur.ok()) setStep((n) => Math.min(n + 1, visibleSteps.length - 1)); };
+  const goBack = () => setStep((n) => Math.max(n - 1, 0));
+  // Enter on a tap question advances; on the last screen it submits (form onSubmit).
+  const onStepKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !isLast) { e.preventDefault(); goNext(); }
+  };
 
   const details = useMemo(() => {
     const d: Array<{ label: string; value: string }> = [];
@@ -507,8 +556,82 @@ export default function RestaurantIntakeForm({
 
       <form
         onSubmit={submit}
-        className="mx-auto max-w-2xl space-y-8 px-5 py-8 sm:px-6 sm:py-10"
+        className={layout === "steps" ? "mx-auto max-w-xl px-5 py-6 sm:px-6 sm:py-8" : "mx-auto max-w-2xl space-y-8 px-5 py-8 sm:px-6 sm:py-10"}
       >
+        {layout === "steps" ? (
+          <div className="space-y-6" onKeyDown={onStepKey}>
+            {/* progress */}
+            <div className="flex items-center justify-between text-xs text-[#6B6D71]">
+              <span>Step {step + 1} of {visibleSteps.length}</span>
+              <div className="ml-4 h-1.5 flex-1 overflow-hidden rounded-full bg-[#EEF1FF]">
+                <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{ width: `${((step + 1) / visibleSteps.length) * 100}%` }} />
+              </div>
+            </div>
+            <Field label={cur.label} hint={cur.hint} required={cur.key !== "buildingValue" && cur.key !== "address"}>
+              {cur.key === "businessType" && (
+                <Radio name="businessType" value={f.businessType} onChange={(v) => { set("businessType", v); }} options={businessTypes} />
+              )}
+              {cur.key === "businessType" && notFood && (
+                <p className="mt-2 rounded-lg bg-[#F1F3F5] px-4 py-3 text-sm text-[#6B6D71]">
+                  This form is for restaurants, cafes, bars and other food businesses. If that was a misclick, just change your answer.
+                </p>
+              )}
+              {cur.key === "revenue" && (
+                <Radio name="revenue" value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} />
+              )}
+              {cur.key === "alcohol" && (
+                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={ALCOHOL} />
+              )}
+              {cur.key === "ownRent" && (
+                <Radio name="ownRent" value={f.ownRent} onChange={(v) => set("ownRent", v)} options={[{ label: "Own", value: "Own" }, { label: "Rent (tenant)", value: "Rent" }]} />
+              )}
+              {cur.key === "buildingValue" && (
+                <Input value={f.buildingValue} onChange={(v) => set("buildingValue", v)} placeholder="e.g. 350,000" inputMode="numeric" />
+              )}
+              {cur.key === "entityType" && (
+                <Radio name="entityType" value={f.entityType} onChange={(v) => set("entityType", v)} options={ENTITY_TYPES} />
+              )}
+              {cur.key === "foundingYear" && (
+                <Radio name="foundingYear" value={f.foundingYear} onChange={(v) => set("foundingYear", v)} options={FOUNDING_YEAR} />
+              )}
+              {cur.key === "timeline" && (
+                <Radio name="timeline" value={f.timeline} onChange={(v) => set("timeline", v)} options={TIMELINE} />
+              )}
+              {cur.key === "address" && (
+                <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" />
+              )}
+              {cur.key === "businessName" && (
+                <Input value={f.businessName} onChange={(v) => set("businessName", v)} placeholder="Glenwood Grill LLC" autoComplete="organization" />
+              )}
+              {cur.key === "fullName" && (
+                <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jordan Lee" autoComplete="name" />
+              )}
+              {cur.key === "email" && (
+                <Input value={f.email} onChange={(v) => set("email", v)} placeholder="you@restaurant.com" type="email" autoComplete="email" inputMode="email" />
+              )}
+              {cur.key === "phone" && (
+                <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
+              )}
+            </Field>
+            <div className="flex gap-3">
+              {step > 0 && (
+                <button type="button" onClick={goBack} className="min-h-[52px] rounded-xl border border-[#D6DBE6] px-5 py-4 text-base font-semibold text-[#27455C]">
+                  Back
+                </button>
+              )}
+              {!isLast ? (
+                <button type="button" onClick={goNext} disabled={!cur.ok()} className="min-h-[52px] flex-1 touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
+                  Next
+                </button>
+              ) : (
+                <button type="submit" disabled={!canSubmit} className="min-h-[52px] flex-1 touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50">
+                  {status === "sending" ? "Sending…" : "Get my quote"}
+                </button>
+              )}
+            </div>
+          </div>
+        ) : (
+          <>
         {/* Contact */}
         <Section title="Your contact info">
           <Field label="Full name" required>
@@ -657,12 +780,15 @@ export default function RestaurantIntakeForm({
           </Field>
         </Section>
 
+          </>
+        )}
         {status === "error" && (
           <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
             {errMsg}
           </p>
         )}
-
+        {layout !== "steps" && (
+        <>
         <button
           type="submit"
           disabled={!canSubmit}
@@ -674,6 +800,8 @@ export default function RestaurantIntakeForm({
           We&rsquo;ll only use your details to prepare and send your insurance
           quote.
         </p>
+        </>
+        )}
       </form>
     </Root>
   );
