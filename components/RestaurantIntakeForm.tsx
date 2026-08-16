@@ -10,6 +10,8 @@ import {
   useState,
 } from "react";
 import { isValidPhoneNumber } from "libphonenumber-js/min";
+import isEmail from "validator/lib/isEmail";
+import { track as vaTrack } from "@vercel/analytics";
 
 /**
  * The restaurant deep-intake form — shared by /restaurant (full-page lane,
@@ -43,7 +45,23 @@ function fbq(...args: unknown[]) {
   (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq?.(...args);
 }
 
-const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+// Email validation = validator.js isEmail (RFC-aware: rejects double dots, bad TLDs, spaces,
+// over-length locals) instead of a shape regex. EMAIL_RE kept as a name for the callers.
+const EMAIL_RE = { test: (v: string) => isEmail((v ?? "").trim()) };
+// Domain-typo nudge - the real mobile failure mode. Suggest, never auto-correct.
+const EMAIL_TYPOS: Record<string, string> = {
+  "gmial.com": "gmail.com", "gamil.com": "gmail.com", "gmal.com": "gmail.com", "gmail.co": "gmail.com",
+  "gmail.con": "gmail.com", "gnail.com": "gmail.com", "hotmial.com": "hotmail.com", "hotmal.com": "hotmail.com",
+  "yaho.com": "yahoo.com", "yahooo.com": "yahoo.com", "yahoo.co": "yahoo.com", "outlok.com": "outlook.com",
+  "iclod.com": "icloud.com", "icloud.co": "icloud.com", "aol.co": "aol.com",
+};
+const emailSuggestion = (v: string): string | undefined => {
+  const at = (v ?? "").trim().toLowerCase().lastIndexOf("@");
+  if (at < 1) return undefined;
+  const dom = v.trim().toLowerCase().slice(at + 1);
+  const fix = EMAIL_TYPOS[dom];
+  return fix ? v.trim().slice(0, at + 1) + fix : undefined;
+};
 // Phone validation = Google libphonenumber (US default region): real NANP rules (area code /
 // exchange can't start with 0 or 1, unassigned 555 area code rejected, +1 / spaces / dashes /
 // parens accepted). Not a length check.
@@ -213,11 +231,14 @@ export default function RestaurantIntakeForm({
   // measure abandonment (FormStart -> ContactDone -> CoverageSelected ->
   // PropertyStarted -> Lead) and see exactly where people drop off.
   const fired = useRef<Set<string>>(new Set());
-  const track = useCallback((name: string) => {
+  // Every milestone goes to BOTH the Meta pixel (ad optimisation) and Vercel Analytics
+  // (first-party, not ad-blocked - the drop-off dashboard). Props: layout + source.
+  const track = useCallback((name: string, props?: Record<string, string | number>) => {
     if (fired.current.has(name)) return;
     fired.current.add(name);
     fbq("trackCustom", name);
-  }, []);
+    try { vaTrack(name, { layout, source, ...(props ?? {}) }); } catch { /* analytics never blocks */ }
+  }, [layout, source]);
 
   const set = (k: string, v: string) => {
     track("FormStart");
@@ -282,7 +303,7 @@ export default function RestaurantIntakeForm({
   }, [layout, track]);
   useEffect(() => {
     if (layout !== "steps" || !cur) return;
-    track(`RestStep_${cur.key}`);
+    track(`RestStep_${cur.key}`, { step: step + 1, of: visibleSteps.length });
     setFurthestStep((n) => Math.max(n, step));
   }, [layout, step, cur?.key, track]);
 
@@ -373,11 +394,33 @@ export default function RestaurantIntakeForm({
     }
   };
 
+  // Drop-off analytics: when the visitor leaves/backgrounds un-submitted, record how far
+  // they got (once per session, first-party). Steps: furthest screen key + index. Long form:
+  // which milestone they reached. Rate = abandons at screen N / RestStep_N views.
+  const sentAbandon = useRef(false);
+  const abandonRef = useRef(() => {});
+  abandonRef.current = () => {
+    if (sentAbandon.current) return;
+    const { status: st } = latest.current;
+    if (st === "done" || st === "es-done" || st === "sending") return;
+    if (!fired.current.has("FormStart") && !fired.current.has("RestStepFormView")) return; // never engaged
+    sentAbandon.current = true;
+    const props: Record<string, string | number> = { layout, source };
+    if (layout === "steps") {
+      props.step = furthestStep + 1;
+      props.of = visibleSteps.length;
+      props.screen = visibleSteps[furthestStep]?.key ?? "?";
+    } else {
+      props.milestone = fired.current.has("ContactDone") ? "contact" : fired.current.has("PropertyStarted") ? "property" : "start";
+    }
+    try { vaTrack("RestFormAbandon", props); } catch { /* ignore */ }
+    fbq("trackCustom", "RestFormAbandon");
+  };
   // Leave / background the page.
   useEffect(() => {
-    const onHide = () => firePartial.current();
+    const onHide = () => { firePartial.current(); abandonRef.current(); };
     const onVis = () => {
-      if (document.visibilityState === "hidden") firePartial.current();
+      if (document.visibilityState === "hidden") { firePartial.current(); abandonRef.current(); }
     };
     window.addEventListener("pagehide", onHide);
     document.addEventListener("visibilitychange", onVis);
@@ -633,7 +676,21 @@ export default function RestaurantIntakeForm({
                 <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jordan Lee" autoComplete="name" />
               )}
               {cur.key === "email" && (
-                <Input value={f.email} onChange={(v) => set("email", v)} placeholder="you@restaurant.com" type="email" autoComplete="email" inputMode="email" />
+                <>
+                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder="you@restaurant.com" type="email" autoComplete="email" inputMode="email" />
+                  {emailSuggestion(f.email ?? "") && (
+                    <p className="mt-2 text-xs text-[#6B7A90]">
+                      Did you mean{" "}
+                      <button type="button" className="font-semibold text-[#2040E7] underline underline-offset-2" onClick={() => set("email", emailSuggestion(f.email ?? "")!)}>
+                        {emailSuggestion(f.email ?? "")}
+                      </button>
+                      ?
+                    </p>
+                  )}
+                  {!!f.email?.trim() && !emailValid && !emailSuggestion(f.email ?? "") && (
+                    <p className="mt-2 text-xs text-[#B42318]">Please enter a valid email address.</p>
+                  )}
+                </>
               )}
               {cur.key === "phone" && (
                 <>
