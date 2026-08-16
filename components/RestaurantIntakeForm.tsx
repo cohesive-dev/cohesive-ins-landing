@@ -84,15 +84,6 @@ const BUSINESS_TYPES: BizType[] = [
 const rainbowClassFor = (businessType?: string): string | undefined =>
   BUSINESS_TYPES.find((o) => o.value === businessType)?.rainbowClass;
 
-const EXPIRATION: Option[] = [
-  { label: "This month", value: "This month" },
-  { label: "In 1-3 months", value: "In 1-3 months" },
-  { label: "In 3-6 months", value: "In 3-6 months" },
-  { label: "6+ months out", value: "6+ months out" },
-  { label: "Not sure", value: "Not sure" },
-  { label: "No coverage right now", value: "No coverage now" },
-];
-
 // Alcohol tier — the master routing driver, at Rainbow's real break points.
 // None/Under 30% = admitted (Rainbow/Next); 30-50% = E&S; Over 50% = true bar
 // (disqualify).
@@ -225,7 +216,6 @@ export default function RestaurantIntakeForm({
     // needs zero inference. Absent for bar / not-a-food-business (disqualified).
     push("Rainbow class", rainbowClassFor(f.businessType));
     push("Building address", f.address);
-    push("Policy expiration", f.expiration);
     push("Coverage timeline", f.timeline);
     // Rainbow writes BOP only and auto-derives property, so the quote needs just
     // class + sales + address + alcohol. own/rent captured for bind-time building coverage.
@@ -608,14 +598,6 @@ export default function RestaurantIntakeForm({
               value={f.address}
               onChange={(v) => set("address", v)}
               placeholder="123 Main St, Springfield, IL 62704"
-            />
-          </Field>
-          <Field label="When does your current policy expire?">
-            <Select
-              value={f.expiration}
-              onChange={(v) => set("expiration", v)}
-              options={EXPIRATION}
-              placeholder="Select one"
             />
           </Field>
         </Section>
