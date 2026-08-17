@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 
 /**
  * /contractors - deep intake landing page for the high-value contractor GL
@@ -190,6 +191,10 @@ export default function ContractorsLandingPage() {
     !!f.employees &&
     status !== "sending";
 
+  // Ad attribution (utm / ad_id / fbclid), first-touch, sessionStorage-backed.
+  const [attr, setAttr] = useState<Attribution>({});
+  useEffect(() => { setAttr(captureAttribution()); }, []);
+
   const details = useMemo(() => {
     const d: Array<{ label: string; value: string }> = [];
     const push = (label: string, value?: string) => {
@@ -207,8 +212,9 @@ export default function ContractorsLandingPage() {
     push("Year started", f.yearStarted);
     push("Current GL / renewal", f.currentGl);
     push("Current annual GL premium", f.currentPremium);
+    d.push(...attributionDetails(attr));
     return d;
-  }, [f]);
+  }, [f, attr]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
