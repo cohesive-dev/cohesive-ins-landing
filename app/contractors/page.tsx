@@ -102,10 +102,15 @@ const STRUCTURE: Option[] = [
   { label: "Partnership", value: "Partnership" },
 ];
 
+// ★ The uninsured answer is SPLIT into buyer vs shopper (Kevin 2026-08-17). Before this, anyone
+// uninsured had to pick "ASAP", so the urgency signal was polluted with people just comparing.
+// Both urgent answers use the SAME 30-day clock so the two urgent buckets are directly
+// comparable ("insured, renewing within 30" vs "uninsured, needs it within 30").
 const CURRENT_GL: Option[] = [
   { label: "Yes - renews within 30 days", value: "Yes - renews within 30 days" },
   { label: "Yes - renews later", value: "Yes - renews later" },
-  { label: "No - I need coverage ASAP", value: "No - need coverage ASAP" },
+  { label: "No - I need coverage within 30 days", value: "No - need coverage within 30 days" },
+  { label: "No - just comparing for now", value: "No - just comparing" },
 ];
 
 // The two CURRENT_PREMIUM buckets that make a lead a QualifiedLead (self-reported $5K+).
@@ -118,7 +123,19 @@ const UNINSURED_PREMIUM_VALUE = "Not insured yet";
 // days or uninsured-and-ASAP = urgent. Fires LeadUrgentQuoted (any premium) and, stacked on the
 // $5K+ self-report, QualifiedUrgentLead - the tightest, most winnable slice. Primary optimisation
 // stays QualifiedLead; QualifiedUrgentLead accumulates history until its volume can steer.
-const URGENT_GL_VALUES = new Set(["Yes - renews within 30 days", "No - need coverage ASAP"]);
+// "No - just comparing" is deliberately NOT here: a shopper with no clock is not urgent, and
+// including it is what made the old ASAP bucket unreliable.
+const URGENT_GL_VALUES = new Set(["Yes - renews within 30 days", "No - need coverage within 30 days"]);
+
+// ★ LargeBusinessLead = self-reported revenue >= $1M, ANY trade (Kevin 2026-08-17).
+// The premium self-report is the truest winnability signal but it is rare - 3 of the first 25
+// contractor leads. Revenue >= $1M fired on 6 of those 25 AND caught all 3 of the $5K+ ones,
+// plus the large businesses that are uninsured or underpaying (the ARGC shape: $2M revenue,
+// a bad incumbent, the biggest win the lane has had). So it is a broader net for the same
+// segment and frequent enough for Meta to actually learn from.
+// ⚠️ Revenue self-reports round UP in a way premium self-reports do not - watch whether these
+// leads actually quote at $5K+ before trusting the proxy.
+const LARGE_REVENUE_VALUES = new Set(["$1M - $2M", "$2M - $4M", "$4M - $8M", "Over $8M"]);
 
 const CURRENT_PREMIUM: Option[] = [
   { label: "Under $2,000", value: "Under $2K" },
@@ -289,6 +306,8 @@ export default function ContractorsLandingPage() {
     const isUrgent = URGENT_GL_VALUES.has(f.currentGl);
     const urgentEventId = isUrgent ? `${eventId}-ur` : undefined;
     const qualifiedUrgentEventId = isUrgent && isQualified ? `${eventId}-qu` : undefined;
+    const isLargeBusiness = LARGE_REVENUE_VALUES.has(f.revenue);
+    const largeBusinessEventId = isLargeBusiness ? `${eventId}-lg` : undefined;
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -307,6 +326,7 @@ export default function ContractorsLandingPage() {
           ...(uninsuredEventId ? { uninsuredEventId } : {}),
           ...(urgentEventId ? { urgentEventId } : {}),
           ...(qualifiedUrgentEventId ? { qualifiedUrgentEventId } : {}),
+          ...(largeBusinessEventId ? { largeBusinessEventId } : {}),
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -317,6 +337,7 @@ export default function ContractorsLandingPage() {
       if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: uninsuredEventId });
       if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
       if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
+      if (largeBusinessEventId) fbq("trackCustom", "LargeBusinessLead", {}, { eventID: largeBusinessEventId });
       setStatus("done");
     } catch (err) {
       setStatus("error");

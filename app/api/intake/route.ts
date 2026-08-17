@@ -60,6 +60,10 @@ type IntakePayload = {
   urgentEventId?: unknown;
   // Contractors: urgent AND self-reported $5K+ -> "QualifiedUrgentLead" (phase-2 stage).
   qualifiedUrgentEventId?: unknown;
+  // Contractors: self-reported revenue >= $1M, any trade -> "LargeBusinessLead". The size proxy
+  // for a $5K+ premium; fires ~2x as often as the premium self-report and catches the large
+  // uninsured/underpaying businesses the premium filter drops.
+  largeBusinessEventId?: unknown;
 };
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -412,8 +416,14 @@ export async function POST(request: NextRequest) {
       ? await sendCapiEvent(request, "QualifiedUrgentLead", qualifiedUrgentEventId, email, phone)
       : "skipped";
 
+  const largeBusinessEventId = asTrimmedString(body.largeBusinessEventId);
+  const capiLargeBusiness =
+    largeBusinessEventId && reachable
+      ? await sendCapiEvent(request, "LargeBusinessLead", largeBusinessEventId, email, phone)
+      : "skipped";
+
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured, capiUrgent, capiQualifiedUrgent },
+    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured, capiUrgent, capiQualifiedUrgent, capiLargeBusiness },
     { status: 200 },
   );
 }
