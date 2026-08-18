@@ -244,6 +244,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
+  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
+  // Declared here rather than further down because the abandoned-fill branch below needs it too.
+  const details = sanitizeDetails(body.details);
+
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
     if (isFinal && reachable) {
@@ -255,6 +260,11 @@ export async function POST(request: NextRequest) {
         zip,
         partial: true,
         source,
+        // Partials carried a detail block and this branch dropped it, which threw
+        // away the only thing an abandon can tell us: how far they got before
+        // leaving. On a completed submit "furthest step" is always the last one,
+        // so the abandon path is precisely where it has any value.
+        details,
       });
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
@@ -318,10 +328,6 @@ export async function POST(request: NextRequest) {
     .filter(Boolean)
     .join(" — ");
 
-  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
-  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
-  const details = sanitizeDetails(body.details);
-
   // The restaurant lane BYPASSES the CRM inbound-lead webhook — exactly like the Foxquilt FB lane.
   // upsertInboundLead fires an automated first-touch SMS, and we must NOT auto-text these leads: the
   // supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE itself as the only
@@ -334,6 +340,14 @@ export async function POST(request: NextRequest) {
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
   // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
   const isContractorLane = source === "contractors-landing";
+  // Commercial property owns its own first touch too: the lane is Pathpoint-first
+  // behind a judgment gate (clean instant quote -> send it; any gap -> ack + Hedge),
+  // so a generic automated SMS the moment the form lands would beat our own quote
+  // to the client and breaks the standing "never auto-text leads" rule. Covers both
+  // A/B cells: "commercial-property-landing" (long) and "-steps".
+  const isCommercialPropertyLane = (source ?? "").startsWith(
+    "commercial-property",
+  );
   const forwarded = isRestaurantLane
     ? false
     : await forwardToCrm({
@@ -343,7 +357,9 @@ export async function POST(request: NextRequest) {
         ...(description ? { business_type: description } : {}),
         ...(company ? { business_name: company } : {}),
         ...(zip ? { zip } : {}),
-        ...(isContractorLane ? { suppress_first_touch: "true" } : {}),
+        ...(isContractorLane || isCommercialPropertyLane
+          ? { suppress_first_touch: "true" }
+          : {}),
         // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
         // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
         // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
