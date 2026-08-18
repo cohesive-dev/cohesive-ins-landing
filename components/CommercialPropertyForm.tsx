@@ -167,6 +167,68 @@ const ROOF_TYPE: Option[] = [
 // answers are underwriting-vital (they make or break the quote), so no free
 // text: every answer is machine-usable and "Not sure" is an explicit state,
 // not a blank.
+// ★ These four map to the exact Pathpoint fields the finisher has to answer. Several answers
+// are ones Pathpoint DECLINES on: steel/iron/polybutylene plumbing, and aluminum / FPE /
+// Zinsco / Stab-Lok wiring.
+//
+// To be clear about what this does and does not do: capturing them turns "declined at the
+// portal three days later" into "known before we file", so the risk can be routed to Hedge or
+// E&S from the start. It deliberately does NOT block the submission or suppress the value
+// events - a polybutylene building is still a real lead we can place somewhere, just not
+// through the instant path. Making it a hard gate would be a doctrine decision, not a form one.
+const PLUMBING_TYPE: Option[] = [
+  { label: "Copper", value: "Copper" },
+  { label: "PEX / plastic", value: "PEX/plastic" },
+  { label: "PVC / CPVC", value: "PVC/CPVC" },
+  { label: "Galvanized steel or iron", value: "Galvanized steel/iron" },
+  { label: "Polybutylene", value: "Polybutylene" },
+  { label: "Not sure", value: "Not sure" },
+];
+
+const ELECTRICAL_TYPE: Option[] = [
+  { label: "Circuit breakers", value: "Circuit breakers" },
+  { label: "Fuses", value: "Fuses" },
+  { label: "Knob and tube (any remaining)", value: "Knob and tube" },
+  { label: "Aluminum branch wiring", value: "Aluminum wiring" },
+  { label: "Federal Pacific / Zinsco / Stab-Lok panel", value: "FPE/Zinsco/Stab-Lok" },
+  { label: "Not sure", value: "Not sure" },
+];
+
+const ROOF_SHAPE: Option[] = [
+  { label: "Flat", value: "Flat" },
+  { label: "Pitched (gable)", value: "Gable" },
+  { label: "Pitched (hip)", value: "Hip" },
+  { label: "Mixed / not sure", value: "Mixed / not sure" },
+];
+
+const SIDING: Option[] = [
+  { label: "Masonry (solid brick or block)", value: "Masonry" },
+  { label: "Brick veneer", value: "Brick veneer" },
+  { label: "Steel / metal", value: "Steel/metal" },
+  { label: "Stucco", value: "Stucco" },
+  { label: "Wood", value: "Wood" },
+  { label: "Vinyl", value: "Vinyl" },
+  { label: "Other / not sure", value: "Other / not sure" },
+];
+
+// ★ Ask each question only of the building types it can possibly apply to (Kevin 2026-08-18).
+// Asking anyway is how a form gets long enough that people quit halfway, and a nonsense
+// question ("who are your tenants?" to a church) reads as a form that does not know what it
+// is looking at.
+//
+//   OCCUPANCY  - vacancy drives property rating on any leased or commercial building, so it
+//                is asked broadly. Meaningless only where the owner IS the occupant.
+//   TENANT MIX - a commercial-plaza concept: who occupies which part. A single-family rental
+//                or an Airbnb has one occupant and no mix, and a congregation has none.
+//   RENTAL INCOME - loss-of-rents only exists where rent is actually collected.
+const NO_OCCUPANCY_TYPES = new Set(["Religious institution"]);
+const NO_TENANT_MIX_TYPES = new Set([
+  "Religious institution",
+  "Rental home (1-4 units)",
+  "Short-term rental",
+]);
+const NO_RENTAL_INCOME_TYPES = new Set(["Religious institution"]);
+
 const UPDATE_RANGES: Option[] = [
   { label: "Within the last 10 years", value: "Within last 10 years" },
   { label: "10-20 years ago", value: "10-20 years ago" },
@@ -219,6 +281,10 @@ type FormState = Record<string, string>;
 // funnel milestone.
 const PROPERTY_SET_FIELDS = new Set([
   "construction",
+  "siding",
+  "roofShape",
+  "electricalType",
+  "plumbingType",
   "stories",
   "yearBuilt",
   "roofType",
@@ -330,6 +396,10 @@ export default function CommercialPropertyForm({
   }, [disqualified, track]);
 
   const qualified = f.ownProperty === "Yes" && !!f.propertyType;
+  const ptype = f.propertyType ?? "";
+  const askOccupancy = !NO_OCCUPANCY_TYPES.has(ptype);
+  const askTenantMix = !NO_TENANT_MIX_TYPES.has(ptype);
+  const askRentalIncome = !NO_RENTAL_INCOME_TYPES.has(ptype);
   useEffect(() => {
     if (qualified) track("PropertyQualified");
   }, [qualified, track]);
@@ -362,7 +432,10 @@ export default function CommercialPropertyForm({
     { key: "own", label: "The property", ok: () => !!f.ownProperty },
     { key: "type", label: "The property", ok: () => !!f.propertyType },
     { key: "address", label: "The property", ok: () => !!f.address?.trim() },
-    { key: "occupancy", label: "The property", ok: () => true },
+    // Hidden entirely for owner-occupied types: with its two fields gone the screen
+    // rendered blank, just a Next button under a progress bar. StepDef always had
+    // skip() for this; nothing was using it until a type hid a whole screen's worth.
+    { key: "occupancy", label: "The property", ok: () => true, skip: () => !askOccupancy && !askTenantMix },
     { key: "expiration", label: "The property", ok: () => true },
     { key: "size", label: "The building", hint: "Best guesses are fine.", ok: () => yearBuiltValid },
     { key: "construction", label: "The building", ok: () => true },
@@ -375,7 +448,7 @@ export default function CommercialPropertyForm({
     { key: "owner", label: "Your details", ok: () => !!f.ownerName?.trim() },
     { key: "contact", label: "Your details", ok: () => !!f.fullName?.trim() && emailValid && !!f.phone?.trim() },
   ];
-  const visibleSteps = STEPS;
+  const visibleSteps = STEPS.filter((st) => !st.skip?.());
   const cur = visibleSteps[Math.min(step, visibleSteps.length - 1)];
   const isLast = step >= visibleSteps.length - 1;
   const stepped = layout === "steps";
@@ -427,10 +500,18 @@ export default function CommercialPropertyForm({
     push("Property address", f.address);
     push("Owns the property", f.ownProperty);
     push("Property type", f.propertyType);
-    push("Occupancy", f.occupancy);
-    push("Who occupies it (tenant mix)", f.tenants);
+    // Only send what we actually asked. Switching a half-filled retail form to a
+    // religious institution hides these inputs but leaves their values in state,
+    // and a church arriving with "Annual rental income $120,000" is worse than a
+    // blank: it is wrong data that a human would have to disbelieve.
+    if (askOccupancy) push("Occupancy", f.occupancy);
+    if (askTenantMix) push("Who occupies it (tenant mix)", f.tenants);
     push("Policy expiration", f.expiration);
     push("Construction type", f.construction);
+    push("Exterior / siding", f.siding);
+    push("Roof shape", f.roofShape);
+    push("Electrical panel / wiring", f.electricalType);
+    push("Plumbing material", f.plumbingType);
     push("Stories", f.stories);
     push("Year built", f.yearBuilt);
     push("Square footage", f.sqft);
@@ -448,13 +529,13 @@ export default function CommercialPropertyForm({
     push("Sprinklered", f.sprinklered);
     if (fireSec.length) push("Fire & security", fireSec.join(", "));
     push("Building value / coverage limit", f.value);
-    push("Annual rental income", f.rentalIncome);
+    if (askRentalIncome) push("Annual rental income", f.rentalIncome);
     push("Claims (last 5 yrs)", f.claims);
     d.push(...attributionDetails(attr));
     return d;
     // visibleSteps.length, not the array: STEPS is rebuilt every render (fresh
     // ok() closures), so depending on the reference recomputed this on each one.
-  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr]);
+  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr, askOccupancy, askTenantMix, askRentalIncome]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
@@ -602,7 +683,7 @@ export default function CommercialPropertyForm({
           🏢
         </div>
         <h1 className="mt-6 text-3xl font-bold text-[#131517]">
-          Thanks — we&rsquo;ve got it.
+          Thanks, we&rsquo;ve got it.
         </h1>
         <p className="mt-3 max-w-md text-[#6B6D71]">
           We&rsquo;ll review your building details and reach out shortly with
@@ -625,22 +706,16 @@ export default function CommercialPropertyForm({
     <main className="min-h-screen bg-white">
       {/* Hero */}
       <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
-        <div className="mx-auto max-w-2xl px-5 py-8 sm:px-6 sm:py-10">
-          <span className="text-xs font-semibold uppercase tracking-wide text-[#2040E7]">
+        <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 sm:py-7">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
             For commercial building owners
           </span>
-          <h1 className="mt-2 text-3xl font-bold leading-tight text-[#131517] sm:text-4xl">
+          <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
             Commercial property insurance for your building
           </h1>
-          <p className="mt-3 text-[#27455C]">
-            Coverage for the building you own — retail, office, mixed-use,
-            apartments, warehouse, or a religious institution. We insure the
-            property itself: fire, wind, water damage, and lost rents. No spam,
-            no obligation.
-          </p>
-          <p className="mt-2 text-sm text-[#6B6D71]">
-            We insure the building for its owner, whether you operate from it
-            or rent it out.
+          <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
+            We use AI to automatically shop your coverage and find you a
+            better rate, reviewed by a licensed agent.
           </p>
         </div>
       </section>
@@ -717,14 +792,14 @@ export default function CommercialPropertyForm({
               onChange={(v) => set("ownProperty", v)}
               options={[
                 { label: "Yes, I own it", value: "Yes" },
-                { label: "No — I rent or lease it", value: "No" },
+                { label: "No, I rent or lease it", value: "No" },
               ]}
             />
           </Field>
           {rentDisqualified && (
             <Notice>
               We only insure buildings for their owners. If you rent your space,
-              your landlord insures the building — you&rsquo;d want business
+              your landlord insures the building, you&rsquo;d want business
               insurance for your own operations instead, which we don&rsquo;t
               quote on this page.
             </Notice>
@@ -736,12 +811,16 @@ export default function CommercialPropertyForm({
           )}
           {qualified && (
             <>
-              <Field k="occupancy" label="How occupied is the building?">
-                <Radio name="occupancy" value={f.occupancy} onChange={(v) => set("occupancy", v)} options={OCCUPANCY} />
-              </Field>
-              <Field k="occupancy" label="Who occupies it?" hint="Tenant mix matters — e.g. 'nail salon + 2 apartments upstairs'. Your own business counts too.">
-                <Input value={f.tenants} onChange={(v) => set("tenants", v)} placeholder="Restaurant on ground floor, offices above" />
-              </Field>
+              {askOccupancy && (
+                <Field k="occupancy" label="How occupied is the building?">
+                  <Radio name="occupancy" value={f.occupancy} onChange={(v) => set("occupancy", v)} options={OCCUPANCY} />
+                </Field>
+              )}
+              {askTenantMix && (
+                <Field k="occupancy" label="Who occupies it?" hint="Tenant mix matters, e.g. 'nail salon + 2 apartments upstairs'. Your own business counts too.">
+                  <Input value={f.tenants} onChange={(v) => set("tenants", v)} placeholder="Restaurant on ground floor, offices above" />
+                </Field>
+              )}
               <Field k="expiration" label="When does your current policy expire?">
                 <Select value={f.expiration} onChange={(v) => set("expiration", v)} options={EXPIRATION} placeholder="Select one" />
               </Field>
@@ -753,7 +832,7 @@ export default function CommercialPropertyForm({
         {qualified && (
           <Section title="Your building">
             <p className="text-sm text-[#6B6D71]">
-              These details drive your rate — recent updates usually mean a
+              These details drive your rate, recent updates usually mean a
               lower premium. Best guesses are fine; &ldquo;not sure&rdquo; is
               always an option.
             </p>
@@ -779,6 +858,9 @@ export default function CommercialPropertyForm({
                 <Field k="construction" label="Building construction type">
                   <Select value={f.construction} onChange={(v) => set("construction", v)} options={CONSTRUCTION} placeholder="Select one" />
                 </Field>
+                <Field k="construction" label="Exterior / siding">
+                  <Select value={f.siding} onChange={(v) => set("siding", v)} options={SIDING} placeholder="Select one" />
+                </Field>
                 <Field k="construction" label="Number of stories">
                   <Select value={f.stories} onChange={(v) => set("stories", v)} options={STORIES} placeholder="Select one" />
                 </Field>
@@ -786,11 +868,14 @@ export default function CommercialPropertyForm({
               <Field k="roof" label="Roof type">
                 <Select value={f.roofType} onChange={(v) => set("roofType", v)} options={ROOF_TYPE} placeholder="Select one" />
               </Field>
+              <Field k="roof" label="Roof shape">
+                <Select value={f.roofShape} onChange={(v) => set("roofShape", v)} options={ROOF_SHAPE} placeholder="Select one" />
+              </Field>
               <Field k="roof" label="When was the roof last replaced?" required>
                 <Select value={f.roofUpdated} onChange={(v) => set("roofUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
               </Field>
               {UPDATED_RANGES.has(f.roofUpdated ?? "") && (
-                <Field k="roof" label="Roof replacement year" hint="Best guess is fine — the exact year gets you a sharper rate.">
+                <Field k="roof" label="Roof replacement year" hint="Best guess is fine, the exact year gets you a sharper rate.">
                   <Input value={f.roofYear} onChange={(v) => set("roofYear", v)} placeholder="2015" inputMode="numeric" />
                 </Field>
               )}
@@ -802,6 +887,9 @@ export default function CommercialPropertyForm({
                   <Input value={f.electricalYear} onChange={(v) => set("electricalYear", v)} placeholder="2010" inputMode="numeric" />
                 </Field>
               )}
+              <Field k="systems" label="Electrical panel and wiring" hint="Select what the building has. Not sure is fine.">
+                <Select value={f.electricalType} onChange={(v) => set("electricalType", v)} options={ELECTRICAL_TYPE} placeholder="Select one" />
+              </Field>
               <Field k="systems" label="When was the plumbing last updated?" required>
                 <Select value={f.plumbingUpdated} onChange={(v) => set("plumbingUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
               </Field>
@@ -810,6 +898,9 @@ export default function CommercialPropertyForm({
                   <Input value={f.plumbingYear} onChange={(v) => set("plumbingYear", v)} placeholder="2010" inputMode="numeric" />
                 </Field>
               )}
+              <Field k="systems" label="Plumbing material" hint="Best guess is fine.">
+                <Select value={f.plumbingType} onChange={(v) => set("plumbingType", v)} options={PLUMBING_TYPE} placeholder="Select one" />
+              </Field>
               <Field k="heating" label="When was the heating / HVAC last updated?" required>
                 <Select value={f.heatingUpdated} onChange={(v) => set("heatingUpdated", v)} options={UPDATE_RANGES} placeholder="Select one" />
               </Field>
@@ -834,9 +925,11 @@ export default function CommercialPropertyForm({
                 <Field k="value" label="Building value / coverage limit" hint="Roughly rebuild cost or current value.">
                   <Input value={f.value} onChange={(v) => set("value", v)} placeholder="$1,500,000" />
                 </Field>
-                <Field k="value" label="Annual rental income" hint="Optional — for loss-of-rents coverage.">
-                  <Input value={f.rentalIncome} onChange={(v) => set("rentalIncome", v)} placeholder="$120,000" />
-                </Field>
+                {askRentalIncome && (
+                  <Field k="value" label="Annual rental income" hint="Optional, for loss-of-rents coverage.">
+                    <Input value={f.rentalIncome} onChange={(v) => set("rentalIncome", v)} placeholder="$120,000" />
+                  </Field>
+                )}
               </div>
             </div>
           </Section>

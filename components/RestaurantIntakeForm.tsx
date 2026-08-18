@@ -560,7 +560,7 @@ export default function RestaurantIntakeForm({
           🍽️
         </div>
         <h1 className="mt-6 text-3xl font-bold text-[#131517]">
-          Thanks — we&rsquo;ve got it.
+          Thanks, we&rsquo;ve got it.
         </h1>
         <p className="mt-3 max-w-md text-[#6B6D71]">
           We&rsquo;ll review your info and reach out shortly with your quote.

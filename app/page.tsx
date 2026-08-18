@@ -185,7 +185,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
                 aria-selected={value === "Other"}
                 onClick={() => { onChange("Other"); setOpen(false); }}
                 className="px-3 py-2 text-sm cursor-pointer text-[#272A2D] hover:bg-[#2040E7]/10 hover:text-[#2040E7]">
-                No matches — use <span className="font-semibold">Other</span>
+                No matches, use <span className="font-semibold">Other</span>
               </li>
             ) : (
               filtered.map((opt) => {
@@ -465,7 +465,7 @@ function CalEmbed({ prefill, onBack, layout = "month_view" }: { prefill?: Prefil
           <img src="/logo.png" alt="Cohesive" className="h-8 w-auto object-contain brightness-0 invert" />
           <div className="text-left">
             <div className="text-white font-bold text-sm leading-tight">Schedule a phone call</div>
-            <div className="text-white/70 text-xs">Pick a time — we&apos;ll bring the quote.</div>
+            <div className="text-white/70 text-xs">Pick a time, we&apos;ll bring the quote.</div>
           </div>
         </div>
         <button
