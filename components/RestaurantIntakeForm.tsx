@@ -11,6 +11,7 @@ import {
 } from "react";
 import { isValidPhoneNumber } from "libphonenumber-js/min";
 import isEmail from "validator/lib/isEmail";
+import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { track as vaTrack } from "@vercel/analytics";
 
 /**
@@ -318,6 +319,10 @@ export default function RestaurantIntakeForm({
     setFurthestStep((n) => Math.max(n, step));
   }, [layout, step, cur?.key, track]);
 
+  // Ad attribution (utm / ad_id / fbclid), first-touch, sessionStorage-backed.
+  const [attr, setAttr] = useState<Attribution>({});
+  useEffect(() => { setAttr(captureAttribution()); }, []);
+
   const details = useMemo(() => {
     const d: Array<{ label: string; value: string }> = [];
     const push = (label: string, value?: string) => {
@@ -344,8 +349,9 @@ export default function RestaurantIntakeForm({
     // completions and partials without a pixel lookup.
     push("Form layout", layout);
     if (layout === "steps") push("Furthest step", `${furthestStep + 1} of ${visibleSteps.length} (${visibleSteps[furthestStep]?.key ?? "?"})`);
+    d.push(...attributionDetails(attr));
     return d;
-  }, [f, layout, furthestStep, visibleSteps]);
+  }, [f, layout, furthestStep, visibleSteps, attr]);
 
   // Funnel milestones driven by state.
   useEffect(() => {
