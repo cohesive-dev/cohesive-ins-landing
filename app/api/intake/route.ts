@@ -16,7 +16,8 @@ import { sendIntakeNotification } from "@/lib/notify";
 // CRM handoff for weeks (2026-08-13 diagnosis — 4 church fills that day alone survived only via
 // the quotes@ fallback). The CRM host changes ~never; a hard-coded constant fails loudly in code
 // review instead of silently in a dashboard. Delete the stale CRM_BASE_URL var from Vercel.
-const CRM_INBOUND_LEAD_URL = "https://crm.cohesiveinsure.com/api/webhooks/inbound-lead";
+const CRM_INBOUND_LEAD_URL =
+  "https://crm.cohesiveinsure.com/api/webhooks/inbound-lead";
 
 // Meta Conversions API (server-side Lead, deduped with the browser pixel via a
 // shared event_id). Dark-safe: if META_CAPI_TOKEN isn't set it no-ops, exactly
@@ -244,6 +245,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
+  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
+  // Declared here rather than further down because the abandoned-fill branch below needs it too.
+  const details = sanitizeDetails(body.details);
+
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
     if (isFinal && reachable) {
@@ -255,6 +261,11 @@ export async function POST(request: NextRequest) {
         zip,
         partial: true,
         source,
+        // Partials carried a detail block and this branch dropped it, which threw
+        // away the only thing an abandon can tell us: how far they got before
+        // leaving. On a completed submit "furthest step" is always the last one,
+        // so the abandon path is precisely where it has any value.
+        details,
       });
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
@@ -318,10 +329,6 @@ export async function POST(request: NextRequest) {
     .filter(Boolean)
     .join(" — ");
 
-  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
-  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
-  const details = sanitizeDetails(body.details);
-
   // The restaurant lane USED to bypass the CRM inbound-lead webhook entirely (like the Foxquilt FB
   // lane) because upsertInboundLead fires an automated first-touch SMS and we must never auto-text
   // these leads — the supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE
@@ -340,6 +347,14 @@ export async function POST(request: NextRequest) {
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
   // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
   const isContractorLane = source === "contractors-landing";
+  // Commercial property owns its own first touch too: the lane is Pathpoint-first
+  // behind a judgment gate (clean instant quote -> send it; any gap -> ack + Hedge),
+  // so a generic automated SMS the moment the form lands would beat our own quote
+  // to the client and breaks the standing "never auto-text leads" rule. Covers both
+  // A/B cells: "commercial-property-landing" (long) and "-steps".
+  const isCommercialPropertyLane = (source ?? "").startsWith(
+    "commercial-property",
+  );
   const forwarded = await forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
@@ -347,7 +362,7 @@ export async function POST(request: NextRequest) {
     ...(description ? { business_type: description } : {}),
     ...(company ? { business_name: company } : {}),
     ...(zip ? { zip } : {}),
-    ...(isContractorLane || isRestaurantLane
+    ...(isContractorLane || isRestaurantLane || isCommercialPropertyLane
       ? { suppress_first_touch: "true" }
       : {}),
     // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
