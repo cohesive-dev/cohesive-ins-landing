@@ -231,6 +231,14 @@ export default function CommercialPropertyForm({
 }: {
   layout?: "long" | "steps";
 }) {
+  // Distinct source per cell. Both cells are the same component posting to the
+  // same route, so without this every lead reads "commercial-property-landing"
+  // and the A/B is unmeasurable — we would know the split cost but not which
+  // cell produced the leads.
+  const sourceLabel =
+    layout === "steps"
+      ? "commercial-property-steps"
+      : "commercial-property-landing";
   // Claims defaults to "None" — the common case, and it means the detail
   // block always carries a claims answer even if untouched.
   const [f, setF] = useState<FormState>({ claims: "None" });
@@ -353,6 +361,14 @@ export default function CommercialPropertyForm({
     const push = (label: string, value?: string) => {
       if (value && value.trim()) d.push({ label, value: value.trim() });
     };
+    // Layout A/B marker so quotes@ / the CRM can split long-form vs step-form
+    // completions without a pixel lookup, and so a step abandon says how far.
+    push("Form layout", layout);
+    if (layout === "steps")
+      push(
+        "Furthest step",
+        `${furthestStep + 1} of ${visibleSteps.length} (${visibleSteps[furthestStep]?.key ?? "?"})`,
+      );
     push("Owner / LLC name", f.ownerName);
     push("Property address", f.address);
     push("Owns the property", f.ownProperty);
@@ -381,7 +397,7 @@ export default function CommercialPropertyForm({
     push("Annual rental income", f.rentalIncome);
     push("Claims (last 5 yrs)", f.claims);
     return d;
-  }, [f, fireSec]);
+  }, [f, fireSec, layout, furthestStep, visibleSteps]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
@@ -417,7 +433,7 @@ export default function CommercialPropertyForm({
       phone: phone || undefined,
       businessType: "Commercial property owner",
       zip: extractZip(cur.address),
-      source: "commercial-property-landing",
+      source: sourceLabel,
       partial: true,
       final: true,
       details: det,
@@ -489,7 +505,7 @@ export default function CommercialPropertyForm({
           phone: f.phone,
           businessType: "Commercial property owner",
           zip: extractZip(f.address),
-          source: "commercial-property-landing",
+          source: sourceLabel,
           details,
           eventId,
           ...(qualifiedEventId ? { qualifiedEventId } : {}),

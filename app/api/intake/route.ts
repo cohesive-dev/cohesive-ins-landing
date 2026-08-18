@@ -334,6 +334,14 @@ export async function POST(request: NextRequest) {
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
   // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
   const isContractorLane = source === "contractors-landing";
+  // Commercial property owns its own first touch too: the lane is Pathpoint-first
+  // behind a judgment gate (clean instant quote -> send it; any gap -> ack + Hedge),
+  // so a generic automated SMS the moment the form lands would beat our own quote
+  // to the client and breaks the standing "never auto-text leads" rule. Covers both
+  // A/B cells: "commercial-property-landing" (long) and "-steps".
+  const isCommercialPropertyLane = (source ?? "").startsWith(
+    "commercial-property",
+  );
   const forwarded = isRestaurantLane
     ? false
     : await forwardToCrm({
@@ -343,7 +351,9 @@ export async function POST(request: NextRequest) {
         ...(description ? { business_type: description } : {}),
         ...(company ? { business_name: company } : {}),
         ...(zip ? { zip } : {}),
-        ...(isContractorLane ? { suppress_first_touch: "true" } : {}),
+        ...(isContractorLane || isCommercialPropertyLane
+          ? { suppress_first_touch: "true" }
+          : {}),
         // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
         // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
         // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
