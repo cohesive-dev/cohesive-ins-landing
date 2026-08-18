@@ -106,10 +106,17 @@ const PROPERTY_TYPES: Option[] = [
   { label: "Short-term rental (Airbnb / VRBO)", value: "Short-term rental" },
   { label: "Rental home (1-4 units)", value: "Rental home (1-4 units)" },
 ];
-const DISQUALIFIED_TYPES = new Set([
-  "Short-term rental",
-  "Rental home (1-4 units)",
-]);
+const DISQUALIFIED_TYPES = new Set(["Short-term rental"]);
+
+// ★ ACCEPTED BUT NEVER VALUED (Kevin 2026-08-17: "we can keep but not send value
+// to Facebook"). Pathpoint's LRO guide lists "1-4 rental dwellings" as a TOP
+// class, so we can genuinely quote these - there is no reason to turn the lead
+// away. But a 1-4 unit dwelling is the small end of this lane, and firing a
+// value event on one teaches Meta to go find more of them, which is exactly how
+// the contractor lane ended up buying pool cleaners. So: a normal lead, a normal
+// quote, plain `Lead` only. No QualifiedLead, no LeadUrgentQuoted, whatever the
+// building value or renewal date says.
+const NO_VALUE_EVENT_TYPES = new Set(["Rental home (1-4 units)"]);
 
 const OCCUPANCY: Option[] = [
   { label: "Fully occupied", value: "Fully occupied" },
@@ -496,8 +503,11 @@ export default function CommercialPropertyForm({
     // ★ Value tiers (Kevin 2026-08-17): premium AND urgency, both known at submit.
     // Each extra event rides its own id so browser + server CAPI dedupe per event.
     const tiv = parseTiv(f.value);
-    const isQualified = tiv !== null && tiv >= QUALIFIED_TIV_USD;
-    const isUrgent = URGENT_EXPIRATIONS.has(f.expiration ?? "");
+    // Accepted-but-never-valued types fire the plain Lead and nothing else.
+    const valuable = !NO_VALUE_EVENT_TYPES.has(f.propertyType ?? "");
+    const isQualified =
+      valuable && tiv !== null && tiv >= QUALIFIED_TIV_USD;
+    const isUrgent = valuable && URGENT_EXPIRATIONS.has(f.expiration ?? "");
     const qualifiedEventId = isQualified ? `${eventId}-q` : undefined;
     const urgentEventId = isUrgent ? `${eventId}-ur` : undefined;
     // Both = the tightest slice. Accumulate now, bid on it once it clears ~10/wk.
@@ -587,8 +597,8 @@ export default function CommercialPropertyForm({
             no obligation.
           </p>
           <p className="mt-2 text-sm text-[#6B6D71]">
-            We insure commercial buildings only — not short-term rentals
-            (Airbnb/VRBO) or 1–4 unit rental homes.
+            We insure buildings you rent out or operate from. We can&rsquo;t
+            cover short-term rentals (Airbnb/VRBO).
           </p>
         </div>
       </section>
@@ -682,9 +692,10 @@ export default function CommercialPropertyForm({
           )}
           {typeDisqualified && !rentDisqualified && (
             <Notice>
-              Sorry — we don&rsquo;t insure short-term rentals or 1–4 unit
-              rental homes. We only cover commercial buildings (retail, office,
-              mixed-use, 5+ unit apartments, warehouse).
+              Sorry — we don&rsquo;t insure short-term rentals (Airbnb/VRBO).
+              We cover commercial buildings and rental property: retail, office,
+              mixed-use, apartments, warehouse, religious institutions, and 1–4
+              unit rentals.
             </Notice>
           )}
           {qualified && (
