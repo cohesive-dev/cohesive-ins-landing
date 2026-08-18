@@ -101,9 +101,7 @@ const PROPERTY_TYPES: Option[] = [
   // property slice Pathpoint instant-quotes. Churches that need real A&M limits
   // (the sole instant-quote killer: $25k/$50k binds, $100k/$300k refers) still
   // come through /religious and the church lane's GL+A&M package.
-  // Named inclusively to match Pathpoint's own house-of-worship appetite, which
-  // covers synagogues, mosques, temples and other faith communities equally.
-  { label: "Church / synagogue / mosque / temple", value: "House of worship" },
+  { label: "Religious institution", value: "Religious institution" },
   { label: "Other commercial building", value: "Other commercial" },
   { label: "Short-term rental (Airbnb / VRBO)", value: "Short-term rental" },
   { label: "Rental home (1-4 units)", value: "Rental home (1-4 units)" },
@@ -584,7 +582,7 @@ export default function CommercialPropertyForm({
           </h1>
           <p className="mt-3 text-[#27455C]">
             Coverage for the building you own — retail, office, mixed-use,
-            apartments, warehouse, or your house of worship. We insure the
+            apartments, warehouse, or a religious institution. We insure the
             property itself: fire, wind, water damage, and lost rents. No spam,
             no obligation.
           </p>
