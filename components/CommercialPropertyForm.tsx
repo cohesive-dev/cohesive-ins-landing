@@ -79,9 +79,9 @@ function parseTiv(raw: string | undefined): number | null {
   // range is the defensible read, same instinct as our quoting assumptions.
   const s = (raw ?? "").toLowerCase().replace(/[$,]/g, "");
   if (!s.trim()) return null;
-  // \b after the optional suffix means a number glued to junk ("1000000abc")
-  // matches nothing and returns null, rather than qualifying on garbage.
-  const m = s.match(/(\d+(?:\.\d+)?)\s*(million|mil|m|thousand|k)?\b/);
+  // \b on BOTH sides means a number glued to junk - "1000000abc" or "abc1000000"
+  // - matches nothing and returns null, rather than qualifying on garbage.
+  const m = s.match(/\b(\d+(?:\.\d+)?)\s*(million|mil|m|thousand|k)?\b/);
   if (!m) return null;
   const n = parseFloat(m[1]);
   if (!Number.isFinite(n) || n <= 0) return null;
@@ -246,6 +246,16 @@ const PROPERTY_SET_FIELDS = new Set([
 // step is active — so the long-form markup is untouched and the two layouts
 // can never drift apart.
 const StepCtx = createContext<string | null>(null);
+
+// Field self-gates on its own `k`, but sibling nodes (inline validation errors)
+// do not, so in "steps" they leaked onto every other screen — walk Back with a
+// bad email and the error followed you. Anything rendered beside a Field needs
+// the same gate.
+function StepOnly({ k, children }: { k: string; children: React.ReactNode }) {
+  const active = useContext(StepCtx);
+  if (active !== null && k !== active) return null;
+  return <>{children}</>;
+}
 
 type StepDef = {
   key: string;
@@ -442,7 +452,9 @@ export default function CommercialPropertyForm({
     push("Claims (last 5 yrs)", f.claims);
     d.push(...attributionDetails(attr));
     return d;
-  }, [f, fireSec, layout, furthestStep, visibleSteps, attr]);
+    // visibleSteps.length, not the array: STEPS is rebuilt every render (fresh
+    // ok() closures), so depending on the reference recomputed this on each one.
+  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
@@ -676,11 +688,13 @@ export default function CommercialPropertyForm({
               <Field k="contact" label="Email" required>
                 <Input type="email" value={f.email} onChange={(v) => set("email", v)} placeholder="you@example.com" autoComplete="email" inputMode="email" />
               </Field>
-              {f.email && !emailValid && (
-                <p className="mt-1 text-xs text-red-600">
-                  Please enter a valid email address.
-                </p>
-              )}
+              <StepOnly k="contact">
+                {f.email && !emailValid && (
+                  <p className="mt-1 text-xs text-red-600">
+                    Please enter a valid email address.
+                  </p>
+                )}
+              </StepOnly>
             </div>
             <Field k="contact" label="Phone" required>
               <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="(929) 594-5450" autoComplete="tel" inputMode="tel" />
@@ -749,11 +763,13 @@ export default function CommercialPropertyForm({
                   <Field k="size" label="Year the building was built" required hint="Best guess is fine.">
                     <Input value={f.yearBuilt} onChange={(v) => set("yearBuilt", v)} placeholder="1978" inputMode="numeric" />
                   </Field>
-                  {yearBuiltRaw && !yearBuiltValid && (
-                    <p className="mt-1 text-xs text-red-600">
-                      Please enter a 4-digit year, like 1978.
-                    </p>
-                  )}
+                  <StepOnly k="size">
+                    {yearBuiltRaw && !yearBuiltValid && (
+                      <p className="mt-1 text-xs text-red-600">
+                        Please enter a 4-digit year, like 1978.
+                      </p>
+                    )}
+                  </StepOnly>
                 </div>
                 <Field k="size" label="Building square footage" hint="Best estimate is fine.">
                   <Input value={f.sqft} onChange={(v) => set("sqft", v)} placeholder="8,000" />

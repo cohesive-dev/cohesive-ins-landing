@@ -244,6 +244,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
+  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
+  // Declared here rather than further down because the abandoned-fill branch below needs it too.
+  const details = sanitizeDetails(body.details);
+
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
     if (isFinal && reachable) {
@@ -255,6 +260,11 @@ export async function POST(request: NextRequest) {
         zip,
         partial: true,
         source,
+        // Partials carried a detail block and this branch dropped it, which threw
+        // away the only thing an abandon can tell us: how far they got before
+        // leaving. On a completed submit "furthest step" is always the last one,
+        // so the abandon path is precisely where it has any value.
+        details,
       });
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
@@ -317,10 +327,6 @@ export async function POST(request: NextRequest) {
   const description = [businessType, source ? `via ${source}` : undefined]
     .filter(Boolean)
     .join(" — ");
-
-  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
-  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
-  const details = sanitizeDetails(body.details);
 
   // The restaurant lane BYPASSES the CRM inbound-lead webhook — exactly like the Foxquilt FB lane.
   // upsertInboundLead fires an automated first-touch SMS, and we must NOT auto-text these leads: the
