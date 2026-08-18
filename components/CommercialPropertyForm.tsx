@@ -206,10 +206,23 @@ const SIDING: Option[] = [
   { label: "Other / not sure", value: "Other / not sure" },
 ];
 
-// Owner-occupied by definition, so tenant mix, occupancy and loss-of-rents are all
-// meaningless questions for them (Kevin 2026-08-18). Asking anyway is how a form gets long
-// enough that people quit halfway.
-const NO_TENANT_TYPES = new Set(["Religious institution"]);
+// ★ Ask each question only of the building types it can possibly apply to (Kevin 2026-08-18).
+// Asking anyway is how a form gets long enough that people quit halfway, and a nonsense
+// question ("who are your tenants?" to a church) reads as a form that does not know what it
+// is looking at.
+//
+//   OCCUPANCY  - vacancy drives property rating on any leased or commercial building, so it
+//                is asked broadly. Meaningless only where the owner IS the occupant.
+//   TENANT MIX - a commercial-plaza concept: who occupies which part. A single-family rental
+//                or an Airbnb has one occupant and no mix, and a congregation has none.
+//   RENTAL INCOME - loss-of-rents only exists where rent is actually collected.
+const NO_OCCUPANCY_TYPES = new Set(["Religious institution"]);
+const NO_TENANT_MIX_TYPES = new Set([
+  "Religious institution",
+  "Rental home (1-4 units)",
+  "Short-term rental",
+]);
+const NO_RENTAL_INCOME_TYPES = new Set(["Religious institution"]);
 
 const UPDATE_RANGES: Option[] = [
   { label: "Within the last 10 years", value: "Within last 10 years" },
@@ -378,8 +391,10 @@ export default function CommercialPropertyForm({
   }, [disqualified, track]);
 
   const qualified = f.ownProperty === "Yes" && !!f.propertyType;
-  // A congregation does not have a tenant mix or loss of rents to insure.
-  const hasTenants = !NO_TENANT_TYPES.has(f.propertyType ?? "");
+  const ptype = f.propertyType ?? "";
+  const askOccupancy = !NO_OCCUPANCY_TYPES.has(ptype);
+  const askTenantMix = !NO_TENANT_MIX_TYPES.has(ptype);
+  const askRentalIncome = !NO_RENTAL_INCOME_TYPES.has(ptype);
   useEffect(() => {
     if (qualified) track("PropertyQualified");
   }, [qualified, track]);
@@ -415,7 +430,7 @@ export default function CommercialPropertyForm({
     // Hidden entirely for owner-occupied types: with its two fields gone the screen
     // rendered blank, just a Next button under a progress bar. StepDef always had
     // skip() for this; nothing was using it until a type hid a whole screen's worth.
-    { key: "occupancy", label: "The property", ok: () => true, skip: () => !hasTenants },
+    { key: "occupancy", label: "The property", ok: () => true, skip: () => !askOccupancy && !askTenantMix },
     { key: "expiration", label: "The property", ok: () => true },
     { key: "size", label: "The building", hint: "Best guesses are fine.", ok: () => yearBuiltValid },
     { key: "construction", label: "The building", ok: () => true },
@@ -787,15 +802,15 @@ export default function CommercialPropertyForm({
           )}
           {qualified && (
             <>
-              {hasTenants && (
-                <>
-              <Field k="occupancy" label="How occupied is the building?">
-                <Radio name="occupancy" value={f.occupancy} onChange={(v) => set("occupancy", v)} options={OCCUPANCY} />
-              </Field>
-              <Field k="occupancy" label="Who occupies it?" hint="Tenant mix matters, e.g. 'nail salon + 2 apartments upstairs'. Your own business counts too.">
-                <Input value={f.tenants} onChange={(v) => set("tenants", v)} placeholder="Restaurant on ground floor, offices above" />
-              </Field>
-                </>
+              {askOccupancy && (
+                <Field k="occupancy" label="How occupied is the building?">
+                  <Radio name="occupancy" value={f.occupancy} onChange={(v) => set("occupancy", v)} options={OCCUPANCY} />
+                </Field>
+              )}
+              {askTenantMix && (
+                <Field k="occupancy" label="Who occupies it?" hint="Tenant mix matters, e.g. 'nail salon + 2 apartments upstairs'. Your own business counts too.">
+                  <Input value={f.tenants} onChange={(v) => set("tenants", v)} placeholder="Restaurant on ground floor, offices above" />
+                </Field>
               )}
               <Field k="expiration" label="When does your current policy expire?">
                 <Select value={f.expiration} onChange={(v) => set("expiration", v)} options={EXPIRATION} placeholder="Select one" />
@@ -901,7 +916,7 @@ export default function CommercialPropertyForm({
                 <Field k="value" label="Building value / coverage limit" hint="Roughly rebuild cost or current value.">
                   <Input value={f.value} onChange={(v) => set("value", v)} placeholder="$1,500,000" />
                 </Field>
-                {hasTenants && (
+                {askRentalIncome && (
                   <Field k="value" label="Annual rental income" hint="Optional, for loss-of-rents coverage.">
                     <Input value={f.rentalIncome} onChange={(v) => set("rentalIncome", v)} placeholder="$120,000" />
                   </Field>
