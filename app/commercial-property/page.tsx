@@ -51,6 +51,39 @@ const EXPIRATION: Option[] = [
   { label: "No coverage right now", value: "No coverage now" },
 ];
 
+// ★ URGENCY (Kevin 2026-08-17): the expiration answer already carries the clock,
+// so CP needs no extra question — a policy expiring THIS MONTH or no coverage at
+// all is a buyer with a deadline. Fires LeadUrgentQuoted, the same event the
+// contractor and restaurant lanes use. "In 1-3 months" is deliberately out: a
+// renewal a quarter away shops, it does not buy.
+const URGENT_EXPIRATIONS = new Set(["This month", "No coverage now"]);
+
+// ★ PREMIUM PROXY: property premium scales with insured value, so the building
+// value/limit answer is CP's version of the contractor "what do you pay today"
+// question — known at submit, no quote required. $1M TIV is the threshold: our
+// own property book runs a $3,803 median / $5,414 average premium, and Pathpoint
+// quotes instantly to $3.8M TIV, so $1M+ is both a real premium and still inside
+// the instant lane. Fires QualifiedLead.
+const QUALIFIED_TIV_USD = 1_000_000;
+
+// The value field is free text ("$1,500,000", "1.5m", "1500000", "4m"), so parse
+// rather than trust the shape. Returns null when we genuinely cannot read it —
+// an unparseable answer must NOT count as qualified.
+function parseTiv(raw: string | undefined): number | null {
+  // Live answers include "$300,000." (trailing period) and "$2m - $3m" (a range),
+  // so normalise then read the FIRST number — the low end of a range is the
+  // defensible read, same instinct as our low-but-defensible quoting assumptions.
+  const s = (raw ?? "").trim().toLowerCase().replace(/[$,\s]/g, "");
+  if (!s) return null;
+  const m = s.match(/^(\d+(?:\.\d+)?)([km])?/);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  if (m[2] === "m") return n * 1_000_000;
+  if (m[2] === "k") return n * 1_000;
+  return n;
+}
+
 // Property type is the qualifier: commercial types continue, the two
 // residential-rental types disqualify (Kevin: no Airbnbs / rental homes).
 const PROPERTY_TYPES: Option[] = [
@@ -367,6 +400,16 @@ export default function CommercialPropertyLandingPage() {
       typeof crypto !== "undefined" && crypto.randomUUID
         ? crypto.randomUUID()
         : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    // ★ Value tiers (Kevin 2026-08-17): premium AND urgency, both known at submit.
+    // Each extra event rides its own id so browser + server CAPI dedupe per event.
+    const tiv = parseTiv(f.value);
+    const isQualified = tiv !== null && tiv >= QUALIFIED_TIV_USD;
+    const isUrgent = URGENT_EXPIRATIONS.has(f.expiration ?? "");
+    const qualifiedEventId = isQualified ? `${eventId}-q` : undefined;
+    const urgentEventId = isUrgent ? `${eventId}-ur` : undefined;
+    // Both = the tightest slice. Accumulate now, bid on it once it clears ~10/wk.
+    const qualifiedUrgentEventId =
+      isQualified && isUrgent ? `${eventId}-qu` : undefined;
     try {
       const res = await fetch("/api/intake", {
         method: "POST",
@@ -380,6 +423,9 @@ export default function CommercialPropertyLandingPage() {
           source: "commercial-property-landing",
           details,
           eventId,
+          ...(qualifiedEventId ? { qualifiedEventId } : {}),
+          ...(urgentEventId ? { urgentEventId } : {}),
+          ...(qualifiedUrgentEventId ? { qualifiedUrgentEventId } : {}),
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
@@ -388,6 +434,12 @@ export default function CommercialPropertyLandingPage() {
       // browser + server CAPI Lead dedupe to a single conversion.
       fbq("track", "Lead", {}, { eventID: eventId });
       fbq("trackCustom", "CommercialPropertySubmit");
+      if (qualifiedEventId)
+        fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
+      if (urgentEventId)
+        fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
+      if (qualifiedUrgentEventId)
+        fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
       setStatus("done");
     } catch (err) {
       setStatus("error");
