@@ -378,25 +378,28 @@ export async function POST(request: NextRequest) {
   // fall back to the quotes@ alert so a real lead still lands somewhere a human reads.
   // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
   // the pixel kept counting them.)
-  // Send quotes@ when the CRM forward failed (zero-miss) OR whenever a deep-form detail block
-  // exists — the CRM webhook only carries flat contact fields, so quotes@ is how the agent gets
-  // the quote-ready building answers even on a successful forward.
-  // ★ The restaurant lane ALWAYS gets the quotes@ email regardless of forward status: rest_loop.py
-  // sweeps that inbox and it is the ONLY outbound touch for the lane. Listing it explicitly rather
-  // than relying on `details` being non-empty, so a future change to the detail block cannot
-  // silently unhook the auto-quoter.
-  if (!forwarded || details || isRestaurantLane) {
-    await sendIntakeNotification({
-      name,
-      email,
-      phone,
-      businessType,
-      zip,
-      partial: false,
-      source,
-      details,
-    });
-  }
+  // ★ Kevin 2026-08-18: EVERY completed submission emails quotes@, unconditionally. This used to
+  // be gated on `!forwarded || details || isRestaurantLane`, which meant a form with no detail
+  // block whose CRM forward SUCCEEDED sent no email at all — precisely the generic homepage
+  // QuoteModal (app/page.tsx) and the splash gates (QuoteSplash.tsx), neither of which sends
+  // `details`. Those leads existed only as a CRM row and a Slack card, so every quotes@-driven
+  // sweep and auto-quoter was structurally blind to them (found via Lauren Parton /
+  // billing@poolprosllc.com, a pool contractor asking for GL: Slack card posted, zero email).
+  // The old rationale still holds as a floor and is now subsumed: forward failure is still the
+  // zero-miss fallback (2026-07-09 incident), deep-form `details` still ride to quotes@ because
+  // the CRM webhook carries flat contact fields only, and the restaurant lane still always gets
+  // its email because rest_loop.py sweeps this inbox and owns the lane's only outbound touch.
+  // A duplicate alert on a lane that was already emailing costs nothing; a silent drop costs a lead.
+  await sendIntakeNotification({
+    name,
+    email,
+    phone,
+    businessType,
+    zip,
+    partial: false,
+    source,
+    details,
+  });
 
   // Server-side CAPI event, deduped with the browser pixel via the shared event
   // id. Real submissions only — partials returned above, so they never count as
