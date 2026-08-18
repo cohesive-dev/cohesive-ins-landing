@@ -412,7 +412,10 @@ export default function CommercialPropertyForm({
     { key: "own", label: "The property", ok: () => !!f.ownProperty },
     { key: "type", label: "The property", ok: () => !!f.propertyType },
     { key: "address", label: "The property", ok: () => !!f.address?.trim() },
-    { key: "occupancy", label: "The property", ok: () => true },
+    // Hidden entirely for owner-occupied types: with its two fields gone the screen
+    // rendered blank, just a Next button under a progress bar. StepDef always had
+    // skip() for this; nothing was using it until a type hid a whole screen's worth.
+    { key: "occupancy", label: "The property", ok: () => true, skip: () => !hasTenants },
     { key: "expiration", label: "The property", ok: () => true },
     { key: "size", label: "The building", hint: "Best guesses are fine.", ok: () => yearBuiltValid },
     { key: "construction", label: "The building", ok: () => true },
@@ -425,7 +428,7 @@ export default function CommercialPropertyForm({
     { key: "owner", label: "Your details", ok: () => !!f.ownerName?.trim() },
     { key: "contact", label: "Your details", ok: () => !!f.fullName?.trim() && emailValid && !!f.phone?.trim() },
   ];
-  const visibleSteps = STEPS;
+  const visibleSteps = STEPS.filter((st) => !st.skip?.());
   const cur = visibleSteps[Math.min(step, visibleSteps.length - 1)];
   const isLast = step >= visibleSteps.length - 1;
   const stepped = layout === "steps";
