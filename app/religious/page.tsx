@@ -322,7 +322,7 @@ export default function ReligiousLandingPage() {
         name: f.fullName,
         email: f.email,
         phone: f.phone,
-        business_type: "House of worship, via religious-landing",
+        business_type: "House of worship — via religious-landing",
         zip: extractZip(f.address),
       }),
     }).catch(() => {});

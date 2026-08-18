@@ -167,10 +167,15 @@ const ROOF_TYPE: Option[] = [
 // answers are underwriting-vital (they make or break the quote), so no free
 // text: every answer is machine-usable and "Not sure" is an explicit state,
 // not a blank.
-// ★ These four map to the exact Pathpoint fields the finisher has to answer, and three of them
-// are eligibility GATES rather than rating detail: steel/iron/polybutylene plumbing, and
-// aluminum / FPE / Zinsco / Stab-Lok wiring, are declines. Asking here turns "referred or
-// declined at the portal three days later" into "known before we file".
+// ★ These four map to the exact Pathpoint fields the finisher has to answer. Several answers
+// are ones Pathpoint DECLINES on: steel/iron/polybutylene plumbing, and aluminum / FPE /
+// Zinsco / Stab-Lok wiring.
+//
+// To be clear about what this does and does not do: capturing them turns "declined at the
+// portal three days later" into "known before we file", so the risk can be routed to Hedge or
+// E&S from the start. It deliberately does NOT block the submission or suppress the value
+// events - a polybutylene building is still a real lead we can place somewhere, just not
+// through the instant path. Making it a hard gate would be a doctrine decision, not a form one.
 const PLUMBING_TYPE: Option[] = [
   { label: "Copper", value: "Copper" },
   { label: "PEX / plastic", value: "PEX/plastic" },
@@ -495,8 +500,12 @@ export default function CommercialPropertyForm({
     push("Property address", f.address);
     push("Owns the property", f.ownProperty);
     push("Property type", f.propertyType);
-    push("Occupancy", f.occupancy);
-    push("Who occupies it (tenant mix)", f.tenants);
+    // Only send what we actually asked. Switching a half-filled retail form to a
+    // religious institution hides these inputs but leaves their values in state,
+    // and a church arriving with "Annual rental income $120,000" is worse than a
+    // blank: it is wrong data that a human would have to disbelieve.
+    if (askOccupancy) push("Occupancy", f.occupancy);
+    if (askTenantMix) push("Who occupies it (tenant mix)", f.tenants);
     push("Policy expiration", f.expiration);
     push("Construction type", f.construction);
     push("Exterior / siding", f.siding);
@@ -520,13 +529,13 @@ export default function CommercialPropertyForm({
     push("Sprinklered", f.sprinklered);
     if (fireSec.length) push("Fire & security", fireSec.join(", "));
     push("Building value / coverage limit", f.value);
-    push("Annual rental income", f.rentalIncome);
+    if (askRentalIncome) push("Annual rental income", f.rentalIncome);
     push("Claims (last 5 yrs)", f.claims);
     d.push(...attributionDetails(attr));
     return d;
     // visibleSteps.length, not the array: STEPS is rebuilt every render (fresh
     // ok() closures), so depending on the reference recomputed this on each one.
-  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr]);
+  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr, askOccupancy, askTenantMix, askRentalIncome]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
