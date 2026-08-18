@@ -73,22 +73,27 @@ const QUALIFIED_TIV_USD = 1_000_000;
 // rather than trust the shape. Returns null when we genuinely cannot read it —
 // an unparseable answer must NOT count as qualified.
 function parseTiv(raw: string | undefined): number | null {
-  // Live answers include "$300,000." (trailing period) and "$2m - $3m" (a range),
-  // so normalise then read the FIRST number — the low end of a range is the
-  // defensible read, same instinct as our low-but-defensible quoting assumptions.
-  const s = (raw ?? "").trim().toLowerCase().replace(/[$,\s]/g, "");
-  if (!s) return null;
-  const m = s.match(/^(\d+(?:\.\d+)?)([km])?/);
+  // Real answers are messy: "$1,500,000", "1.5m", "$300,000." with a trailing
+  // period, "$2m - $3m" as a range, "over $2M", "2.4 million". Strip currency
+  // noise, then read the FIRST number and its magnitude word. The low end of a
+  // range is the defensible read, same instinct as our quoting assumptions.
+  const s = (raw ?? "").toLowerCase().replace(/[$,]/g, "");
+  if (!s.trim()) return null;
+  // \b after the optional suffix means a number glued to junk ("1000000abc")
+  // matches nothing and returns null, rather than qualifying on garbage.
+  const m = s.match(/(\d+(?:\.\d+)?)\s*(million|mil|m|thousand|k)?\b/);
   if (!m) return null;
   const n = parseFloat(m[1]);
   if (!Number.isFinite(n) || n <= 0) return null;
-  if (m[2] === "m") return n * 1_000_000;
-  if (m[2] === "k") return n * 1_000;
-  return n;
+  const suffix = m[2];
+  if (suffix === "million" || suffix === "mil" || suffix === "m") return n * 1_000_000;
+  if (suffix === "thousand" || suffix === "k") return n * 1_000;
+  // A bare number under $10k is ambiguous - "1.5" could be $1.5M or $1.50, and
+  // "750" could be $750k. Guessing risks BOTH mistakes: inventing a qualified
+  // lead, or dropping a real one. Fail closed; they still submit as a plain Lead.
+  return n >= 10_000 ? n : null;
 }
 
-// Property type is the qualifier: commercial types continue, the two
-// residential-rental types disqualify (Kevin: no Airbnbs / rental homes).
 const PROPERTY_TYPES: Option[] = [
   { label: "Retail / storefront", value: "Retail / storefront" },
   { label: "Office building", value: "Office building" },
@@ -296,6 +301,16 @@ export default function CommercialPropertyForm({
 
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
 
+  // Year built is a REQUIRED underwriting answer that drives property rating, and
+  // it was a free-text box that accepted "old" or "1'"'"'m not sure". Require a
+  // plausible 4-digit year so we never file a submission on unusable data.
+  const yearBuiltRaw = (f.yearBuilt ?? "").trim();
+  const yearBuiltNum = /^\d{4}$/.test(yearBuiltRaw) ? Number(yearBuiltRaw) : NaN;
+  const yearBuiltValid =
+    Number.isFinite(yearBuiltNum) &&
+    yearBuiltNum >= 1700 &&
+    yearBuiltNum <= new Date().getFullYear() + 1;
+
   // Only disqualifier left: renters. The form collapses to a polite "not a fit"
   // message and nothing submits — a disqualified visitor never becomes a lead.
   const rentDisqualified = f.ownProperty === "No";
@@ -313,7 +328,7 @@ export default function CommercialPropertyForm({
   // requirements: year built + all four system-update selects (each has a
   // "Not sure" escape hatch, so requiring them costs one tap, not a lookup).
   const buildingComplete =
-    !!f.yearBuilt?.trim() &&
+    yearBuiltValid &&
     !!f.roofUpdated &&
     !!f.electricalUpdated &&
     !!f.plumbingUpdated &&
@@ -339,7 +354,7 @@ export default function CommercialPropertyForm({
     { key: "address", label: "The property", ok: () => !!f.address?.trim() },
     { key: "occupancy", label: "The property", ok: () => true },
     { key: "expiration", label: "The property", ok: () => true },
-    { key: "size", label: "The building", hint: "Best guesses are fine.", ok: () => !!f.yearBuilt?.trim() },
+    { key: "size", label: "The building", hint: "Best guesses are fine.", ok: () => yearBuiltValid },
     { key: "construction", label: "The building", ok: () => true },
     { key: "roof", label: "The building", ok: () => !!f.roofUpdated },
     { key: "systems", label: "The building", ok: () => !!f.electricalUpdated && !!f.plumbingUpdated },
@@ -730,9 +745,16 @@ export default function CommercialPropertyForm({
             </p>
             <div className="space-y-4 rounded-xl border border-[#EEF1FF] bg-[#FBFCFF] p-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field k="size" label="Year the building was built" required hint="Best guess is fine.">
-                  <Input value={f.yearBuilt} onChange={(v) => set("yearBuilt", v)} placeholder="1978" inputMode="numeric" />
-                </Field>
+                <div>
+                  <Field k="size" label="Year the building was built" required hint="Best guess is fine.">
+                    <Input value={f.yearBuilt} onChange={(v) => set("yearBuilt", v)} placeholder="1978" inputMode="numeric" />
+                  </Field>
+                  {yearBuiltRaw && !yearBuiltValid && (
+                    <p className="mt-1 text-xs text-red-600">
+                      Please enter a 4-digit year, like 1978.
+                    </p>
+                  )}
+                </div>
                 <Field k="size" label="Building square footage" hint="Best estimate is fine.">
                   <Input value={f.sqft} onChange={(v) => set("sqft", v)} placeholder="8,000" />
                 </Field>
@@ -1048,6 +1070,10 @@ function AddressAutocomplete({
   const places = useRef<GPlacesService | null>(null);
   const token = useRef<object | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Mirrors the live input so an async Place Details reply can tell whether the
+  // user has moved on since it was requested.
+  const latestValue = useRef(value);
+  latestValue.current = value;
 
   useEffect(() => {
     if (!GMAPS_KEY) return;
@@ -1096,6 +1122,11 @@ function AddressAutocomplete({
     setSuggestions([]);
     setOpen(false);
     onChange(p.description);
+    // Place Details is async. If the user keeps typing (or picks another
+    // prediction) before it returns, applying the result would silently
+    // overwrite their newer text with a stale address. Only upgrade if the
+    // field still holds exactly what this call was made for.
+    const expected = p.description;
     places.current?.getDetails(
       {
         placeId: p.place_id,
@@ -1103,7 +1134,11 @@ function AddressAutocomplete({
         sessionToken: token.current,
       },
       (place, status) => {
-        if (status === "OK" && place?.formatted_address) {
+        if (
+          status === "OK" &&
+          place?.formatted_address &&
+          latestValue.current === expected
+        ) {
           onChange(place.formatted_address);
         }
         const g = getGoogle();
@@ -1261,6 +1296,10 @@ function CheckGroup({
 
 function extractZip(address?: string): string | undefined {
   if (!address) return undefined;
-  const m = address.match(/\b(\d{5})(?:-\d{4})?\b/);
-  return m ? m[1] : undefined;
+  // LAST 5-digit token, not the first: "12345 Main St, Springfield, IL 62704"
+  // is a perfectly ordinary address, and taking the first match sent the street
+  // number to the CRM as the ZIP. US addresses put the ZIP at the end, so the
+  // final match is the right one even with a ZIP+4 or a trailing ", USA".
+  const all = [...address.matchAll(/\b(\d{5})(?:-\d{4})?\b/g)];
+  return all.length ? all[all.length - 1][1] : undefined;
 }
