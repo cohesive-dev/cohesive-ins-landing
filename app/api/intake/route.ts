@@ -322,11 +322,17 @@ export async function POST(request: NextRequest) {
   // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
   const details = sanitizeDetails(body.details);
 
-  // The restaurant lane BYPASSES the CRM inbound-lead webhook — exactly like the Foxquilt FB lane.
-  // upsertInboundLead fires an automated first-touch SMS, and we must NOT auto-text these leads: the
-  // supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE itself as the only
-  // outbound touch. So restaurant submissions go to quotes@ (+ CAPI) only, never the CRM. Church and
-  // every other lane are unchanged.
+  // The restaurant lane USED to bypass the CRM inbound-lead webhook entirely (like the Foxquilt FB
+  // lane) because upsertInboundLead fires an automated first-touch SMS and we must never auto-text
+  // these leads — the supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE
+  // itself as the only outbound touch. The bypass worked but made the lane INVISIBLE: a restaurant
+  // landing fill existed only as a quotes@ email and a pixel event, so landing-lane volume could
+  // not be counted or reconciled in the CRM at all (2026-08-17: 12 pixel-recorded fills, 0 CRM rows,
+  // and no way to tell a real lead from test traffic).
+  // ★ Kevin 2026-08-17: do what contractors do instead — FORWARD, with suppress_first_touch. The
+  // deployed CRM honors that flag (contractor lane has relied on it since 2026-08-13), so the lead
+  // is recorded without any automated SMS/dial, and rest_loop.py keeps owning the first touch via
+  // quotes@ exactly as before.
   const fbc = request.cookies.get("_fbc")?.value;
   const fbp = request.cookies.get("_fbp")?.value;
   const isRestaurantLane = source === "restaurant-landing";
@@ -334,23 +340,23 @@ export async function POST(request: NextRequest) {
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
   // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
   const isContractorLane = source === "contractors-landing";
-  const forwarded = isRestaurantLane
-    ? false
-    : await forwardToCrm({
-        ...(name ? { name } : {}),
-        ...(email ? { email } : {}),
-        ...(phone ? { phone } : {}),
-        ...(description ? { business_type: description } : {}),
-        ...(company ? { business_name: company } : {}),
-        ...(zip ? { zip } : {}),
-        ...(isContractorLane ? { suppress_first_touch: "true" } : {}),
-        // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
-        // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
-        // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
-        // the ids die with the request and every value event is a weak match.
-        ...(fbc ? { fbc } : {}),
-        ...(fbp ? { fbp } : {}),
-      });
+  const forwarded = await forwardToCrm({
+    ...(name ? { name } : {}),
+    ...(email ? { email } : {}),
+    ...(phone ? { phone } : {}),
+    ...(description ? { business_type: description } : {}),
+    ...(company ? { business_name: company } : {}),
+    ...(zip ? { zip } : {}),
+    ...(isContractorLane || isRestaurantLane
+      ? { suppress_first_touch: "true" }
+      : {}),
+    // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
+    // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
+    // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
+    // the ids die with the request and every value event is a weak match.
+    ...(fbc ? { fbc } : {}),
+    ...(fbp ? { fbp } : {}),
+  });
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
   // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
@@ -360,7 +366,11 @@ export async function POST(request: NextRequest) {
   // Send quotes@ when the CRM forward failed (zero-miss) OR whenever a deep-form detail block
   // exists — the CRM webhook only carries flat contact fields, so quotes@ is how the agent gets
   // the quote-ready building answers even on a successful forward.
-  if (!forwarded || details) {
+  // ★ The restaurant lane ALWAYS gets the quotes@ email regardless of forward status: rest_loop.py
+  // sweeps that inbox and it is the ONLY outbound touch for the lane. Listing it explicitly rather
+  // than relying on `details` being non-empty, so a future change to the detail block cannot
+  // silently unhook the auto-quoter.
+  if (!forwarded || details || isRestaurantLane) {
     await sendIntakeNotification({
       name,
       email,
@@ -395,35 +405,74 @@ export async function POST(request: NextRequest) {
   const qualifiedEventId = asTrimmedString(body.qualifiedEventId);
   const capiQualified =
     qualifiedEventId && reachable
-      ? await sendCapiEvent(request, "QualifiedLead", qualifiedEventId, email, phone)
+      ? await sendCapiEvent(
+          request,
+          "QualifiedLead",
+          qualifiedEventId,
+          email,
+          phone,
+        )
       : "skipped";
 
   const uninsuredEventId = asTrimmedString(body.uninsuredEventId);
   const capiUninsured =
     uninsuredEventId && reachable
-      ? await sendCapiEvent(request, "UninsuredLead", uninsuredEventId, email, phone)
+      ? await sendCapiEvent(
+          request,
+          "UninsuredLead",
+          uninsuredEventId,
+          email,
+          phone,
+        )
       : "skipped";
 
   const urgentEventId = asTrimmedString(body.urgentEventId);
   const capiUrgent =
     urgentEventId && reachable
-      ? await sendCapiEvent(request, "LeadUrgentQuoted", urgentEventId, email, phone)
+      ? await sendCapiEvent(
+          request,
+          "LeadUrgentQuoted",
+          urgentEventId,
+          email,
+          phone,
+        )
       : "skipped";
 
   const qualifiedUrgentEventId = asTrimmedString(body.qualifiedUrgentEventId);
   const capiQualifiedUrgent =
     qualifiedUrgentEventId && reachable
-      ? await sendCapiEvent(request, "QualifiedUrgentLead", qualifiedUrgentEventId, email, phone)
+      ? await sendCapiEvent(
+          request,
+          "QualifiedUrgentLead",
+          qualifiedUrgentEventId,
+          email,
+          phone,
+        )
       : "skipped";
 
   const largeBusinessEventId = asTrimmedString(body.largeBusinessEventId);
   const capiLargeBusiness =
     largeBusinessEventId && reachable
-      ? await sendCapiEvent(request, "LargeBusinessLead", largeBusinessEventId, email, phone)
+      ? await sendCapiEvent(
+          request,
+          "LargeBusinessLead",
+          largeBusinessEventId,
+          email,
+          phone,
+        )
       : "skipped";
 
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed", capi, capiQualified, capiUninsured, capiUrgent, capiQualifiedUrgent, capiLargeBusiness },
+    {
+      ok: true,
+      crm: forwarded ? "sent" : "failed",
+      capi,
+      capiQualified,
+      capiUninsured,
+      capiUrgent,
+      capiQualifiedUrgent,
+      capiLargeBusiness,
+    },
     { status: 200 },
   );
 }
