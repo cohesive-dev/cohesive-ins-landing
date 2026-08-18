@@ -94,6 +94,16 @@ const PROPERTY_TYPES: Option[] = [
   { label: "Mixed-use (commercial + apartments)", value: "Mixed-use" },
   { label: "Apartment building (5+ units)", value: "Apartment building (5+ units)" },
   { label: "Warehouse / industrial", value: "Warehouse / industrial" },
+  // ★ Religious institutions (Kevin 2026-08-17): church property runs INSIDE the
+  // commercial-property campaign rather than as its own lane. Arriving through
+  // this form is itself the qualifier — CP asks nothing about abuse & molestation,
+  // so a congregation here wants the BUILDING covered, which is the monoline
+  // property slice Pathpoint instant-quotes. Churches that need real A&M limits
+  // (the sole instant-quote killer: $25k/$50k binds, $100k/$300k refers) still
+  // come through /religious and the church lane's GL+A&M package.
+  // Named inclusively to match Pathpoint's own house-of-worship appetite, which
+  // covers synagogues, mosques, temples and other faith communities equally.
+  { label: "Church / synagogue / mosque / temple", value: "House of worship" },
   { label: "Other commercial building", value: "Other commercial" },
   { label: "Short-term rental (Airbnb / VRBO)", value: "Short-term rental" },
   { label: "Rental home (1-4 units)", value: "Rental home (1-4 units)" },
@@ -574,8 +584,9 @@ export default function CommercialPropertyForm({
           </h1>
           <p className="mt-3 text-[#27455C]">
             Coverage for the building you own — retail, office, mixed-use,
-            apartments, warehouse. We insure the property itself: fire, wind,
-            water damage, and lost rents. No spam, no obligation.
+            apartments, warehouse, or your house of worship. We insure the
+            property itself: fire, wind, water damage, and lost rents. No spam,
+            no obligation.
           </p>
           <p className="mt-2 text-sm text-[#6B6D71]">
             We insure commercial buildings only — not short-term rentals

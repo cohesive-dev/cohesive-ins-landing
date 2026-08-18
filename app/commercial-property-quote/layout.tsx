@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 
-// The /commercial-property page is a client component, so it can't export
-// `metadata` itself. This route-segment layout supplies the LRO-specific Open
-// Graph / Twitter tags so FB ad link-previews and organic shares show a
-// commercial-property card — not the site-wide contractor blurb it would
-// otherwise inherit from the root layout.
+// Mirrors app/commercial-property/layout.tsx on purpose. Without this the step
+// cell inherits the ROOT metadata, so the two A/B cells would serve different
+// page titles and link-preview cards — a difference that has nothing to do with
+// the thing we're testing (long form vs one-question-per-screen) but would show
+// up in the results. Only the canonical/og url differs, since they are separate
+// routes.
 export const metadata: Metadata = {
   title: "Commercial Property Insurance for Building Owners | Cohesive Insurance",
   description:
     "Property coverage for the commercial building you own — retail, office, mixed-use, warehouse, house of worship. Fast quotes from A-rated carriers.",
-  alternates: { canonical: "/commercial-property" },
+  alternates: { canonical: "/commercial-property-quote" },
   openGraph: {
     type: "website",
-    url: "/commercial-property",
+    url: "/commercial-property-quote",
     siteName: "Cohesive Insurance",
     title: "Commercial property insurance for building owners",
     description:
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CommercialPropertyLayout({
+export default function CommercialPropertyQuoteLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return children;
