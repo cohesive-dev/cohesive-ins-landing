@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 
 /**
  * /commercial-property — deep intake landing page for commercial building
@@ -374,6 +375,16 @@ export default function CommercialPropertyForm({
     setFurthestStep((n) => Math.max(n, step));
   }, [stepped, step, cur, track]);
 
+  // Ad attribution (utm / ad_id / fbclid), first-touch, sessionStorage-backed —
+  // same capture the contractor and restaurant lanes use. Both CP cells are
+  // website lanes, which are precisely the ones that were untraceable to the ad
+  // that bought them; and since the A/B runs two adsets, per-ad attribution is
+  // what tells us whether a cell won on its layout or just on its creative.
+  const [attr, setAttr] = useState<Attribution>({});
+  useEffect(() => {
+    setAttr(captureAttribution());
+  }, []);
+
   const details = useMemo(() => {
     const d: Array<{ label: string; value: string }> = [];
     const push = (label: string, value?: string) => {
@@ -414,8 +425,9 @@ export default function CommercialPropertyForm({
     push("Building value / coverage limit", f.value);
     push("Annual rental income", f.rentalIncome);
     push("Claims (last 5 yrs)", f.claims);
+    d.push(...attributionDetails(attr));
     return d;
-  }, [f, fireSec, layout, furthestStep, visibleSteps]);
+  }, [f, fireSec, layout, furthestStep, visibleSteps, attr]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
