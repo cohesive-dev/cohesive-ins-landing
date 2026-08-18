@@ -106,17 +106,25 @@ const PROPERTY_TYPES: Option[] = [
   { label: "Short-term rental (Airbnb / VRBO)", value: "Short-term rental" },
   { label: "Rental home (1-4 units)", value: "Rental home (1-4 units)" },
 ];
-const DISQUALIFIED_TYPES = new Set(["Short-term rental"]);
+// No property TYPE disqualifies any more (Kevin 2026-08-17). Pathpoint's Lessors
+// Risk guide lists "1-4 rental dwellings", "Short-term rentals" AND "Vacation
+// rentals" among its top classes, so every option on this form is quotable and
+// turning any of them away was refusing business we can write. Only RENTERS are
+// disqualified now, and that is an ownership fact rather than a class judgment.
 
 // ★ ACCEPTED BUT NEVER VALUED (Kevin 2026-08-17: "we can keep but not send value
-// to Facebook"). Pathpoint's LRO guide lists "1-4 rental dwellings" as a TOP
-// class, so we can genuinely quote these - there is no reason to turn the lead
-// away. But a 1-4 unit dwelling is the small end of this lane, and firing a
-// value event on one teaches Meta to go find more of them, which is exactly how
-// the contractor lane ended up buying pool cleaners. So: a normal lead, a normal
-// quote, plain `Lead` only. No QualifiedLead, no LeadUrgentQuoted, whatever the
-// building value or renewal date says.
-const NO_VALUE_EVENT_TYPES = new Set(["Rental home (1-4 units)"]);
+// to Facebook"). Pathpoint quotes these - 1-4 dwellings, short-term rentals and
+// vacation rentals are all top LRO classes - so there is no reason to turn the
+// lead away. But they are the small end of this lane, and firing a value event
+// on one teaches Meta to go find more of them, which is exactly how the
+// contractor lane ended up spending 5x more on pool cleaners than roofers.
+// Accepting a lead and asking for more of it are separate decisions: these get a
+// normal quote and the plain `Lead` only. No QualifiedLead, no LeadUrgentQuoted,
+// whatever the building value or renewal date says.
+const NO_VALUE_EVENT_TYPES = new Set([
+  "Rental home (1-4 units)",
+  "Short-term rental",
+]);
 
 const OCCUPANCY: Option[] = [
   { label: "Fully occupied", value: "Fully occupied" },
@@ -287,20 +295,15 @@ export default function CommercialPropertyForm({
 
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
 
-  // Disqualifiers: renters, and residential-rental property types. The rest of
-  // the form collapses to a polite "not a fit" message and nothing submits —
-  // a disqualified visitor never becomes a lead.
+  // Only disqualifier left: renters. The form collapses to a polite "not a fit"
+  // message and nothing submits — a disqualified visitor never becomes a lead.
   const rentDisqualified = f.ownProperty === "No";
-  const typeDisqualified = DISQUALIFIED_TYPES.has(f.propertyType ?? "");
-  const disqualified = rentDisqualified || typeDisqualified;
+  const disqualified = rentDisqualified;
   useEffect(() => {
     if (disqualified) track("CPDisqualified");
   }, [disqualified, track]);
 
-  const qualified =
-    f.ownProperty === "Yes" &&
-    !!f.propertyType &&
-    !DISQUALIFIED_TYPES.has(f.propertyType);
+  const qualified = f.ownProperty === "Yes" && !!f.propertyType;
   useEffect(() => {
     if (qualified) track("PropertyQualified");
   }, [qualified, track]);
@@ -597,8 +600,8 @@ export default function CommercialPropertyForm({
             no obligation.
           </p>
           <p className="mt-2 text-sm text-[#6B6D71]">
-            We insure buildings you rent out or operate from. We can&rsquo;t
-            cover short-term rentals (Airbnb/VRBO).
+            We insure the building for its owner, whether you operate from it
+            or rent it out.
           </p>
         </div>
       </section>
@@ -689,14 +692,6 @@ export default function CommercialPropertyForm({
             <Field k="type" label="What kind of property is it?" required>
               <Select value={f.propertyType} onChange={(v) => set("propertyType", v)} options={PROPERTY_TYPES} placeholder="Select one" />
             </Field>
-          )}
-          {typeDisqualified && !rentDisqualified && (
-            <Notice>
-              Sorry — we don&rsquo;t insure short-term rentals (Airbnb/VRBO).
-              We cover commercial buildings and rental property: retail, office,
-              mixed-use, apartments, warehouse, religious institutions, and 1–4
-              unit rentals.
-            </Notice>
           )}
           {qualified && (
             <>
