@@ -322,7 +322,7 @@ export default function ReligiousLandingPage() {
         name: f.fullName,
         email: f.email,
         phone: f.phone,
-        business_type: "House of worship — via religious-landing",
+        business_type: "House of worship, via religious-landing",
         zip: extractZip(f.address),
       }),
     }).catch(() => {});
@@ -359,7 +359,7 @@ export default function ReligiousLandingPage() {
           🙏
         </div>
         <h1 className="mt-6 text-3xl font-bold text-[#131517]">
-          Thanks — we&rsquo;ve got it.
+          Thanks, we&rsquo;ve got it.
         </h1>
         <p className="mt-3 max-w-md text-[#6B6D71]">
           We&rsquo;ll review your info and reach out shortly with your quote.
@@ -486,7 +486,7 @@ export default function ReligiousLandingPage() {
               <Field label="Roof type">
                 <Select value={f.roofType} onChange={(v) => set("roofType", v)} options={ROOF_TYPE} placeholder="Select one" />
               </Field>
-              <Field label="Update years — electrical / plumbing / HVAC" hint="The more recent, the lower your premium.">
+              <Field label="Update years, electrical / plumbing / HVAC" hint="The more recent, the lower your premium.">
                 <Input value={f.updates} onChange={(v) => set("updates", v)} placeholder="electrical 2010, plumbing original, HVAC 2019" />
               </Field>
               <div className="grid gap-4 sm:grid-cols-2">

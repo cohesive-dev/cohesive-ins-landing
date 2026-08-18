@@ -22,7 +22,7 @@ export const metadata: Metadata = {
         url: "/og/default.png",
         width: 1200,
         height: 630,
-        alt: "Cohesive Insurance — insurance for restaurants",
+        alt: "Cohesive Insurance, insurance for restaurants",
       },
     ],
   },

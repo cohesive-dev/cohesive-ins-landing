@@ -9,7 +9,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Commercial Property Insurance for Building Owners | Cohesive Insurance",
   description:
-    "Property coverage for the commercial building you own — retail, office, mixed-use, warehouse, religious institution. Fast quotes from A-rated carriers.",
+    "Property coverage for the commercial building you own, retail, office, mixed-use, warehouse, religious institution. Fast quotes from A-rated carriers.",
   alternates: { canonical: "/commercial-property-quote" },
   openGraph: {
     type: "website",
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "Cohesive Insurance",
     title: "Commercial property insurance for building owners",
     description:
-      "Property coverage for the commercial building you own — retail, office, mixed-use, warehouse, religious institution. Fast quotes from A-rated carriers.",
+      "Property coverage for the commercial building you own, retail, office, mixed-use, warehouse, religious institution. Fast quotes from A-rated carriers.",
   },
   twitter: {
     card: "summary",
