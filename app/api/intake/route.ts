@@ -111,7 +111,9 @@ function toE164(raw: string | undefined): string | undefined {
   return candidate && E164_RE.test(candidate) ? candidate : undefined;
 }
 
-async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
+async function forwardToCrm(
+  payload: Record<string, string | string[]>,
+): Promise<boolean> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
       method: "POST",
@@ -365,6 +367,14 @@ export async function POST(request: NextRequest) {
     ...(isContractorLane || isRestaurantLane || isCommercialPropertyLane
       ? { suppress_first_touch: "true" }
       : {}),
+    // ★ Kevin 2026-08-19: the CP lane must record Property, not GL. The CRM webhook defaults
+    // a lead with no `coverage` to General Liability (inboundLead.ts: `input.coverage?.length
+    // ? input.coverage : [Line.GeneralLiability]`), and this route never sent one — so every
+    // commercial-property fill landed as a GL lead, indistinguishable from a contractor in any
+    // coverage-based query or route (found while reconciling the 8/18-19 CP A/B: 9 real leads
+    // in Slack, only 2 findable by coverage in the CRM). The lane is Property-first; GL is at
+    // most a secondary line on a building owner, never the requested one.
+    ...(isCommercialPropertyLane ? { coverage: ["Property"] } : {}),
     // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
     // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
     // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
