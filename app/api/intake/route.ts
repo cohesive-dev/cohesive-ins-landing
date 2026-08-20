@@ -112,7 +112,12 @@ function toE164(raw: string | undefined): string | undefined {
 }
 
 async function forwardToCrm(
-  payload: Record<string, string | string[]>,
+  // `details` rides through as an array of {label, value} objects, so this cannot be
+  // Record<string, string | string[]> any more.
+  payload: Record<
+    string,
+    string | string[] | Array<{ label: string; value: string }>
+  >,
 ): Promise<boolean> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
@@ -381,6 +386,24 @@ export async function POST(request: NextRequest) {
     // the ids die with the request and every value event is a weak match.
     ...(fbc ? { fbc } : {}),
     ...(fbp ? { fbp } : {}),
+    // ★ Kevin 2026-08-19: forward the FULL questionnaire to the CRM for EVERY lane, not just the
+    // one-line `description`. The webhook's InboundLeadInput carries flat contact fields only, so
+    // until now the 30-answer COPE block (year built, sq ft, building value, electrical/roof update
+    // years, claims) reached quotes@ by email and NOTHING else. That made the CRM structurally
+    // blind to every rating fact: an agent reading the CRM saw only "Commercial property owner -
+    // via commercial-property-steps 29532".
+    // The cost was real. On 8/19 the CP sweep fell back to agent-written note SUMMARIES, which had
+    // silently dropped `Electrical updated`; cp_engine scores an absent update year as 999 and
+    // misrouted Larson and Khanna to Hedge on the 35-year system-age wall. Larson's actual form
+    // said "10-20 years ago (2005)" - a clean Pathpoint LRO. Reginald Lee was reported as having
+    // no form at all when his full form was sitting in quotes@.
+    // The webhook reads this as `details` (also accepts extra_fields/extraFields) and maps it onto
+    // InboundLeadInput.slackExtraFields - the existing pass-through for data-heavy sources, which
+    // SmartFinancial's business profile already uses. So this needs NO webhook schema change.
+    // Send the key the route actually reads: `slackExtraFields` here would be silently ignored.
+    // The CRM now also persists it to the inbound Activity meta as `formAnswers`, which makes the
+    // questionnaire queryable instead of email-only.
+    ...(details ? { details } : {}),
   });
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
