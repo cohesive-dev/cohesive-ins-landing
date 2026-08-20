@@ -112,7 +112,12 @@ function toE164(raw: string | undefined): string | undefined {
 }
 
 async function forwardToCrm(
-  payload: Record<string, string | string[]>,
+  // `details` rides through as an array of {label, value} objects, so this cannot be
+  // Record<string, string | string[]> any more.
+  payload: Record<
+    string,
+    string | string[] | Array<{ label: string; value: string }>
+  >,
 ): Promise<boolean> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
@@ -381,6 +386,13 @@ export async function POST(request: NextRequest) {
     // the ids die with the request and every value event is a weak match.
     ...(fbc ? { fbc } : {}),
     ...(fbp ? { fbp } : {}),
+    // The full questionnaire (COPE answers, claims, ad attribution). Already parsed and
+    // capped by sanitizeDetails() above. The CRM webhook reads this key as `details` and maps
+    // it onto InboundLeadInput.slackExtraFields, the existing pass-through for data-heavy
+    // sources, which renders as the Slack card's collapsible "More details" block and is
+    // persisted to activities.meta->formAnswers. Note the key: `slackExtraFields` here would
+    // be silently ignored. Without this the answers reached quotes@ by email and nowhere else.
+    ...(details ? { details } : {}),
   });
 
   // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
