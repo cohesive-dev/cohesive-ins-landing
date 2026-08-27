@@ -118,7 +118,7 @@ async function forwardToCrm(
     string,
     string | string[] | Array<{ label: string; value: string }>
   >,
-): Promise<"crm-notifying" | "stored" | "failed"> {
+): Promise<"crm-notified" | "stored" | "failed"> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
       method: "POST",
@@ -138,8 +138,12 @@ async function forwardToCrm(
     }
     const result = (await response.json().catch(() => null)) as {
       notificationOwner?: unknown;
+      notificationDelivery?: unknown;
     } | null;
-    return result?.notificationOwner === "crm" ? "crm-notifying" : "stored";
+    return result?.notificationOwner === "crm" &&
+      (result.notificationDelivery === "sent" || result.notificationDelivery === "duplicate")
+      ? "crm-notified"
+      : "stored";
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
     return "failed";
@@ -365,6 +369,18 @@ export async function POST(request: NextRequest) {
   const isCommercialPropertyLane = (source ?? "").startsWith(
     "commercial-property",
   );
+  // Give every completed web form a delivery-scoped provider id. Deep forms already carry a
+  // stable Meta event id; lightweight forms do not, so derive a short-lived fingerprint. This
+  // keeps rapid double-POSTs idempotent while allowing the same person to submit again later and
+  // receive a fresh Activity + notification (the CRM otherwise falls back to contact.id forever).
+  const providerId = asTrimmedString(body.eventId) ?? (() => {
+    const fingerprint = createHash("sha256")
+      .update(JSON.stringify({ name, email, phone, businessType, company, zip, source, details }))
+      .digest("hex")
+      .slice(0, 24);
+    const fiveMinuteBucket = Math.floor(Date.now() / (5 * 60 * 1000));
+    return `website-${fiveMinuteBucket}-${fingerprint}`;
+  })();
   const crmResult = await forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
@@ -396,17 +412,16 @@ export async function POST(request: NextRequest) {
     // persisted to activities.meta->formAnswers. Note the key: `slackExtraFields` here would
     // be silently ignored. Without this the answers reached quotes@ by email and nowhere else.
     ...(details ? { details } : {}),
-    // The production CRM now owns the completed-form quotes@ notification. Its response confirms
-    // that capability before this route suppresses its legacy SMTP leg, so deploying the landing
-    // change ahead of the CRM change cannot create a notification gap.
+    providerId,
+    // The production CRM now owns the completed-form quotes@ notification. Its response includes
+    // the SMTP outcome; this route suppresses its legacy leg only after a confirmed send.
     notify_quotes: "true",
   });
 
-  // The hosted CRM owns the normal alert. Keep the website SMTP leg only as a compatibility and
-  // handoff-failure fallback: an older CRM deploy returns no notificationOwner, and a failed CRM
-  // request stores nothing. This prevents duplicates after the cutover without making deploy
-  // order capable of dropping a lead.
-  if (crmResult !== "crm-notifying") {
+  // The hosted CRM owns the normal alert only after it proves SMTP delivery. Keep the website
+  // mailer for an older CRM, a failed CRM handoff, or a CRM-side SMTP failure. This preserves the
+  // zero-miss rule and also makes either deploy order safe.
+  if (crmResult !== "crm-notified") {
     await sendIntakeNotification({
       name,
       email,
@@ -502,7 +517,7 @@ export async function POST(request: NextRequest) {
     {
       ok: true,
       crm: crmResult === "failed" ? "failed" : "sent",
-      notification: crmResult === "crm-notifying" ? "crm" : "website-fallback",
+      notification: crmResult === "crm-notified" ? "crm" : "website-fallback",
       capi,
       capiQualified,
       capiUninsured,
