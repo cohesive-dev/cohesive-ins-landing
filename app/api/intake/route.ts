@@ -118,7 +118,7 @@ async function forwardToCrm(
     string,
     string | string[] | Array<{ label: string; value: string }>
   >,
-): Promise<boolean> {
+): Promise<"crm-notified" | "stored" | "failed"> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
       method: "POST",
@@ -134,12 +134,19 @@ async function forwardToCrm(
         response.status,
         await response.text().catch(() => ""),
       );
-      return false;
+      return "failed";
     }
-    return true;
+    const result = (await response.json().catch(() => null)) as {
+      notificationOwner?: unknown;
+      notificationDelivery?: unknown;
+    } | null;
+    return result?.notificationOwner === "crm" &&
+      (result.notificationDelivery === "sent" || result.notificationDelivery === "duplicate")
+      ? "crm-notified"
+      : "stored";
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
-    return false;
+    return "failed";
   }
 }
 
@@ -362,7 +369,19 @@ export async function POST(request: NextRequest) {
   const isCommercialPropertyLane = (source ?? "").startsWith(
     "commercial-property",
   );
-  const forwarded = await forwardToCrm({
+  // Give every completed web form a delivery-scoped provider id. Deep forms already carry a
+  // stable Meta event id; lightweight forms do not, so derive a short-lived fingerprint. This
+  // keeps rapid double-POSTs idempotent while allowing the same person to submit again later and
+  // receive a fresh Activity + notification (the CRM otherwise falls back to contact.id forever).
+  const providerId = asTrimmedString(body.eventId) ?? (() => {
+    const fingerprint = createHash("sha256")
+      .update(JSON.stringify({ name, email, phone, businessType, company, zip, source, details }))
+      .digest("hex")
+      .slice(0, 24);
+    const fiveMinuteBucket = Math.floor(Date.now() / (5 * 60 * 1000));
+    return `website-${fiveMinuteBucket}-${fingerprint}`;
+  })();
+  const crmResult = await forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
     ...(phone ? { phone } : {}),
@@ -393,35 +412,27 @@ export async function POST(request: NextRequest) {
     // persisted to activities.meta->formAnswers. Note the key: `slackExtraFields` here would
     // be silently ignored. Without this the answers reached quotes@ by email and nowhere else.
     ...(details ? { details } : {}),
+    providerId,
+    // The production CRM now owns the completed-form quotes@ notification. Its response includes
+    // the SMTP outcome; this route suppresses its legacy leg only after a confirmed send.
+    notify_quotes: "true",
   });
 
-  // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
-  // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
-  // fall back to the quotes@ alert so a real lead still lands somewhere a human reads.
-  // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
-  // the pixel kept counting them.)
-  // ★ Kevin 2026-08-18: EVERY completed submission emails quotes@, unconditionally. This used to
-  // be gated on `!forwarded || details || isRestaurantLane`, which meant a form with no detail
-  // block whose CRM forward SUCCEEDED sent no email at all — precisely the generic homepage
-  // QuoteModal (app/page.tsx) and the splash gates (QuoteSplash.tsx), neither of which sends
-  // `details`. Those leads existed only as a CRM row and a Slack card, so every quotes@-driven
-  // sweep and auto-quoter was structurally blind to them (found via Lauren Parton /
-  // billing@poolprosllc.com, a pool contractor asking for GL: Slack card posted, zero email).
-  // The old rationale still holds as a floor and is now subsumed: forward failure is still the
-  // zero-miss fallback (2026-07-09 incident), deep-form `details` still ride to quotes@ because
-  // the CRM webhook carries flat contact fields only, and the restaurant lane still always gets
-  // its email because rest_loop.py sweeps this inbox and owns the lane's only outbound touch.
-  // A duplicate alert on a lane that was already emailing costs nothing; a silent drop costs a lead.
-  await sendIntakeNotification({
-    name,
-    email,
-    phone,
-    businessType,
-    zip,
-    partial: false,
-    source,
-    details,
-  });
+  // The hosted CRM owns the normal alert only after it proves SMTP delivery. Keep the website
+  // mailer for an older CRM, a failed CRM handoff, or a CRM-side SMTP failure. This preserves the
+  // zero-miss rule and also makes either deploy order safe.
+  if (crmResult !== "crm-notified") {
+    await sendIntakeNotification({
+      name,
+      email,
+      phone,
+      businessType,
+      zip,
+      partial: false,
+      source,
+      details,
+    });
+  }
 
   // Server-side CAPI event, deduped with the browser pixel via the shared event
   // id. Real submissions only — partials returned above, so they never count as
@@ -505,7 +516,8 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(
     {
       ok: true,
-      crm: forwarded ? "sent" : "failed",
+      crm: crmResult === "failed" ? "failed" : "sent",
+      notification: crmResult === "crm-notified" ? "crm" : "website-fallback",
       capi,
       capiQualified,
       capiUninsured,
