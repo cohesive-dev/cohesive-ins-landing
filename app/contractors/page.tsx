@@ -907,6 +907,29 @@ function MultiSelect({
   placeholder?: string;
   ariaLabel?: string;
 }) {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      const details = detailsRef.current;
+      if (details?.open && event.target instanceof Node && !details.contains(event.target)) {
+        details.open = false;
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      const details = detailsRef.current;
+      if (event.key !== "Escape" || !details?.open) return;
+      details.open = false;
+      details.querySelector<HTMLElement>("summary")?.focus();
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
   const summary = values.length === 0
     ? placeholder ?? "Select all that apply"
     : values.includes("None")
@@ -916,7 +939,7 @@ function MultiSelect({
         : `${values.length} trades selected`;
 
   return (
-    <details className="group relative">
+    <details ref={detailsRef} className="group relative">
       <summary
         aria-label={ariaLabel}
         className={`${inputClasses} flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden`}
