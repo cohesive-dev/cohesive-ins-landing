@@ -62,6 +62,20 @@ const OTHER_TRADES: Option[] = [
   ...TRADES,
 ];
 
+const TRACKED_QUESTION_FIELDS = new Set([
+  "trade",
+  "otherTrades",
+  "primaryPct",
+  "revenue",
+  "employees",
+  "payroll",
+  "usesSubcontractors",
+  "subcontractorCosts",
+  "structure",
+  "currentGl",
+  "currentPremium",
+]);
+
 const PRIMARY_PCT: Option[] = [
   { label: "All of it (100%)", value: "All of it (100%)" },
   { label: "75% - 99%", value: "75% - 99%" },
@@ -80,7 +94,7 @@ const REVENUE: Option[] = [
 ];
 
 const EMPLOYEES: Option[] = [
-  { label: "0 - just me / subs only", value: "0 - just me / subs only" },
+  { label: "0 - no W2 employees", value: "0 - no W2 employees" },
   { label: "1 - 5", value: "1 - 5" },
   { label: "6 - 10", value: "6 - 10" },
   { label: "11 - 20", value: "11 - 20" },
@@ -88,12 +102,27 @@ const EMPLOYEES: Option[] = [
 ];
 
 const PAYROLL: Option[] = [
-  { label: "$0 (all subs / no employees)", value: "$0 (all subs)" },
   { label: "$0 - $50k", value: "$0 - $50k" },
   { label: "$50k - $100k", value: "$50k - $100k" },
   { label: "$100k - $250k", value: "$100k - $250k" },
   { label: "$250k - $500k", value: "$250k - $500k" },
-  { label: "Over $500k", value: "Over $500k" },
+  { label: "$500k - $1M", value: "$500k - $1M" },
+  { label: "$1M+", value: "$1M+" },
+];
+
+const USES_SUBCONTRACTORS: Option[] = [
+  { label: "Yes", value: "Yes" },
+  { label: "No", value: "No" },
+];
+
+const SUBCONTRACTOR_COSTS: Option[] = [
+  { label: "Under $25k", value: "Under $25k" },
+  { label: "$25k - $50k", value: "$25k - $50k" },
+  { label: "$50k - $100k", value: "$50k - $100k" },
+  { label: "$100k - $250k", value: "$100k - $250k" },
+  { label: "$250k - $500k", value: "$250k - $500k" },
+  { label: "$500k - $1M", value: "$500k - $1M" },
+  { label: "$1M+", value: "$1M+" },
 ];
 
 const STRUCTURE: Option[] = [
@@ -158,6 +187,8 @@ export default function ContractorsLandingPage() {
   // Funnel instrumentation: fire each milestone once per session so we can
   // measure abandonment (FormStart -> ContactDone -> TradeSelected -> Lead).
   const fired = useRef<Set<string>>(new Set());
+  const answeredQuestions = useRef<Set<string>>(new Set());
+  const formStartedAt = useRef<number | null>(null);
   const track = useCallback((name: string) => {
     if (fired.current.has(name)) return;
     fired.current.add(name);
@@ -166,8 +197,31 @@ export default function ContractorsLandingPage() {
 
   const set = (k: string, v: string) => {
     track("FormStart");
+    if (formStartedAt.current === null && typeof performance !== "undefined") {
+      formStartedAt.current = performance.now();
+    }
     if (k === "trade") track("TradeSelected");
-    setF((p) => ({ ...p, [k]: v }));
+    if (TRACKED_QUESTION_FIELDS.has(k) && v && !answeredQuestions.current.has(k)) {
+      answeredQuestions.current.add(k);
+      const elapsedSeconds = formStartedAt.current === null
+        ? 0
+        : Math.round((performance.now() - formStartedAt.current) / 1000);
+      fbq("trackCustom", "ContractorQuestionAnswered", {
+        field: k,
+        elapsed_seconds: elapsedSeconds,
+      });
+    }
+    setF((p) => {
+      const next = { ...p, [k]: v };
+      if (k === "trade" && next.otherTrades && next.otherTrades !== "None") {
+        const remaining = next.otherTrades.split(", ").filter((trade) => trade !== v);
+        if (remaining.length) next.otherTrades = remaining.join(", ");
+        else delete next.otherTrades;
+      }
+      if (k === "employees" && v.startsWith("0")) delete next.payroll;
+      if (k === "usesSubcontractors" && v === "No") delete next.subcontractorCosts;
+      return next;
+    });
   };
 
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
@@ -177,6 +231,26 @@ export default function ContractorsLandingPage() {
   // Meta trains on it. The "commercial policies only" hero line is the filter.
   const disqualified = false;
   const qualified = true;
+  const hasW2Employees = !!f.employees && !f.employees.startsWith("0");
+  const usesSubcontractors = f.usesSubcontractors === "Yes";
+  const selectedOtherTrades = f.otherTrades && f.otherTrades !== "None"
+    ? f.otherTrades.split(", ").filter(Boolean)
+    : f.otherTrades === "None" ? ["None"] : [];
+  const otherTradeOptions = OTHER_TRADES.filter(
+    (option) => option.value === "None" || option.value !== f.trade,
+  );
+
+  const toggleOtherTrade = (value: string) => {
+    if (value === "None") {
+      set("otherTrades", "None");
+      return;
+    }
+    const current = selectedOtherTrades.filter((trade) => trade !== "None");
+    const next = current.includes(value)
+      ? current.filter((trade) => trade !== value)
+      : [...current, value];
+    set("otherTrades", next.join(", "));
+  };
 
   const canSubmit =
     f.fullName?.trim() &&
@@ -189,6 +263,9 @@ export default function ContractorsLandingPage() {
     !!f.primaryPct &&
     !!f.revenue &&
     !!f.employees &&
+    (!hasW2Employees || !!f.payroll) &&
+    !!f.usesSubcontractors &&
+    (!usesSubcontractors || !!f.subcontractorCosts) &&
     status !== "sending";
 
   // Ad attribution (utm / ad_id / fbclid), first-touch, sessionStorage-backed.
@@ -207,14 +284,16 @@ export default function ContractorsLandingPage() {
     push("Primary trade % of work", f.primaryPct);
     push("Annual revenue", f.revenue);
     push("W2 employees", f.employees);
-    push("Annual W2 payroll", f.payroll);
+    if (hasW2Employees) push("Annual W2 payroll", f.payroll);
+    push("Uses subcontractors", f.usesSubcontractors);
+    if (usesSubcontractors) push("Annual subcontractor costs", f.subcontractorCosts);
     push("Business structure", f.structure);
     push("Year started", f.yearStarted);
     push("Current GL / renewal", f.currentGl);
     push("Current annual GL premium", f.currentPremium);
     d.push(...attributionDetails(attr));
     return d;
-  }, [f, attr]);
+  }, [f, attr, hasW2Employees, usesSubcontractors]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
@@ -429,26 +508,41 @@ export default function ContractorsLandingPage() {
               <Select value={f.trade} onChange={(v) => set("trade", v)} options={TRADES} placeholder="Select one" />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Any other trades?" required>
-                <Select value={f.otherTrades} onChange={(v) => set("otherTrades", v)} options={OTHER_TRADES} placeholder="Select one" />
+              <Field label="Any other trades?" required alignOnDesktop>
+                <MultiSelect
+                  values={selectedOtherTrades}
+                  onToggle={toggleOtherTrade}
+                  options={otherTradeOptions}
+                  placeholder="Select all that apply"
+                />
               </Field>
-              <Field label="How much of your work is your primary trade?" required>
+              <Field label="How much of your work is your primary trade?" required alignOnDesktop>
                 <Select value={f.primaryPct} onChange={(v) => set("primaryPct", v)} options={PRIMARY_PCT} placeholder="Select one" />
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Annual revenue (roughly)" required>
+              <Field label="Annual revenue (roughly)" required alignOnDesktop>
                 <Select value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} placeholder="Select one" />
               </Field>
-              <Field label="W2 employees" required hint="Not you or subcontractors; subs-only = 0.">
+              <Field label="W2 employees" required hint="Do not include owners or subcontractors." alignOnDesktop>
                 <Select value={f.employees} onChange={(v) => set("employees", v)} options={EMPLOYEES} placeholder="Select one" />
               </Field>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <Field label="Annual W2 payroll (roughly)" hint="Wages to employees, not sub payments.">
-                <Select value={f.payroll} onChange={(v) => set("payroll", v)} options={PAYROLL} placeholder="Select one" />
+              {hasW2Employees && (
+                <Field label="Annual W2 payroll (roughly)" required hint="Wages to employees, not subcontractor payments." alignOnDesktop>
+                  <Select value={f.payroll} onChange={(v) => set("payroll", v)} options={PAYROLL} placeholder="Select one" />
+                </Field>
+              )}
+              <Field label="Do you hire subcontractors?" required alignOnDesktop>
+                <Select value={f.usesSubcontractors} onChange={(v) => set("usesSubcontractors", v)} options={USES_SUBCONTRACTORS} placeholder="Select one" />
               </Field>
-              <Field label="Business structure">
+              {usesSubcontractors && (
+                <Field label="Annual subcontractor costs (roughly)" required hint="Total amount paid to subcontractors each year." alignOnDesktop>
+                  <Select value={f.subcontractorCosts} onChange={(v) => set("subcontractorCosts", v)} options={SUBCONTRACTOR_COSTS} placeholder="Select one" />
+                </Field>
+              )}
+              <Field label="Business structure" alignOnDesktop>
                 <Select value={f.structure} onChange={(v) => set("structure", v)} options={STRUCTURE} placeholder="Select one" />
               </Field>
             </div>
@@ -519,11 +613,13 @@ function Field({
   label,
   hint,
   required,
+  alignOnDesktop,
   children,
 }: {
   label: string;
   hint?: string;
   required?: boolean;
+  alignOnDesktop?: boolean;
   children: React.ReactNode;
 }) {
   // A <div>, not a <label>: several fields hold button groups (radio chips),
@@ -536,11 +632,13 @@ function Field({
     : children;
   return (
     <div className="space-y-1.5">
-      <span className="block text-sm font-medium text-[#131517]">
-        {label}
-        {required && <span className="text-[#2040E7]"> *</span>}
-      </span>
-      {hint && <span className="block text-xs text-[#6B6D71]">{hint}</span>}
+      <div className={alignOnDesktop ? "sm:min-h-[3.25rem]" : undefined}>
+        <span className="block text-sm font-medium text-[#131517]">
+          {label}
+          {required && <span className="text-[#2040E7]"> *</span>}
+        </span>
+        {hint && <span className="mt-1 block text-xs text-[#6B6D71]">{hint}</span>}
+      </div>
       {control}
     </div>
   );
@@ -793,6 +891,66 @@ function Select({
         </option>
       ))}
     </select>
+  );
+}
+
+function MultiSelect({
+  values,
+  onToggle,
+  options,
+  placeholder,
+  ariaLabel,
+}: {
+  values: string[];
+  onToggle: (value: string) => void;
+  options: Option[];
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  const summary = values.length === 0
+    ? placeholder ?? "Select all that apply"
+    : values.includes("None")
+      ? "None - just my primary trade"
+      : values.length === 1
+        ? values[0]
+        : `${values.length} trades selected`;
+
+  return (
+    <details className="group relative">
+      <summary
+        aria-label={ariaLabel}
+        className={`${inputClasses} flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden`}
+      >
+        <span className="min-w-0 truncate">{summary}</span>
+        <span aria-hidden="true" className="shrink-0 text-[#6B6D71] transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-[#D8DEF5] bg-white p-2 shadow-lg">
+        {options.map((option) => {
+          const selected = values.includes(option.value);
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onToggle(option.value)}
+              aria-pressed={selected}
+              className={`flex min-h-[44px] w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm ${
+                selected ? "bg-[#EEF1FF] text-[#1A33B9]" : "text-[#131517] hover:bg-slate-50"
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
+                  selected ? "border-[#2040E7] bg-[#2040E7] text-white" : "border-[#AAB3C5]"
+                }`}
+              >
+                {selected ? "✓" : ""}
+              </span>
+              <span>{option.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </details>
   );
 }
 
