@@ -20,6 +20,7 @@
 // (Scaffold Law) + FL (wind/AOB) on top.
 
 import type { Fact, PageContent } from "./data";
+import { priorityStateContent } from "./priority-state-content";
 import type { Trade } from "./contractors";
 import { buildContractorNational, plural } from "./contractors";
 
@@ -405,6 +406,7 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
       ? `See what ${cs.abbr} ${plural(t.noun)} pay, starting around ${floor}/mo, and tell us about your work to get a quote back fast.`
       : `See what ${cs.abbr} ${plural(t.noun)} actually pay, starting as low as ${floor}/mo, and get your own quote in a few minutes.`,
     stateFacts: stateFacts(cs, t),
+    ...priorityStateContent(t.slug, cs.slug),
   };
 }
 

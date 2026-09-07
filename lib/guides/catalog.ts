@@ -1,3 +1,4 @@
+import { getContractorState, contractorStateBuildable } from "../seo/contractor-states";
 import { addStartupVendors } from "./vendors";
 import { serviceLeadSections, restaurantLeadSections } from "./leads";
 import { RESTAURANT_GUIDES, type RestaurantGuide, type GuideSection } from "./restaurant";
@@ -42,6 +43,9 @@ function serviceStateGuide(industry: ServiceIndustry, state: StartupState): Rest
   const specific = SPECIAL_TRADE_RESOURCES[`${industry.id}:${state.slug}`];
   const construction = ["pool-construction", "roofing", "remodeling"].includes(industry.id);
   const noQuote = state.slug === "california" || (industry.id === "roofing" && ["new-york", "florida"].includes(state.slug));
+  const insurancePath = !noQuote && getContractorState(state.slug) && contractorStateBuildable(industry.insuranceSlug, state.slug)
+    ? `/insurance/${industry.insuranceSlug}/${state.slug}`
+    : `/insurance/${industry.insuranceSlug}`;
   const licenseParagraphs = specific ? [specific.note] : construction ? [state.construction.note] : [
     `For a ${industry.noun}, first check the official ${state.name} business-registration route below, then ask about credentials tied to the specific services and staffing model. This guide does not establish that a special license is unnecessary.`,
   ];
@@ -52,7 +56,7 @@ function serviceStateGuide(industry: ServiceIndustry, state: StartupState): Rest
     intro: `Build your ${state.name} ${industry.noun} around a defined service area and a first contract you can deliver well. Use the official resources below to check the registration and licensing route, then turn the job scope into a staffing, equipment, and cash plan.`,
     category: `${state.name} service business startup`, industry: industry.name, stateSlug: state.slug,
     nationalSlug: industry.slug, quoteKind: "service", tradeLabel: industry.name,
-    insurancePath: `/insurance/${industry.insuranceSlug}`, noQuote,
+    insurancePath, noQuote,
     noQuoteReason: noQuote ? `This ${state.name} guide is for planning. Cohesive does not currently offer ${industry.name.toLowerCase()} insurance placement in this state.` : undefined,
     sections: [
       { id: "scope", title: `Choose the ${industry.name.toLowerCase()} work you will sell`, paragraphs: [industry.sections[0].paragraphs[0], "Define the first service area narrowly enough to estimate travel, supervision, and scheduling. Set written boundaries for work needing another specialist or credentials you do not yet hold."], checklist: industry.scope },
@@ -61,7 +65,7 @@ function serviceStateGuide(industry: ServiceIndustry, state: StartupState): Rest
       { id: "local-checks", title: "Questions for the local authority and your advisers", paragraphs: ["These are questions to resolve for your operation, not statements that every listed requirement applies. Keep the agency's response, contact, date, and follow-up action with your first-job file. A state registration does not replace job-specific permits."], checklist: industry.localQuestions },
       { id: "budget-and-bid", title: "Build a startup budget and first-job estimate", paragraphs: ["Get written local estimates for the equipment, training, setup, and supplies you actually need. Compare renting with buying before committing cash to an unproven service. Keep pending financing out of the cash available to pay suppliers and staff.", "Estimate the first job from its scope and payment schedule. Price travel, supervision, overhead, and rework alongside direct labor and materials. Compare the cash needed before collection with your reserve so a signed contract does not create an immediate funding gap."], checklist: industry.costs },
       { id: "bid-inputs", title: "What to include in the customer estimate", paragraphs: ["Use one scope version for your estimate, supplier requests, and customer proposal. Put allowances and exclusions in writing and identify who approves extra work. Have the contract reviewed for the applicable local consumer and commercial requirements."], checklist: industry.bidInputs },
-      { id: "insurance", title: "Prepare the insurance and customer requirements", paragraphs: ["Give a broker the exact services, state, expected revenue, payroll, subcontracting plan, equipment, and customer insurance clauses. Ask how the proposed policy addresses the work and which exclusions matter. A certificate of insurance is not permission to perform work outside your licensing or policy scope."], checklist: industry.insuranceQuestions },
+      { id: "insurance", title: "Prepare the insurance and customer requirements", paragraphs: ["Give a broker the exact services, state, expected revenue, payroll, subcontracting plan, equipment, and customer insurance clauses. Ask how the proposed policy addresses the work and which exclusions matter. A certificate of insurance is not permission to perform work outside your licensing or policy scope."], checklist: industry.insuranceQuestions, links: noQuote ? undefined : [{ label: `${industry.name} insurance: coverage and requirements in ${state.name}`, href: insurancePath }] },
       ...serviceLeadSections(industry, state.name),
       { id: "first-job", title: "Make the first job a repeatable process", paragraphs: [industry.sections[industry.sections.length - 1].paragraphs[0], "After completion, compare actual hours, materials, travel, and callbacks with the estimate. Use the result to improve the next bid and decide when the business can support another employee or a wider service area."], checklist: ["Confirm customer scope, permissions, price, and payment timing.", "Verify qualifications, staffing, equipment, and any job approvals.", "Document changes before performing extra work.", "Complete a customer handoff and record outstanding items."], links: [{ label: `Full ${industry.name.toLowerCase()} startup guide`, href: `/guides/${industry.slug}` }] },
     ],

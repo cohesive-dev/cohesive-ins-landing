@@ -173,9 +173,7 @@ export default function SeoPage({
           </table>
         </div>
         <p className="text-xs text-[#6B6D71] max-w-3xl">
-          Figures are estimates from published small-business premium medians
-          and quotes we&apos;ve run for similar businesses. Your premium depends
-          on your operations. This is not a quote or an offer of insurance.
+          {content.costDisclaimer ?? "Figures are estimates from published small-business premium medians and quotes we have run for similar businesses. Your premium depends on your operations. This is not a quote or an offer of insurance."}
         </p>
 
         <h3 className="text-lg font-extrabold text-[#131517] mt-10 mb-3">
@@ -219,6 +217,7 @@ export default function SeoPage({
           <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-6">
             {stateFactsHeading}
           </h2>
+          {content.reviewedOn && <p className="mb-6 text-sm text-[#6B6D71]">State resources checked <time dateTime={content.reviewedOn}>{new Date(`${content.reviewedOn}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}</time>. Confirm current requirements with the linked agencies.</p>}
           <div className="max-w-3xl space-y-7">
             {content.stateFacts.map((f) => (
               <div key={f.title}>
@@ -228,6 +227,7 @@ export default function SeoPage({
                 <p className="text-[15px] text-[#27455C] leading-relaxed">
                   {f.body}
                 </p>
+                {f.source && <a href={f.source.href} className="mt-2 inline-block text-sm font-semibold text-[#2040E7] hover:underline">{f.source.label} →</a>}
               </div>
             ))}
           </div>
@@ -277,7 +277,7 @@ export default function SeoPage({
 
       {/* Cross-links */}
       {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => source.startsWith(`seo-${industry.insuranceSlug}-`)).map((industry) => (
-        <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
+        <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}${source.endsWith("-national") ? "" : `-in-${source.slice(`seo-${industry.insuranceSlug}-`.length)}`}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
       ))}
       {source.startsWith("seo-restaurant-") && (
         <section className="border-t border-slate-100">
