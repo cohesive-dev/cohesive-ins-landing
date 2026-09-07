@@ -1,0 +1,230 @@
+{
+  "source": "https://www.sba.gov/counseling/launch-your-business/state-registration-lookup/",
+  "checked": "2026-09-07",
+  "states": {
+    "alabama": {
+      "label": "Alabama Secretary of State",
+      "href": "http://sos.alabama.gov/business-services"
+    },
+    "alaska": {
+      "label": "Alaska Department of Commerce, Community, and Economic Development",
+      "href": "https://www.commerce.alaska.gov/web/cbpl/Corporations/ReservingRegisteringBusinessName.aspx"
+    },
+    "arizona": {
+      "label": "Arizona Secretary of State",
+      "href": "https://www.azsos.gov/business"
+    },
+    "arkansas": {
+      "label": "Arkansas Secretary of State",
+      "href": "https://www.sos.arkansas.gov/business-commercial-services-bcs"
+    },
+    "california": {
+      "label": "California Secretary of State",
+      "href": "http://www.sos.ca.gov/business-programs/business-entities/forms/"
+    },
+    "northern-mariana-islands": {
+      "label": "CNMI Department of Commerce",
+      "href": "https://commerce.gov.mp/"
+    },
+    "colorado": {
+      "label": "Colorado Secretary of State",
+      "href": "https://www.coloradosos.gov/pubs/business/businessHome.html"
+    },
+    "connecticut": {
+      "label": "Connecticut Secretary of State",
+      "href": "https://www.concord-sots.ct.gov/CONCORD/NewBusinessFormation/BusinessRegistrationTool.jsp?pInquiry=false"
+    },
+    "delaware": {
+      "label": "Delaware Department of State",
+      "href": "http://www.corp.delaware.gov/howtoform.shtml"
+    },
+    "district-of-columbia": {
+      "label": "District of Columbia Office of Tax and Revenue",
+      "href": "https://otr.cfo.dc.gov/page/new-business-registration"
+    },
+    "florida": {
+      "label": "Florida Department of State",
+      "href": "http://dos.myflorida.com/sunbiz/start-business/"
+    },
+    "georgia": {
+      "label": "Georgia Secretary of State",
+      "href": "http://sos.ga.gov/index.php/corporations"
+    },
+    "puerto-rico": {
+      "label": "Gobierno de Puerto Rico",
+      "href": "http://www2.pr.gov/pages/servicefilter.aspx?cat=registro&type=empresa"
+    },
+    "guam": {
+      "label": "Guam Department of Revenue and Taxation",
+      "href": "http://www.govguamdocs.com/revtax/index_revtax.htm"
+    },
+    "hawaii": {
+      "label": "Hawai\u2018i Business Express",
+      "href": "https://hbe.ehawaii.gov/BizEx/home.eb"
+    },
+    "idaho": {
+      "label": "Idaho Secretary of State",
+      "href": "https://sos.idaho.gov/business-services-resources/"
+    },
+    "iowa": {
+      "label": "Iowa Secretary of State",
+      "href": "https://sos.iowa.gov/business/formsandfees.html"
+    },
+    "kansas": {
+      "label": "Kansas Business Center",
+      "href": "https://www.kansas.gov/businesscenter/"
+    },
+    "kentucky": {
+      "label": "Kentucky One Stop Business Portal",
+      "href": "http://onestop.ky.gov/Pages/default.aspx"
+    },
+    "louisiana": {
+      "label": "Louisiana Secretary of State",
+      "href": "https://geauxbiz.sos.la.gov/"
+    },
+    "maine": {
+      "label": "Maine Secretary of State",
+      "href": "http://www.maine.gov/sos/cec/corp/index.html"
+    },
+    "maryland": {
+      "label": "Maryland Department of Commerce",
+      "href": "https://open.maryland.gov/business-resources/starting-a-business/"
+    },
+    "massachusetts": {
+      "label": "Massachusetts Housing and Economic Development",
+      "href": "https://www.mass.gov/guides/starting-a-new-business"
+    },
+    "michigan": {
+      "label": "Michigan Business One Stop",
+      "href": "https://michigansbdc.org/get-started/start-a-business/"
+    },
+    "minnesota": {
+      "label": "Minnesota Secretary of State",
+      "href": "http://www.sos.state.mn.us/business-liens/start-a-business/how-to-register-your-business/"
+    },
+    "mississippi": {
+      "label": "Mississippi BOSS (Business One Stop Shop)",
+      "href": "https://www.ms.gov/sos/onestopshop"
+    },
+    "missouri": {
+      "label": "Missouri Secretary of State",
+      "href": "http://www.sos.mo.gov/business/corporations/"
+    },
+    "montana": {
+      "label": "Montana Secretary of State",
+      "href": "https://biz.sosmt.gov/"
+    },
+    "nebraska": {
+      "label": "Nebraska Secretary of State",
+      "href": "https://sos.nebraska.gov/business-services/corporate-and-business"
+    },
+    "nevada": {
+      "label": "Nevada Secretary of State",
+      "href": "https://www.nvsilverflume.gov/startBusiness"
+    },
+    "new-hampshire": {
+      "label": "New Hampshire Quick Start",
+      "href": "https://quickstart.sos.nh.gov/online/Account/LandingPage"
+    },
+    "new-mexico": {
+      "label": "New Mexico Secretary of State",
+      "href": "https://portal.sos.state.nm.us/BFS/online/Account"
+    },
+    "new-york": {
+      "label": "New York Department of State",
+      "href": "https://dos.ny.gov/existing-corporations-and-businesses"
+    },
+    "ohio": {
+      "label": "Ohio Secretary of State",
+      "href": "https://www.sos.state.oh.us/businesses/information-on-starting-and-maintaining-a-business/starting-a-business/"
+    },
+    "oklahoma": {
+      "label": "Oklahoma Secretary of State",
+      "href": "https://www.sos.ok.gov/business/forms.aspx"
+    },
+    "oregon": {
+      "label": "Oregon Secretary of State",
+      "href": "http://sos.oregon.gov/business/Pages/register.aspx"
+    },
+    "pennsylvania": {
+      "label": "Pennsylvania Department of State",
+      "href": "https://www.pa.gov/agencies/dos/programs/business"
+    },
+    "rhode-island": {
+      "label": "Rhode Island Secretary of State",
+      "href": "http://sos.ri.gov/divisions/Business-Portal/"
+    },
+    "american-samoa": {
+      "label": "Samoa Business Registry",
+      "href": "https://www.businessregistries.gov.ws/"
+    },
+    "south-carolina": {
+      "label": "South Carolina Business One Stop (SCBOS)",
+      "href": "https://scbos.sc.gov/"
+    },
+    "south-dakota": {
+      "label": "South Dakota Secretary of State",
+      "href": "https://sosenterprise.sd.gov/BusinessServices/Business/RegistrationInstr.aspx"
+    },
+    "illinois": {
+      "label": "State of Illinois",
+      "href": "https://www2.illinois.gov/rev/businesses/Registration/Pages/default.aspx"
+    },
+    "indiana": {
+      "label": "State of Indiana",
+      "href": "https://inbiz.in.gov/BOS/BusinssEntity/StartMyBusiness"
+    },
+    "new-jersey": {
+      "label": "State of New Jersey Business Portal",
+      "href": "https://business.nj.gov/pages/register-your-business"
+    },
+    "north-carolina": {
+      "label": "State of North Carolina",
+      "href": "https://www.nc.gov/working/starting-business"
+    },
+    "north-dakota": {
+      "label": "State of North Dakota",
+      "href": "http://www.nd.gov/businessreg/"
+    },
+    "tennessee": {
+      "label": "Tennessee Secretary of State",
+      "href": "https://tnbear.tn.gov/newbiz/"
+    },
+    "texas": {
+      "label": "Texas Secretary of State",
+      "href": "http://www.sos.state.tx.us/corp/forms_option.shtml"
+    },
+    "": {
+      "label": "U.S. Virgin Islands Office of the Lieutenant Governor",
+      "href": "https://ltg.gov.vi/departments/corporations-trademarks/"
+    },
+    "utah": {
+      "label": "Utah Department of Commerce",
+      "href": "https://corporations.utah.gov/faqs/how-to-register-a-business/"
+    },
+    "vermont": {
+      "label": "Vermont Secretary of State",
+      "href": "https://sos.vermont.gov/corporations/registration/"
+    },
+    "virginia": {
+      "label": "Virginia State Corporation Commission",
+      "href": "https://scc.virginia.gov/pages/New-Business-Resources"
+    },
+    "washington": {
+      "label": "Washington Secretary of State",
+      "href": "https://www.sos.wa.gov/corps/"
+    },
+    "west-virginia": {
+      "label": "West Virginia One Stop Business Portal",
+      "href": "https://business4.wv.gov/Pages/default.aspx"
+    },
+    "wisconsin": {
+      "label": "Wisconsin One Stop Business Portal",
+      "href": "https://openforbusiness.wi.gov/Home/NewStart"
+    },
+    "wyoming": {
+      "label": "Wyoming Secretary of State",
+      "href": "https://sos.wyo.gov/Business/Default.aspx"
+    }
+  }
+}

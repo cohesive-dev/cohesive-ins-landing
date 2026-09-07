@@ -1,6 +1,9 @@
 import { createHash } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { sendIntakeNotification } from "@/lib/notify";
+import { getStartupGuide } from "@/lib/guides/catalog";
+import { STARTUP_STATES } from "@/lib/guides/states";
+import { startupPlacementRestriction } from "@/lib/guides/eligibility";
 
 // This route no longer owns lead storage. A completed submission is forwarded to the CRM's
 // inbound-lead webhook, which is the single fan-out point for every lead source (FB Lead Ads,
@@ -38,6 +41,7 @@ type IntakePayload = {
   partial?: unknown;
   final?: unknown;
   source?: unknown;
+  startupState?: unknown;
   // Ordered [{label, value}] answers from a deep intake form (e.g. /church).
   details?: unknown;
   // Browser-pixel Lead event id, forwarded so the CAPI Lead can dedupe to it.
@@ -77,7 +81,7 @@ function sanitizeDetails(
     if (!item || typeof item !== "object") continue;
     const label = asTrimmedString((item as Record<string, unknown>).label);
     const value = asTrimmedString((item as Record<string, unknown>).value);
-    if (label && value) out.push({ label, value: value.slice(0, 500) });
+    if (label && value) out.push({ label, value: value.slice(0, 2000) });
   }
   return out.length > 0 ? out.slice(0, 40) : undefined;
 }
@@ -124,8 +128,7 @@ async function forwardToCrm(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ source: "webform", ...payload }),
-      // The browser call is fire-and-forget, so a hung CRM would otherwise pin this
-      // function open until the platform timeout.
+      // Bound the CRM leg so notification delivery can still accept the request.
       signal: AbortSignal.timeout(10_000),
     });
     if (!response.ok) {
@@ -136,7 +139,8 @@ async function forwardToCrm(
       );
       return false;
     }
-    return true;
+    const result: unknown = await response.json();
+    return Boolean(result && typeof result === "object" && "ok" in result && result.ok === true);
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
     return false;
@@ -225,6 +229,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json({ ok: false, error: "Invalid form payload" }, { status: 400 });
+  }
+
   // A final beacon always represents an abandoned form, even if the client
   // somehow omitted `partial`.
   const isFinal = body.final === true;
@@ -241,6 +249,18 @@ export async function POST(request: NextRequest) {
   const company = asTrimmedString(body.company);
   const zip = asTrimmedString(body.zip);
   const source = asTrimmedString(body.source);
+  // Startup guides collect a state explicitly. Reject unsupported inquiries before
+  // any CRM, notification, or CAPI side effect; preserve existing intake sources.
+  const isStartupGuideLane = source?.startsWith("seo-startup-") ?? false;
+  if (isStartupGuideLane) {
+    const guide = getStartupGuide(source!.slice("seo-startup-".length));
+    const startupState = asTrimmedString(body.startupState);
+    if (!guide || !startupState || !STARTUP_STATES.some((state) => state.slug === startupState)) {
+      return NextResponse.json({ ok: false, error: "Choose a valid business state and try again." }, { status: 400 });
+    }
+    const restriction = startupPlacementRestriction(startupState, guide.industry ?? "Restaurants");
+    if (restriction) return NextResponse.json({ ok: false, error: restriction }, { status: 400 });
+  }
 
   // Minimum to accept a submission: some way to reach the person. Phone-only submissions are
   // valid leads — the CRM keys those on phone alone.
@@ -255,7 +275,15 @@ export async function POST(request: NextRequest) {
   // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
   // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
   // Declared here rather than further down because the abandoned-fill branch below needs it too.
-  const details = sanitizeDetails(body.details);
+  let details = sanitizeDetails(body.details);
+  if (isStartupGuideLane) {
+    const state = STARTUP_STATES.find((item) => item.slug === asTrimmedString(body.startupState))!;
+    details = [
+      { label: "State", value: state.name },
+      { label: "Startup guide", value: `/guides/${source!.slice("seo-startup-".length)}` },
+      ...(details ?? []).filter((item) => !["State", "Startup guide"].includes(item.label)),
+    ];
+  }
 
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
@@ -265,6 +293,7 @@ export async function POST(request: NextRequest) {
         email,
         phone,
         businessType,
+        company,
         zip,
         partial: true,
         source,
@@ -292,13 +321,15 @@ export async function POST(request: NextRequest) {
   // business" pick (often a misclick) lands in quotes@ for a human to triage.
   if (capiEventName === "RestaurantDisqualified") {
     const disqEventId = asTrimmedString(body.eventId);
+    let emailed = false;
     {
       const disqDetails = sanitizeDetails(body.details) ?? [];
-      await sendIntakeNotification({
+      emailed = await sendIntakeNotification({
         name,
         email,
         phone,
         businessType,
+        company,
         zip,
         partial: false,
         source,
@@ -311,6 +342,7 @@ export async function POST(request: NextRequest) {
         ],
       });
     }
+    if (!emailed) return NextResponse.json({ ok: false, crm: "skipped", notification: "failed", error: "We could not save your request. Please try again." }, { status: 503 });
     const capi =
       disqEventId && reachable
         ? await sendCapiEvent(
@@ -322,7 +354,7 @@ export async function POST(request: NextRequest) {
           )
         : "skipped";
     return NextResponse.json(
-      { ok: true, crm: "skipped", capi },
+      { ok: true, crm: "skipped", notification: "sent", capi },
       { status: 200 },
     );
   }
@@ -362,14 +394,14 @@ export async function POST(request: NextRequest) {
   const isCommercialPropertyLane = (source ?? "").startsWith(
     "commercial-property",
   );
-  const forwarded = await forwardToCrm({
+  const crmDelivery = forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
     ...(phone ? { phone } : {}),
     ...(description ? { business_type: description } : {}),
     ...(company ? { business_name: company } : {}),
     ...(zip ? { zip } : {}),
-    ...(isContractorLane || isRestaurantLane || isCommercialPropertyLane
+    ...(isContractorLane || isRestaurantLane || isCommercialPropertyLane || isStartupGuideLane
       ? { suppress_first_touch: "true" }
       : {}),
     // ★ Kevin 2026-08-19: the CP lane must record Property, not GL. The CRM webhook defaults
@@ -395,9 +427,8 @@ export async function POST(request: NextRequest) {
     ...(details ? { details } : {}),
   });
 
-  // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
-  // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
-  // fall back to the quotes@ alert so a real lead still lands somewhere a human reads.
+  // Attempt both destinations independently. Accept when at least one confirms delivery;
+  // if both fail, return a retryable error instead of reporting a captured lead.
   // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
   // the pixel kept counting them.)
   // ★ Kevin 2026-08-18: EVERY completed submission emails quotes@, unconditionally. This used to
@@ -412,16 +443,24 @@ export async function POST(request: NextRequest) {
   // the CRM webhook carries flat contact fields only, and the restaurant lane still always gets
   // its email because rest_loop.py sweeps this inbox and owns the lane's only outbound touch.
   // A duplicate alert on a lane that was already emailing costs nothing; a silent drop costs a lead.
-  await sendIntakeNotification({
+  const [forwarded, emailed] = await Promise.all([crmDelivery, sendIntakeNotification({
     name,
     email,
     phone,
     businessType,
+    company,
     zip,
     partial: false,
     source,
     details,
-  });
+  })]);
+
+  if (!forwarded && !emailed) {
+    return NextResponse.json({
+      ok: false, crm: "failed", notification: "failed",
+      error: "We could not save your request. Please try again, or call Cohesive at (929) 594-5450.",
+    }, { status: 503 });
+  }
 
   // Server-side CAPI event, deduped with the browser pixel via the shared event
   // id. Real submissions only — partials returned above, so they never count as
@@ -506,6 +545,7 @@ export async function POST(request: NextRequest) {
     {
       ok: true,
       crm: forwarded ? "sent" : "failed",
+      notification: emailed ? "sent" : "failed",
       capi,
       capiQualified,
       capiUninsured,

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
 import { TRADES } from "@/lib/seo/contractors";
@@ -17,13 +18,13 @@ export default function Page() {
     <main className="min-h-screen bg-white">
       <header className="border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
-          <a href="/">
+          <Link href="/">
             <img
               src="/logo-long.png"
               alt="Cohesive"
               className="h-7 sm:h-8 w-auto object-contain"
             />
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -41,6 +42,10 @@ export default function Page() {
       </section>
 
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+        <Link href="/guides" className="mb-10 block rounded-xl border border-blue-200 bg-blue-50 p-5 text-[#2040E7] hover:underline">
+          <span className="block font-bold">Starting a business?</span>
+          <span className="text-sm">Explore restaurant and service-business startup guides for all 50 states →</span>
+        </Link>
         <h2 className="text-2xl font-extrabold text-[#131517] mb-6">
           By industry
         </h2>

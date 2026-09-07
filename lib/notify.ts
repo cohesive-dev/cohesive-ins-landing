@@ -7,8 +7,8 @@ import { QUOTES_ADDRESS, sendRawFromQuotes } from "@/lib/gmail";
  * Lead notification email to quotes@cohesiveinsure.com.
  *
  * The email is the alert channel, not the system of record (the Contact row
- * is) — so this must never throw into the intake route: a mail failure logs
- * and returns, and the form submission still succeeds.
+ * is). Return delivery status without throwing so the intake route can accept
+ * CRM-only delivery or reject a request when neither destination succeeds.
  *
  * Transport is the Gmail API (see lib/gmail.ts) — SMTP app-password auth is
  * permanently dead for the domain. nodemailer stays for what it is good at:
@@ -38,6 +38,7 @@ export type IntakeNotification = {
   email?: string;
   phone?: string;
   businessType?: string;
+  company?: string;
   zip?: string;
   // True for an abandoned (partial) form fill — changes subject/body and adds
   // a no-consent warning, since the visitor never clicked submit.
@@ -53,7 +54,7 @@ export type IntakeNotification = {
 
 export async function sendIntakeNotification(
   fields: IntakeNotification,
-): Promise<void> {
+): Promise<boolean> {
   // Vertical splash pages send "<slug>-splash-next-handoff" (visitor handed
   // to Next's self-serve flow) or "<slug>-splash-abandoned" (typed email but
   // never started). Slug = the page, e.g. restaurants, cleaning, beauty.
@@ -84,6 +85,7 @@ export async function sendIntakeNotification(
     `Name: ${fields.name ?? "(not provided)"}`,
     `Email: ${fields.email ?? "(not provided)"}`,
     `Phone: ${fields.phone ?? "(not provided)"}`,
+    `Business name: ${fields.company ?? "(not provided)"}`,
     `Business type: ${fields.businessType ?? "(not provided)"}`,
     `ZIP: ${fields.zip ?? "(not provided)"}`,
     ...(fields.details && fields.details.length > 0
@@ -118,7 +120,7 @@ export async function sendIntakeNotification(
         ? `New quote request: ${subjectWho} - ${fields.businessType}`
         : `New quote request: ${subjectWho}`;
 
-  await composeAndSend(
+  return composeAndSend(
     {
       from: `Cohesive Insurance Services <${QUOTES_ADDRESS}>`,
       to: QUOTES_ADDRESS,

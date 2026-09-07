@@ -1,5 +1,7 @@
+import Link from "next/link";
 import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
 import ContractorQuoteForm from "@/components/ContractorQuoteForm";
+import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
 import type { PageContent } from "@/lib/seo/data";
 
 // Shared layout for the /insurance SEO pages (state pages + national vertical
@@ -80,13 +82,13 @@ export default function SeoPage({
 
       <header className="border-b border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
-          <a href="/">
+          <Link href="/">
             <img
               src="/logo-long.png"
               alt="Cohesive"
               className="h-7 sm:h-8 w-auto object-contain"
             />
-          </a>
+          </Link>
         </div>
       </header>
 
@@ -274,6 +276,18 @@ export default function SeoPage({
       </section>
 
       {/* Cross-links */}
+      {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => source.startsWith(`seo-${industry.insuranceSlug}-`)).map((industry) => (
+        <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
+      ))}
+      {source.startsWith("seo-restaurant-") && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="font-bold text-[#131517]">Opening a restaurant?</h2>
+            <p className="mt-2 text-sm text-[#6B6D71]">Plan the steps before your first service, from the opening budget to approvals and lease requirements.</p>
+            <Link href="/guides/how-to-open-a-restaurant" className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Read the restaurant opening guide →</Link>
+          </div>
+        </section>
+      )}
       {stateLinks && stateLinks.length > 0 && (
         <section className="border-t border-slate-100">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -301,9 +315,9 @@ export default function SeoPage({
           <a href="/about" className="hover:underline">
             About &amp; licensing
           </a>
-          <a href="/insurance" className="hover:underline">
+          <Link href="/insurance" className="hover:underline">
             Insurance guides
-          </a>
+          </Link>
           <a href="/privacy" className="hover:underline">
             Privacy
           </a>

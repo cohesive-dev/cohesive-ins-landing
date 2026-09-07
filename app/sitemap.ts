@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS } from "@/lib/seo/data";
 import { TRADES } from "@/lib/seo/contractors";
+import { GUIDE_UPDATED } from "@/lib/guides/restaurant";
+import { STARTUP_GUIDES } from "@/lib/guides/catalog";
 import {
   CONTRACTOR_STATE_SLUGS,
   contractorStateBuildable,
@@ -39,5 +41,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ),
   );
 
-  return [...core, ...hub, ...verticals, ...foodStates, ...tradeStates];
+  const guides = ["/guides", ...STARTUP_GUIDES.map((guide) => `/guides/${guide.slug}`)].map((path) => ({
+    url: `${BASE}${path}`,
+    lastModified: GUIDE_UPDATED,
+    changeFrequency: "monthly" as const,
+  }));
+
+  return [...core, ...hub, ...verticals, ...foodStates, ...tradeStates, ...guides];
 }

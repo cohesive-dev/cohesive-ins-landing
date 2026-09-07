@@ -1196,6 +1196,8 @@ function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 { label: "How It Works", href: "#how-it-works" },
+                { label: "Business Startup Guides", href: "/guides" },
+                { label: "Insurance Guides", href: "/insurance" },
                 { label: "Carriers", href: "#carriers" },
                 { label: "Contact", href: "tel:+19295945450" },
               ].map((l) => (
