@@ -38,22 +38,31 @@ const GMAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
 type Option = { label: string; value: string };
 
-// Mirrors the FB instant form v5 exactly (Kevin's final 14-trade list).
+// Web-form trade taxonomy. Keep paid-ad trade targets as first-class choices so
+// they do not collapse into "Other trade" and lose downstream attribution.
 const TRADES: Option[] = [
   { label: "General contractor", value: "General contractor" },
   { label: "Remodeling / renovations", value: "Remodeling / renovations" },
   { label: "Roofing", value: "Roofing" },
+  { label: "HVAC / heating and air conditioning", value: "HVAC / heating and air conditioning" },
+  { label: "Plumbing", value: "Plumbing" },
+  { label: "Electrical", value: "Electrical" },
   { label: "Painting", value: "Painting" },
   { label: "Carpentry / framing", value: "Carpentry / framing" },
   { label: "Masonry / concrete", value: "Masonry / concrete" },
   { label: "Siding / gutters", value: "Siding / gutters" },
   { label: "Flooring / tile", value: "Flooring / tile" },
-  { label: "Excavation / demolition", value: "Excavation / demolition" },
+  { label: "Excavation / grading / site work", value: "Excavation / grading / site work" },
+  { label: "Demolition", value: "Demolition" },
+  { label: "Deck construction", value: "Deck construction" },
+  { label: "Fence installation / repair", value: "Fence installation / repair" },
   { label: "Paving / asphalt", value: "Paving / asphalt" },
   { label: "Tree service", value: "Tree service" },
   { label: "Restoration (water / fire damage)", value: "Restoration (water / fire damage)" },
-  { label: "Waterproofing / foundation repair", value: "Waterproofing / foundation repair" },
+  { label: "Waterproofing", value: "Waterproofing" },
+  { label: "Foundation repair / underpinning", value: "Foundation repair / underpinning" },
   { label: "Pool construction / service", value: "Pool construction / service" },
+  { label: "Welding / metal fabrication", value: "Welding / metal fabrication" },
   { label: "Other trade", value: "Other trade" },
 ];
 
@@ -65,6 +74,7 @@ const OTHER_TRADES: Option[] = [
 const TRACKED_QUESTION_FIELDS = new Set([
   "trade",
   "otherTrades",
+  "otherTradeDescription",
   "primaryPct",
   "revenue",
   "employees",
@@ -220,6 +230,9 @@ export default function ContractorsLandingPage() {
       }
       if (k === "employees" && v.startsWith("0")) delete next.payroll;
       if (k === "usesSubcontractors" && v === "No") delete next.subcontractorCosts;
+      if (next.trade !== "Other trade" && !(next.otherTrades ?? "").split(", ").includes("Other trade")) {
+        delete next.otherTradeDescription;
+      }
       return next;
     });
   };
@@ -239,6 +252,7 @@ export default function ContractorsLandingPage() {
   const otherTradeOptions = OTHER_TRADES.filter(
     (option) => option.value === "None" || option.value !== f.trade,
   );
+  const needsOtherTradeDescription = f.trade === "Other trade" || selectedOtherTrades.includes("Other trade");
 
   const toggleOtherTrade = (value: string) => {
     if (value === "None") {
@@ -260,6 +274,7 @@ export default function ContractorsLandingPage() {
     f.address?.trim() &&
     !!f.trade &&
     !!f.otherTrades &&
+    (!needsOtherTradeDescription || !!f.otherTradeDescription?.trim()) &&
     !!f.primaryPct &&
     !!f.revenue &&
     !!f.employees &&
@@ -281,6 +296,9 @@ export default function ContractorsLandingPage() {
     push("Business address", f.address);
     push("Primary trade", f.trade);
     push("Other trades", f.otherTrades);
+    if (f.trade === "Other trade" || (f.otherTrades ?? "").split(", ").includes("Other trade")) {
+      push("Other trade description", f.otherTradeDescription);
+    }
     push("Primary trade % of work", f.primaryPct);
     push("Annual revenue", f.revenue);
     push("W2 employees", f.employees);
@@ -520,6 +538,11 @@ export default function ContractorsLandingPage() {
                 <Select value={f.primaryPct} onChange={(v) => set("primaryPct", v)} options={PRIMARY_PCT} placeholder="Select one" />
               </Field>
             </div>
+            {needsOtherTradeDescription && (
+              <Field label="Describe your other trade or services" required>
+                <Input value={f.otherTradeDescription} onChange={(v) => set("otherTradeDescription", v)} placeholder="Tell us what work you do" />
+              </Field>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Annual revenue (roughly)" required alignOnDesktop>
                 <Select value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} placeholder="Select one" />
