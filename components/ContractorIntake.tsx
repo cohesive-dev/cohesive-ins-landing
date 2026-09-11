@@ -1,0 +1,1019 @@
+"use client";
+
+import {
+  cloneElement,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { contractorCanSubmit, contractorDetails, normalizeContractor, needsDevelopmentQuestion, WORK_MARKETS, PROJECT_TYPES, POOL_WORK, hasPoolWork, needsGeneralWorkQuestions } from "@/lib/contractor-intake";
+import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
+import { trackRooferOffer } from "@/lib/roofer-offer-tracking";
+
+/**
+ * /contractors - deep intake landing page for the high-value contractor GL
+ * lane (cell 2 of the 3-way capture test; cell 1 is the Meta Instant Form,
+ * cell 3 is /rate-check policy upload).
+ *
+ * Mirrors the Instant Form's question set so the two cells are comparable:
+ * trade, roofing exposure (the Foxquilt-vs-Hedge routing gate), revenue,
+ * W2 employees/payroll, entity, year started, address, renewal window.
+ * Personal/home coverage seekers are disqualified inline and never become
+ * leads. Everything flows to quotes@ + the CRM via POST /api/intake
+ * (source "contractors-landing").
+ */
+
+// ---- Meta Pixel helper (matches app/page.tsx / QuoteSplash) --------------
+function fbq(...args: unknown[]) {
+  if (typeof window === "undefined") return;
+  (window as unknown as { fbq?: (...a: unknown[]) => void }).fbq?.(...args);
+}
+
+const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+// Google Places autocomplete on the address field. Public, build-time-inlined
+// key; when unset the address field is just a plain input (dark-safe).
+const GMAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+
+type Option = { label: string; value: string };
+
+// Web-form trade taxonomy. Keep paid-ad trade targets as first-class choices so
+// they do not collapse into "Other trade" and lose downstream attribution.
+const TRADES: Option[] = [
+  { label: "General contractor", value: "General contractor" },
+  { label: "Remodeling / renovations", value: "Remodeling / renovations" },
+  { label: "Roofing", value: "Roofing" },
+  { label: "HVAC / heating and air conditioning", value: "HVAC / heating and air conditioning" },
+  { label: "Plumbing", value: "Plumbing" },
+  { label: "Electrical", value: "Electrical" },
+  { label: "Painting", value: "Painting" },
+  { label: "Carpentry / framing", value: "Carpentry / framing" },
+  { label: "Masonry / concrete", value: "Masonry / concrete" },
+  { label: "Siding / gutters", value: "Siding / gutters" },
+  { label: "Flooring / tile", value: "Flooring / tile" },
+  { label: "Excavation / grading / site work", value: "Excavation / grading / site work" },
+  { label: "Demolition", value: "Demolition" },
+  { label: "Deck construction", value: "Deck construction" },
+  { label: "Fence installation / repair", value: "Fence installation / repair" },
+  { label: "Paving / asphalt", value: "Paving / asphalt" },
+  { label: "Tree service", value: "Tree service" },
+  { label: "Landscaping", value: "Landscaping" },
+  { label: "Restoration (water / fire damage)", value: "Restoration (water / fire damage)" },
+  { label: "Waterproofing", value: "Waterproofing" },
+  { label: "Foundation repair / underpinning", value: "Foundation repair / underpinning" },
+  { label: "Pool construction / service", value: "Pool construction / service" },
+  { label: "Welding / metal fabrication", value: "Welding / metal fabrication" },
+  { label: "Other trade", value: "Other trade" },
+];
+
+const OTHER_TRADES: Option[] = [
+  { label: "None - just my primary trade", value: "None" },
+  ...TRADES,
+];
+
+const TRACKED_QUESTION_FIELDS = new Set([
+  "trade",
+  "otherTrades",
+  "otherTradeDescription",
+  "workMarket",
+  "projectTypes",
+  "developmentWork",
+  "poolWork",
+  "poolWorkDescription",
+  "revenue",
+  "employees",
+  "payroll",
+  "usesSubcontractors",
+  "subcontractorCosts",
+  "structure",
+  "currentGl",
+  "currentPremium",
+]);
+
+const REVENUE: Option[] = [
+  { label: "Under $250k", value: "Under $250k" },
+  { label: "$250k - $500k", value: "$250k - $500k" },
+  { label: "$500k - $1M", value: "$500k - $1M" },
+  { label: "$1M - $2M", value: "$1M - $2M" },
+  { label: "$2M - $4M", value: "$2M - $4M" },
+  { label: "$4M - $8M", value: "$4M - $8M" },
+  { label: "Over $8M", value: "Over $8M" },
+];
+
+const EMPLOYEES: Option[] = [
+  { label: "0 - no W2 employees", value: "0 - no W2 employees" },
+  { label: "1 - 5", value: "1 - 5" },
+  { label: "6 - 10", value: "6 - 10" },
+  { label: "11 - 20", value: "11 - 20" },
+  { label: "More than 20", value: "More than 20" },
+];
+
+const PAYROLL: Option[] = [
+  { label: "$0 - $50k", value: "$0 - $50k" },
+  { label: "$50k - $100k", value: "$50k - $100k" },
+  { label: "$100k - $250k", value: "$100k - $250k" },
+  { label: "$250k - $500k", value: "$250k - $500k" },
+  { label: "$500k - $1M", value: "$500k - $1M" },
+  { label: "$1M+", value: "$1M+" },
+];
+
+const USES_SUBCONTRACTORS: Option[] = [
+  { label: "Yes", value: "Yes" },
+  { label: "No", value: "No" },
+];
+
+const SUBCONTRACTOR_COSTS: Option[] = [
+  { label: "Under $25k", value: "Under $25k" },
+  { label: "$25k - $50k", value: "$25k - $50k" },
+  { label: "$50k - $100k", value: "$50k - $100k" },
+  { label: "$100k - $250k", value: "$100k - $250k" },
+  { label: "$250k - $500k", value: "$250k - $500k" },
+  { label: "$500k - $1M", value: "$500k - $1M" },
+  { label: "$1M+", value: "$1M+" },
+];
+
+const STRUCTURE: Option[] = [
+  { label: "Sole proprietor / self-employed", value: "Sole proprietor" },
+  { label: "LLC", value: "LLC" },
+  { label: "Corporation / Inc", value: "Corporation" },
+  { label: "Partnership", value: "Partnership" },
+];
+
+// ★ The uninsured answer is SPLIT into buyer vs shopper (Kevin 2026-08-17). Before this, anyone
+// uninsured had to pick "ASAP", so the urgency signal was polluted with people just comparing.
+// Both urgent answers use the SAME 30-day clock so the two urgent buckets are directly
+// comparable ("insured, renewing within 30" vs "uninsured, needs it within 30").
+const CURRENT_GL: Option[] = [
+  { label: "Yes - renews within 30 days", value: "Yes - renews within 30 days" },
+  { label: "Yes - renews later", value: "Yes - renews later" },
+  { label: "No - I need coverage within 30 days", value: "No - need coverage within 30 days" },
+  { label: "No - just comparing for now", value: "No - just comparing" },
+];
+
+// The two CURRENT_PREMIUM buckets that make a lead a QualifiedLead (self-reported $5K+).
+const QUALIFIED_PREMIUM_VALUES = new Set(["$5K - $20K", "$20K+"]);
+// "Not insured yet" is a YELLOW flag (Kevin 2026-08-15): a real, kept lead - they are buying,
+// often ASAP - but there is no incumbent premium, so it is NOT the winnability signal and must
+// not be folded into QualifiedLead. It gets its own event so it stays separable and trackable.
+const UNINSURED_PREMIUM_VALUE = "Not insured yet";
+// Urgency, from the EXISTING current-GL question (no new question asked). Renewing within 30
+// days or uninsured-and-ASAP = urgent. Fires LeadUrgentQuoted (any premium) and, stacked on the
+// $5K+ self-report, QualifiedUrgentLead - the tightest, most winnable slice. Primary optimisation
+// stays QualifiedLead; QualifiedUrgentLead accumulates history until its volume can steer.
+// "No - just comparing" is deliberately NOT here: a shopper with no clock is not urgent, and
+// including it is what made the old ASAP bucket unreliable.
+const URGENT_GL_VALUES = new Set(["Yes - renews within 30 days", "No - need coverage within 30 days"]);
+
+// ★ LargeBusinessLead = self-reported revenue >= $1M, ANY trade (Kevin 2026-08-17).
+// The premium self-report is the truest winnability signal but it is rare - 3 of the first 25
+// contractor leads. Revenue >= $1M fired on 6 of those 25 AND caught all 3 of the $5K+ ones,
+// plus the large businesses that are uninsured or underpaying (the ARGC shape: $2M revenue,
+// a bad incumbent, the biggest win the lane has had). So it is a broader net for the same
+// segment and frequent enough for Meta to actually learn from.
+// ⚠️ Revenue self-reports round UP in a way premium self-reports do not - watch whether these
+// leads actually quote at $5K+ before trusting the proxy.
+const LARGE_REVENUE_VALUES = new Set(["$1M - $2M", "$2M - $4M", "$4M - $8M", "Over $8M"]);
+
+const CURRENT_PREMIUM: Option[] = [
+  { label: "Under $2,000", value: "Under $2K" },
+  { label: "$2,000 - $5,000", value: "$2K - $5K" },
+  { label: "$5,000 - $20,000", value: "$5K - $20K" },
+  { label: "Over $20,000", value: "$20K+" },
+  { label: "Not insured yet", value: "Not insured yet" },
+];
+
+type FormState = Record<string, string>;
+
+export type ContractorIntakeAdapter = {
+  initial: FormState;
+  title: string;
+  preview?: boolean;
+  onChange: (fields: FormState) => void;
+  onSubmit: (fields: FormState) => Promise<void>;
+  progress: string;
+};
+export default function ContractorIntake({ adapter, offer }: { adapter?: ContractorIntakeAdapter; offer?: "roofer-free-leads" }) {
+  const [f, setF] = useState<FormState>(adapter?.initial ?? (offer ? { trade: "Roofing" } : {}));
+  const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
+    "idle",
+  );
+  const [errMsg, setErrMsg] = useState("");
+
+  // Funnel instrumentation: fire each milestone once per session so we can
+  // measure abandonment (FormStart -> ContactDone -> TradeSelected -> Lead).
+  const fired = useRef<Set<string>>(new Set());
+  const answeredQuestions = useRef<Set<string>>(new Set());
+  const formStartedAt = useRef<number | null>(null);
+  const track = useCallback((name: string) => {
+    if (adapter || fired.current.has(name)) return;
+    fired.current.add(name);
+    fbq("trackCustom", name);
+    if (offer && (name === "FormStart" || name === "ContactDone" || name === "TradeSelected")) trackRooferOffer(name);
+  }, [adapter, offer]);
+
+  const set = (k: string, v: string) => {
+    track("FormStart");
+    if (formStartedAt.current === null && typeof performance !== "undefined") {
+      formStartedAt.current = performance.now();
+    }
+    if (k === "trade") track("TradeSelected");
+    if (!adapter && TRACKED_QUESTION_FIELDS.has(k) && v && !answeredQuestions.current.has(k)) {
+      answeredQuestions.current.add(k);
+      const elapsedSeconds = formStartedAt.current === null
+        ? 0
+        : Math.round((performance.now() - formStartedAt.current) / 1000);
+      fbq("trackCustom", "ContractorQuestionAnswered", {
+        field: k,
+        elapsed_seconds: elapsedSeconds,
+      });
+    }
+    setF((p) => {
+      const next = { ...p, [k]: v };
+      if (k === "trade" && next.otherTrades && next.otherTrades !== "None") {
+        const remaining = next.otherTrades.split(", ").filter((trade) => trade !== v);
+        if (remaining.length) next.otherTrades = remaining.join(", ");
+        else delete next.otherTrades;
+      }
+      if (k === "employees" && (v.startsWith("0") || p.employees?.startsWith("0"))) delete next.payroll;
+      if (k === "usesSubcontractors" && (v === "No" || p.usesSubcontractors === "No")) delete next.subcontractorCosts;
+      if (next.trade !== "Other trade" && !(next.otherTrades ?? "").split(", ").includes("Other trade")) {
+        delete next.otherTradeDescription;
+      }
+      return normalizeContractor(next);
+    });
+  };
+
+  const emailValid = EMAIL_RE.test((f.email ?? "").trim());
+
+  // No qualifier gate on the landing page (Kevin 2026-08-13): ad traffic is
+  // business owners; the personal-DQ mechanic only pays on the FB form where
+  // Meta trains on it. The "commercial policies only" hero line is the filter.
+  const disqualified = false;
+  const qualified = true;
+  const hasW2Employees = !!f.employees && !f.employees.startsWith("0");
+  const usesSubcontractors = f.usesSubcontractors === "Yes";
+  const selectedOtherTrades = f.otherTrades && f.otherTrades !== "None"
+    ? f.otherTrades.split(", ").filter(Boolean)
+    : f.otherTrades === "None" ? ["None"] : [];
+  const otherTradeOptions = OTHER_TRADES.filter(
+    (option) => option.value === "None" || option.value !== f.trade,
+  );
+  const needsOtherTradeDescription = f.trade === "Other trade" || selectedOtherTrades.includes("Other trade");
+
+  const toggleOtherTrade = (value: string) => {
+    if (value === "None") {
+      set("otherTrades", "None");
+      return;
+    }
+    const current = selectedOtherTrades.filter((trade) => trade !== "None");
+    const next = current.includes(value)
+      ? current.filter((trade) => trade !== value)
+      : [...current, value];
+    set("otherTrades", next.join(", "));
+  };
+
+  const canSubmit = contractorCanSubmit(f) && status !== "sending";
+
+  // Ad attribution (utm / ad_id / fbclid), first-touch, sessionStorage-backed.
+  const [attr, setAttr] = useState<Attribution>({});
+  // Browser attribution is unavailable during server rendering. Preserve the FB initialization.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { if (!adapter) setAttr(captureAttribution()); }, [adapter]);
+
+  const details = useMemo(() => [...contractorDetails(f), ...attributionDetails(attr), ...(offer ? [{ label: "Marketing offer", value: offer }, { label: "Offer terms", value: "Free local email outreach after binding business insurance" }] : [])], [f, attr, offer]);
+  const previousFields = useRef(f);
+  useEffect(() => {
+    if (f !== previousFields.current) {
+      previousFields.current = f;
+      adapter?.onChange(f);
+    }
+  }, [f, adapter]);
+
+  // Funnel milestone driven by state.
+  useEffect(() => {
+    if (f.fullName?.trim() && emailValid && f.phone?.trim()) {
+      track("ContactDone");
+    }
+  }, [f.fullName, f.phone, emailValid, track]);
+
+  // Keep a live snapshot so the capture handlers don't read a stale closure.
+  const latest = useRef({ f, details, status, disqualified });
+  useEffect(() => { latest.current = { f, details, status, disqualified }; }, [f, details, status, disqualified]);
+  const sentPartial = useRef(false);
+
+  // Partial capture: the moment a visitor gives us ANY way to reach them,
+  // capture them as a partial (final) lead so a mid-form abandoner is never
+  // lost. Fires at most once, on leave/background OR 120s idle. The intake
+  // route sends partials to quotes@ ONLY (no CRM/SMS). Disqualified visitors
+  // are never captured.
+  const firePartial = useRef(() => {});
+  useEffect(() => { firePartial.current = () => {
+    if (adapter) return;
+    if (sentPartial.current) return;
+    const { f: cur, details: det, status: st, disqualified: dq } = latest.current;
+    if (st === "done" || st === "sending" || dq) return;
+    const email = (cur.email ?? "").trim();
+    const phone = (cur.phone ?? "").trim();
+    const validEmail = EMAIL_RE.test(email) ? email : undefined;
+    if (!(validEmail || phone)) return;
+    sentPartial.current = true;
+    const body = JSON.stringify({
+      name: cur.fullName,
+      email: validEmail,
+      phone: phone || undefined,
+      businessType: cur.trade ? `Contractor - ${cur.trade}` : "Contractor",
+      zip: extractZip(cur.address),
+      source: "contractors-landing",
+      partial: true,
+      final: true,
+      details: det,
+    });
+    try {
+      const ok = navigator.sendBeacon(
+        "/api/intake",
+        new Blob([body], { type: "application/json" }),
+      );
+      if (!ok) throw new Error("beacon refused");
+    } catch {
+      fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true,
+      }).catch(() => {});
+    }
+  }; }, [adapter]);
+
+  // Leave / background the page.
+  useEffect(() => {
+    const onHide = () => firePartial.current();
+    const onVis = () => {
+      if (document.visibilityState === "hidden") firePartial.current();
+    };
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, []);
+
+  // Idle backup: reset on every field change; 120s of no input captures them.
+  useEffect(() => {
+    const t = setTimeout(() => firePartial.current(), 120_000);
+    return () => clearTimeout(t);
+  }, [f]);
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmit) return;
+    if (offer && !adapter) trackRooferOffer("SubmitAttempt");
+    setStatus("sending");
+    setErrMsg("");
+    if (adapter) {
+      try { await adapter.onSubmit(f); setStatus("done"); }
+      catch (err) { setStatus("error"); setErrMsg(err instanceof Error ? err.message : "Please try again."); }
+      return;
+    }
+    // Shared event id: the server-side CAPI Lead dedupes with the browser
+    // pixel Lead below.
+    const eventId =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    // ★ QualifiedLead = self-reported current GL premium of $5K+ (Kevin 2026-08-15).
+    // The one field that measures WINNABILITY (what their incumbent already charges),
+    // as opposed to what we'd quote. Optimising ads on this finds people we can beat.
+    // Uninsured leads deliberately do NOT qualify here - no incumbent, no gap to measure.
+    const isQualified = QUALIFIED_PREMIUM_VALUES.has(f.currentPremium);
+    const qualifiedEventId = isQualified ? `${eventId}-q` : undefined;
+    const isUninsured = f.currentPremium === UNINSURED_PREMIUM_VALUE;
+    const uninsuredEventId = isUninsured ? `${eventId}-u` : undefined;
+    const isUrgent = URGENT_GL_VALUES.has(f.currentGl);
+    const urgentEventId = isUrgent ? `${eventId}-ur` : undefined;
+    const qualifiedUrgentEventId = isUrgent && isQualified ? `${eventId}-qu` : undefined;
+    const isLargeBusiness = LARGE_REVENUE_VALUES.has(f.revenue);
+    const largeBusinessEventId = isLargeBusiness ? `${eventId}-lg` : undefined;
+    try {
+      const res = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: f.fullName,
+          email: f.email,
+          phone: f.phone,
+          businessType: `Contractor - ${f.trade}`,
+          company: f.legalName,
+          zip: extractZip(f.address),
+          source: "contractors-landing",
+          details,
+          eventId,
+          ...(qualifiedEventId ? { qualifiedEventId } : {}),
+          ...(uninsuredEventId ? { uninsuredEventId } : {}),
+          ...(urgentEventId ? { urgentEventId } : {}),
+          ...(qualifiedUrgentEventId ? { qualifiedUrgentEventId } : {}),
+          ...(largeBusinessEventId ? { largeBusinessEventId } : {}),
+        }),
+      });
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      // Fire the pixel ONLY after the intake POST succeeds.
+      fbq("track", "Lead", {}, { eventID: eventId });
+      fbq("trackCustom", "ContractorSubmit");
+      if (offer) trackRooferOffer("SubmitSuccess", { event_id: eventId });
+      if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
+      if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: uninsuredEventId });
+      if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
+      if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
+      if (largeBusinessEventId) fbq("trackCustom", "LargeBusinessLead", {}, { eventID: largeBusinessEventId });
+      setStatus("done");
+    } catch (err) {
+      setStatus("error");
+      fbq("trackCustom", "SubmitError");
+      if (offer) trackRooferOffer("SubmitError");
+      setErrMsg(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+      );
+    }
+  }
+
+  if (status === "done") {
+    return (
+      <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF1FF] text-3xl">
+          🛠️
+        </div>
+        <h1 className="mt-6 text-3xl font-bold text-[#131517]">
+          {adapter?.preview ? "Preview complete. Nothing was sent." : "Thanks — we’ve got it."}
+        </h1>
+        {!adapter?.preview && <p className="mt-3 max-w-md text-[#6B6D71]">
+          A licensed agent will run your quote and reach out shortly - most
+          come back within a day. Want to talk now? Call{" "}
+          <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
+            (929) 594-5450
+          </a>
+          .
+        </p>}
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-white">
+      {/* Hero */}
+      <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
+        <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 sm:py-7">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
+            For contractors &amp; construction businesses
+          </span>
+          <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
+            {adapter?.title ?? (offer ? "Get your roofing insurance quote" : "General liability built for contractors")}
+          </h1>
+          <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
+            {offer ? "Start with an insurance quote. Bind with us to get your local outreach campaign at no extra cost." : adapter ? "Takes just a few minutes. We may be able to save you money on your business insurance." : "We use AI to automatically shop your coverage and find you a better rate, reviewed by a licensed agent."}
+          </p>
+        </div>
+      </section>
+
+      <form onSubmit={submit} className="mx-auto max-w-2xl space-y-8 px-5 py-8 sm:px-6 sm:py-10">
+        {adapter?.preview && <Notice>Local preview · Nothing is sent to email, CRM or Smartlead.</Notice>}
+        {/* Contact */}
+        <Section title="Your contact info">
+          <Field label="Full name" required>
+            <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jane Smith" autoComplete="name" />
+          </Field>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div>
+              <Field label="Email" required>
+                <Input type="email" value={f.email} onChange={(v) => set("email", v)} placeholder="you@example.com" autoComplete="email" inputMode="email" />
+              </Field>
+              {f.email && !emailValid && (
+                <p className="mt-1 text-xs text-red-600">
+                  Please enter a valid email address.
+                </p>
+              )}
+            </div>
+            <Field label="Phone" required>
+              <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="(929) 594-5450" autoComplete="tel" inputMode="tel" />
+            </Field>
+          </div>
+        </Section>
+
+        {/* Business */}
+        {qualified && (
+          <Section title="About your business">
+            <Field label="Legal business name" required>
+              <Input value={f.legalName} onChange={(v) => set("legalName", v)} placeholder="Smith Contracting LLC" autoComplete="organization" />
+            </Field>
+            <Field label="Business address" required hint="Street, city, state, ZIP">
+              <AddressAutocomplete disabledAutocomplete={!!adapter} value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, San Antonio, TX 78216" />
+            </Field>
+            <Field label="What's your primary trade?" required>
+              <Select value={f.trade} onChange={(v) => set("trade", v)} options={TRADES} placeholder="Select one" />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Any other trades?" required alignOnDesktop>
+                <MultiSelect
+                  values={selectedOtherTrades}
+                  onToggle={toggleOtherTrade}
+                  options={otherTradeOptions}
+                  placeholder="Select all that apply"
+                />
+              </Field>
+
+            </div>
+            {needsOtherTradeDescription && (
+              <Field label="Describe your other trade or services" required>
+                <Input value={f.otherTradeDescription} onChange={(v) => set("otherTradeDescription", v)} placeholder="Tell us what work you do" />
+              </Field>
+            )}
+            {hasPoolWork(f) && <>
+              <Field label="What pool work do you do?" required hint="Select all that apply, including work you subcontract.">
+                <MultiSelect values={(f.poolWork ?? "").split(", ").filter(Boolean)} onToggle={(value) => {
+                  const current = (f.poolWork ?? "").split(", ").filter(Boolean);
+                  set("poolWork", (current.includes(value) ? current.filter(v => v !== value) : [...current, value]).join(", "));
+                }} options={POOL_WORK.map(value => ({ label: value, value }))} placeholder="Select pool work" />
+              </Field>
+              {(f.poolWork ?? "").split(", ").includes("Other pool work") && <Field label="Describe your other pool work" required>
+                <Input value={f.poolWorkDescription} onChange={(v) => set("poolWorkDescription", v)} />
+              </Field>}
+            </>}
+            {needsGeneralWorkQuestions(f) && <>
+            <Field label="Residential or commercial work?" required>
+              <Select value={f.workMarket} onChange={(v) => set("workMarket", v)} options={WORK_MARKETS.map(value => ({ label: value, value }))} placeholder="Select one" />
+            </Field>
+            <Field label="What projects do you take on?" required hint="Select all that apply.">
+              <MultiSelect values={(f.projectTypes ?? "").split(", ").filter(Boolean)} onToggle={(value) => {
+                const current = (f.projectTypes ?? "").split(", ").filter(Boolean);
+                set("projectTypes", (current.includes(value) ? current.filter(v => v !== value) : [...current, value]).join(", "));
+              }} options={PROJECT_TYPES.map(value => ({ label: value, value }))} placeholder="Select projects" />
+            </Field>
+            </>}
+            {needsDevelopmentQuestion(f) && <Field label="Apartment, townhome, or tract-development projects?" required>
+              <Select value={f.developmentWork} onChange={(v) => set("developmentWork", v)} options={["Yes", "No", "Not sure"].map(value => ({ label: value, value }))} placeholder="Select one" />
+            </Field>}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Annual revenue (roughly)" required alignOnDesktop>
+                <Select value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} placeholder="Select one" />
+              </Field>
+              <Field label="W2 employees" required hint="Do not include owners or subcontractors." alignOnDesktop>
+                <Select value={f.employees} onChange={(v) => set("employees", v)} options={EMPLOYEES} placeholder="Select one" />
+              </Field>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {hasW2Employees && (
+                <Field label="Annual W2 payroll (roughly)" required hint="Wages to employees, not subcontractor payments." alignOnDesktop>
+                  <Select value={f.payroll} onChange={(v) => set("payroll", v)} options={PAYROLL} placeholder="Select one" />
+                </Field>
+              )}
+              <Field label="Do you hire subcontractors?" required alignOnDesktop>
+                <Select value={f.usesSubcontractors} onChange={(v) => set("usesSubcontractors", v)} options={USES_SUBCONTRACTORS} placeholder="Select one" />
+              </Field>
+              {usesSubcontractors && (
+                <Field label="Annual subcontractor costs (roughly)" required hint="Total amount paid to subcontractors each year." alignOnDesktop>
+                  <Select value={f.subcontractorCosts} onChange={(v) => set("subcontractorCosts", v)} options={SUBCONTRACTOR_COSTS} placeholder="Select one" />
+                </Field>
+              )}
+              <Field label="Business structure" alignOnDesktop>
+                <Select value={f.structure} onChange={(v) => set("structure", v)} options={STRUCTURE} placeholder="Select one" />
+              </Field>
+            </div>
+            <Field label="What year did you start the business?">
+              <Input value={f.yearStarted} onChange={(v) => set("yearStarted", v)} placeholder="2015" inputMode="numeric" />
+            </Field>
+          </Section>
+        )}
+
+        {/* Current coverage */}
+        {qualified && (
+          <Section title="Your current coverage">
+            <Field label="Do you have general liability coverage today?">
+              <Select value={f.currentGl} onChange={(v) => set("currentGl", v)} options={CURRENT_GL} placeholder="Select one" />
+            </Field>
+            <Field label="What are you paying now for GL, per year?" hint="Best guess is fine.">
+              <Select value={f.currentPremium} onChange={(v) => set("currentPremium", v)} options={CURRENT_PREMIUM} placeholder="Select one" />
+            </Field>
+          </Section>
+        )}
+
+        {status === "error" && (
+          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+            {errMsg}
+          </p>
+        )}
+
+        {adapter && <p aria-live="polite" className="text-xs text-slate-500">{adapter.progress}</p>}
+        {!disqualified && (
+          <>
+            <button
+              type="submit"
+              disabled={!canSubmit}
+              className="min-h-[52px] w-full touch-manipulation rounded-xl bg-[#2040E7] px-6 py-4 text-center text-base font-semibold text-white transition hover:bg-[#1A33B9] active:bg-[#1A33B9] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {status === "sending" ? "Sending…" : "Get my quote"}
+            </button>
+            <p className="text-center text-xs text-[#6B6D71]">
+              {adapter ? "Progress is saved as you edit. By submitting, you ask Cohesive to contact you about your quote. Coverage is not bound by this form." : "We’ll only use your details to prepare and send your insurance quote."}
+            </p>
+          </>
+        )}
+      </form>
+    </main>
+  );
+}
+
+// ---- little presentational helpers ---------------------------------------
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="space-y-4">
+      <h2 className="text-lg font-semibold text-[#27455C]">{title}</h2>
+      {children}
+    </section>
+  );
+}
+
+function Notice({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+      {children}
+    </p>
+  );
+}
+
+function Field({
+  label,
+  hint,
+  required,
+  alignOnDesktop,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  required?: boolean;
+  alignOnDesktop?: boolean;
+  children: React.ReactNode;
+}) {
+  // A <div>, not a <label>: several fields hold button groups (radio chips),
+  // and wrapping those in a <label> makes tapping the question text toggle
+  // the first chip. The label is pushed down as an accessible name instead.
+  const control = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<{ ariaLabel?: string }>, {
+        ariaLabel: label,
+      })
+    : children;
+  return (
+    <div className="space-y-1.5">
+      <div className={alignOnDesktop ? "sm:min-h-[3.25rem]" : undefined}>
+        <span className="block text-sm font-medium text-[#131517]">
+          {label}
+          {required && <span className="text-[#2040E7]"> *</span>}
+        </span>
+        {hint && <span className="mt-1 block text-xs text-[#6B6D71]">{hint}</span>}
+      </div>
+      {control}
+    </div>
+  );
+}
+
+// text-base (16px) is deliberate: inputs under 16px make iOS Safari auto-zoom
+// on focus. min-h keeps a comfortable tap target.
+const inputClasses =
+  "w-full rounded-lg border border-[#D8DEF5] bg-white px-4 py-3 text-base text-[#131517] outline-none transition focus:border-[#2040E7] focus:ring-2 focus:ring-[#2040E7]/20";
+
+function Input({
+  value,
+  onChange,
+  placeholder,
+  type = "text",
+  autoComplete,
+  ariaLabel,
+  inputMode,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  type?: string;
+  autoComplete?: string;
+  ariaLabel?: string;
+  inputMode?: "text" | "numeric" | "tel" | "email";
+}) {
+  return (
+    <input
+      type={type}
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      autoComplete={autoComplete}
+      aria-label={ariaLabel}
+      inputMode={inputMode}
+      className={inputClasses}
+    />
+  );
+}
+
+// ---- Google Places address autocomplete -----------------------------------
+
+type GPrediction = { description: string; place_id: string };
+type GPlaceResult = { formatted_address?: string };
+type GAutocompleteService = {
+  getPlacePredictions: (
+    req: Record<string, unknown>,
+    cb: (preds: GPrediction[] | null, status: string) => void,
+  ) => void;
+};
+type GPlacesService = {
+  getDetails: (
+    req: Record<string, unknown>,
+    cb: (place: GPlaceResult | null, status: string) => void,
+  ) => void;
+};
+type GMaps = {
+  maps: {
+    places: {
+      AutocompleteService: new () => GAutocompleteService;
+      PlacesService: new (attrContainer: HTMLElement) => GPlacesService;
+      AutocompleteSessionToken: new () => object;
+    };
+  };
+};
+const getGoogle = () => (window as unknown as { google?: GMaps }).google;
+
+function loadGoogleMaps(key: string): Promise<void> {
+  const w = window as unknown as {
+    google?: GMaps;
+    __gmapsPromise?: Promise<void>;
+  };
+  if (w.google?.maps?.places) return Promise.resolve();
+  if (w.__gmapsPromise) return w.__gmapsPromise;
+  w.__gmapsPromise = new Promise<void>((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
+      key,
+    )}&libraries=places&loading=async`;
+    s.async = true;
+    // With loading=async, onload fires before google.maps.places is populated,
+    // so poll for it before resolving.
+    s.onload = () => {
+      const ready = () => {
+        if ((window as unknown as { google?: GMaps }).google?.maps?.places) {
+          resolve();
+        } else {
+          setTimeout(ready, 50);
+        }
+      };
+      ready();
+    };
+    s.onerror = () => reject(new Error("Google Maps failed to load"));
+    document.head.appendChild(s);
+  });
+  return w.__gmapsPromise;
+}
+
+// A styled address input backed by Google Places (custom dropdown off
+// AutocompleteService + session token). Dark-safe: with no key it's a plain
+// input.
+function AddressAutocomplete({ disabledAutocomplete = false,
+  value,
+  onChange,
+  placeholder,
+  ariaLabel,
+}: {
+  disabledAutocomplete?: boolean;
+  value?: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  const [suggestions, setSuggestions] = useState<GPrediction[]>([]);
+  const [open, setOpen] = useState(false);
+  const svc = useRef<GAutocompleteService | null>(null);
+  const places = useRef<GPlacesService | null>(null);
+  const token = useRef<object | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (disabledAutocomplete || !GMAPS_KEY) return;
+    loadGoogleMaps(GMAPS_KEY)
+      .then(() => {
+        const g = getGoogle();
+        if (!g?.maps?.places) return;
+        svc.current = new g.maps.places.AutocompleteService();
+        places.current = new g.maps.places.PlacesService(
+          document.createElement("div"),
+        );
+        token.current = new g.maps.places.AutocompleteSessionToken();
+      })
+      .catch(() => {});
+  }, [disabledAutocomplete]);
+
+  const query = (input: string) => {
+    if (timer.current) clearTimeout(timer.current);
+    if (!svc.current || input.trim().length < 4) {
+      setSuggestions([]);
+      return;
+    }
+    timer.current = setTimeout(() => {
+      svc.current?.getPlacePredictions(
+        {
+          input,
+          componentRestrictions: { country: "us" },
+          types: ["address"],
+          sessionToken: token.current,
+        },
+        (preds, status) => {
+          if (status === "OK" && preds) {
+            setSuggestions(preds.slice(0, 5));
+            setOpen(true);
+          } else {
+            setSuggestions([]);
+          }
+        },
+      );
+    }, 300);
+  };
+
+  // On select, show the prediction immediately, then upgrade to the full
+  // formatted address (with ZIP) via Place Details. Rotate the session token.
+  const choose = (p: GPrediction) => {
+    setSuggestions([]);
+    setOpen(false);
+    onChange(p.description);
+    places.current?.getDetails(
+      {
+        placeId: p.place_id,
+        fields: ["formatted_address"],
+        sessionToken: token.current,
+      },
+      (place, status) => {
+        if (status === "OK" && place?.formatted_address) {
+          onChange(place.formatted_address);
+        }
+        const g = getGoogle();
+        if (g?.maps?.places) {
+          token.current = new g.maps.places.AutocompleteSessionToken();
+        }
+      },
+    );
+  };
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={value ?? ""}
+        onChange={(e) => {
+          onChange(e.target.value);
+          query(e.target.value);
+        }}
+        onFocus={() => suggestions.length > 0 && setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        placeholder={placeholder}
+        aria-label={ariaLabel}
+        autoComplete="off"
+        className={inputClasses}
+      />
+      {open && suggestions.length > 0 && (
+        <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-[#D8DEF5] bg-white shadow-lg">
+          {suggestions.map((s) => (
+            <li key={s.place_id}>
+              <button
+                type="button"
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  choose(s);
+                }}
+                className="block w-full px-4 py-3 text-left text-[15px] text-[#131517] hover:bg-[#EEF1FF]"
+              >
+                {s.description}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function Select({
+  value,
+  onChange,
+  options,
+  placeholder,
+  ariaLabel,
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+  options: Option[];
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  return (
+    <select
+      value={value ?? ""}
+      onChange={(e) => onChange(e.target.value)}
+      aria-label={ariaLabel}
+      className={inputClasses}
+    >
+      <option value="" disabled>
+        {placeholder ?? "Select"}
+      </option>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+function MultiSelect({
+  values,
+  onToggle,
+  options,
+  placeholder,
+  ariaLabel,
+}: {
+  values: string[];
+  onToggle: (value: string) => void;
+  options: Option[];
+  placeholder?: string;
+  ariaLabel?: string;
+}) {
+  const detailsRef = useRef<HTMLDetailsElement>(null);
+
+  useEffect(() => {
+    const closeOnOutsidePress = (event: PointerEvent) => {
+      const details = detailsRef.current;
+      if (details?.open && event.target instanceof Node && !details.contains(event.target)) {
+        details.open = false;
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      const details = detailsRef.current;
+      if (event.key !== "Escape" || !details?.open) return;
+      details.open = false;
+      details.querySelector<HTMLElement>("summary")?.focus();
+    };
+    document.addEventListener("pointerdown", closeOnOutsidePress);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutsidePress);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
+
+  const summary = values.length === 0
+    ? placeholder ?? "Select all that apply"
+    : values.includes("None")
+      ? "None - just my primary trade"
+      : values.length === 1
+        ? values[0]
+        : `${values.length} trades selected`;
+
+  return (
+    <details ref={detailsRef} className="group relative">
+      <summary
+        aria-label={ariaLabel}
+        className={`${inputClasses} flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden`}
+      >
+        <span className="min-w-0 truncate">{summary}</span>
+        <span aria-hidden="true" className="shrink-0 text-[#6B6D71] transition group-open:rotate-180">⌄</span>
+      </summary>
+      <div className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-[#D8DEF5] bg-white p-2 shadow-lg">
+        {options.map((option) => {
+          const selected = values.includes(option.value);
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => onToggle(option.value)}
+              aria-pressed={selected}
+              className={`flex min-h-[44px] w-full items-center gap-3 rounded-md px-3 py-2 text-left text-sm ${
+                selected ? "bg-[#EEF1FF] text-[#1A33B9]" : "text-[#131517] hover:bg-slate-50"
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border ${
+                  selected ? "border-[#2040E7] bg-[#2040E7] text-white" : "border-[#AAB3C5]"
+                }`}
+              >
+                {selected ? "✓" : ""}
+              </span>
+              <span>{option.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </details>
+  );
+}
+
+function extractZip(address?: string): string | undefined {
+  if (!address) return undefined;
+  const m = address.match(/\b(\d{5})(?:-\d{4})?\b/);
+  return m ? m[1] : undefined;
+}
