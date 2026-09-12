@@ -24,6 +24,7 @@ export type RestaurantGuide = {
   tradeLabel?: string;
   noQuote?: boolean;
   noQuoteReason?: string;
+  updatedAt?: string;
 };
 
 // Editorial dates are changed deliberately when the content is checked, not at build time.

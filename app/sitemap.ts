@@ -43,9 +43,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ),
   );
 
-  const guides = ["/guides", ...STARTUP_GUIDES.map((guide) => `/guides/${guide.slug}`)].map((path) => ({
-    url: `${BASE}${path}`,
-    lastModified: GUIDE_UPDATED,
+  const guides = [{ slug: "", updatedAt: GUIDE_UPDATED }, ...STARTUP_GUIDES].map((guide) => ({
+    url: `${BASE}/guides${guide.slug ? `/${guide.slug}` : ""}`,
+    lastModified: guide.updatedAt ?? GUIDE_UPDATED,
     changeFrequency: "monthly" as const,
   }));
 

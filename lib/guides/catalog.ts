@@ -66,7 +66,7 @@ function serviceStateGuide(industry: ServiceIndustry, state: StartupState): Rest
       { id: "budget-and-bid", title: "Build a startup budget and first-job estimate", paragraphs: ["Get written local estimates for the equipment, training, setup, and supplies you actually need. Compare renting with buying before committing cash to an unproven service. Keep pending financing out of the cash available to pay suppliers and staff.", "Estimate the first job from its scope and payment schedule. Price travel, supervision, overhead, and rework alongside direct labor and materials. Compare the cash needed before collection with your reserve so a signed contract does not create an immediate funding gap."], checklist: industry.costs },
       { id: "bid-inputs", title: "What to include in the customer estimate", paragraphs: ["Use one scope version for your estimate, supplier requests, and customer proposal. Put allowances and exclusions in writing and identify who approves extra work. Have the contract reviewed for the applicable local consumer and commercial requirements."], checklist: industry.bidInputs },
       { id: "insurance", title: "Prepare the insurance and customer requirements", paragraphs: ["Give a broker the exact services, state, expected revenue, payroll, subcontracting plan, equipment, and customer insurance clauses. Ask how the proposed policy addresses the work and which exclusions matter. A certificate of insurance is not permission to perform work outside your licensing or policy scope."], checklist: industry.insuranceQuestions, links: noQuote ? undefined : [{ label: `${industry.name} insurance: coverage and requirements in ${state.name}`, href: insurancePath }] },
-      ...serviceLeadSections(industry, state.name),
+      ...serviceLeadSections(industry, state.name, !noQuote),
       { id: "first-job", title: "Make the first job a repeatable process", paragraphs: [industry.sections[industry.sections.length - 1].paragraphs[0], "After completion, compare actual hours, materials, travel, and callbacks with the estimate. Use the result to improve the next bid and decide when the business can support another employee or a wider service area."], checklist: ["Confirm customer scope, permissions, price, and payment timing.", "Verify qualifications, staffing, equipment, and any job approvals.", "Document changes before performing extra work.", "Complete a customer handoff and record outstanding items."], links: [{ label: `Full ${industry.name.toLowerCase()} startup guide`, href: `/guides/${industry.slug}` }] },
     ],
   };
@@ -83,7 +83,9 @@ export const STARTUP_GUIDES: RestaurantGuide[] = [
   ...STARTUP_STATES.map(restaurantStateGuide).filter((guide) => !authoredSlugs.has(guide.slug)),
   ...SERVICE_INDUSTRIES.map(nationalServiceGuide),
   ...SERVICE_INDUSTRIES.flatMap((industry) => STARTUP_STATES.map((state) => serviceStateGuide(industry, state))),
-].map(addStartupVendors);
+].map(addStartupVendors).map((guide) => guide.sections.some((section) => section.id === "cohesive-ai-referrals")
+  ? { ...guide, updatedAt: "2026-09-11" }
+  : guide);
 
 export const NATIONAL_STARTUP_GUIDES = STARTUP_GUIDES.filter((g) => !g.stateSlug && g.slug === g.nationalSlug);
 export function getStartupGuide(slug: string) { return STARTUP_GUIDES.find((guide) => guide.slug === slug); }

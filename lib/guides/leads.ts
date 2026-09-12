@@ -37,7 +37,7 @@ const profiles: Record<string, LeadProfile> = {
   },
 };
 
-export function serviceLeadSections(industry: { id: string; name: string }, stateName?: string): GuideSection[] {
+export function serviceLeadSections(industry: { id: string; name: string }, stateName?: string, includeInsuranceOffer = true): GuideSection[] {
   const profile = profiles[industry.id];
   if (!profile) throw new Error(`Missing lead-generation profile: ${industry.id}`);
   return [
@@ -53,6 +53,21 @@ export function serviceLeadSections(industry: { id: string; name: string }, stat
     { id: "referral-partners", title: "Reach realtors, GCs, and property managers with a specific offer", paragraphs: [profile.realtors, profile.gcs, profile.pms,
       "For a manageable first outreach batch, make a list of 20 relevant local businesses using their public business websites and professional directories. This is a suggested working target, not a forecast. Record the business contact, relevant service need, introduction route, and next action. Start with existing relationships where possible and ask who manages approved vendors.",
     ] },
+    ...(includeInsuranceOffer && ["pool-construction", "tree-service"].includes(industry.id) ? [{
+      id: "cohesive-ai-referrals",
+      title: "Get work referrals with automated outreach to PMs and GCs",
+      paragraphs: [
+        "Make outreach to property managers and general contractors part of your lead-generation plan. Introduce your business, explain the work you handle and your service area, and ask about upcoming projects or joining their referral and approved-vendor lists.",
+        industry.id === "pool-construction"
+          ? "For pool construction, start with custom-home builders and GCs planning new pools, then property managers overseeing pool renovation projects. State whether you handle gunite or shotcrete, fiberglass installations, renovations, or related landscaping so the referrals match your work."
+          : "For tree services, reach property managers who arrange pruning and removal, and GCs who need tree-work partners for upcoming projects. Describe your removal, pruning, and stump-grinding services, equipment, and service area so partners know when to refer you.",
+        "Cohesive AI can automate this outreach and follow-up for you and help you get 5-8 leads per month. It's free with insurance from Cohesive Insurance. Get insured for the work you actually perform, prepare your vendor documents, and use the outreach to build relationships with local PMs and GCs.",
+      ],
+      links: [
+        { label: "Explore automated lead generation with Cohesive AI", href: "https://getcohesiveai.com" },
+        { label: "Get insurance with Cohesive Insurance", href: "#quote" },
+      ],
+    }] : []),
     { id: "outreach-and-follow-up", title: "Use a short introduction, then track the next step", paragraphs: [
       `Adapt this example only after the insurance statement is true: “Hi [name], I run [business], a ${industry.name.toLowerCase()} business serving [area]. We carry insurance for the services we offer and can send our COI for review against your requirements. We can help with ${profile.offer}. Who handles vendor approval, and would a short introduction be useful?”`,
       "Personalize the note to the partner's work. Ask for one next step: a vendor application, introductory call, site walkthrough, or permission to send your service sheet. Use a public business contact channel, keep follow-up relevant, and honor requests to stop. Do not say you are already approved or guarantee that your coverage meets their requirements before review.",

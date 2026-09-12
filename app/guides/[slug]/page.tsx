@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const guide = getStartupGuide((await params).slug);
   if (!guide) return {};
   const title = `${guide.title} | Cohesive`;
-  return { title, description: guide.description, alternates: { canonical: `/guides/${guide.slug}` }, openGraph: { title, description: guide.description, type: "article", url: `/guides/${guide.slug}`, modifiedTime: GUIDE_UPDATED }, twitter: { card: "summary_large_image", title, description: guide.description } };
+  return { title, description: guide.description, alternates: { canonical: `/guides/${guide.slug}` }, openGraph: { title, description: guide.description, type: "article", url: `/guides/${guide.slug}`, modifiedTime: guide.updatedAt ?? GUIDE_UPDATED }, twitter: { card: "summary_large_image", title, description: guide.description } };
 }
 
 export default async function GuidePage({ params }: Props) {
@@ -30,14 +30,14 @@ export default async function GuidePage({ params }: Props) {
   const sources = guide.sections.flatMap((s) => [...(s.links ?? []), ...(s.comparison?.rows.map((row) => ({ label: row.name, href: row.href })) ?? [])]).filter((link, i, all) => all.findIndex((other) => other.href === link.href) === i);
   const url = `https://www.cohesiveinsure.com/guides/${guide.slug}`;
   const structuredData = { "@context": "https://schema.org", "@graph": [
-    { "@type": "Article", headline: guide.title, description: guide.description, mainEntityOfPage: url, dateModified: GUIDE_UPDATED, author: { "@type": "Organization", name: "Cohesive Insurance Services", url: "https://www.cohesiveinsure.com" }, publisher: { "@type": "Organization", name: "Cohesive Insurance Services", url: "https://www.cohesiveinsure.com" } },
+    { "@type": "Article", headline: guide.title, description: guide.description, mainEntityOfPage: url, dateModified: guide.updatedAt ?? GUIDE_UPDATED, author: { "@type": "Organization", name: "Cohesive Insurance Services", url: "https://www.cohesiveinsure.com" }, publisher: { "@type": "Organization", name: "Cohesive Insurance Services", url: "https://www.cohesiveinsure.com" } },
     { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Startup guides", item: "https://www.cohesiveinsure.com/guides" }, { "@type": "ListItem", position: 2, name: guide.title, item: url }] },
   ] };
   return <main className="guide-article">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
     <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
       <nav aria-label="Breadcrumb" className="mb-7 text-sm text-slate-600 print:hidden"><Link href="/guides" className="text-blue-700 hover:underline">Startup guides</Link><span aria-hidden="true" className="mx-2">/</span><span>{guide.industry}{guide.stateSlug ? ` · ${STARTUP_STATES.find((s) => s.slug === guide.stateSlug)?.name}` : ""}</span></nav>
-      <header className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-widest text-blue-700">{guide.category}</p><h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{guide.title}</h1><p className="mt-5 text-lg leading-8 text-slate-700">{guide.intro}</p><p className="mt-5 text-sm text-slate-500">By Cohesive Insurance Services · Updated <time dateTime={GUIDE_UPDATED}>September 7, 2026</time></p></header>
+      <header className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-widest text-blue-700">{guide.category}</p><h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{guide.title}</h1><p className="mt-5 text-lg leading-8 text-slate-700">{guide.intro}</p><p className="mt-5 text-sm text-slate-500">By Cohesive Insurance Services · Updated <time dateTime={guide.updatedAt ?? GUIDE_UPDATED}>{new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${guide.updatedAt ?? GUIDE_UPDATED}T00:00:00Z`))}</time></p></header>
       <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_260px]">
         <article className="min-w-0 max-w-3xl">
           <nav aria-label="On this page" className="rounded-xl border border-slate-200 bg-slate-50 p-5 print:hidden"><h2 className="font-bold">On this page</h2><ul className="mt-3 space-y-2 text-sm leading-6">{guide.budget && <li><a className="text-blue-700 hover:underline" href="#budget-worksheet">Free opening-budget worksheet</a></li>}{guide.sections.map((section) => <li key={section.id}><a className="text-blue-700 hover:underline" href={`#${section.id}`}>{section.title}</a></li>)}</ul></nav>
