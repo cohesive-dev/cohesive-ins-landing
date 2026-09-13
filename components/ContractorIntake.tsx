@@ -419,15 +419,19 @@ export default function ContractorIntake({ adapter, offer }: { adapter?: Contrac
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      const result=await res.json();
+      if(result.ok!==true)throw new Error('Unable to confirm your request.');
+      if(result.conversion?.eligible!==true||typeof result.conversion.eventId!=='string'){setStatus('done');return;}
+      const conversionId=result.conversion.eventId;
       // Fire the pixel ONLY after the intake POST succeeds.
-      fbq("track", "Lead", {}, { eventID: eventId });
+      fbq("track", "Lead", {}, { eventID: conversionId });
       fbq("trackCustom", "ContractorSubmit");
       if (offer) trackRooferOffer("SubmitSuccess", { event_id: eventId });
-      if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
-      if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: uninsuredEventId });
-      if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
-      if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
-      if (largeBusinessEventId) fbq("trackCustom", "LargeBusinessLead", {}, { eventID: largeBusinessEventId });
+      if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: conversionId+'-q' });
+      if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: conversionId+'-u' });
+      if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: conversionId+'-ur' });
+      if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: conversionId+'-qu' });
+      if (largeBusinessEventId) fbq("trackCustom", "LargeBusinessLead", {}, { eventID: conversionId+'-lg' });
       setStatus("done");
     } catch (err) {
       setStatus("error");

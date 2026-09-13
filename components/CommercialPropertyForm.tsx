@@ -655,17 +655,21 @@ export default function CommercialPropertyForm({
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      const result=await res.json();
+      if(result.ok!==true)throw new Error('Unable to confirm your request.');
+      if(result.conversion?.eligible!==true||typeof result.conversion.eventId!=='string'){setStatus('done');return;}
+      const conversionId=result.conversion.eventId;
       // Fire the pixel ONLY after the intake POST succeeds, so test / failed /
       // abandoned submits never count. Lead carries the shared eventID so the
       // browser + server CAPI Lead dedupe to a single conversion.
-      fbq("track", "Lead", {}, { eventID: eventId });
+      fbq("track", "Lead", {}, { eventID: conversionId });
       fbq("trackCustom", "CommercialPropertySubmit");
       if (qualifiedEventId)
-        fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
+        fbq("trackCustom", "QualifiedLead", {}, { eventID: conversionId+'-q' });
       if (urgentEventId)
-        fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
+        fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: conversionId+'-ur' });
       if (qualifiedUrgentEventId)
-        fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
+        fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: conversionId+'-qu' });
       setStatus("done");
     } catch (err) {
       setStatus("error");

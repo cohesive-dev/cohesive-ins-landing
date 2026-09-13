@@ -4,6 +4,7 @@ import { sendIntakeNotification } from "@/lib/notify";
 import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
+import {assessSubmission,acquisitionEventId} from '@/lib/submission-quality';
 
 // This route no longer owns lead storage. A completed submission is forwarded to the CRM's
 // inbound-lead webhook, which is the single fan-out point for every lead source (FB Lead Ads,
@@ -30,6 +31,7 @@ const CAPI_PIXEL_ID = process.env.META_PIXEL_ID ?? "831179966599677";
 const sha256 = (v: string) => createHash("sha256").update(v).digest("hex");
 
 type IntakePayload = {
+  website?: unknown;
   name?: unknown;
   email?: unknown;
   phone?: unknown;
@@ -122,7 +124,7 @@ async function forwardToCrm(
     string,
     string | string[] | Array<{ label: string; value: string }>
   >,
-): Promise<boolean> {
+): Promise<{ok:boolean;duplicate:boolean}> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
       method: "POST",
@@ -137,13 +139,15 @@ async function forwardToCrm(
         response.status,
         await response.text().catch(() => ""),
       );
-      return false;
+      return {ok:false,duplicate:false};
     }
     const result: unknown = await response.json();
-    return Boolean(result && typeof result === "object" && "ok" in result && result.ok === true);
+    const ok=Boolean(result && typeof result === "object" && "ok" in result && result.ok === true);
+    const duplicate=Boolean(result&&typeof result==='object'&&'notificationDelivery' in result&&result.notificationDelivery==='duplicate');
+    return {ok,duplicate};
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
-    return false;
+    return {ok:false,duplicate:false};
   }
 }
 
@@ -246,7 +250,7 @@ export async function POST(request: NextRequest) {
   const rawPhone = asTrimmedString(body.phone);
   const phone = toE164(rawPhone) ?? rawPhone;
   const businessType = asTrimmedString(body.businessType);
-  const company = asTrimmedString(body.company);
+  const company = asTrimmedString(body.company) ?? ((asTrimmedString(body.source)||'').startsWith('commercial-property') ? sanitizeDetails(body.details)?.find(d=>d.label==='Owner / LLC name')?.value : undefined);
   const zip = asTrimmedString(body.zip);
   const source = asTrimmedString(body.source);
   // Startup guides collect a state explicitly. Reject unsupported inquiries before
@@ -306,6 +310,18 @@ export async function POST(request: NextRequest) {
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
+
+  const guardedLane=source==='contractors-landing'||Boolean(source?.startsWith('commercial-property'));
+  const quality=guardedLane?assessSubmission({name,email,phone,company,honeypot:body.website},(process.env.INTAKE_BLOCKED_IDENTITY_HASHES||'').split(',').map(v=>v.trim()).filter(Boolean)):{kind:'accept',reason:'legacy'};
+  if(quality.kind==='reject') {
+    // No contact values in logs. Rejection does not fan out to CRM/mail/CAPI.
+    console.info('intake_quality',{decision:'reject',reason:quality.reason,source});
+    return NextResponse.json({ok:false,conversion:{eligible:false},error:'Please check your name, business, email and phone. If you need help, call (929) 594-5450.'},{status:422});
+  }
+  if(quality.kind==='review')details=[...(details??[]),{label:'Submission review',value:'Hold for human verification - do not treat as qualified or send a conversion.'}];
+  const conversionSecret=process.env.INTAKE_CONVERSION_SECRET||process.env.META_CAPI_TOKEN;
+  const acceptedEventId=guardedLane&&conversionSecret?acquisitionEventId({name,email,phone,company},conversionSecret):undefined;
+  if(guardedLane)details=[...(details??[]),{label:'Submission validation',value:quality.reason},...(acceptedEventId?[{label:'Acquisition event id',value:acceptedEventId}]:[])];
 
   // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
   // and every other caller are untouched).
@@ -443,7 +459,7 @@ export async function POST(request: NextRequest) {
   // the CRM webhook carries flat contact fields only, and the restaurant lane still always gets
   // its email because rest_loop.py sweeps this inbox and owns the lane's only outbound touch.
   // A duplicate alert on a lane that was already emailing costs nothing; a silent drop costs a lead.
-  const [forwarded, emailed] = await Promise.all([crmDelivery, sendIntakeNotification({
+  const [crmResult, emailed] = await Promise.all([crmDelivery, sendIntakeNotification({
     name,
     email,
     phone,
@@ -454,6 +470,8 @@ export async function POST(request: NextRequest) {
     source,
     details,
   })]);
+  const forwarded=crmResult.ok;
+  const conversionEligible=!guardedLane||(quality.kind==='accept'&&!!acceptedEventId&&!crmResult.duplicate);
 
   if (!forwarded && !emailed) {
     return NextResponse.json({
@@ -468,10 +486,12 @@ export async function POST(request: NextRequest) {
   // eventName defaults to "Lead" (church/religious + any legacy caller); the
   // /restaurant lane sends "Lead" for instant-quotable and "RestaurantLeadES"
   // for the E&S lane so Meta captures the lead without optimizing toward it.
-  const eventId = asTrimmedString(body.eventId);
+  const eventId = guardedLane?acceptedEventId:asTrimmedString(body.eventId);
   const eventName = capiEventName ?? "Lead";
   const capi =
-    eventId && reachable
+    // A CRM duplicate may retry the SAME CAPI event ID after an earlier send failure.
+    // Never mint another event ID for a same-day repeat; browser emission stays suppressed.
+    eventId && reachable && (conversionEligible||(guardedLane&&quality.kind==='accept'&&!!acceptedEventId))
       ? await sendCapiEvent(request, eventName, eventId, email, phone)
       : "skipped";
   // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead
@@ -481,7 +501,7 @@ export async function POST(request: NextRequest) {
   // Steve said $2-5K and was unwinnable at our $8-16K). Sent server-side with the same
   // fbc/fbp/ip/ua match quality as Lead, deduped with the browser fbq by shared event id.
   // The plain Lead above still fires for EVERY submit - this is additive, never a filter.
-  const qualifiedEventId = asTrimmedString(body.qualifiedEventId);
+  const qualifiedEventId = conversionEligible&&body.qualifiedEventId ? (guardedLane?`${acceptedEventId}-q`:asTrimmedString(body.qualifiedEventId)) : undefined;
   const capiQualified =
     qualifiedEventId && reachable
       ? await sendCapiEvent(
@@ -493,7 +513,7 @@ export async function POST(request: NextRequest) {
         )
       : "skipped";
 
-  const uninsuredEventId = asTrimmedString(body.uninsuredEventId);
+  const uninsuredEventId = conversionEligible&&body.uninsuredEventId ? (guardedLane?`${acceptedEventId}-u`:asTrimmedString(body.uninsuredEventId)) : undefined;
   const capiUninsured =
     uninsuredEventId && reachable
       ? await sendCapiEvent(
@@ -505,7 +525,7 @@ export async function POST(request: NextRequest) {
         )
       : "skipped";
 
-  const urgentEventId = asTrimmedString(body.urgentEventId);
+  const urgentEventId = conversionEligible&&body.urgentEventId ? (guardedLane?`${acceptedEventId}-ur`:asTrimmedString(body.urgentEventId)) : undefined;
   const capiUrgent =
     urgentEventId && reachable
       ? await sendCapiEvent(
@@ -517,7 +537,7 @@ export async function POST(request: NextRequest) {
         )
       : "skipped";
 
-  const qualifiedUrgentEventId = asTrimmedString(body.qualifiedUrgentEventId);
+  const qualifiedUrgentEventId = conversionEligible&&body.qualifiedUrgentEventId ? (guardedLane?`${acceptedEventId}-qu`:asTrimmedString(body.qualifiedUrgentEventId)) : undefined;
   const capiQualifiedUrgent =
     qualifiedUrgentEventId && reachable
       ? await sendCapiEvent(
@@ -529,7 +549,7 @@ export async function POST(request: NextRequest) {
         )
       : "skipped";
 
-  const largeBusinessEventId = asTrimmedString(body.largeBusinessEventId);
+  const largeBusinessEventId = conversionEligible&&body.largeBusinessEventId ? (guardedLane?`${acceptedEventId}-lg`:asTrimmedString(body.largeBusinessEventId)) : undefined;
   const capiLargeBusiness =
     largeBusinessEventId && reachable
       ? await sendCapiEvent(
@@ -545,6 +565,7 @@ export async function POST(request: NextRequest) {
     {
       ok: true,
       crm: forwarded ? "sent" : "failed",
+      ...(guardedLane?{conversion:{eligible:conversionEligible,eventId:acceptedEventId,reason:crmResult.duplicate?'duplicate':quality.reason}}:{}),
       notification: emailed ? "sent" : "failed",
       capi,
       capiQualified,

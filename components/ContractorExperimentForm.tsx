@@ -12,6 +12,7 @@ export default function ContractorExperimentForm(){
  const form=useRef<HTMLFormElement>(null),tracker=useRef<ReturnType<typeof attachFunnelTracker>|null>(null);
  const submission=useRef<string>('');
  const sentPartial=useRef(false);
+ const honeypot=useRef<HTMLInputElement>(null);
  useEffect(()=>{
    if(!layout||!validExperiment(industry,angle)||query.get('preview')==='1')return;
    const capture=()=>{
@@ -82,11 +83,12 @@ export default function ContractorExperimentForm(){
     ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!})),
    ];
    try{
-    const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current})});
+    const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||''})});
     if(!res.ok)throw new Error('Unable to save your request. Please try again.');
     const result=await res.json();if(result.ok!==true)throw new Error('Unable to confirm your request. Please try again.');
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
-    (window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:submission.current});
+    if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
+     (window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
     setStatus('done');
    }catch(err){tracker.current?.emit('submit_error');setStatus('error');setError(err instanceof Error?err.message:'Please try again.');}
  }
@@ -97,6 +99,7 @@ export default function ContractorExperimentForm(){
  {preview&&<p role="status">Preview only - no lead will be sent.</p>}
  <p className="text-sm mb-4">Contact details you enter may be saved before submission to help recover an unfinished quote request. <a href="/privacy" className="underline">Privacy policy</a></p>
  <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===fields.length-1?'true':'false'} className="space-y-6">
+ <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
  {layout==='step'&&<div><p>Question {step+1} of {fields.length}</p><div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={fields.length} aria-valuenow={step+1}><div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/fields.length)*100}%`}}/></div></div>}
  {shown.map(k=><div key={k} data-funnel-field={k}><label htmlFor={k} className="block font-semibold mb-2">{LABELS[k]} *</label>
  {k==='payroll'&&<p>Select $0 if you have no W2 payroll. Do not include subcontractor payments.</p>}

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
+import { Suspense } from 'react';
+import { WebsiteTraffic } from '@/components/WebsiteTraffic';
 import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
@@ -80,6 +82,7 @@ fbq('track', 'PageView');`}
         {/* End Meta Pixel Code */}
         {children}
         <Analytics />
+        <Suspense fallback={null}><WebsiteTraffic /></Suspense>
       </body>
     </html>
   );

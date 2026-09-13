@@ -1,17 +1,13 @@
 import { validateFunnelEvent, type FunnelEvent } from './funnel-event';
+import {trafficSession} from './traffic-session';
 
 /** Only attach to a consent-aware experiment form with data-funnel-field wrappers.
  * Never sends answers. Missing/rejected endpoint retains queued events for retry.
  * Integration and durable endpoint must pass QA before advertising this as live.
  */
 export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string;adId?:string;adsetId?:string;campaignId?:string}) {
-  const storageKey='cohesive_funnel_session_v1';
-  let sessionId=crypto.randomUUID();
-  try {
-    const previous=sessionStorage.getItem(storageKey);
-    if(previous&&/^[a-f0-9-]{36}$/i.test(previous))sessionId=previous as typeof sessionId;
-    else sessionStorage.setItem(storageKey,sessionId);
-  } catch { /* memory-only fallback; do not claim cross-reload dedup */ }
+  const sessionId=trafficSession();
+  if(process.env.NEXT_PUBLIC_FB_FUNNEL_ENABLED!=='true')return {sessionId,emit(_event:FunnelEvent['event'],_field?:string,_submissionId?:string){},async flush(){},dispose(){}};
   const start=performance.now();
   const queueKey='cohesive_funnel_queue_v1';
   const queue:FunnelEvent[]=[];
@@ -36,7 +32,8 @@ export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string
     finally {inflight=false;}
   }
   const fieldOf=(target:EventTarget|null)=>target instanceof Element?target.closest<HTMLElement>('[data-funnel-field]')?.dataset.funnelField:undefined;
-  const focus=(event:Event)=>{const field=fieldOf(event.target);if(field)emit('field_focus',field);};
+  let started=false;
+  const focus=(event:Event)=>{const field=fieldOf(event.target);if(field){if(!started){started=true;emit('form_start');}emit('field_focus',field);}};
   const change=(event:Event)=>{
     const element=event.target;
     if(!(element instanceof HTMLInputElement||element instanceof HTMLSelectElement||element instanceof HTMLTextAreaElement))return;
@@ -68,6 +65,7 @@ export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string
   form.addEventListener('submit',submit);
   window.addEventListener('pagehide',exit);
   const timer=setInterval(()=>void flush(),5000);
+  emit('variant_view');void flush();
   return {sessionId,emit,flush,dispose(){
     if(disposed)return;disposed=true;
     clearInterval(timer);observer.disconnect();mutation.disconnect();

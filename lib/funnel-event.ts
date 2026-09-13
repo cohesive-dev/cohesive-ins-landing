@@ -1,5 +1,5 @@
 /** Strict allowlist: no entered answers, contact values, URLs or error prose. */
-export const FUNNEL_EVENTS = ['form_view','field_view','field_focus','field_complete','field_clear','field_error','submit_attempt','intake_accepted','submit_error','session_exit'] as const;
+export const FUNNEL_EVENTS = ['page_view','variant_view','form_start','form_view','field_view','field_focus','field_complete','field_clear','field_error','submit_attempt','intake_accepted','submit_error','session_exit'] as const;
 export type FunnelEvent = {
   eventId:string; sessionId:string; cellId:string; version:string;
   event:typeof FUNNEL_EVENTS[number]; field?:string; elapsedMs:number;

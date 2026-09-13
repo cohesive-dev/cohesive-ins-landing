@@ -433,14 +433,18 @@ export default function ContractorsLandingPage() {
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
-      // Fire the pixel ONLY after the intake POST succeeds.
-      fbq("track", "Lead", {}, { eventID: eventId });
+      const result = await res.json();
+      if (!result.ok) throw new Error('We could not save your request. Please try again.');
+      const conversionId = result.conversion?.eventId;
+      if (result.conversion?.eligible !== true || typeof conversionId !== 'string') {setStatus('done');return;}
+      // Server acceptance and shared ID gate all acquisition signals.
+      fbq("track", "Lead", {}, { eventID: conversionId });
       fbq("trackCustom", "ContractorSubmit");
-      if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: qualifiedEventId });
-      if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: uninsuredEventId });
-      if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
-      if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: qualifiedUrgentEventId });
-      if (largeBusinessEventId) fbq("trackCustom", "LargeBusinessLead", {}, { eventID: largeBusinessEventId });
+      if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: conversionId+'-q' });
+      if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: conversionId+'-u' });
+      if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: conversionId+'-ur' });
+      if (qualifiedUrgentEventId) fbq("trackCustom", "QualifiedUrgentLead", {}, { eventID: conversionId+'-qu' });
+      if (largeBusinessEventId) fbq("trackCustom", "LargeBusinessLead", {}, { eventID: conversionId+'-lg' });
       setStatus("done");
     } catch (err) {
       setStatus("error");
