@@ -1,29 +1,37 @@
 'use client';
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useMemo,useRef,useState} from 'react';
 import {useSearchParams} from 'next/navigation';
 import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers,experimentValid,validExperiment,type Answers} from '@/lib/contractor-experiment';
 import {captureAttribution,attributionDetails} from '@/lib/attribution';
 import {attachFunnelTracker} from '@/lib/funnel-tracker';
+import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-landing';
 
-export default function ContractorExperimentForm(){
- const query=useSearchParams(),industry=query.get('industry')||'',angle=query.get('angle')||'';
- const [layout,setLayout]=useState<'step'|'long'|null>(null),[answers,setAnswers]=useState<Answers>({});
+export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
+ const query=useSearchParams();
+ const cold=useMemo(()=>coldLayout?coldEmailContext(query,coldLayout):null,[query,coldLayout]);
+ const industry=cold?.industry||query.get('industry')||'',angle=coldLayout?'coi':query.get('angle')||'';
+ const valid=isColdIndustry(industry)&&validExperiment(industry,angle);
+ const [assignedLayout,setLayout]=useState<'step'|'long'|null>(null),[answers,setAnswers]=useState<Answers>({});
+ const layout=coldLayout||assignedLayout;
  const [step,setStep]=useState(0),[status,setStatus]=useState('idle'),[error,setError]=useState('');
  const form=useRef<HTMLFormElement>(null),tracker=useRef<ReturnType<typeof attachFunnelTracker>|null>(null);
  const submission=useRef<string>('');
  const sentPartial=useRef(false);
  const honeypot=useRef<HTMLInputElement>(null);
+ const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
+ const sourceDetails=useMemo(()=>cold?[{label:'Acquisition channel',value:'Cold email landing'},
+   {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:[],[cold,coldLayout]);
  useEffect(()=>{
-   if(!layout||!validExperiment(industry,angle)||query.get('preview')==='1')return;
+   if(!layout||!valid||query.get('preview')==='1')return;
    const capture=()=>{
     if(sentPartial.current||status==='sending'||status==='done')return;
     const email=validField('email',answers.email)?answers.email:undefined;
     const phone=validField('phone',answers.phone)?answers.phone:undefined;
     if(!email&&!phone)return;
     submission.current ||=crypto.randomUUID();
-    const details=[{label:'Experiment cell',value:`${industry}__${angle}__${layout}__v1`},
+    const details=[{label:'Experiment cell',value:cellId},
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
-      {label:'Advertised industry (not confirmed trade)',value:INDUSTRIES[industry]},
+      {label:'Advertised industry (not confirmed trade)',value:INDUSTRIES[industry]},...sourceDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,value])=>({label:LABELS[k],value})),
       ...attributionDetails(captureAttribution())];
     const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details});
@@ -33,24 +41,28 @@ export default function ContractorExperimentForm(){
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
- },[answers,status,layout,industry,angle,query]);
+ },[answers,status,layout,industry,query,cellId,valid,sourceDetails]);
  useEffect(()=>{
-   if(!validExperiment(industry,angle))return;
+   if(!valid)return;
+   if(coldLayout)return;
    const key=`cohesive_experiment_${industry}_${angle}_v1`;
    let chosen:'step'|'long'=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'step':'long';
    try{const stored=localStorage.getItem(key);if(stored==='step'||stored==='long')chosen=stored;else localStorage.setItem(key,chosen);}catch{/* stable for this mount only */}
    // Preview controls never enter production experiment assignment or lead submission.
    if(query.get('preview')==='1'&&(query.get('layout')==='step'||query.get('layout')==='long'))chosen=query.get('layout') as 'step'|'long';
-   setLayout(chosen);
- },[industry,angle,query]);
+   const timer=setTimeout(()=>setLayout(chosen),0);
+   return()=>clearTimeout(timer);
+ },[industry,angle,query,coldLayout,valid]);
  useEffect(()=>{
-   if(!layout||!form.current||!validExperiment(industry,angle)||query.get('preview')==='1')return;
+   if(!layout||!form.current||!valid||query.get('preview')==='1')return;
    const ids:Record<string,string>={};
-   for(const [q,k]of [['ad_id','adId'],['adset_id','adsetId'],['campaign_id','campaignId']]){const v=query.get(q);if(v&&/^\d{5,30}$/.test(v))ids[k]=v;}
-   tracker.current=attachFunnelTracker(form.current,{cellId:`${industry}__${angle}__${layout}__v1`,...ids});
+   if(!coldLayout)for(const [q,k]of [['ad_id','adId'],['adset_id','adsetId'],['campaign_id','campaignId']]){const v=query.get(q);if(v&&/^\d{5,30}$/.test(v))ids[k]=v;}
+   tracker.current=attachFunnelTracker(form.current,{cellId,...ids});
+   if(coldLayout){tracker.current.emit('page_view');void tracker.current.flush();}
    return()=>{tracker.current?.dispose();tracker.current=null;};
- },[layout,industry,angle,query]);
- if(!validExperiment(industry,angle))return <main className="p-8">This test link is not valid. <a href="/contractors">Get a contractor insurance quote.</a></main>;
+ },[layout,query,cellId,coldLayout,valid]);
+ if(!valid&&coldLayout)return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">Get a contractor insurance quote</h1><p className="my-4">What type of work do you do?</p><ul className="space-y-3">{Object.entries(INDUSTRIES).map(([id,name])=><li key={id}><a className="underline" href={`?${new URLSearchParams({...Object.fromEntries(query),industry:id})}`}>{name}</a></li>)}</ul><a className="mt-6 inline-block underline" href="/contractors">Another trade</a></main>;
+ if(!valid)return <main className="p-8">This test link is not valid. <a href="/contractors">Get a contractor insurance quote.</a></main>;
  if(!layout)return <main className="p-8">Loading your quote request…</main>;
  const fields=fieldsFor(answers,layout),shown=layout==='step'?[fields[Math.min(step,fields.length-1)]]:fields;
  const offer=angle==='free_gen',label=INDUSTRIES[industry],preview=query.get('preview')==='1';
@@ -71,11 +83,11 @@ export default function ContractorExperimentForm(){
    setStatus('sending');setError('');
    submission.current ||=crypto.randomUUID();
    const details=[
-    {label:'Experiment cell',value:`${industry}__${angle}__${layout}__v1`},
+    {label:'Experiment cell',value:cellId},
     {label:'Form version',value:'2026-09-12-v1'},
     {label:'Session id',value:tracker.current?.sessionId||'unavailable'},
     {label:'Submission id',value:submission.current},
-    {label:'Advertised industry (not confirmed trade)',value:label},
+    {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,
     {label:'Marketing offer',value:offer?'free lead gen - outreach after insurance bind':'insurance quote'},
     {label:'Actual work and business state',value:'Confirm during follow-up before quoting'},
     ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,v])=>({label:LABELS[k],value:v})),
