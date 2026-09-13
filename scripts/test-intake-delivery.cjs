@@ -60,6 +60,22 @@ async function submit(body) {
   emailOk = true; crmMode = 'accepted';
   await submit({ ...base, source: 'commercial-property-landing' });
   assert.deepEqual(crmCalls[0].coverage, ['Property']); assert.equal(crmCalls[0].suppress_first_touch, 'true');
+  // Dedicated cold-email layouts retain the guarded contractor fan-out and attribution.
+  for (const layout of ['long', 'step']) {
+    const details = [{label:'Cold email campaign',value:'pool-quick-link'},
+      {label:'Landing layout',value:layout},{label:'Acquisition channel',value:'Cold email landing'},
+      {label:'Annual W2 payroll',value:'$0'},
+      {label:'Experiment cell',value:`pool__email_quick_link__${layout}__v1`}];
+    const result = await submit({...base, source:'contractors-landing', details});
+    assert.equal(result.body.ok,true); assert.equal(result.body.crm,'sent');
+    assert.equal(crmCalls[0].source,'webform');
+    assert.equal(crmCalls[0].suppress_first_touch,'true');
+    assert.equal(crmCalls[0].providerId,undefined);
+    for(const forwarded of [crmCalls[0].details,emails[0].details])
+      for(const field of details) assert.equal(forwarded.find(x=>x.label===field.label).value,field.value);
+    await submit({...base,source:'contractors-landing',details,partial:true,final:true});
+    assert.equal(crmCalls.length,0);assert.equal(emails[0].partial,true);
+  }
   await submit({ ...base, source: 'ordinary-webform' }); assert.equal(crmCalls[0].suppress_first_touch, undefined);
   await submit({ ...base, partial: true }); assert.equal(crmCalls.length, 0); assert.equal(emails.length, 0);
   await submit({ ...base, final: true }); assert.equal(crmCalls.length, 0); assert.equal(emails[0].partial, true);
