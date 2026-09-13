@@ -39,7 +39,8 @@ campaign and layout details. Original first-touch attribution is preserved separ
 The tracker requires `NEXT_PUBLIC_FB_FUNNEL_ENABLED=true` at build time. Existing client event
 validation accepts the new cell shape. Verify the production receiver accepts and persists
 these cells before switching campaign links; local mocked receiver tests are not proof of
-production ingestion. Receiver source access was unavailable from the implementation workspace.
+production ingestion. The CRM companion change explicitly registers these cells in
+`src/backend/services/fbFunnel.ts`; QA probes must set `isTest:true` on each event (not the batch).
 Vercel Analytics also tracks distinct paths, but its dashboard was not accessed here.
 
 Report distinct 30-minute browser session IDs by campaign/layout, interaction-started sessions,
