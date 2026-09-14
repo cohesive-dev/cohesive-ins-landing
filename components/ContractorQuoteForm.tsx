@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { captureAttribution, attributionDetails } from "@/lib/attribution";
 
 // Minimal contractor intake for the /insurance/<trade> SEO pages. Posts to the
-// same /api/intake webhook every other lead source uses (CRM card + Smartlead
-// enroll + first-touch SMS), attributed per-page via `source`. The one-click
+// same /api/intake webhook under the contractor lane, with automated first touch
+// suppressed. The page label is placement evidence, not proof of organic acquisition.
+// The one-click
 // Foxquilt/Next instant-quote redirect (QuoteSplash) layers on later, once the
 // per-trade carrier COB ids are confirmed; until then this owns the lead.
 
@@ -27,12 +29,14 @@ export default function ContractorQuoteForm({
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
+  useEffect(() => { captureAttribution(); }, []);
 
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (sending) return;
     const email = f.email.trim().toLowerCase();
     if (!EMAIL_RE.test(email)) {
       setErr("Please enter a valid email so we can send your quote.");
@@ -42,10 +46,12 @@ export default function ContractorQuoteForm({
       setErr("Please add a phone number so our team can reach you.");
       return;
     }
+    const captured = captureAttribution();
+    const attribution = { ...captured, landing_page: captured.landing_page || window.location.pathname, referrer: captured.referrer || document.referrer || undefined };
     setErr(null);
     setSending(true);
     try {
-      await fetch("/api/intake", {
+      const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,20 +60,29 @@ export default function ContractorQuoteForm({
           phone: f.phone.trim(),
           zip: f.zip.trim() || undefined,
           businessType: tradeLabel,
-          source,
-          final: true,
+          company: f.company.trim() || undefined,
+          source: "contractors-landing",
           details: [
             f.company.trim() && { label: "Business", value: f.company.trim() },
             { label: "Trade", value: tradeLabel },
+            { label: "Page source", value: source },
+            ...attributionDetails(attribution),
+            attribution.referrer && { label: "Referrer", value: attribution.referrer },
           ].filter(Boolean),
         }),
         keepalive: true,
       });
+      const result = await response.json();
+      if (!response.ok || result.ok !== true ||
+          (result.crm !== "sent" && result.notification !== "sent")) {
+        throw new Error("intake_not_accepted");
+      }
+      setDone(true);
     } catch {
-      // never block the confirmation on our backend
+      setErr("We couldn't save your request. Please try again, or call (929) 594-5450.");
+    } finally {
+      setSending(false);
     }
-    setSending(false);
-    setDone(true);
   };
 
   if (done) {

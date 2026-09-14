@@ -1,0 +1,45 @@
+// Real component handlers and intake route; all external services replaced locally.
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),Module=require('node:module'),ts=require('typescript');
+const root=path.resolve(__dirname,'..'),originalLoad=Module._load;
+let states=[],cursor=0,effectRan=false,crmCalls=[],emails=[],mode='success',payload;
+for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true},fileName:f}).outputText,f);
+Module._load=function(req,parent,isMain){
+ if(req==='react'){const real=originalLoad.call(this,req,parent,isMain);return {...real,useState(init){const i=cursor++;if(!(i in states))states[i]=init;return[states[i],v=>{states[i]=typeof v==='function'?v(states[i]):v;}];},useEffect(fn){if(!effectRan){effectRan=true;fn();}}};}
+ if(req==='@/lib/notify')return {sendIntakeNotification:async f=>{emails.push(f);return true;}};
+ if(req.startsWith('@/'))req=path.join(root,req.slice(2));return originalLoad.call(this,req,parent,isMain);
+};
+const store=new Map();global.sessionStorage={getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v)};
+global.window={location:{pathname:'/insurance/painter/new-york',search:''}};global.document={referrer:'https://www.google.com/'};
+const {NextRequest}=require('next/server'),{POST}=require('../app/api/intake/route.ts'),Form=require('../components/ContractorQuoteForm.tsx').default;
+global.fetch=async(url,options)=>{
+ if(url==='/api/intake'){
+  payload=JSON.parse(options.body);
+  if(mode==='network')throw new Error('offline');
+  if(mode==='http')return new Response(JSON.stringify({ok:false}),{status:503});
+  if(mode==='false-ok')return new Response(JSON.stringify({ok:false}),{status:200});
+  if(mode==='skipped')return new Response(JSON.stringify({ok:true,crm:'skipped'}),{status:200});
+  if(mode==='non-json')return new Response('<html>gateway</html>',{status:200});
+  return POST(new NextRequest('http://localhost/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:options.body}));
+ }
+ assert.equal(url,'https://crm.cohesiveinsure.com/api/webhooks/inbound-lead','unexpected network destination');
+ crmCalls.push(JSON.parse(options.body));return new Response(JSON.stringify({ok:true}),{status:200});
+};
+function render(){cursor=0;return Form({source:'seo-painter-new-york',tradeLabel:'Painter'});}
+function nodes(n){if(!n||typeof n!=='object')return[];if(Array.isArray(n))return n.flatMap(nodes);return[n,...nodes(n.props?.children)];}
+function text(n){if(typeof n==='string')return n;if(!n||typeof n!=='object')return '';if(Array.isArray(n))return n.map(text).join('');return text(n.props?.children);}
+function reset(search=''){states=[];effectRan=false;store.clear();crmCalls=[];emails=[];window.location.search=search;render();}
+function fill(){for(const [placeholder,value] of Object.entries({'Business name':'QA TEST ONLY Painter','Your name':'QA TEST ONLY','ZIP code':'10001',Email:'seo-test@example.invalid',Phone:'2025550184'})){const input=nodes(render()).find(n=>n.type==='input'&&n.props.placeholder===placeholder);assert.ok(input);input.props.onChange({target:{value}});}}
+(async()=>{
+ for(const search of ['', '?utm_source=facebook&utm_medium=paid_social&ad_id=120251012015050660']){
+  mode='success';reset(search);fill();await render().props.onSubmit({preventDefault(){}});
+  assert.equal(payload.final,undefined);assert.equal(payload.partial,undefined);assert.equal(payload.source,'contractors-landing');assert.equal(payload.company,'QA TEST ONLY Painter');
+  assert.equal(crmCalls.length,1);assert.equal(crmCalls[0].suppress_first_touch,'true');assert.equal(emails.length,1);assert.equal(emails[0].partial,false);assert.match(text(render()),/Got it/);
+  const d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(d['Page source'],'seo-painter-new-york');assert.equal(d['Landing page'],'/insurance/painter/new-york');assert.equal(d.Referrer,'https://www.google.com/');
+  if(search)assert.equal(d['Ad id (Meta)'],'120251012015050660');else assert.equal(d['Ad id (Meta)'],undefined);
+ }
+ for(const failure of ['network','http','false-ok','skipped','non-json']){
+  mode=failure;reset();fill();await render().props.onSubmit({preventDefault(){}});assert.doesNotMatch(text(render()),/Got it/);assert.match(text(render()),/couldn't save/);assert.equal(nodes(render()).find(n=>n.type==='button').props.disabled,false);
+ }
+ crmCalls=[];emails=[];await POST(new NextRequest('http://localhost/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...payload,partial:true,final:true})}));assert.equal(crmCalls.length,0);assert.equal(emails[0].partial,true);
+ console.log('PASS: real form and route deliver completed intake, preserve page/referrer/ad attribution, suppress automated first touch; five failures never confirm; abandonment stays email-only. No external requests.');
+})().catch(e=>{console.error(e);process.exitCode=1;});
