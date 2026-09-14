@@ -15,6 +15,7 @@ export type RestaurantGuide = {
   intro: string;
   category: string;
   insurancePath: string;
+  relatedInsurancePaths?: string[];
   sections: GuideSection[];
   budget?: boolean;
   industry?: string;

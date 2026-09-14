@@ -35,3 +35,34 @@ assert.ok(!sitemap.some(s => s.url.endsWith('/about')));
 assert.ok(!sitemap.some(s => s.url.endsWith('/insurance/pool/california')));
 assert.equal(new Set(sitemap.map(s => s.url)).size, sitemap.length);
 console.log(`PASS: ${pages.length} pool pages, state-profile precedence, ${resourceSlugs.length} resource guides, 102 cash plans, sitemap uniqueness and restricted-state scope. No network.`);
+
+// New state profiles must reach the composed pages without reopening restricted routes
+// or reintroducing national price floors as state-specific evidence.
+const { STATE_EXPANSION_PROFILES } = require('../lib/seo/state-expansion-profiles.ts');
+const release = JSON.parse(fs.readFileSync(path.join(root, 'public/.well-known/cohesive-content-release.json')));
+const stateKeys = Object.keys(STATE_EXPANSION_PROFILES);
+assert.equal(stateKeys.length, 12);
+for (const key of stateKeys) {
+  const [trade, state] = key.split('/');
+  assert.ok(contractorStateBuildable(trade, state));
+  const p = buildContractorState(getContractorState(state), getTrade(trade));
+  assert.equal(p.reviewedOn, '2026-09-14');
+  assert.ok(p.stateFacts.filter(f => f.source?.href.startsWith('https://')).length >= 2);
+  assert.doesNotMatch([p.title, p.heroSub, ...p.costRows.map(r => r.range)].join(' '), /from \$|as low as|\/mo|instant/i);
+  assert.ok(sitemap.some(s => s.url.endsWith('/insurance/' + key) && s.lastModified === '2026-09-14'));
+  if (release.release === 'seo-20260914-state-depth-v1') assert.ok(release.paths.includes('/insurance/' + key));
+}
+for (const trade of ['pool', 'tree-service', 'remodeler', 'painter', 'handyman', 'roofer']) {
+  for (const state of ['california', 'michigan', 'washington']) {
+    assert.equal(contractorStateBuildable(trade, state), false);
+    assert.ok(!sitemap.some(s => s.url.endsWith(`/insurance/${trade}/${state}`)));
+  }
+}
+for (const state of ['new-york', 'florida']) assert.equal(contractorStateBuildable('roofer', state), false);
+const ny = buildContractorState(getContractorState('new-york'), getTrade('painter'));
+assert.match(JSON.stringify(ny.stateFacts), /New York City|NYC/);
+assert.match(JSON.stringify(ny.stateFacts), /not acceptable proof/);
+const okRoof = buildContractorState(getContractorState('oklahoma'), getTrade('roofer'));
+assert.match(JSON.stringify(okRoof.stateFacts), /future milestones/);
+assert.match(JSON.stringify(okRoof.stateFacts), /January 1, 2028/);
+console.log('PASS: 12 state profiles composed, notification coverage, source links, truthful pricing, local/future rule scope and placement restrictions.');

@@ -1,3 +1,4 @@
+import { STATE_EXPANSION_PROFILES } from "./state-expansion-profiles";
 import type { Fact, PageContent } from "./data";
 
 export const PRIORITY_STATE_UPDATED = "2026-09-07";
@@ -17,7 +18,7 @@ const njRegistration: Fact = {
   source: njHic,
 };
 
-type Profile = {
+export type Profile = {
   name: string;
   reviewedOn?: string;
   state: string;
@@ -30,6 +31,7 @@ type Profile = {
 };
 
 const profiles: Record<string, Profile> = {
+  ...STATE_EXPANSION_PROFILES,
   "carpenter/massachusetts": {
     "name": "Carpenter",
     "state": "Massachusetts",

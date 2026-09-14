@@ -10,6 +10,7 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
     "industry": "Remodeling",
     "tradeLabel": "General contractor",
     "insurancePath": "/insurance/general-contractor",
+    "relatedInsurancePaths": ["/insurance/remodeler"],
     "quoteKind": "service",
     "updatedAt": "2026-09-14",
     "nationalSlug": "contractor-quote-checklists",
