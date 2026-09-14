@@ -19,6 +19,7 @@ const njRegistration: Fact = {
 
 type Profile = {
   name: string;
+  reviewedOn?: string;
   state: string;
   intro: string;
   pricing: string;
@@ -29,6 +30,179 @@ type Profile = {
 };
 
 const profiles: Record<string, Profile> = {
+  "pool/texas": {
+    "name": "Pool Construction",
+    "state": "Texas",
+    "reviewedOn": "2026-09-14",
+    "intro": "Building a pool involves excavation, structural work and several trades. Describe what your crew builds and what you subcontract so Cohesive can request insurance for the actual operation, including gunite, fiberglass or vinyl-lined installations.",
+    "pricing": "Separate new pool construction, renovation and maintenance receipts. Include annual payroll, subcontractor costs, project values and claims history. Compare quotes using the same revenue and work description: a pool-cleaning starting price does not establish the cost of insuring a builder. This page does not claim a verified Texas construction premium.",
+    "facts": [
+      {
+        "title": "Ask about the work and the completed project",
+        "body": "Texas Department of Insurance distinguishes premises/operations liability from products/completed operations. For a pool builder, ask how the proposed policy treats injuries or property damage during construction and after handover. Coverage for repairing your own work and damage to other property must be reviewed in the actual policy.",
+        "source": {
+          "label": "Texas Department of Insurance: commercial general liability",
+          "href": "https://www.tdi.texas.gov/pubs/pc/pcgenliab.html"
+        }
+      },
+      {
+        "title": "Put each construction stage in the quote request",
+        "body": "List excavation, shell installation, shotcrete or gunite, plumbing, electrical connections, decking and retaining walls. Identify the responsible business at each stage. Include residential versus commercial pools and any work on an existing structure; a maintenance-only description leaves out the construction you need reviewed."
+      },
+      {
+        "title": "Separate the builder’s contract from subcontractor insurance",
+        "body": "Send the customer insurance exhibit, subcontractor agreements and available insurance evidence. Ask about uninsured subcontractors and any subcontractor conditions before accepting the quote. An all-subcontracted builder still needs its own role and receipts described accurately."
+      },
+      {
+        "title": "Review local approvals for the job address",
+        "body": "Ask the relevant city or county about the project’s permits and inspections, and verify the credentials required for electrical, plumbing and other specialist tasks. Business registration, job approval and insurance are separate checks; do not treat a policy as permission to perform licensed work."
+      }
+    ],
+    "questions": [
+      "What share of receipts is new construction, renovation and maintenance?",
+      "Who excavates, installs the shell and performs electrical or plumbing connections?",
+      "Do you build retaining walls, raised pools or commercial pools?",
+      "What are your largest project value, subcontractor costs and required start date?"
+    ],
+    "coverages": [
+      {
+        "name": "Pool-builder liability and completed operations",
+        "desc": "Request review of the construction methods, excavation, underground property, subcontractors and post-completion damage. Compare exclusions and endorsements alongside limits and price."
+      },
+      {
+        "name": "Unfinished work, equipment and crew",
+        "desc": "Establish who insures materials and the pool while it is being built. Review equipment, business vehicles and workers’ compensation separately; general liability is not a substitute for those coverages."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Can pool maintenance insurance cover gunite construction?",
+        "a": "Do not assume it does. Disclose gunite, excavation and structural work, then obtain a quote that accepts the actual operations. A policy issued for cleaning or servicing pools may have a different scope."
+      },
+      {
+        "q": "Can I request a quote if every trade is subcontracted?",
+        "a": "Yes, submit the actual all-subcontracted arrangement for review. Provide gross receipts, subcontractor costs, agreements and insurance requirements. We’ll check which markets accept that arrangement before offering terms."
+      },
+      {
+        "q": "What should I send to compare Texas pool-builder quotes?",
+        "a": "Send the same operation description, receipts, payroll, subcontractor costs, loss history and requested limits to each review. Include the existing policy and customer contract if available. Check completed operations and exclusions before treating a lower premium as equivalent coverage."
+      }
+    ]
+  },
+  "tree-service/north-carolina": {
+    "name": "Tree Service",
+    "state": "North Carolina",
+    "reviewedOn": "2026-09-14",
+    "intro": "Pruning, removals, stump grinding and crane-assisted jobs create different insurance questions. Tell Cohesive your maximum working height, equipment and proximity to utilities so the quote reflects the tree work you actually perform.",
+    "pricing": "Prepare annual receipts, payroll, subcontractor costs and a split of pruning, removal and other work. Include maximum height, climbing or aerial-lift use, crane arrangements and claims history. Compare accepted operations before price: this page does not claim a verified North Carolina tree-service premium.",
+    "facts": [
+      {
+        "title": "Check North Carolina’s employer coverage rules",
+        "body": "The Industrial Commission generally requires workers’ compensation for businesses regularly employing three or more people, with exceptions. Corporate officers count toward the threshold; sole proprietors, partners and LLC members are not automatically counted. Review your entity and workforce with the Commission rather than relying only on a W2 payroll number.",
+        "source": {
+          "label": "North Carolina Industrial Commission: employer requirements",
+          "href": "https://www.ic.nc.gov/workers-compensation-claims/employers"
+        }
+      },
+      {
+        "title": "Disclose height and utility exposure directly",
+        "body": "Record maximum working height, climbing, lifts, removals and any work near power lines. Include occasional jobs as well as routine work. If you are unsure about a hazard or working method, flag it so the question can be resolved before coverage is arranged."
+      },
+      {
+        "title": "Make the crane and subcontractor arrangements explicit",
+        "body": "Distinguish your own equipment from a rented crane, a crane supplied with an operator and an independent subcontractor. Share the rental or subcontract agreement and the customer insurance exhibit. Ask which policy responds to equipment damage and which business is responsible for the work."
+      },
+      {
+        "title": "Prepare a removal-job review file",
+        "body": "For a job near a house, prepare the height, access, rigging method, surrounding property, utility exposure and disposal plan. Explain storm-damaged or unstable trees separately. Request coverage review before promising a customer that a certificate covers every part of the job."
+      }
+    ],
+    "questions": [
+      "What is the maximum height, including occasional jobs?",
+      "Do crews climb, use aerial lifts or hire cranes?",
+      "Is utility-line work, storm response or land clearing included?",
+      "Who performs the work, and what are employee payroll and subcontractor costs?"
+    ],
+    "coverages": [
+      {
+        "name": "Tree-work liability",
+        "desc": "Ask about pruning, removals, stump grinding, height conditions, utility exclusions and subcontractors. Review the proposed wording for the actual work before accepting a price."
+      },
+      {
+        "name": "Workers, vehicles and equipment",
+        "desc": "Review employer obligations, work classifications, trucks, chippers, lifts and owned or rented equipment. Customer contract requirements may differ from state requirements."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Is tree removal the same insurance classification as lawn care?",
+        "a": "Do not assume so. Describe the removals, heights, equipment and utility exposure. Tree operations need to be accepted by the insurer even if the business also mows lawns or installs landscaping."
+      },
+      {
+        "q": "Does having no W2 payroll settle whether I need workers’ compensation?",
+        "a": "No. Review the business structure and actual working relationships against North Carolina’s requirements. Corporate officers and subcontractor arrangements can raise questions that a payroll total alone does not answer."
+      },
+      {
+        "q": "What if I only occasionally remove a tall tree?",
+        "a": "Include occasional work and the maximum height in the quote request. A policy based on a lower limit may not match the job. Ask for review before accepting work outside the scope used for the quote."
+      }
+    ]
+  },
+  "welding/maine": {
+    "name": "Welding Contractor",
+    "state": "Maine",
+    "reviewedOn": "2026-09-14",
+    "intro": "A mobile welding business, a fabrication shop and a structural welding subcontractor need different insurance reviews. Describe the metals, finished products and job sites, including any hot work on existing buildings or equipment.",
+    "pricing": "Provide the split between shop fabrication and work at customer sites, annual receipts, payroll, subcontracting costs and claims history. Identify structural, vehicle, marine, pressure-vessel or other specialist work explicitly. We have not established a Maine welding premium benchmark; a generic artisan starting price is not a quote for those operations.",
+    "facts": [
+      {
+        "title": "Check employment status against the actual working relationship",
+        "body": "Maine’s Workers’ Compensation Board explains that paid workers are presumed employees unless the employing unit proves otherwise under its criteria. Calling a helper an independent contractor does not settle that status. Use the Board’s guidance when planning staffing and coverage.",
+        "source": {
+          "label": "Maine Workers’ Compensation Board: independent contractor FAQ",
+          "href": "https://www.maine.gov/wcb/Departments/coverage/independentcontractorFAQ.html"
+        }
+      },
+      {
+        "title": "Describe what you weld and where it goes",
+        "body": "List shop products and site tasks separately: ornamental rails, equipment repairs, structural components and any specialist products. Include who designs the item, who installs it and how it is used. A business name or a general welding category does not explain those exposures."
+      },
+      {
+        "title": "Prepare the hot-work questions before arriving on site",
+        "body": "Ask the customer about its hot-work permit, fire-watch requirements, nearby combustible materials and site access. Share the contract with Cohesive and disclose cutting and welding methods. Flag any fire-control arrangements that still need to be confirmed with the customer."
+      }
+    ],
+    "questions": [
+      "What percentage is shop work versus mobile work?",
+      "Are any welds structural or on vehicles, vessels or pressure equipment?",
+      "Who designs and installs the product, and is inspection required?",
+      "What hot-work procedures and customer insurance requirements apply?"
+    ],
+    "coverages": [
+      {
+        "name": "Welding operations and completed products",
+        "desc": "Request review of hot work, property being worked on and products or completed operations. Discuss design responsibility separately where relevant."
+      },
+      {
+        "name": "Shop, mobile equipment and workers",
+        "desc": "Review shop property, welding rigs, tools taken to jobs, business vehicles and staffing. Match the insured property and vehicle use to the actual operation."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Can one quote cover both shop and mobile welding?",
+        "a": "Submit both operations and their revenue split for review. Whether one policy can cover them depends on the insurer and the proposed terms; do not leave mobile work out of a shop-only application."
+      },
+      {
+        "q": "Is structural welding automatically covered by artisan contractor insurance?",
+        "a": "No automatic assumption is appropriate. Describe the structural work, project types and inspection responsibilities so the insurer can decide whether it will accept them."
+      },
+      {
+        "q": "What should I prepare for a Maine welding insurance quote?",
+        "a": "Send the work description, shop and service locations, receipts, payroll, subcontractors, claims history and any contract insurance exhibit. Include hot-work procedures and specialist products rather than relying only on a welding business label."
+      }
+    ]
+  },
   "roofer/new-jersey": {
     name: "Roofing", state: "New Jersey",
     intro: "Describe the roofs you work on before choosing a policy: residential or commercial, flat or pitched, repairs or replacement, and maximum working height. Cohesive can review the roofing scope alongside your NJ registration evidence and customer contract.",
@@ -133,6 +307,11 @@ const profiles: Record<string, Profile> = {
   },
 };
 
+export function priorityStateUpdated(path: string): string | undefined {
+  const profile = profiles[path.replace(/^\/insurance\//, "")];
+  return profile ? profile.reviewedOn ?? PRIORITY_STATE_UPDATED : undefined;
+}
+
 export const PRIORITY_STATE_PATHS = Object.keys(profiles).map((key) => `/insurance/${key}`);
 
 export function priorityStateContent(trade: string, state: string): Partial<PageContent> {
@@ -143,7 +322,7 @@ export function priorityStateContent(trade: string, state: string): Partial<Page
     metaDescription: `Review ${profile.state} ${profile.name.toLowerCase()} insurance, official state resources, job-specific coverage questions, and the information Cohesive needs for a quote.`,
     heroH1: `${profile.name} Insurance in ${profile.state}`,
     heroSub: profile.intro,
-    reviewedOn: PRIORITY_STATE_UPDATED,
+    reviewedOn: profile.reviewedOn ?? PRIORITY_STATE_UPDATED,
     costNarrative: [profile.pricing],
     costRows: [
       { coverage: "General liability", range: "Individual quote", note: "Based on accepted operations, limits, deductibles, revenue, and claims." },

@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS } from "@/lib/seo/data";
-import { PRIORITY_STATE_PATHS, PRIORITY_STATE_UPDATED } from "@/lib/seo/priority-state-content";
+import { priorityStateUpdated } from "@/lib/seo/priority-state-content";
 import { TRADES } from "@/lib/seo/contractors";
 import { GUIDE_UPDATED } from "@/lib/guides/restaurant";
 import { STARTUP_GUIDES } from "@/lib/guides/catalog";
@@ -37,13 +37,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     CONTRACTOR_STATE_SLUGS.filter((s) => contractorStateBuildable(t.slug, s)).map(
       (s) => ({
         url: `${BASE}/insurance/${t.slug}/${s}`,
-        ...(PRIORITY_STATE_PATHS.includes(`/insurance/${t.slug}/${s}`) ? { lastModified: PRIORITY_STATE_UPDATED } : {}),
+        ...(priorityStateUpdated(`/insurance/${t.slug}/${s}`) ? { lastModified: priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
         changeFrequency: "monthly" as const,
       }),
     ),
   );
 
-  const guides = [{ slug: "", updatedAt: GUIDE_UPDATED }, ...STARTUP_GUIDES].map((guide) => ({
+  const guides = [{ slug: "", updatedAt: "2026-09-14" }, ...STARTUP_GUIDES].map((guide) => ({
     url: `${BASE}/guides${guide.slug ? `/${guide.slug}` : ""}`,
     lastModified: guide.updatedAt ?? GUIDE_UPDATED,
     changeFrequency: "monthly" as const,

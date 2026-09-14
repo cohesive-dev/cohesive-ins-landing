@@ -39,6 +39,22 @@ function restaurantStateGuide(state: StartupState): RestaurantGuide {
   };
 }
 
+function priorityQuotePreparation(industry: ServiceIndustry, state: StartupState): GuideSection[] {
+  if (industry.id === "pool-construction" && state.slug === "texas") return [{
+    id: "first-project-insurance", title: "Prepare a Texas pool project for an insurance review",
+    paragraphs: ["Before pricing your first installation, map the work from excavation to handover. Identify what you perform and what each subcontractor performs, then ask the prospective customer for its insurance requirements. Keep the construction revenue estimate separate from any cleaning or service work."],
+    checklist: ["List excavation, shell type, plumbing, electrical, decking and retaining walls.", "Record expected annual receipts, payroll and subcontractor costs separately.", "Prepare subcontractor agreements and available insurance evidence.", "Ask who insures materials and unfinished work before the customer accepts the pool."],
+    links: [{ label: "Texas pool-builder coverage and quote checklist", href: "/insurance/pool/texas" }],
+  }];
+  if (industry.id === "tree-service" && state.slug === "north-carolina") return [{
+    id: "first-project-insurance", title: "Prepare a North Carolina tree job for an insurance review",
+    paragraphs: ["Define the jobs your new business can perform with its crew and equipment. A pruning job, a crane-assisted removal and a storm-damaged tree need different plans. Give the broker the full service scope before you promise a property manager that you can meet its contract."],
+    checklist: ["Record maximum height, climbing, lifts and proximity to utilities.", "Identify owned equipment, rentals with operators and subcontracted work.", "Prepare receipts, payroll and subcontractor-cost estimates without combining them.", "Review employer requirements and the customer insurance exhibit before the start date."],
+    links: [{ label: "North Carolina tree-service coverage and quote checklist", href: "/insurance/tree-service/north-carolina" }],
+  }];
+  return [];
+}
+
 function serviceStateGuide(industry: ServiceIndustry, state: StartupState): RestaurantGuide {
   const specific = SPECIAL_TRADE_RESOURCES[`${industry.id}:${state.slug}`];
   const construction = ["pool-construction", "roofing", "remodeling"].includes(industry.id);
@@ -63,6 +79,7 @@ function serviceStateGuide(industry: ServiceIndustry, state: StartupState): Rest
       { id: "state-licensing", title: `Check the ${state.name} licensing route`, paragraphs: [...licenseParagraphs, "Describe the work, project type, staffing, and business location to the responsible office. Ask for the current application, scope rules, renewal requirements, and any supporting insurance or bond documents. Confirm before using a license claim in an advertisement or bid."], links: specific ? [specific] : construction ? [state.construction] : [registrationLinks[state.slug]] },
       businessSection(state),
       { id: "local-checks", title: "Questions for the local authority and your advisers", paragraphs: ["These are questions to resolve for your operation, not statements that every listed requirement applies. Keep the agency's response, contact, date, and follow-up action with your first-job file. A state registration does not replace job-specific permits."], checklist: industry.localQuestions },
+      ...priorityQuotePreparation(industry, state),
       { id: "budget-and-bid", title: "Build a startup budget and first-job estimate", paragraphs: ["Get written local estimates for the equipment, training, setup, and supplies you actually need. Compare renting with buying before committing cash to an unproven service. Keep pending financing out of the cash available to pay suppliers and staff.", "Estimate the first job from its scope and payment schedule. Price travel, supervision, overhead, and rework alongside direct labor and materials. Compare the cash needed before collection with your reserve so a signed contract does not create an immediate funding gap."], checklist: industry.costs },
       { id: "bid-inputs", title: "What to include in the customer estimate", paragraphs: ["Use one scope version for your estimate, supplier requests, and customer proposal. Put allowances and exclusions in writing and identify who approves extra work. Have the contract reviewed for the applicable local consumer and commercial requirements."], checklist: industry.bidInputs },
       { id: "insurance", title: "Prepare the insurance and customer requirements", paragraphs: ["Give a broker the exact services, state, expected revenue, payroll, subcontracting plan, equipment, and customer insurance clauses. Ask how the proposed policy addresses the work and which exclusions matter. A certificate of insurance is not permission to perform work outside your licensing or policy scope."], checklist: industry.insuranceQuestions, links: noQuote ? undefined : [{ label: `${industry.name} insurance: coverage and requirements in ${state.name}`, href: insurancePath }] },
