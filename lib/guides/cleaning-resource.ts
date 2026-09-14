@@ -69,6 +69,20 @@ export const CLEANING_RESOURCE: RestaurantGuide = {
       ]
     },
     {
+      "id": "documented-quote-example",
+      "title": "A documented example: $2 million GL, $5,000 customer-property protection",
+      "paragraphs": [
+        "A September 2026 housekeeper proposal reviewed by Cohesive listed a $2,000,000 general liability limit and a separate $5,000 Customer Property Protection sublimit. The proposal summary said that extension did not apply to poor workmanship by the insured or people working on its behalf.",
+        "This is an anonymized reading of one saved quote document, not a paid-claim example, a bound-policy confirmation or a promise about today’s options. It demonstrates why a headline GL limit cannot be substituted for the limit that applies to property in your care. Compare those separate terms in your own documents."
+      ],
+      "checklist": [
+        "Read the customer-property sublimit separately from the GL limit.",
+        "Check exclusions even when a property extension is included.",
+        "Ask for the current proposed endorsement and deductible."
+      ],
+      "links": []
+    },
+    {
       "id": "limits",
       "title": "The headline GL limit may not be the customer-property limit",
       "paragraphs": [

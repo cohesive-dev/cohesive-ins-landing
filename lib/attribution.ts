@@ -1,5 +1,5 @@
 /**
- * Ad attribution capture (2026-08-17).
+ * Acquisition attribution capture (2026-08-17; search referrals fixed 2026-09-14).
  *
  * THE GAP THIS CLOSES: the landing forms captured no utm / ad id / fbclid, so no lead could be
  * traced back to the ad that bought it. Every per-ad CPL figure was an inference from Meta's own
@@ -45,7 +45,8 @@ export function captureAttribution(): Attribution {
   if (typeof window === "undefined") return {};
   let stored: Attribution = {};
   try {
-    stored = JSON.parse(sessionStorage.getItem(KEY) || "{}") as Attribution;
+    const parsed: unknown = JSON.parse(sessionStorage.getItem(KEY) || "{}");
+    stored = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Attribution : {};
   } catch {
     stored = {};
   }
@@ -57,14 +58,22 @@ export function captureAttribution(): Attribution {
     if (v && v.trim()) fresh[f] = v.trim().slice(0, 200);
   }
 
-  // Nothing in the URL: keep whatever the first touch recorded.
-  if (Object.keys(fresh).length === 0) return stored;
-
   // First touch wins — only write if this session has no attribution yet.
   if (Object.keys(stored).length > 0) return stored;
 
+  // Save a search/referral landing even without UTM parameters. Internal navigation
+  // must not replace the original referring site. A bare direct visit remains unclassified.
+  let externalReferrer: string | undefined;
+  try {
+    const ref = new URL(document.referrer);
+    const ownHost = window.location.hostname || "www.cohesiveinsure.com";
+    const isOwn = ref.hostname === ownHost || ref.hostname === "cohesiveinsure.com" || ref.hostname === "www.cohesiveinsure.com";
+    if (["http:", "https:"].includes(ref.protocol) && !isOwn) externalReferrer = document.referrer.slice(0, 200);
+  } catch { /* Empty or malformed referrer is unknown, not organic. */ }
+  if (Object.keys(fresh).length === 0 && !externalReferrer) return stored;
+
   fresh.landing_page = window.location.pathname;
-  fresh.referrer = document.referrer ? document.referrer.slice(0, 200) : undefined;
+  fresh.referrer = externalReferrer;
   fresh.captured_at = new Date().toISOString();
   try {
     sessionStorage.setItem(KEY, JSON.stringify(fresh));

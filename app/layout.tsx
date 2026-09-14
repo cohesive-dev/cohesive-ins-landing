@@ -1,3 +1,4 @@
+import AcquisitionAttribution from "@/components/AcquisitionAttribution";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
@@ -80,6 +81,7 @@ fbq('track', 'PageView');`}
         </noscript>
         )}
         {/* End Meta Pixel Code */}
+        <AcquisitionAttribution />
         {children}
         <Analytics />
         <Suspense fallback={null}><WebsiteTraffic /></Suspense>

@@ -1,3 +1,4 @@
+import { TRADE_COVERAGE_RESOURCES } from "./trade-coverage-resources";
 import { CLEANING_RESOURCE } from "./cleaning-resource";
 import type { RestaurantGuide } from "./restaurant";
 
@@ -7,6 +8,7 @@ const common = { quoteKind: "service" as const, updatedAt: "2026-09-14", nationa
 
 export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
   CLEANING_RESOURCE,
+  ...TRADE_COVERAGE_RESOURCES,
   {
     ...common, slug: "contractor-insurance-quote-comparison", title: "How to compare contractor insurance quotes", category: "Quote comparison", industry: "Contractors", tradeLabel: "General contractor", insurancePath: "/insurance/general-contractor",
     description: "Compare contractor insurance using the same work description, revenue, subcontractors, coverage and total cost. Download a blank quote-comparison worksheet.",
@@ -33,6 +35,26 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     description: "Separate pool building, renovation and maintenance when requesting insurance. Prepare excavation, shell, subcontractor and completed-work questions.",
     intro: "A pool builder and a pool-cleaning business may serve the same homeowner, but perform different work. Separate those services before using a price or policy description as a comparison.",
     sections: [
+{
+  "id": "pool-quote-questions",
+  "title": "Can I compare a pool-service quote with an installation quote?",
+  "paragraphs": [
+    "Only after confirming that both proposals accept the same construction work. Write a stage-by-stage scope: excavation, steel, gunite/shotcrete or shell placement, plumbing, electrical connections, decking and commissioning. Mark which stages your crew performs and which you subcontract.",
+    "Give every reviewer the same gross receipts, employee payroll and subcontractor costs. If a service-only proposal omits installation or uses different figures, ask for correction before comparing prices. A lower number based on different operations is not evidence of a better deal.",
+    "For a concrete review, ask about shell damage during installation, damage to the existing home or utilities, and a leak discovered after handover. Separate the cost of correcting your work from resulting damage and ask which forms govern each question."
+  ],
+  "checklist": [
+    "Match installed pool systems and each construction stage.",
+    "Match receipts, payroll and subcontractor cost estimates.",
+    "Resolve installation and completed-work questions before comparing premiums."
+  ],
+  "links": [
+    {
+      "label": "Compare the full terms of contractor quotes",
+      "href": "/guides/contractor-insurance-quote-comparison"
+    }
+  ]
+},
       {
   "id": "installation-exclusions",
   "title": "Check pool installation, gunite and excavation exclusions",
@@ -63,6 +85,19 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     description: "Prepare a tree-service quote with heights, removal methods, cranes, utilities, crew and subcontractor details. Download a working checklist.",
     intro: "The details that make a tree job workable also matter to an insurer. Describe the work directly, including occasional removals, instead of relying only on the label landscaping or tree care.",
     sections: [
+{
+  "id": "documented-height-example",
+  "title": "A documented tree quote lists two separate height restrictions",
+  "paragraphs": [
+    "An August 2026 tree-service proposal reviewed by Cohesive listed a work-height exclusion above 60 feet and a separate tree-felling height limitation in its coverage modifications. That is why a quote labelled tree service needs more review than checking its premium and main liability limit.",
+    "This anonymized example records what one proposal’s schedule listed. The schedule title does not explain how work height or felling height is measured, or every condition and exception. Request the full endorsements before deciding a particular job fits. This is not a bound-policy or paid-claim example, and 60 feet is not a universal market limit."
+  ],
+  "checklist": [
+    "Look for separate restrictions on work height and tree felling.",
+    "Get the full endorsement rather than relying on its title.",
+    "Compare the wording against climbing, bucket work and the trees you remove."
+  ]
+},
       {
   "id": "height-exclusions",
   "title": "A height exclusion can leave your normal tree work outside the policy",
