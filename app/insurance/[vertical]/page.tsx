@@ -1,3 +1,4 @@
+import { INSURANCE_SERVICES, getInsuranceService, serviceContent, serviceStateLinks } from "@/lib/seo/service-industries";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SeoPage from "@/components/SeoPage";
@@ -31,6 +32,7 @@ export function generateStaticParams(): Params[] {
   return [
     ...VERTICALS.map((v) => ({ vertical: v.slug })),
     ...TRADES.map((t) => ({ vertical: t.slug })),
+    ...INSURANCE_SERVICES.map((s) => ({ vertical: s.slug })),
   ];
 }
 
@@ -41,7 +43,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { vertical } = await params;
   const content =
-    getNationalContent(vertical) ?? getContractorNationalContent(vertical);
+    serviceContent(vertical) ?? getNationalContent(vertical) ?? getContractorNationalContent(vertical);
   if (!content) return {};
   return {
     title: content.title,
@@ -52,6 +54,17 @@ export async function generateMetadata({
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { vertical: slug } = await params;
+
+  const service = getInsuranceService(slug);
+  if (service) {
+    const content = serviceContent(slug)!;
+    return <SeoPage content={content} eyebrow={service.name} source={`seo-${slug}-national`}
+      areaServed="United States" formMode="contractor" tradeSlug={slug}
+      tradeLabel={service.intakeLabel} operationsPrompt={service.operationsPrompt}
+      costHeading={`What ${service.noun} insurance costs`} coverageHeading="Coverage questions to review"
+      stateFactsHeading="Resources and operations to check" stateLinksHeading="Choose your state"
+      stateLinks={serviceStateLinks(service)} />;
+  }
 
   // --- contractor trade national page ---
   const trade = getTrade(slug);
@@ -71,6 +84,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         areaServed="United States"
         formMode="contractor"
         tradeLabel={trade.intakeLabel ?? trade.name}
+        tradeSlug={trade.slug}
         costHeading={`What ${trade.noun} insurance costs`}
         coverageHeading={`The coverage ${trade.noun}s need`}
         stateLinksHeading={`${trade.name} insurance by state`}

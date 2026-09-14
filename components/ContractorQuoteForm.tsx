@@ -15,9 +15,11 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 export default function ContractorQuoteForm({
   source,
   tradeLabel,
+  operationsPrompt,
 }: {
   source: string;
   tradeLabel: string;
+  operationsPrompt?: string;
 }) {
   const [f, setF] = useState({
     company: "",
@@ -25,13 +27,14 @@ export default function ContractorQuoteForm({
     email: "",
     phone: "",
     zip: "",
+    operations: "",
   });
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
   useEffect(() => { captureAttribution(); }, []);
 
-  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) =>
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
 
   const submit = async (e: React.FormEvent) => {
@@ -65,6 +68,7 @@ export default function ContractorQuoteForm({
           details: [
             f.company.trim() && { label: "Business", value: f.company.trim() },
             { label: "Trade", value: tradeLabel },
+            operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
             { label: "Page source", value: source },
             ...attributionDetails(attribution),
             attribution.referrer && { label: "Referrer", value: attribution.referrer },
@@ -153,6 +157,7 @@ export default function ContractorQuoteForm({
           autoComplete="tel"
         />
       </div>
+      {operationsPrompt && <label className="block text-sm text-[#27455C]">Describe your services (optional)<span className="block text-xs text-[#6B6D71] my-1">{operationsPrompt}</span><textarea className={field} value={f.operations} onChange={set("operations")} maxLength={2000} rows={3} /></label>}
       {err && <p className="text-sm text-red-600">{err}</p>}
       <button
         type="submit"

@@ -1,3 +1,4 @@
+import { POOL_TREE_STATE_PROFILES } from "./pool-tree-state-profiles";
 import { STATE_EXPANSION_PROFILES } from "./state-expansion-profiles";
 import type { Fact, PageContent } from "./data";
 
@@ -32,6 +33,7 @@ export type Profile = {
 
 const profiles: Record<string, Profile> = {
   ...STATE_EXPANSION_PROFILES,
+  ...POOL_TREE_STATE_PROFILES,
   "carpenter/massachusetts": {
     "name": "Carpenter",
     "state": "Massachusetts",

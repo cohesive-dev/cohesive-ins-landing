@@ -24,7 +24,8 @@ global.fetch=async(url,options)=>{
  assert.equal(url,'https://crm.cohesiveinsure.com/api/webhooks/inbound-lead','unexpected network destination');
  crmCalls.push(JSON.parse(options.body));return new Response(JSON.stringify({ok:true}),{status:200});
 };
-function render(){cursor=0;return Form({source:'seo-painter-new-york',tradeLabel:'Painter'});}
+let formProps={source:'seo-painter-new-york',tradeLabel:'Painter'};
+function render(){cursor=0;return Form(formProps);}
 function nodes(n){if(!n||typeof n!=='object')return[];if(Array.isArray(n))return n.flatMap(nodes);return[n,...nodes(n.props?.children)];}
 function text(n){if(typeof n==='string')return n;if(!n||typeof n!=='object')return '';if(Array.isArray(n))return n.map(text).join('');return text(n.props?.children);}
 function reset(search=''){states=[];effectRan=false;store.clear();crmCalls=[];emails=[];window.location.search=search;render();}
@@ -36,6 +37,19 @@ function fill(){for(const [placeholder,value] of Object.entries({'Business name'
   assert.equal(crmCalls.length,1);assert.equal(crmCalls[0].suppress_first_touch,'true');assert.equal(emails.length,1);assert.equal(emails[0].partial,false);assert.match(text(render()),/Got it/);
   const d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(d['Page source'],'seo-painter-new-york');assert.equal(d['Landing page'],'/insurance/painter/new-york');assert.equal(d.Referrer,'https://www.google.com/');
   if(search)assert.equal(d['Ad id (Meta)'],'120251012015050660');else assert.equal(d['Ad id (Meta)'],undefined);
+ }
+ for(const service of require('../lib/seo/service-industries.ts').INSURANCE_SERVICES){
+  formProps={source:`seo-${service.slug}-texas`,tradeLabel:service.intakeLabel,operationsPrompt:service.operationsPrompt};
+  window.location.pathname=`/insurance/${service.slug}/texas`;mode='success';reset();fill();
+  const textarea=nodes(render()).find(n=>n.type==='textarea');assert.ok(textarea);assert.equal(textarea.props.required,undefined);
+  textarea.props.onChange({target:{value:'Actual work: cleaning plus occasional repairs.'}});
+  await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  assert.equal(crmCalls.length,1);assert.equal(crmCalls[0].suppress_first_touch,'true');
+  assert.equal(payload.businessType,service.intakeLabel);
+  assert.equal(Object.fromEntries(payload.details.map(d=>[d.label,d.value]))['Services described'],'Actual work: cleaning plus occasional repairs.');
+  assert.ok(JSON.stringify(crmCalls[0]).includes('Actual work: cleaning plus occasional repairs.'));
+  reset();fill();await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  assert.ok(!payload.details.some(d=>d.label==='Services described'));
  }
  for(const failure of ['network','http','false-ok','skipped','non-json']){
   mode=failure;reset();fill();await render().props.onSubmit({preventDefault(){}});assert.doesNotMatch(text(render()),/Got it/);assert.match(text(render()),/couldn't save/);assert.equal(nodes(render()).find(n=>n.type==='button').props.disabled,false);

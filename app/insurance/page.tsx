@@ -1,3 +1,4 @@
+import { INSURANCE_SERVICES } from "@/lib/seo/service-industries";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
@@ -80,6 +81,9 @@ export default function Page() {
             </a>
           ))}
         </div>
+
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">Cleaning and pool maintenance</h2>
+        <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm mb-12">{INSURANCE_SERVICES.map(service => <Link key={service.slug} href={`/insurance/${service.slug}`} className="text-[#2040E7] hover:underline">{service.name} insurance</Link>)}</div>
 
         {STATE_VERTICALS.map((vs) => {
           const v = getVertical(vs)!;

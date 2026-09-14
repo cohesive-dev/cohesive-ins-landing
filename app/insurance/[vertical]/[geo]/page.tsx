@@ -1,3 +1,4 @@
+import { INSURANCE_SERVICES, getInsuranceService, serviceContent, serviceStateLinks, SERVICE_STATE_NAMES } from "@/lib/seo/service-industries";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SeoPage from "@/components/SeoPage";
@@ -33,7 +34,7 @@ export function generateStaticParams(): Params[] {
       contractorStateBuildable(t.slug, s),
     ).map((s) => ({ vertical: t.slug, geo: s })),
   );
-  return [...food, ...trades];
+  return [...food, ...trades, ...INSURANCE_SERVICES.flatMap(service => Object.keys(service.stateProfiles).map(geo => ({ vertical: service.slug, geo })))];
 }
 
 export async function generateMetadata({
@@ -43,12 +44,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { vertical, geo } = await params;
   const trade = getTrade(vertical);
-  let content = null;
-  if (trade) {
+  let content = serviceContent(vertical, geo);
+  if (!content && trade) {
     const cs = getContractorState(geo);
     if (cs && contractorStateBuildable(vertical, geo))
       content = buildContractorState(cs, trade);
-  } else {
+  } else if (!content) {
     content = getStateContent(vertical, geo);
   }
   if (!content) return {};
@@ -61,6 +62,19 @@ export async function generateMetadata({
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { vertical: verticalSlug, geo: geoSlug } = await params;
+
+  const service = getInsuranceService(verticalSlug);
+  if (service) {
+    const content = serviceContent(verticalSlug, geoSlug);
+    if (!content) notFound();
+    const stateName = SERVICE_STATE_NAMES[geoSlug];
+    return <SeoPage content={content} eyebrow={`${service.name} · ${stateName}`}
+      source={`seo-${verticalSlug}-${geoSlug}`} areaServed={stateName} formMode="contractor"
+      tradeSlug={verticalSlug} stateSlug={geoSlug} tradeLabel={service.intakeLabel}
+      operationsPrompt={service.operationsPrompt} costHeading={`Insurance costs in ${stateName}`}
+      coverageHeading="Coverage questions to review" stateFactsHeading={`What to check in ${stateName}`}
+      stateLinksHeading="Explore other states" stateLinks={serviceStateLinks(service).filter(l => !l.href.endsWith(`/${geoSlug}`))} />;
+  }
 
   // --- contractor trade x state page ---
   const trade = getTrade(verticalSlug);
@@ -81,6 +95,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         areaServed={cs.name}
         formMode="contractor"
         tradeLabel={trade.intakeLabel ?? trade.name}
+        tradeSlug={trade.slug}
+        stateSlug={cs.slug}
         costHeading={`What ${trade.noun} insurance costs in ${cs.name}`}
         coverageHeading={`The coverage a ${cs.abbr} ${trade.noun} needs`}
         stateFactsHeading={`What's different about ${cs.name}`}

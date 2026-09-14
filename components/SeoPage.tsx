@@ -1,3 +1,4 @@
+import { relatedServiceLinks } from "@/lib/seo/service-industries";
 import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
 import Link from "next/link";
 import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
@@ -15,6 +16,9 @@ export default function SeoPage({
   areaServed,
   formMode,
   tradeLabel,
+  tradeSlug,
+  stateSlug,
+  operationsPrompt,
   costHeading,
   coverageHeading,
   stateFactsHeading,
@@ -29,6 +33,9 @@ export default function SeoPage({
   // the trades intake (tradeLabel required in that case).
   formMode: "restaurant" | "bar" | "contractor";
   tradeLabel?: string;
+  tradeSlug?: string;
+  stateSlug?: string;
+  operationsPrompt?: string;
   costHeading: string;
   coverageHeading: string;
   stateFactsHeading?: string;
@@ -270,15 +277,16 @@ export default function SeoPage({
           </p>
         </div>
         {formMode === "contractor" ? (
-          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} />
+          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} />
         ) : (
           <RestaurantIntakeForm embedded source={source} mode={formMode} />
         )}
       </section>
 
-      {/* Cross-links */}
-      {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => source.startsWith(`seo-${industry.insuranceSlug}-`)).map((industry) => (
-        <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}${source.endsWith("-national") ? "" : `-in-${source.slice(`seo-${industry.insuranceSlug}-`.length)}`}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
+      {/* Cross-links use route identity, never acquisition labels. */}
+      {relatedServiceLinks(tradeSlug, stateSlug).length > 0 && <section className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Match your insurance to the work you do</h2>{relatedServiceLinks(tradeSlug, stateSlug).map(link => <Link key={link.href} href={link.href} className="mt-3 block text-sm font-semibold text-[#2040E7] underline">{link.label} →</Link>)}</div></section>}
+      {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => tradeSlug === industry.insuranceSlug).map((industry) => (
+        <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}${stateSlug ? `-in-${stateSlug}` : ""}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
       ))}
       {source.startsWith("seo-restaurant-") && (
         <section className="border-t border-slate-100">
@@ -310,7 +318,7 @@ export default function SeoPage({
         </section>
       )}
 
-      {formMode === "contractor" && <section className="border-t border-slate-100"><div className="mx-auto max-w-6xl px-4 py-8 sm:px-6"><h2 className="font-bold">Prepare and compare your insurance request</h2><Link href="/guides/contractor-insurance-quote-comparison" className="mt-3 inline-block font-semibold text-[#2040E7] underline">Use the contractor quote-comparison checklist →</Link>{TRADE_COVERAGE_RESOURCES.filter((guide) => [guide.insurancePath, ...(guide.relatedInsurancePaths ?? [])].some((path) => source.startsWith(`seo-${path.split("/").pop()}-`))).map((guide) => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="mt-3 block font-semibold text-[#2040E7] underline">{guide.title} →</Link>)}{source.startsWith("seo-cleaning-") && <Link href="/guides/cleaning-insurance-customer-property-damage" className="mt-3 block font-semibold text-[#2040E7] underline">Does your policy cover damage to the property you clean? →</Link>}{source.startsWith("seo-pool-") && <Link href="/guides/pool-construction-vs-maintenance-insurance" className="mt-3 block font-semibold text-[#2040E7] underline">Compare pool construction and maintenance operations →</Link>}{source.startsWith("seo-tree-service-") && <Link href="/guides/tree-service-insurance-quote-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare tree heights, equipment and subcontractor details →</Link>}{source.startsWith("seo-general-contractor-") && <Link href="/guides/general-contractor-subcontractor-insurance-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare an all-subcontractor GC insurance request →</Link>}</div></section>}
+      {formMode === "contractor" && <section className="border-t border-slate-100"><div className="mx-auto max-w-6xl px-4 py-8 sm:px-6"><h2 className="font-bold">Prepare and compare your insurance request</h2><Link href="/guides/contractor-insurance-quote-comparison" className="mt-3 inline-block font-semibold text-[#2040E7] underline">Use the contractor quote-comparison checklist →</Link>{TRADE_COVERAGE_RESOURCES.filter((guide) => [guide.insurancePath, ...(guide.relatedInsurancePaths ?? [])].some((path) => tradeSlug === path.split("/").pop())).map((guide) => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="mt-3 block font-semibold text-[#2040E7] underline">{guide.title} →</Link>)}{tradeSlug === "cleaning" && <Link href="/guides/cleaning-insurance-customer-property-damage" className="mt-3 block font-semibold text-[#2040E7] underline">Does your policy cover damage to the property you clean? →</Link>}{tradeSlug === "pool" && <Link href="/guides/pool-construction-vs-maintenance-insurance" className="mt-3 block font-semibold text-[#2040E7] underline">Compare pool construction and maintenance operations →</Link>}{tradeSlug === "tree-service" && <Link href="/guides/tree-service-insurance-quote-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare tree heights, equipment and subcontractor details →</Link>}{tradeSlug === "general-contractor" && <Link href="/guides/general-contractor-subcontractor-insurance-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare an all-subcontractor GC insurance request →</Link>}</div></section>}
 
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
