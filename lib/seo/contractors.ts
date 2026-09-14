@@ -1,3 +1,4 @@
+import { swimmingPoolContent } from "./swimming-pool-content";
 // Contractor / trades programmatic-SEO content engine.
 //
 // Parallel to the restaurant/bar builders in ./data.ts, but data-driven: every
@@ -22,6 +23,7 @@ import type { PageContent } from "./data";
 export type Trade = {
   slug: string;
   name: string; // Title Case display name
+  intakeLabel?: string; // Preserve an established intake value when display wording changes.
   noun: string; // lowercase noun for sentences ("an electrician's business")
   // Monthly starting FLOORS shown as "from $X/mo".
   glFrom: number; // general liability only, cheapest owner-op
@@ -473,7 +475,8 @@ export const TRADES: Trade[] = [
   },
   {
     slug: "pool",
-    name: "Pool & Spa",
+    name: "Swimming Pool Contractor",
+    intakeLabel: "Pool & Spa",
     noun: "pool contractor",
     glFrom: 69,
     bopFrom: 89,
@@ -804,6 +807,7 @@ export function buildContractorNational(t: Trade): PageContent {
     coverages: coverageSpine(t),
     stateFacts: [],
     faqs: sharedFaqs(t),
+    ...(t.slug === "pool" ? swimmingPoolContent() : {}),
   };
 }
 

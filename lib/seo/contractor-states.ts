@@ -1,3 +1,4 @@
+import { swimmingPoolContent } from "./swimming-pool-content";
 // Per-state tailoring for contractor SEO pages.
 //
 // Beyond price, each state page weaves genuinely state-specific facts a
@@ -406,6 +407,7 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
       ? `See what ${cs.abbr} ${plural(t.noun)} pay, starting around ${floor}/mo, and tell us about your work to get a quote back fast.`
       : `See what ${cs.abbr} ${plural(t.noun)} actually pay, starting as low as ${floor}/mo, and get your own quote in a few minutes.`,
     stateFacts: stateFacts(cs, t),
+    ...(t.slug === "pool" ? swimmingPoolContent(cs.name) : {}),
     ...priorityStateContent(t.slug, cs.slug),
   };
 }

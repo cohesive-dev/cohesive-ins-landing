@@ -309,12 +309,11 @@ export default function SeoPage({
         </section>
       )}
 
+      {formMode === "contractor" && <section className="border-t border-slate-100"><div className="mx-auto max-w-6xl px-4 py-8 sm:px-6"><h2 className="font-bold">Prepare and compare your insurance request</h2><Link href="/guides/contractor-insurance-quote-comparison" className="mt-3 inline-block font-semibold text-[#2040E7] underline">Use the contractor quote-comparison checklist →</Link>{source.startsWith("seo-pool-") && <Link href="/guides/pool-construction-vs-maintenance-insurance" className="mt-3 block font-semibold text-[#2040E7] underline">Compare pool construction and maintenance operations →</Link>}{source.startsWith("seo-tree-service-") && <Link href="/guides/tree-service-insurance-quote-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare tree heights, equipment and subcontractor details →</Link>}{source.startsWith("seo-general-contractor-") && <Link href="/guides/general-contractor-subcontractor-insurance-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare an all-subcontractor GC insurance request →</Link>}</div></section>}
+
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
           <span>Cohesive Insurance Services - licensed insurance agency</span>
-          <a href="/about" className="hover:underline">
-            About &amp; licensing
-          </a>
           <Link href="/insurance" className="hover:underline">
             Insurance guides
           </Link>

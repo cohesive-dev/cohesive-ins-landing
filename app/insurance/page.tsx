@@ -107,9 +107,6 @@ export default function Page() {
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
           <span>Cohesive Insurance Services - licensed insurance agency</span>
-          <a href="/about" className="hover:underline">
-            About &amp; licensing
-          </a>
           <a href="/privacy" className="hover:underline">
             Privacy
           </a>

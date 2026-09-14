@@ -1,3 +1,4 @@
+import { CONTRACTOR_RESOURCES } from "./contractor-resources";
 import { getContractorState, contractorStateBuildable } from "../seo/contractor-states";
 import { addStartupVendors } from "./vendors";
 import { serviceLeadSections, restaurantLeadSections } from "./leads";
@@ -96,6 +97,7 @@ const authoredRestaurants = RESTAURANT_GUIDES.map((guide): RestaurantGuide => {
 const authoredSlugs = new Set(authoredRestaurants.map((guide) => guide.slug));
 
 export const STARTUP_GUIDES: RestaurantGuide[] = [
+  ...CONTRACTOR_RESOURCES,
   ...authoredRestaurants,
   ...STARTUP_STATES.map(restaurantStateGuide).filter((guide) => !authoredSlugs.has(guide.slug)),
   ...SERVICE_INDUSTRIES.map(nationalServiceGuide),

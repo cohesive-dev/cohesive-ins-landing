@@ -12,7 +12,7 @@ import {
 const BASE = "https://www.cohesiveinsure.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const core = ["", "/restaurants", "/restaurant", "/about"].map((p) => ({
+  const core = ["", "/restaurants", "/restaurant"].map((p) => ({
     url: `${BASE}${p}`,
     changeFrequency: "monthly" as const,
   }));
@@ -22,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const verticals = [...VERTICALS.map((v) => v.slug), ...TRADES.map((t) => t.slug)].map(
     (slug) => ({
       url: `${BASE}/insurance/${slug}`,
+      ...(slug === "pool" ? { lastModified: "2026-09-14" } : {}),
       changeFrequency: "monthly" as const,
     }),
   );
@@ -37,7 +38,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     CONTRACTOR_STATE_SLUGS.filter((s) => contractorStateBuildable(t.slug, s)).map(
       (s) => ({
         url: `${BASE}/insurance/${t.slug}/${s}`,
-        ...(priorityStateUpdated(`/insurance/${t.slug}/${s}`) ? { lastModified: priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
+        ...((t.slug === "pool" || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? { lastModified: t.slug === "pool" ? "2026-09-14" : priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
         changeFrequency: "monthly" as const,
       }),
     ),

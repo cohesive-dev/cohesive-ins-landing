@@ -70,7 +70,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-${trade.slug}-national`}
         areaServed="United States"
         formMode="contractor"
-        tradeLabel={trade.name}
+        tradeLabel={trade.intakeLabel ?? trade.name}
         costHeading={`What ${trade.noun} insurance costs`}
         coverageHeading={`The coverage ${trade.noun}s need`}
         stateLinksHeading={`${trade.name} insurance by state`}

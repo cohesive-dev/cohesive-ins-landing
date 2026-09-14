@@ -30,6 +30,73 @@ type Profile = {
 };
 
 const profiles: Record<string, Profile> = {
+  "carpenter/massachusetts": {
+    "name": "Carpenter",
+    "state": "Massachusetts",
+    "reviewedOn": "2026-09-14",
+    "intro": "Finish carpentry, cabinet installation, framing and deck building create different insurance questions. Describe your Massachusetts projects, working heights and subcontractors so Cohesive can review the actual work and the customer contract.",
+    "pricing": "Prepare annual receipts, payroll, subcontractor costs, claims history and a split of finish work, framing and other operations. Include your largest project and any structural changes. Compare quotes on the same basis; a finish-carpentry price does not establish the cost of framing or elevated exterior work.",
+    "facts": [
+      {
+        "title": "HIC registration and a supervisor license are different",
+        "body": "Massachusetts distinguishes Home Improvement Contractor registration from a Construction Supervisor License. They are not interchangeable. Ask the relevant program and local building official which credentials apply to your project, particularly when it involves structural work.",
+        "source": {
+          "label": "Massachusetts: HIC contractor resources",
+          "href": "https://www.mass.gov/info-details/hic-contractor-resources"
+        }
+      },
+      {
+        "title": "Check the scope requiring a Construction Supervisor License",
+        "body": "The state provides a separate guide to work requiring a CSL. Describe the building and proposed alterations when checking that guidance; do not assume that cabinet fitting and structural framing have the same requirements.",
+        "source": {
+          "label": "Massachusetts: when a CSL is required",
+          "href": "https://www.mass.gov/info-details/when-is-a-construction-supervisor-license-required"
+        }
+      },
+      {
+        "title": "Review workers’ compensation before hiring",
+        "body": "Massachusetts generally requires employers to insure employees, including owners who are employees of their company. Exemptions and owner treatment depend on the circumstances. Confirm the rules for your entity and working relationships rather than assuming that paying a helper as a subcontractor settles the question.",
+        "source": {
+          "label": "Massachusetts: workers’ compensation requirements",
+          "href": "https://www.mass.gov/info-details/workers-compensation-insurance-requirements"
+        }
+      },
+      {
+        "title": "Prepare the GC’s insurance exhibit before the bid",
+        "body": "Collect requested limits, additional insured language, completed-operations requirements and any waiver requests. Give the broker your project scope and the exhibit together. A certificate is evidence of insurance; it does not itself change the policy to satisfy the contract."
+      }
+    ],
+    "questions": [
+      "What percentage is finish carpentry, framing, decks or structural repairs?",
+      "What heights do crews reach, and is exterior work included?",
+      "Do you use employees, subcontractors or both?",
+      "What does the customer or GC require before you start?"
+    ],
+    "coverages": [
+      {
+        "name": "Carpentry liability and completed operations",
+        "desc": "Review the actual tasks, damage to property being worked on, subcontractors and damage discovered after completion. Compare exclusions as well as the limit."
+      },
+      {
+        "name": "Tools, vehicles and workforce",
+        "desc": "List tools taken to jobs, rented equipment and business vehicle use. Review employee coverage and owner elections separately from general liability."
+      }
+    ],
+    "faqs": [
+      {
+        "q": "Can a finish-carpentry quote cover framing or deck construction?",
+        "a": "Only if the insurer accepts those operations under the proposed policy. List them when requesting the quote, including heights and structural work, instead of relying on the broad label carpenter."
+      },
+      {
+        "q": "Does insurance replace Massachusetts contractor registration or licensing?",
+        "a": "No. Check HIC registration, CSL and project permits with the responsible authorities. Coverage and credentials are separate requirements."
+      },
+      {
+        "q": "What do I need for a Massachusetts carpenter insurance quote?",
+        "a": "Prepare your legal business details, service area, operation split, receipts, payroll, subcontractor costs, claims history and the customer insurance requirements. Include your desired coverage start date."
+      }
+    ]
+  },
   "pool/texas": {
     "name": "Pool Construction",
     "state": "Texas",

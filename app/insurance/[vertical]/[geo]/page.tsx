@@ -80,7 +80,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-${trade.slug}-${cs.slug}`}
         areaServed={cs.name}
         formMode="contractor"
-        tradeLabel={trade.name}
+        tradeLabel={trade.intakeLabel ?? trade.name}
         costHeading={`What ${trade.noun} insurance costs in ${cs.name}`}
         coverageHeading={`The coverage a ${cs.abbr} ${trade.noun} needs`}
         stateFactsHeading={`What's different about ${cs.name}`}
