@@ -20,7 +20,7 @@ for (const page of pages) {
 assert.match(buildContractorState(getContractorState('texas'), pool).heroSub, /gunite/);
 assert.match(buildContractorState(getContractorState('new-jersey'), pool).heroSub, /excavate/);
 assert.match(buildContractorState(getContractorState('massachusetts'), getTrade('carpenter')).title, /Carpenter Insurance in Massachusetts/);
-const resourceSlugs = ['contractor-insurance-quote-comparison', 'general-contractor-subcontractor-insurance-checklist', 'pool-construction-vs-maintenance-insurance', 'tree-service-insurance-quote-checklist'];
+const resourceSlugs = ['cleaning-insurance-customer-property-damage', 'contractor-insurance-quote-comparison', 'general-contractor-subcontractor-insurance-checklist', 'pool-construction-vs-maintenance-insurance', 'tree-service-insurance-quote-checklist'];
 for (const slug of resourceSlugs) {
   const guide = STARTUP_GUIDES.find(g => g.slug === slug); assert.ok(guide);
   assert.equal(new Set(guide.sections.map(s => s.id)).size, guide.sections.length);
@@ -34,4 +34,4 @@ for (const g of cashGuides.filter(g => g.noQuote)) assert.ok(!g.sections.some(s 
 assert.ok(!sitemap.some(s => s.url.endsWith('/about')));
 assert.ok(!sitemap.some(s => s.url.endsWith('/insurance/pool/california')));
 assert.equal(new Set(sitemap.map(s => s.url)).size, sitemap.length);
-console.log(`PASS: ${pages.length} pool pages, state-profile precedence, 4 resource guides, 102 cash plans, sitemap uniqueness and restricted-state scope. No network.`);
+console.log(`PASS: ${pages.length} pool pages, state-profile precedence, 5 resource guides, 102 cash plans, sitemap uniqueness and restricted-state scope. No network.`);

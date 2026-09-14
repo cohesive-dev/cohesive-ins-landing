@@ -1,3 +1,4 @@
+import { CLEANING_RESOURCE } from "./cleaning-resource";
 import type { RestaurantGuide } from "./restaurant";
 
 const liability = { label: "Texas Department of Insurance: general liability and quote comparisons", href: "https://www.tdi.texas.gov/pubs/pc/pcgenliab.html" };
@@ -5,6 +6,7 @@ const certificate = { label: "Texas Department of Insurance: certificates of ins
 const common = { quoteKind: "service" as const, updatedAt: "2026-09-14", nationalSlug: "contractor-quote-checklists" };
 
 export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
+  CLEANING_RESOURCE,
   {
     ...common, slug: "contractor-insurance-quote-comparison", title: "How to compare contractor insurance quotes", category: "Quote comparison", industry: "Contractors", tradeLabel: "General contractor", insurancePath: "/insurance/general-contractor",
     description: "Compare contractor insurance using the same work description, revenue, subcontractors, coverage and total cost. Download a blank quote-comparison worksheet.",
@@ -31,6 +33,26 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     description: "Separate pool building, renovation and maintenance when requesting insurance. Prepare excavation, shell, subcontractor and completed-work questions.",
     intro: "A pool builder and a pool-cleaning business may serve the same homeowner, but perform different work. Separate those services before using a price or policy description as a comparison.",
     sections: [
+      {
+  "id": "installation-exclusions",
+  "title": "Check pool installation, gunite and excavation exclusions",
+  "paragraphs": [
+    "A policy described as pool insurance may be intended for cleaning or servicing. If you build pools, have the reviewer explicitly check new installation, gunite or shotcrete application, excavation and structural work against the proposed forms. A maintenance classification or an accepted business name is not confirmation that construction is covered.",
+    "List the pool systems you install: gunite/concrete, fiberglass, vinyl liner or above-ground. Identify who excavates, places steel, forms the shell and handles plumbing, electrical work and decking. If a subcontractor performs a stage, disclose it; subcontracting does not by itself establish coverage for your responsibility.",
+    "Ask how exclusions or conditions address subsidence, soil movement, underground utilities, damage to existing property and completed work. Discuss responsibility for materials and the unfinished pool separately. These are coverage-review questions, not a claim that every policy excludes these hazards or that all resulting damage is insurable."
+  ],
+  "checklist": [
+    "Get written clarification of installation, gunite/shotcrete and excavation scope.",
+    "Check the actual exclusions and required endorsements before binding.",
+    "Identify direct and subcontracted stages, including completed-work responsibilities."
+  ],
+  "links": [
+    {
+      "label": "Texas Department of Insurance: compare policy coverage and exclusions",
+      "href": "https://www.tdi.texas.gov/pubs/pc/pcgenliab.html"
+    }
+  ]
+},
       { id: "construction", title: "Describe construction and renovation stages", paragraphs: ["List excavation, shell installation, gunite or shotcrete, plumbing, electrical connections, decking, drainage and retaining walls. Identify what your business performs and what another contractor performs. Include structural renovations and any work on an existing pool.", "State the pool systems, project values and construction share of receipts. Ask how the proposal treats damage to existing property, underground services and damage discovered after completion."], checklist: ["Map each stage and responsible contractor.", "Record construction and renovation receipts separately from service.", "Identify equipment, depth, site access and specialist connections."] },
       { id: "maintenance", title: "Describe servicing beyond the word maintenance", paragraphs: ["List cleaning, chemical treatment, pump repairs, equipment installation, liner replacement and other services individually. Some repair or installation tasks may change the insurance review even if most visits are routine cleaning.", "If you do both construction and maintenance, disclose both and their shares of receipts. Do not use a maintenance-only price as a promised premium for building pools."], checklist: ["List chemicals, equipment repairs and installation work.", "Include occasional tasks as well as recurring service visits.", "Confirm the proposed policy accepts each operation."] },
       { id: "startup", title: "Connect the quote to your first-project plan", paragraphs: ["Prepare the customer contract, subcontractor responsibilities and a cash plan before committing to the first build. Establish who insures unfinished work and materials. Review job permits and specialist credentials with the responsible local authority.", "Use the startup guide to work through services, approvals, first customers and the optional Cohesive AI outreach offer available with eligible insurance placement."], checklist: ["Prepare the project insurance exhibit and quote inputs.", "Check responsibility for unfinished work and equipment.", "Build the first-project cash plan before accepting a payment schedule."], links: [{ label: "Start a pool construction business", href: "/guides/how-to-start-a-pool-construction-business" }, { label: "Texas pool construction startup plan", href: "/guides/how-to-start-a-pool-construction-business-in-texas" }, { label: "Compare pool contractor insurance", href: "/insurance/pool" }] },
@@ -41,6 +63,27 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     description: "Prepare a tree-service quote with heights, removal methods, cranes, utilities, crew and subcontractor details. Download a working checklist.",
     intro: "The details that make a tree job workable also matter to an insurer. Describe the work directly, including occasional removals, instead of relying only on the label landscaping or tree care.",
     sections: [
+      {
+  "id": "height-exclusions",
+  "title": "A height exclusion can leave your normal tree work outside the policy",
+  "paragraphs": [
+    "Do not stop at a quote labelled tree service. Ask for every height restriction or exclusion and confirm how height is defined: the tree, the work being performed or another measure in the wording. Give the highest work you actually accept, including occasional jobs. Climbing and bucket-truck operations should both be described.",
+    "A quote limited to lower-height trimming is not interchangeable with protection for taller removals. As an appetite example, Thimble’s April 2026 guide lists an above-ground trimming/pruning activity below 30 feet. That is a specific product activity, not a universal insurance height limit or the wording of your policy.",
+    "Also check removal, crane, storm-work and utility restrictions. Do not omit a tall job, call removal trimming or assume an insured subcontractor removes your exposure. If a planned job exceeds the documented scope, have coverage reviewed before accepting it."
+  ],
+  "checklist": [
+    "Record the maximum accepted height, not the average job height.",
+    "Request the exact height wording and how it is measured.",
+    "Confirm trimming versus removal, climbing, bucket trucks, cranes and utility exposure.",
+    "Obtain any required coverage change before doing work outside the existing scope."
+  ],
+  "links": [
+    {
+      "label": "Thimble April 2026 appetite guide: specific tree-work activities",
+      "href": "https://www.thimble.com/wp-content/uploads/2026/04/Thimble_Appetite_Guide_Apr02_2026.pdf"
+    }
+  ]
+},
       { id: "work", title: "Record work types and maximum height", paragraphs: ["Separate pruning, removal, stump grinding, land clearing and any plant-health services. Give the maximum working height, including occasional jobs, and explain climbing, aerial lifts and rigging methods. Identify storm-damaged or unstable trees and work near utilities.", "If a fact is unknown, mark it for clarification. A limit on the jobs you accept is useful information to discuss with the reviewer."], checklist: ["List work types and their receipt shares.", "Record maximum height and access methods.", "Describe utility proximity and storm work."] },
       { id: "equipment", title: "Explain crane and crew arrangements", paragraphs: ["Distinguish owned machinery, rented machinery, rentals with operators and subcontractors. Share relevant agreements and insurance requirements. Ask which policy is intended to cover equipment damage and which business is responsible for the operation.", "Prepare employee payroll and subcontractor costs separately, together with your claims history. State which roles the owners perform and check employer coverage obligations for the business structure and state."], checklist: ["List owned and rented chippers, lifts and cranes.", "Identify operators, subcontractors and contract responsibilities.", "Prepare receipts, payroll, subcontractor costs and claims records."] },
       { id: "review", title: "Review the quote against the jobs you accept", paragraphs: ["Ask about height, utility, crane and subcontractor restrictions before comparing premiums. Check completed operations and the customer’s requested limits or endorsements. If a new job is outside the description used for the quote, ask for review before accepting it."], checklist: ["Compare the accepted operations and restrictions.", "Resolve the customer insurance exhibit.", "Confirm the policy effective date before starting insured work."], links: [{ label: "Contractor quote comparison worksheet", href: "/guides/contractor-insurance-quote-comparison" }, { label: "Start a tree-service business", href: "/guides/how-to-start-a-tree-service-business" }, { label: "North Carolina tree insurance preparation", href: "/insurance/tree-service/north-carolina" }] },
