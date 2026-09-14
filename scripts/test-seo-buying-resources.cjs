@@ -1,0 +1,13 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),Module=require('node:module'),ts=require('typescript');
+const root=path.resolve(__dirname,'..'),load=Module._load;
+for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true},fileName:f}).outputText,f);
+Module._load=function(req,parent,main){return load.call(this,req.startsWith('@/')?path.join(root,req.slice(2)):req,parent,main);};
+const {BUYING_RESOURCES}=require('../lib/guides/buying-resources.ts'),{STARTUP_GUIDES}=require('../lib/guides/catalog.ts'),sitemap=require('../app/sitemap.ts').default(),route=require('../app/guides/[slug]/page.tsx');
+assert.equal(BUYING_RESOURCES.length,3);
+for(const g of BUYING_RESOURCES){assert.ok(STARTUP_GUIDES.some(x=>x.slug===g.slug));assert.ok(route.generateStaticParams().some(x=>x.slug===g.slug));assert.ok(sitemap.some(x=>x.url.endsWith('/guides/'+g.slug)));assert.equal(new Set(g.sections.map(s=>s.id)).size,g.sections.length);for(const l of g.sections.flatMap(s=>s.links??[])){if(l.href.startsWith('/checklists/'))assert.ok(fs.existsSync(path.join(root,'public',l.href)));else if(l.href.startsWith('/'))assert.ok(sitemap.some(x=>x.url.endsWith(l.href)),l.href);}assert.doesNotMatch(JSON.stringify(g),/partner-quote\?|applicationId|quoteid=|@gmail\.com|\.context\//);}
+const examples=BUYING_RESOURCES.find(g=>g.slug.endsWith('real-quote-examples'));const body=examples.sections.flatMap(s=>s.paragraphs).join(' ');
+for(const fact of ['$2,000,000','$5,000','$1,036.69','$258.62','$78.06','$1,610.99','$35.99','$75','$20,000','$30,000','$286','$1,786'])assert.ok(body.includes(fact),fact);
+assert.match(body,/different businesses/);assert.match(body,/did not establish an installment count/);assert.match(body,/forms title/);assert.match(body,/quote-stage assumptions/);assert.doesNotMatch(body,/cheapest|guaranteed|saved \$/i);
+const {getTrade}=require('../lib/seo/contractors.ts'),{getContractorState,buildContractorState}=require('../lib/seo/contractor-states.ts');const indiana=buildContractorState(getContractorState('indiana'),getTrade('cleaning'));
+assert.match(indiana.title,/Janitorial/);assert.doesNotMatch(indiana.title,/42|\/mo|Instant/);assert.match(indiana.heroSub,/customer/);assert.equal(indiana.reviewedOn,'2026-09-14');
+console.log('PASS: three composed buying guides, sitemap/routes/downloads, bounded document facts, no quote links or personal contact details, Indiana profile override.');

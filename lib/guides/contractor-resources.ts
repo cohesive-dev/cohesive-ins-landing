@@ -1,3 +1,4 @@
+import { BUYING_RESOURCES } from "./buying-resources";
 import { TRADE_COVERAGE_RESOURCES } from "./trade-coverage-resources";
 import { CLEANING_RESOURCE } from "./cleaning-resource";
 import type { RestaurantGuide } from "./restaurant";
@@ -7,6 +8,7 @@ const certificate = { label: "Texas Department of Insurance: certificates of ins
 const common = { quoteKind: "service" as const, updatedAt: "2026-09-14", nationalSlug: "contractor-quote-checklists" };
 
 export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
+  ...BUYING_RESOURCES,
   CLEANING_RESOURCE,
   ...TRADE_COVERAGE_RESOURCES,
   {

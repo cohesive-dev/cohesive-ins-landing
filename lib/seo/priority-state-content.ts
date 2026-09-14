@@ -32,6 +32,65 @@ export type Profile = {
 };
 
 const profiles: Record<string, Profile> = {
+  "cleaning/indiana": {
+  "name": "Janitorial & Cleaning",
+  "state": "Indiana",
+  "reviewedOn": "2026-09-14",
+  "intro": "Indiana janitorial and cleaning businesses should match insurance to the facilities and surfaces they service. Describe office cleaning, residential jobs, floor care and post-construction cleanup separately, and review damage to the customer’s property before choosing a policy.",
+  "pricing": "Prepare annual receipts, payroll, subcontractor costs, claims history and the customer’s insurance exhibit. Ask about property being cleaned, key access, floor treatments, after-hours work and occasional specialist jobs. Compare the full cost and accepted operations; a generic cleaning starting price does not establish your Indiana premium.",
+  "facts": [
+    {
+      "title": "Check employer coverage and working relationships",
+      "body": "Use Indiana’s Worker’s Compensation Board resources to check employer obligations, coverage evidence and independent-contractor arrangements. The Board provides separate resources for employers and independent contractors; a payment label alone does not settle the relationship.",
+      "source": {
+        "label": "Indiana Worker’s Compensation Board: employer resources",
+        "href": "https://www.in.gov/wcb/employers/"
+      }
+    },
+    {
+      "title": "Keep the customer’s property question specific",
+      "body": "Describe a realistic loss: a floor treatment damages the floor, a worker breaks an unrelated item, or keys are lost. Ask how the proposed policy responds to each, including any customer-property extension, exclusion, deductible or sublimit."
+    },
+    {
+      "title": "Prepare the facility’s vendor request before the first shift",
+      "body": "For a multi-site office contract, send the legal entities, locations and insurance exhibit before asking for a certificate. Identify clinics, kitchens, elevated windows and post-construction work separately instead of relying on the job title “janitorial.”"
+    }
+  ],
+  "questions": [
+    "Which facilities and surfaces do you clean?",
+    "Do you strip or wax floors, work at height or handle specialist hazards?",
+    "Who performs the work, and what are payroll and subcontractor costs?",
+    "What does the customer require before allowing your crew on site?"
+  ],
+  "coverages": [
+    {
+      "name": "GL and customer-property protection",
+      "desc": "Review damage to surfaces or items being cleaned separately from the main liability limit. An extension may have a smaller sublimit and workmanship exclusions."
+    },
+    {
+      "name": "Workers and hired cleaning businesses",
+      "desc": "Check employee coverage, owner treatment and subcontractor conditions against the actual staffing and state requirements."
+    },
+    {
+      "name": "Keys, tools and business travel",
+      "desc": "Ask about lost keys, equipment carried between facilities and commercial vehicle use. These are not automatically included in GL."
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Does janitorial insurance cover damage to the floor I clean?",
+      "a": "It depends on the proposed wording. Ask about property being worked on, care/custody/control exclusions, customer-property extensions and poor workmanship. A headline GL limit alone cannot answer the question."
+    },
+    {
+      "q": "Can I get a certificate for an Indiana office-cleaning contract?",
+      "a": "If appropriate coverage is in force, ask the servicing agent for a certificate using the customer’s exact legal name and requirements. Any required coverage or endorsement must exist in the policy; typing it on a certificate does not create it."
+    },
+    {
+      "q": "Is residential cleaning the same as commercial janitorial work?",
+      "a": "Describe both when you do both. Customer types, cleaning methods and specialist operations can affect the correct classification and eligibility. Do not change the work description just to reach a lower price."
+    }
+  ]
+},
   ...STATE_EXPANSION_PROFILES,
   ...POOL_TREE_STATE_PROFILES,
   "carpenter/massachusetts": {
