@@ -2,8 +2,8 @@
 
 import { track } from "@vercel/analytics";
 
-export function GuideQuoteLink({ slug, placement = "sidebar" }: { slug: string; placement?: string }) {
-  return <a href="#quote" onClick={() => { try { track("GuideQuoteClick", { guide: slug, placement }); } catch { /* Navigation always works. */ } }} className="inline-block rounded-lg bg-[#2040E7] px-5 py-3 font-semibold text-white hover:bg-blue-800">Get coverage options with Cohesive</a>;
+export function GuideQuoteLink({ slug, placement = "sidebar", label = "Get coverage options with Cohesive" }: { slug: string; placement?: string; label?: string }) {
+  return <a href="#quote" onClick={() => { try { track("GuideQuoteClick", { guide: slug, placement }); } catch { /* Navigation always works. */ } }} className="inline-block rounded-lg bg-[#2040E7] px-5 py-3 font-semibold text-white hover:bg-blue-800">{label}</a>;
 }
 
 export function PrintGuide() {

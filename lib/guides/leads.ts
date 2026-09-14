@@ -1,4 +1,5 @@
 import type { GuideSection } from "./restaurant";
+import { STARTUP_BUNDLE } from "./lead-bundle";
 
 const certificateSource = { label: "Texas Department of Insurance: what a certificate of insurance does and does not show", href: "https://www.tdi.texas.gov/certificates/faq.html" };
 const marketingSource = { label: "SBA: marketing and sales planning", href: "https://www.sba.gov/business-guide/manage-your-business/marketing-sales" };
@@ -55,18 +56,33 @@ export function serviceLeadSections(industry: { id: string; name: string }, stat
     ] },
     ...(includeInsuranceOffer && ["pool-construction", "tree-service"].includes(industry.id) ? [{
       id: "cohesive-ai-referrals",
-      title: "Get work referrals with automated outreach to PMs and GCs",
+      title: "Free Cohesive AI outreach with insurance: how the bundle works",
       paragraphs: [
         "Make outreach to property managers and general contractors part of your lead-generation plan. Introduce your business, explain the work you handle and your service area, and ask about upcoming projects or joining their referral and approved-vendor lists.",
         industry.id === "pool-construction"
           ? "For pool construction, start with custom-home builders and GCs planning new pools, then property managers overseeing pool renovation projects. State whether you handle gunite or shotcrete, fiberglass installations, renovations, or related landscaping so the referrals match your work."
           : "For tree services, reach property managers who arrange pruning and removal, and GCs who need tree-work partners for upcoming projects. Describe your removal, pruning, and stump-grinding services, equipment, and service area so partners know when to refer you.",
-        "Cohesive AI can automate this outreach and follow-up for you and help you get 5-8 leads per month. It's free with insurance from Cohesive Insurance. Get insured for the work you actually perform, prepare your vendor documents, and use the outreach to build relationships with local PMs and GCs.",
+        STARTUP_BUNDLE.detail,
+        "Start by requesting insurance for your actual work and tell us you are interested in the outreach bundle. Review coverage options and the promotion with the team. After your insurance is placed, agree on the services, service area, and introduction you want to use. Keep the introduction accurate: a newly formed business should not claim past projects, customer reviews, or credentials it does not have.",
+        "A lead is an opportunity to speak with a potential customer or referral partner. It is not a signed construction contract or an approved vendor application. You still handle site assessments, estimates, customer agreements, and the work itself. Ask the team how outreach replies and next steps will be handed to you before the outreach starts.",
       ],
       links: [
         { label: "Explore automated lead generation with Cohesive AI", href: "https://getcohesiveai.com" },
         { label: "Get insurance with Cohesive Insurance", href: "#quote" },
       ],
+    }] : []),
+    ...(["pool-construction", "tree-service"].includes(industry.id) ? [{
+      id: "first-customer-plan",
+      title: "A first-month plan for finding customers",
+      paragraphs: [
+        "Use these as planning milestones, not a promise that licensing, insurance, or your first sale will be completed in 30 days. You can research demand and ask about vendor requirements while preparing the business; only accept and perform work when the required credentials, coverage, and capacity are in place.",
+        industry.id === "pool-construction"
+          ? "Week 1: choose the pool systems and project stages you can deliver, then identify local custom-home builders and landscapers whose projects fit. Week 2: prepare a one-page scope and responsibility map for excavation, shell, specialist connections, and handover. Use your own experience accurately rather than presenting someone else's finished pool as your project."
+          : "Week 1: choose the pruning, removal, or stump services your qualified team can provide and define its service area. Week 2: prepare a service sheet with actual credentials, equipment access, scope limits, and a site-assessment process. Avoid advertising utility-line work or complex removals your team is not prepared to handle.",
+        "Week 3: introduce the business to a small, relevant group of potential referral partners. Ask who handles vendor applications and what information they need. Week 4: follow up where appropriate, record conversations and estimate requests, and identify why prospects did or did not move forward. Track contacts, qualified opportunities, estimates, signed jobs, and profit separately. Respect requests to stop contacting someone.",
+      ],
+      checklist: ["Write one clear service offer and service area.", "List relevant referral partners and their vendor requirements.", "Prepare truthful credentials, experience, and insurance evidence.", "Record each conversation, next action, estimate, and outcome.", "Review which outreach produces work you can deliver profitably."],
+      links: [{ label: "Download a blank first-customer tracker (CSV)", href: "/worksheets/contractor-first-customer-tracker.csv" }],
     }] : []),
     { id: "outreach-and-follow-up", title: "Use a short introduction, then track the next step", paragraphs: [
       `Adapt this example only after the insurance statement is true: “Hi [name], I run [business], a ${industry.name.toLowerCase()} business serving [area]. We carry insurance for the services we offer and can send our COI for review against your requirements. We can help with ${profile.offer}. Who handles vendor approval, and would a short introduction be useful?”`,

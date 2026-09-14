@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import { track } from "@vercel/analytics";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
 
-export default function StartupQuoteForm({ slug, industry, tradeLabel, initialState = "", states }: { slug: string; industry: string; tradeLabel: string; initialState?: string; states: { slug: string; name: string }[] }) {
+export default function StartupQuoteForm({ slug, industry, tradeLabel, initialState = "", states, bundleOffer = false }: { slug: string; industry: string; tradeLabel: string; initialState?: string; bundleOffer?: boolean; states: { slug: string; name: string }[] }) {
   const [state, setState] = useState(initialState);
+  useEffect(() => { captureAttribution(); }, []);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">("idle");
   const [error, setError] = useState("");
   const restriction = startupPlacementRestriction(state, industry);
@@ -14,6 +16,8 @@ export default function StartupQuoteForm({ slug, industry, tradeLabel, initialSt
     event.preventDefault();
     if (restriction || status === "sending") return;
     const fields = new FormData(event.currentTarget);
+    const captured = captureAttribution();
+    const attribution = { ...captured, landing_page: captured.landing_page || window.location.pathname, referrer: captured.referrer || document.referrer || undefined };
     setStatus("sending"); setError("");
     try {
       const response = await fetch("/api/intake", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
@@ -25,10 +29,13 @@ export default function StartupQuoteForm({ slug, industry, tradeLabel, initialSt
           { label: "Starting or coverage timeline", value: String(fields.get("timeline") ?? "") },
           { label: "Planned operations", value: String(fields.get("operations") ?? "").trim() },
           { label: "Startup guide", value: `/guides/${slug}` },
+          ...attributionDetails(attribution),
+          ...(attribution.referrer ? [{ label: "Referrer", value: attribution.referrer }] : []),
+          ...(bundleOffer ? [{ label: "Cohesive AI bundle interest", value: fields.get("bundleInterest") === "yes" ? "Requested information about free outreach with insurance" : "Not requested" }] : []),
         ],
       }) });
       const result = await response.json();
-      if (!response.ok || result.ok !== true) throw new Error(result.error || "We could not confirm your request. Please try again.");
+      if (!response.ok || result.ok !== true || (result.crm !== "sent" && result.notification !== "sent")) throw new Error(result.error || "We could not confirm your request. Please try again.");
       setStatus("done");
       try { track("StartupQuoteCaptured", { guide: slug, industry, state, crm: String(result.crm ?? "unknown"), notification: String(result.notification ?? "unknown") }); } catch { /* Capture does not depend on analytics. */ }
     } catch (cause) { setStatus("error"); setError(cause instanceof Error ? cause.message : "Please try again."); }
@@ -44,6 +51,7 @@ export default function StartupQuoteForm({ slug, industry, tradeLabel, initialSt
       <label className="text-sm font-medium">When do you need coverage?<select name="timeline" className={input} required defaultValue=""><option value="">Choose a timeline</option><option>Within 30 days</option><option>Within 31–60 days</option><option>More than 60 days away</option><option>Still researching</option><option>Already operating</option></select></label>
       <label className="text-sm font-medium sm:col-span-2">What will the business do?<textarea name="operations" className={input} rows={3} maxLength={2000} required placeholder={`Describe your ${industry.toLowerCase()} services, staffing, and any insurance requirements you already have.`} /></label>
     </div>
+    {bundleOffer && !restriction && <label className="mt-5 flex items-start gap-3 text-sm leading-6"><input type="checkbox" name="bundleInterest" value="yes" className="mt-1 h-4 w-4 shrink-0" /><span>Also tell me about free Cohesive AI outreach with insurance. I understand leads and jobs are not guaranteed.</span></label>}
     {restriction && <p role="status" className="mt-5 rounded-lg bg-amber-50 p-4 text-sm leading-6 text-amber-900">{restriction} You can still use the guide and free checklist.</p>}
     {error && <p role="alert" className="mt-5 text-sm text-red-700">{error}</p>}
     <button type="submit" disabled={Boolean(restriction) || status === "sending"} className="mt-6 w-full rounded-lg bg-[#2040E7] px-5 py-3 font-bold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50">{status === "sending" ? "Sending…" : "Get coverage options with Cohesive"}</button>

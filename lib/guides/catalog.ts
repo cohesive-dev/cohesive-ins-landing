@@ -83,8 +83,8 @@ export const STARTUP_GUIDES: RestaurantGuide[] = [
   ...STARTUP_STATES.map(restaurantStateGuide).filter((guide) => !authoredSlugs.has(guide.slug)),
   ...SERVICE_INDUSTRIES.map(nationalServiceGuide),
   ...SERVICE_INDUSTRIES.flatMap((industry) => STARTUP_STATES.map((state) => serviceStateGuide(industry, state))),
-].map(addStartupVendors).map((guide) => guide.sections.some((section) => section.id === "cohesive-ai-referrals")
-  ? { ...guide, updatedAt: "2026-09-11" }
+].map(addStartupVendors).map((guide) => guide.sections.some((section) => section.id === "first-customer-plan")
+  ? { ...guide, updatedAt: "2026-09-14", description: `${guide.title}. Plan startup costs, licensing, insurance, and how to find your first customers.${guide.noQuote ? "" : " Explore free Cohesive AI outreach with insurance."}` }
   : guide);
 
 export const NATIONAL_STARTUP_GUIDES = STARTUP_GUIDES.filter((g) => !g.stateSlug && g.slug === g.nationalSlug);
