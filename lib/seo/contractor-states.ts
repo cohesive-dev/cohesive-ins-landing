@@ -1,3 +1,4 @@
+import { withConstructionHazardReview } from "./construction-hazard-review";
 import { swimmingPoolContent } from "./swimming-pool-content";
 // Per-state tailoring for contractor SEO pages.
 //
@@ -398,7 +399,7 @@ function stateFacts(cs: ContractorState, t: Trade): Fact[] {
 export function buildContractorState(cs: ContractorState, t: Trade): PageContent {
   const base = buildContractorNational(t);
   const floor = `$${t.glFrom}`;
-  return {
+  return withConstructionHazardReview({
     ...base,
     title: `${t.name} Insurance in ${cs.name} - Costs from ${floor}/mo`,
     metaDescription: `What ${t.noun} insurance costs in ${cs.name} (from ${floor}/mo), plus ${cs.abbr} licensing, workers' comp, and bond rules. Licensed ${cs.abbr} contractor insurance agency.`,
@@ -409,7 +410,7 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
     stateFacts: stateFacts(cs, t),
     ...(t.slug === "pool" ? swimmingPoolContent(cs.name) : {}),
     ...priorityStateContent(t.slug, cs.slug),
-  };
+  }, t.slug);
 }
 
 // Is this (trade, state) combo buildable?

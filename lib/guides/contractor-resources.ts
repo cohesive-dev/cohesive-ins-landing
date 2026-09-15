@@ -33,8 +33,8 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     ],
   },
   {
-    ...common, slug: "pool-construction-vs-maintenance-insurance", title: "Pool construction vs. pool maintenance insurance", category: "Swimming pool operations", industry: "Pool construction", tradeLabel: "Pool construction", insurancePath: "/insurance/pool",
-    description: "Separate pool building, renovation and maintenance when requesting insurance. Prepare excavation, shell, subcontractor and completed-work questions.",
+    ...common, updatedAt: "2026-09-15", slug: "pool-construction-vs-maintenance-insurance", title: "Pool construction vs. pool maintenance insurance", category: "Swimming pool operations", industry: "Pool construction", tradeLabel: "Pool construction", insurancePath: "/insurance/pool",
+    description: "Separate pool building, renovation and maintenance when requesting insurance. Review gunite, silica, excavation, subcontractors and completed-work questions.",
     intro: "A pool builder and a pool-cleaning business may serve the same homeowner, but perform different work. Separate those services before using a price or policy description as a comparison.",
     sections: [
 {
@@ -74,6 +74,30 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     {
       "label": "Texas Department of Insurance: compare policy coverage and exclusions",
       "href": "https://www.tdi.texas.gov/pubs/pc/pcgenliab.html"
+    }
+  ]
+},
+{
+  "id": "silica-gunite",
+  "title": "Gunite accepted does not mean silica claims are covered",
+  "paragraphs": [
+    "Gunite and shotcrete application, and cutting or grinding concrete, mortar or tile, deserve a separate dust review. Identify the materials and tasks, including cleanup, and whether your crew or a subcontractor performs them. OSHA identifies cutting and grinding silica-containing construction materials as exposure sources; use the applicable safety requirements and material information to plan the work.",
+    "For insurance, ask for the actual silica, silica-related dust and pollution wording in the proposed general liability policy. Review an employee exposure separately from a claim by a homeowner or neighbor. If contractors pollution liability is proposed, check its own exclusions and accepted operations too; the product name does not establish that silica is covered.",
+    "Subcontracting the application does not establish coverage for the pool builder\u2019s contractual or supervisory responsibility. Describe that arrangement. Safety controls, an accepted gunite classification and a subcontractor\u2019s certificate answer different questions; none amends an exclusion in your policy."
+  ],
+  "checklist": [
+    "Identify gunite/shotcrete, concrete or tile cutting, and cleanup methods.",
+    "Separate employee exposure from third-party injury or property claims.",
+    "Request relevant exclusions and any proposed coverage change in writing."
+  ],
+  "links": [
+    {
+      "label": "OSHA: crystalline silica in construction",
+      "href": "https://www.osha.gov/silica-crystalline/construction"
+    },
+    {
+      "label": "Travelers: managing construction pollution liability",
+      "href": "https://www.travelers.com/resources/business-industries/construction/managing-pollution-liability-risks-in-construction"
     }
   ]
 },

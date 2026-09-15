@@ -1,3 +1,4 @@
+import { withConstructionHazardReview } from "./construction-hazard-review";
 import { swimmingPoolContent } from "./swimming-pool-content";
 // Contractor / trades programmatic-SEO content engine.
 //
@@ -763,7 +764,7 @@ export function buildContractorNational(t: Trade): PageContent {
       ? ` We've bound ${an(t.noun)} ${t.noun} for around ${money(t.realAnnual)}/yr.`
       : "";
 
-  return {
+  return withConstructionHazardReview({
     title: `${t.name} Insurance - Costs from ${floor}/mo & Instant Quotes`,
     metaDescription: `What ${t.noun} insurance really costs (from ${floor}/mo), what GCs make you carry, and how to get a quote in minutes. Licensed contractor insurance agency.`,
     heroH1: `${t.name} Insurance`,
@@ -808,7 +809,7 @@ export function buildContractorNational(t: Trade): PageContent {
     stateFacts: [],
     faqs: sharedFaqs(t),
     ...(t.slug === "pool" ? swimmingPoolContent() : {}),
-  };
+  }, t.slug);
 }
 
 // ---- lookups ----------------------------------------------------------------

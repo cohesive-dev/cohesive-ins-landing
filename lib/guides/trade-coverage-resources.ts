@@ -12,9 +12,34 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
     "insurancePath": "/insurance/general-contractor",
     "relatedInsurancePaths": ["/insurance/remodeler"],
     "quoteKind": "service",
-    "updatedAt": "2026-09-14",
+    "updatedAt": "2026-09-15",
     "nationalSlug": "contractor-quote-checklists",
     "sections": [
+{
+  "id": "occupied-project-review",
+  "title": "Use the next remodeling job as the coverage test",
+  "paragraphs": [
+    "For a kitchen or bathroom renovation, write down whether you remove a load-bearing wall, cut concrete, disconnect plumbing or open the building to weather. Mark the rooms that remain occupied and the parts of the existing home outside your work. Send the same scope to every quote reviewer instead of relying on the word remodeling.",
+    "Ask about a water leak into an untouched room, dust reaching occupants or a neighboring property, and damage discovered after handover. Chubb\u2019s construction pollution materials identify dust, disturbed older materials and leaks that can lead to mold as exposures to consider. These examples are questions for the proposed wording, not a promise that general liability or a pollution policy will pay.",
+    "Provide annual sales, W2 payroll and subcontractor costs as three separate figures, with your project mix and largest job. Zero employee payroll should stay zero when accurate. The reviewer also needs to know who performs demolition, structural, electrical and plumbing work; a subcontracted stage is still part of the project you contract to deliver."
+  ],
+  "checklist": [
+    "Separate cosmetic renovation, structural alterations and additions.",
+    "Identify occupied areas, existing property and temporary weather protection.",
+    "Review water, dust, lead/asbestos and completed-work scenarios against actual terms.",
+    "Match the scope and financial estimates before comparing premiums."
+  ],
+  "links": [
+    {
+      "label": "Chubb: construction project pollution exposures and coverage considerations",
+      "href": "https://www.chubb.com/content/dam/chubb-sites/chubb-com/us-en/business-insurance/contractors-pollution-liability-cpl/documents/pdf/project-cpl-exposures-and-coverage-solutions.pdf"
+    },
+    {
+      "label": "Prepare a GC and subcontractor insurance request",
+      "href": "/guides/general-contractor-subcontractor-insurance-checklist"
+    }
+  ]
+},
       {
         "id": "structural-work",
         "title": "Does remodeling insurance cover structural changes?",

@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const verticals = [...VERTICALS.map((v) => v.slug), ...TRADES.map((t) => t.slug)].map(
     (slug) => ({
       url: `${BASE}/insurance/${slug}`,
-      ...(slug === "pool" ? { lastModified: "2026-09-14" } : {}),
+      ...(["pool", "remodeler"].includes(slug) ? { lastModified: "2026-09-15" } : {}),
       changeFrequency: "monthly" as const,
     }),
   );
@@ -39,7 +39,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     CONTRACTOR_STATE_SLUGS.filter((s) => contractorStateBuildable(t.slug, s)).map(
       (s) => ({
         url: `${BASE}/insurance/${t.slug}/${s}`,
-        ...((t.slug === "pool" || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? { lastModified: t.slug === "pool" ? "2026-09-14" : priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
+        ...((["pool", "remodeler"].includes(t.slug) || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? { lastModified: ["pool", "remodeler"].includes(t.slug) ? "2026-09-15" : priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
         changeFrequency: "monthly" as const,
       }),
     ),

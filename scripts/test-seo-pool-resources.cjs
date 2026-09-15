@@ -49,7 +49,7 @@ for (const key of stateKeys) {
   assert.equal(p.reviewedOn, '2026-09-14');
   assert.ok(p.stateFacts.filter(f => f.source?.href.startsWith('https://')).length >= 2);
   assert.doesNotMatch([p.title, p.heroSub, ...p.costRows.map(r => r.range)].join(' '), /from \$|as low as|\/mo|instant/i);
-  assert.ok(sitemap.some(s => s.url.endsWith('/insurance/' + key) && s.lastModified === '2026-09-14'));
+  assert.ok(sitemap.some(s => s.url.endsWith('/insurance/' + key) && s.lastModified === (['pool', 'remodeler'].includes(trade) ? '2026-09-15' : '2026-09-14')));
   if (release.release === 'seo-20260914-state-depth-v1') assert.ok(release.paths.includes('/insurance/' + key));
 }
 for (const trade of ['pool', 'tree-service', 'remodeler', 'painter', 'handyman', 'roofer']) {
@@ -66,3 +66,24 @@ const okRoof = buildContractorState(getContractorState('oklahoma'), getTrade('ro
 assert.match(JSON.stringify(okRoof.stateFacts), /future milestones/);
 assert.match(JSON.stringify(okRoof.stateFacts), /January 1, 2028/);
 console.log('PASS: 12 state profiles composed, notification coverage, source links, truthful pricing, local/future rule scope and placement restrictions.');
+
+// Shared coverage review must survive the priority-profile FAQ replacements.
+const { withConstructionHazardReview } = require('../lib/seo/construction-hazard-review.ts');
+for (const trade of ['pool', 'remodeler']) {
+  const t = getTrade(trade), pattern = trade === 'pool' ? /silica claims/ : /occupied-home project/;
+  const composed = [buildContractorNational(t), ...CONTRACTOR_STATE_SLUGS.filter(s => contractorStateBuildable(trade, s)).map(s => buildContractorState(getContractorState(s), t))];
+  for (const p of composed) {
+    assert.equal(p.faqs.filter(f => pattern.test(f.q)).length, 1);
+    assert.deepEqual(withConstructionHazardReview(p, trade), p);
+  }
+  const texas = buildContractorState(getContractorState('texas'), t);
+  assert.ok(texas.stateFacts.length > 0);
+  const expected = [`/insurance/${trade}`, ...CONTRACTOR_STATE_SLUGS.filter(s => contractorStateBuildable(trade, s)).map(s => `/insurance/${trade}/${s}`)];
+  for (const route of expected) {
+    if (release.release === 'seo-20260915-pool-silica-remodeling-v1') assert.ok(release.paths.includes(route));
+    assert.ok(sitemap.some(s => s.url.endsWith(route) && s.lastModified === '2026-09-15'));
+  }
+}
+const painter = buildContractorNational(getTrade('painter'));
+assert.equal(withConstructionHazardReview(painter, 'painter'), painter);
+console.log('PASS: pool/remodeler questions survive all state overrides, remain unique, preserve local facts and update only their release routes.');
