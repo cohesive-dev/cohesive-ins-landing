@@ -8,6 +8,7 @@ const { getTrade, buildContractorNational } = require('../lib/seo/contractors.ts
 const { CONTRACTOR_STATE_SLUGS, getContractorState, buildContractorState, contractorStateBuildable } = require('../lib/seo/contractor-states.ts');
 const { STARTUP_GUIDES } = require('../lib/guides/catalog.ts');
 const sitemap = require('../app/sitemap.ts').default();
+const { metroUpdatedForPath } = require('../lib/seo/metro-pages.ts');
 const pool = getTrade('pool');
 assert.equal(pool.intakeLabel, 'Pool & Spa');
 const pages = [buildContractorNational(pool), ...CONTRACTOR_STATE_SLUGS.filter(s => contractorStateBuildable('pool', s)).map(s => buildContractorState(getContractorState(s), pool))];
@@ -49,7 +50,7 @@ for (const key of stateKeys) {
   assert.equal(p.reviewedOn, '2026-09-14');
   assert.ok(p.stateFacts.filter(f => f.source?.href.startsWith('https://')).length >= 2);
   assert.doesNotMatch([p.title, p.heroSub, ...p.costRows.map(r => r.range)].join(' '), /from \$|as low as|\/mo|instant/i);
-  assert.ok(sitemap.some(s => s.url.endsWith('/insurance/' + key) && s.lastModified === (['pool', 'remodeler'].includes(trade) ? '2026-09-15' : '2026-09-14')));
+  assert.ok(sitemap.some(s => s.url.endsWith('/insurance/' + key) && s.lastModified === (metroUpdatedForPath('/insurance/' + key) || (['pool', 'remodeler'].includes(trade) ? '2026-09-15' : '2026-09-14'))));
   if (release.release === 'seo-20260914-state-depth-v1') assert.ok(release.paths.includes('/insurance/' + key));
 }
 for (const trade of ['pool', 'tree-service', 'remodeler', 'painter', 'handyman', 'roofer']) {
@@ -81,7 +82,7 @@ for (const trade of ['pool', 'remodeler']) {
   const expected = [`/insurance/${trade}`, ...CONTRACTOR_STATE_SLUGS.filter(s => contractorStateBuildable(trade, s)).map(s => `/insurance/${trade}/${s}`)];
   for (const route of expected) {
     if (release.release === 'seo-20260915-pool-silica-remodeling-v1') assert.ok(release.paths.includes(route));
-    assert.ok(sitemap.some(s => s.url.endsWith(route) && s.lastModified === '2026-09-15'));
+    assert.ok(sitemap.some(s => s.url.endsWith(route) && s.lastModified === (metroUpdatedForPath(route) || '2026-09-15')));
   }
 }
 const painter = buildContractorNational(getTrade('painter'));

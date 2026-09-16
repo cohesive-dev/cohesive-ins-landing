@@ -1,3 +1,4 @@
+import { METRO_PAGES } from "@/lib/seo/metro-pages";
 import { INSURANCE_SERVICES } from "@/lib/seo/service-industries";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -8,7 +9,7 @@ import { TRADES } from "@/lib/seo/contractors";
 // every state page so crawlers have a full path to all of them.
 
 export const metadata: Metadata = {
-  title: "Business Insurance Guides by Industry & State",
+  title: "Business Insurance Guides by Industry, State & City",
   description:
     "What business insurance costs by trade and state - contractors, restaurants, bars, and more. Costs, licensing, and quotes from a licensed agency.",
   alternates: { canonical: "/insurance" },
@@ -32,7 +33,7 @@ export default function Page() {
       <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
           <h1 className="text-3xl lg:text-5xl font-extrabold text-[#131517] leading-tight mb-4 max-w-3xl">
-            Insurance guides by industry and state
+            Insurance guides by industry, state and city
           </h1>
           <p className="text-base lg:text-lg text-[#6B6D71] leading-relaxed max-w-2xl">
             What coverage costs, what your state requires, and how to get a
@@ -47,6 +48,9 @@ export default function Page() {
           <span className="block font-bold">Starting a business?</span>
           <span className="text-sm">Explore restaurant and service-business startup guides for all 50 states →</span>
         </Link>
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">Explore city insurance guides</h2>
+        <div className="grid sm:grid-cols-2 gap-4 mb-12">{METRO_PAGES.map(p => <Link key={p.path} href={p.path} className="rounded-xl border border-slate-200 p-4 text-[#2040E7] hover:underline"><span className="block font-semibold">{p.cityName}, {p.stateName}</span><span>{p.label}</span></Link>)}</div>
+
         <h2 className="text-2xl font-extrabold text-[#131517] mb-6">
           By industry
         </h2>

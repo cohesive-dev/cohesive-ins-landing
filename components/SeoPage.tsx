@@ -1,3 +1,4 @@
+import { metroLinksFor } from "@/lib/seo/metro-pages";
 import { relatedServiceLinks } from "@/lib/seo/service-industries";
 import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
 import Link from "next/link";
@@ -18,6 +19,9 @@ export default function SeoPage({
   tradeLabel,
   tradeSlug,
   stateSlug,
+  metroSlug,
+  breadcrumbs,
+  resourceScopeLabel = "State resources checked",
   operationsPrompt,
   costHeading,
   coverageHeading,
@@ -35,6 +39,9 @@ export default function SeoPage({
   tradeLabel?: string;
   tradeSlug?: string;
   stateSlug?: string;
+  metroSlug?: string;
+  breadcrumbs?: { label: string; href: string }[];
+  resourceScopeLabel?: string;
   operationsPrompt?: string;
   costHeading: string;
   coverageHeading: string;
@@ -42,6 +49,7 @@ export default function SeoPage({
   stateLinks?: { label: string; href: string }[];
   stateLinksHeading?: string;
 }) {
+  const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -99,6 +107,8 @@ export default function SeoPage({
           </Link>
         </div>
       </header>
+
+      {breadcrumbs && <nav aria-label="Breadcrumb" className="max-w-6xl mx-auto px-4 sm:px-6 py-3 text-sm flex flex-wrap gap-x-4 gap-y-2">{breadcrumbs.map(b => <Link key={b.href} href={b.href} className="text-[#2040E7] underline">{b.label}</Link>)}</nav>}
 
       {/* Hero - deliberately compact: the cost content is the point of the
           page, so it should be visible without scrolling. */}
@@ -225,7 +235,7 @@ export default function SeoPage({
           <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-6">
             {stateFactsHeading}
           </h2>
-          {content.reviewedOn && <p className="mb-6 text-sm text-[#6B6D71]">State resources checked <time dateTime={content.reviewedOn}>{new Date(`${content.reviewedOn}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}</time>. Confirm current requirements with the linked agencies.</p>}
+          {content.reviewedOn && <p className="mb-6 text-sm text-[#6B6D71]">{resourceScopeLabel} <time dateTime={content.reviewedOn}>{new Date(`${content.reviewedOn}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}</time>. Confirm current requirements with the linked agencies.</p>}
           <div className="max-w-3xl space-y-7">
             {content.stateFacts.map((f) => (
               <div key={f.title}>
@@ -242,6 +252,8 @@ export default function SeoPage({
           <div className="mt-8">{quoteCta}</div>
         </section>
       )}
+
+      {localLinks.length > 0 && <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="text-xl font-bold mb-4">City insurance guides</h2><div className="flex flex-wrap gap-x-5 gap-y-3">{localLinks.map(link => <Link key={link.href} href={link.href} className="text-[#2040E7] underline">{link.label}</Link>)}</div></section>}
 
       {/* FAQ */}
       <section className="bg-slate-50 border-y border-slate-100">

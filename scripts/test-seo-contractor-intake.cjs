@@ -51,6 +51,24 @@ function fill(){for(const [placeholder,value] of Object.entries({'Business name'
   reset();fill();await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
   assert.ok(!payload.details.some(d=>d.label==='Services described'));
  }
+ const metroRoute=require('../app/insurance/[vertical]/[geo]/[metro]/page.tsx');
+ for(const p of require('../lib/seo/metro-pages.ts').METRO_PAGES){
+  const page=await metroRoute.default({params:Promise.resolve({vertical:p.trade,geo:p.state,metro:p.city})});
+  formProps=page.props;window.location.pathname=p.path;
+  for(const query of ['', '?utm_source=facebook&utm_medium=paid_social&ad_id=120251012015050660']){
+   mode='success';reset(query);fill();
+   const textarea=nodes(render()).find(n=>n.type==='textarea');textarea.props.onChange({target:{value:'Client-described operations; no inferred hazard answers.'}});
+   await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+   const details=Object.fromEntries(payload.details.map(d=>[d.label,d.value]));
+   assert.equal(details['Page source'],p.source);assert.equal(details['Landing page'],p.path);
+   assert.equal(details.Referrer,'https://www.google.com/');
+   if(query)assert.equal(details['Ad id (Meta)'],'120251012015050660');
+   assert.equal(payload.businessType,page.props.tradeLabel);assert.equal(crmCalls.length,1);
+   assert.equal(crmCalls[0].suppress_first_touch,'true');
+   assert.ok(JSON.stringify(crmCalls[0]).includes(p.source));assert.ok(JSON.stringify(crmCalls[0]).includes(p.path));
+   assert.ok(JSON.stringify(crmCalls[0]).includes('Client-described operations; no inferred hazard answers.'));
+  }
+ }
  for(const failure of ['network','http','false-ok','skipped','non-json']){
   mode=failure;reset();fill();await render().props.onSubmit({preventDefault(){}});assert.doesNotMatch(text(render()),/Got it/);assert.match(text(render()),/couldn't save/);assert.equal(nodes(render()).find(n=>n.type==='button').props.disabled,false);
  }

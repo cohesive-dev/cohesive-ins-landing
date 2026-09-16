@@ -6,6 +6,7 @@ Module._load=function(req,parent,main){return load.call(this,req.startsWith('@/'
 const {INSURANCE_SERVICES,SERVICE_PATHS,serviceContent,relatedServiceLinks}=require('../lib/seo/service-industries.ts');
 const national=require('../app/insurance/[vertical]/page.tsx'),state=require('../app/insurance/[vertical]/[geo]/page.tsx'),sitemap=require('../app/sitemap.ts').default();
 const SeoPage=require('../components/SeoPage.tsx').default;
+const {metroUpdatedForPath}=require('../lib/seo/metro-pages.ts');
 function nodes(n){if(!n||typeof n!=='object')return[];if(Array.isArray(n))return n.flatMap(nodes);return[n,...nodes(n.props?.children)];}
 (async()=>{
 assert.equal(SERVICE_PATHS.length,18);assert.equal(new Set(sitemap.map(s=>s.url)).size,sitemap.length);
@@ -32,6 +33,6 @@ assert.ok(relatedServiceLinks('pool','texas').some(l=>l.href==='/insurance/pool-
 assert.ok(relatedServiceLinks('pool','new-york').some(l=>l.href==='/insurance/pool-service'));
 const {POOL_TREE_STATE_PROFILES}=require('../lib/seo/pool-tree-state-profiles.ts');const {getTrade}=require('../lib/seo/contractors.ts');const {getContractorState,buildContractorState}=require('../lib/seo/contractor-states.ts');
 assert.equal(Object.keys(POOL_TREE_STATE_PROFILES).length,6);
-for(const [key,profile]of Object.entries(POOL_TREE_STATE_PROFILES)){const [trade,geo]=key.split('/'),content=buildContractorState(getContractorState(geo),getTrade(trade));assert.equal(content.heroSub,profile.intro);assert.equal(content.reviewedOn,'2026-09-14');assert.ok(sitemap.some(s=>s.url.endsWith('/insurance/'+key)&&s.lastModified==='2026-09-14'));}
+for(const [key,profile]of Object.entries(POOL_TREE_STATE_PROFILES)){const [trade,geo]=key.split('/'),content=buildContractorState(getContractorState(geo),getTrade(trade));assert.equal(content.heroSub,profile.intro);assert.equal(content.reviewedOn,'2026-09-14');assert.ok(sitemap.some(s=>s.url.endsWith('/insurance/'+key)&&s.lastModified===(metroUpdatedForPath('/insurance/'+key)||(trade==='pool'?'2026-09-15':'2026-09-14'))));}
 console.log('PASS: 18 new pages, six enriched pages, explicit five-state scope, sitemap agreement, real route props and rendered links, pool/pool-service identity separation.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

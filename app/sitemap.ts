@@ -1,3 +1,4 @@
+import { METRO_PAGES, METRO_UPDATED, metroUpdatedForPath } from "@/lib/seo/metro-pages";
 import { SERVICE_PATHS, SERVICE_UPDATED } from "@/lib/seo/service-industries";
 import type { MetadataRoute } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS } from "@/lib/seo/data";
@@ -51,5 +52,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
   }));
 
-  return [...core, ...hub, ...verticals, ...foodStates, ...tradeStates, ...guides, ...SERVICE_PATHS.map(path => ({ url: `${BASE}${path}`, lastModified: SERVICE_UPDATED, changeFrequency: "monthly" as const }))];
+  return [...core, ...hub, ...verticals, ...foodStates, ...tradeStates, ...guides,
+    ...SERVICE_PATHS.map(path => ({ url: `${BASE}${path}`, lastModified: SERVICE_UPDATED, changeFrequency: "monthly" as const })),
+    ...METRO_PAGES.map(p => ({ url: `${BASE}${p.path}`, lastModified: METRO_UPDATED, changeFrequency: "monthly" as const })),
+  ].map(entry => {
+    const updated = metroUpdatedForPath(entry.url.slice(BASE.length));
+    return updated ? { ...entry, lastModified: updated } : entry;
+  });
 }
