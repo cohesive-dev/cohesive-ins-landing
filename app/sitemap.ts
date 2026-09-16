@@ -46,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ),
   );
 
-  const guides = [{ slug: "", updatedAt: "2026-09-14" }, ...STARTUP_GUIDES].map((guide) => ({
+  const guides = [{ slug: "", updatedAt: "2026-09-16" }, ...STARTUP_GUIDES].map((guide) => ({
     url: `${BASE}/guides${guide.slug ? `/${guide.slug}` : ""}`,
     lastModified: guide.updatedAt ?? GUIDE_UPDATED,
     changeFrequency: "monthly" as const,
@@ -56,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...SERVICE_PATHS.map(path => ({ url: `${BASE}${path}`, lastModified: SERVICE_UPDATED, changeFrequency: "monthly" as const })),
     ...METRO_PAGES.map(p => ({ url: `${BASE}${p.path}`, lastModified: METRO_UPDATED, changeFrequency: "monthly" as const })),
   ].map(entry => {
-    const updated = metroUpdatedForPath(entry.url.slice(BASE.length));
+    const updated = entry.url === `${BASE}/insurance/cleaning/new-york` ? "2026-09-16" : metroUpdatedForPath(entry.url.slice(BASE.length));
     return updated ? { ...entry, lastModified: updated } : entry;
   });
 }

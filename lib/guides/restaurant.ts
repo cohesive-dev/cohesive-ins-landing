@@ -9,6 +9,8 @@ export type GuideSection = {
 };
 
 export type RestaurantGuide = {
+  kind?: "growth";
+  cityName?: string;
   slug: string;
   title: string;
   description: string;

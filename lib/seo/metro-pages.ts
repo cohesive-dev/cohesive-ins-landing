@@ -1,3 +1,4 @@
+import { POOL_METRO_EXPANSION } from "./pool-metro-expansion";
 import type { PageContent } from "./data";
 
 export const METRO_UPDATED = "2026-09-16";
@@ -563,7 +564,8 @@ export const METRO_PAGES: MetroPage[] = [
       ]
     },
     "operationsPrompt": "Separate cosmetic updates from load-bearing changes, additions, foundation work and demolition. Identify who disconnects plumbing, performs electrical work and protects the occupied home. Keep sales, W2 payroll and subcontractor costs separate."
-  }
+  },
+  ...POOL_METRO_EXPANSION
 ];
 export function getMetroPage(trade: string, state: string, city: string): MetroPage | undefined {
   return METRO_PAGES.find(p => p.trade === trade && p.state === state && p.city === city);
@@ -577,4 +579,8 @@ export const METRO_RELEASE_PATHS = [...new Set([
 ])];
 export function metroUpdatedForPath(path: string): string | undefined {
   return METRO_RELEASE_PATHS.includes(path) ? METRO_UPDATED : undefined;
+}
+
+export function poolLeadGuidePath(p: Pick<MetroPage, "city" | "state">): string {
+  return `/guides/how-to-get-pool-construction-leads-in-${p.city}-${p.state}`;
 }

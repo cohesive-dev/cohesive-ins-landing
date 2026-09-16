@@ -1,4 +1,5 @@
-import { metroLinksFor } from "@/lib/seo/metro-pages";
+import { GROWTH_BUNDLE } from "@/lib/guides/lead-bundle";
+import { metroLinksFor, poolLeadGuidePath } from "@/lib/seo/metro-pages";
 import { relatedServiceLinks } from "@/lib/seo/service-industries";
 import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
 import Link from "next/link";
@@ -50,6 +51,11 @@ export default function SeoPage({
   stateLinksHeading?: string;
 }) {
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
+  const growthLink = tradeSlug === "pool" && stateSlug && metroSlug
+    ? { href: poolLeadGuidePath({ state: stateSlug, city: metroSlug }), label: `How to find pool construction leads in ${areaServed}` }
+    : tradeSlug === "cleaning" && stateSlug === "new-york" && !metroSlug
+      ? { href: "/guides/how-to-get-janitorial-leads-in-new-york-city", label: "How to get janitorial leads in New York City" }
+      : undefined;
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -346,6 +352,7 @@ export default function SeoPage({
           </a>
         </div>
       </footer>
+      {growthLink && <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6"><h2 className="text-2xl font-bold">Find customers as well as coverage</h2><p className="mt-3 max-w-3xl leading-7 text-slate-600">{GROWTH_BUNDLE.summary} Leads and jobs are not guaranteed.</p><a href={growthLink.href} className="mt-4 inline-block font-semibold text-[#2040E7] underline">{growthLink.label} →</a></section>}
     </main>
   );
 }

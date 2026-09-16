@@ -1,3 +1,4 @@
+import { LOCAL_GROWTH_GUIDES } from "./local-growth";
 import { CONTRACTOR_RESOURCES } from "./contractor-resources";
 import { getContractorState, contractorStateBuildable } from "../seo/contractor-states";
 import { addStartupVendors } from "./vendors";
@@ -104,9 +105,9 @@ export const STARTUP_GUIDES: RestaurantGuide[] = [
   ...SERVICE_INDUSTRIES.flatMap((industry) => STARTUP_STATES.map((state) => serviceStateGuide(industry, state))),
 ].map(addStartupVendors).map((guide) => guide.sections.some((section) => section.id === "first-customer-plan")
   ? { ...guide, updatedAt: "2026-09-14", description: `${guide.title}. Plan startup costs, licensing, insurance, and how to find your first customers.${guide.noQuote ? "" : " Explore free Cohesive AI outreach with insurance."}` }
-  : guide);
+  : guide).concat(LOCAL_GROWTH_GUIDES);
 
 export const NATIONAL_STARTUP_GUIDES = STARTUP_GUIDES.filter((g) => !g.stateSlug && g.slug === g.nationalSlug);
 export function getStartupGuide(slug: string) { return STARTUP_GUIDES.find((guide) => guide.slug === slug); }
-export function getStateGuides(guide: RestaurantGuide) { return STARTUP_GUIDES.filter((other) => other.stateSlug && other.nationalSlug === guide.nationalSlug).sort((a, b) => a.stateSlug!.localeCompare(b.stateSlug!)); }
-export function getRelatedGuides(guide: RestaurantGuide) { return STARTUP_GUIDES.filter((other) => other.slug !== guide.slug && !other.stateSlug && other.nationalSlug === guide.nationalSlug); }
+export function getStateGuides(guide: RestaurantGuide) { if (guide.kind === "growth") return []; return STARTUP_GUIDES.filter((other) => other.stateSlug && other.nationalSlug === guide.nationalSlug).sort((a, b) => a.stateSlug!.localeCompare(b.stateSlug!)); }
+export function getRelatedGuides(guide: RestaurantGuide) { if (guide.kind === "growth") return LOCAL_GROWTH_GUIDES.filter(g => g.slug !== guide.slug && g.industry === guide.industry).slice(0, 3); return STARTUP_GUIDES.filter((other) => other.slug !== guide.slug && !other.stateSlug && other.nationalSlug === guide.nationalSlug); }
