@@ -49,7 +49,7 @@ export default function Page() {
           <span className="text-sm">Explore restaurant and service-business startup guides for all 50 states →</span>
         </Link>
         <h2 className="text-2xl font-extrabold text-[#131517] mb-4">Explore city insurance guides</h2>
-        <div className="grid sm:grid-cols-2 gap-4 mb-12">{METRO_PAGES.map(p => <Link key={p.path} href={p.path} className="rounded-xl border border-slate-200 p-4 text-[#2040E7] hover:underline"><span className="block font-semibold">{p.cityName}, {p.stateName}</span><span>{p.label}</span></Link>)}</div>
+        <div className="space-y-3 mb-12">{[...new Set(METRO_PAGES.map(p => p.trade))].map(trade => <details key={trade} className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer font-semibold text-[#2040E7]">{METRO_PAGES.find(p => p.trade === trade)?.label}</summary><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{METRO_PAGES.filter(p => p.trade === trade).map(p => <Link key={p.path} href={p.path} className="text-[#2040E7] underline">{p.cityName}, {p.stateName}</Link>)}</div></details>)}</div>
 
         <h2 className="text-2xl font-extrabold text-[#131517] mb-6">
           By industry

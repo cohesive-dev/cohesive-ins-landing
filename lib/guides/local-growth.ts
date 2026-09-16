@@ -1,3 +1,4 @@
+import { TRADE_METRO_GROWTH_GUIDES } from "./trade-metro-growth";
 import { GROWTH_BUNDLE } from "./lead-bundle";
 import type { RestaurantGuide } from "./restaurant";
 
@@ -2828,4 +2829,4 @@ export const LOCAL_GROWTH_GUIDES: RestaurantGuide[] = AUTHORED_LOCAL_GROWTH_GUID
   ...guide, sections: guide.sections.map(section => section.id === "cohesive-ai-referrals"
     ? { ...section, title: "A free PM/GC list and lead-generation help with insurance", paragraphs: [GROWTH_BUNDLE.summary, ...section.paragraphs.slice(1)] }
     : section),
-}));
+})).concat(TRADE_METRO_GROWTH_GUIDES);

@@ -7,7 +7,8 @@ const route=require('../app/insurance/[vertical]/[geo]/[metro]/page.tsx');
 const {getTrade}=require('../lib/seo/contractors.ts');const stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
 const sitemap=require('../app/sitemap.ts').default();const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/.well-known/cohesive-content-release.json')));
 (async()=>{
- assert.equal(METRO_PAGES.length,24);assert.equal(new Set(METRO_PAGES.map(p=>p.path)).size,24);assert.equal(route.dynamicParams,false);
+ assert.equal(METRO_PAGES.length,183);assert.equal(new Set(METRO_PAGES.map(p=>p.path)).size,183);assert.equal(route.dynamicParams,false);
+ for(const t of ['remodeler','siding','glass-glazing','electrician','plumber','handyman','hvac','painter'])assert.equal(METRO_PAGES.filter(p=>p.trade===t).length,20,t+' cohort');
  const parents=stateRoute.generateStaticParams();
  for(const p of METRO_PAGES){
   const params={vertical:p.trade,geo:p.state,metro:p.city};
@@ -21,7 +22,7 @@ const sitemap=require('../app/sitemap.ts').default();const manifest=JSON.parse(f
   assert.doesNotMatch(JSON.stringify(p.content.costRows),/\$|\/mo|from /i);assert.ok(p.content.metaDescription.length<=210);
   assert.ok(sitemap.some(e=>e.url.endsWith(p.path)&&e.lastModified==='2026-09-16'));
  }
- assert.equal(route.generateStaticParams().length,24);
+ assert.equal(route.generateStaticParams().length,183);
  assert.deepEqual(route.generateStaticParams({params:{vertical:'pool',geo:'texas'}}),['dallas','houston','austin','san-antonio'].map(metro=>({vertical:'pool',geo:'texas',metro})));
  assert.deepEqual(route.generateStaticParams({params:{vertical:'pool',geo:'california'}}),[]);
  for(const params of [{vertical:'pool',geo:'florida',metro:'dallas'},{vertical:'cleaning',geo:'florida',metro:'orlando'},{vertical:'pool',geo:'california',metro:'los-angeles'}]){
@@ -30,5 +31,5 @@ const sitemap=require('../app/sitemap.ts').default();const manifest=JSON.parse(f
  assert.equal(new Set(sitemap.map(e=>e.url)).size,sitemap.length);
  if(manifest.release==='seo-20260916-metro-pilot-v1')assert.deepEqual(new Set(manifest.paths),new Set(METRO_RELEASE_PATHS));
  assert.deepEqual(metroLinksFor('unknown'),[]);
- console.log('PASS: 24 real metro routes, canonical metadata, parent/national discovery, actual trade labels, source attribution props, nested generation, restricted/unknown404 and sitemap/release scope.');
+ console.log('PASS: 183 real metro routes, canonical metadata, parent/national discovery, actual trade labels, source attribution props, nested generation, restricted/unknown404 and sitemap/release scope.');
 })().catch(e=>{console.error(e);process.exitCode=1});

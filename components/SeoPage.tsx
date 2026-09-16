@@ -1,3 +1,4 @@
+import { findTradeMetroGrowthLink } from "@/lib/seo/trade-metro-research";
 import { GROWTH_BUNDLE } from "@/lib/guides/lead-bundle";
 import { metroLinksFor, poolLeadGuidePath } from "@/lib/seo/metro-pages";
 import { relatedServiceLinks } from "@/lib/seo/service-industries";
@@ -53,9 +54,9 @@ export default function SeoPage({
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
   const growthLink = tradeSlug === "pool" && stateSlug && metroSlug
     ? { href: poolLeadGuidePath({ state: stateSlug, city: metroSlug }), label: `How to find pool construction leads in ${areaServed}` }
-    : tradeSlug === "cleaning" && stateSlug === "new-york" && !metroSlug
+    : findTradeMetroGrowthLink(tradeSlug, stateSlug, metroSlug) ?? (tradeSlug === "cleaning" && stateSlug === "new-york" && !metroSlug
       ? { href: "/guides/how-to-get-janitorial-leads-in-new-york-city", label: "How to get janitorial leads in New York City" }
-      : undefined;
+      : undefined);
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",

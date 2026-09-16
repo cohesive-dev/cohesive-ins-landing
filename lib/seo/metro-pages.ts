@@ -1,3 +1,4 @@
+import { TRADE_METRO_PAGES } from "./trade-metro-content";
 import { POOL_METRO_EXPANSION } from "./pool-metro-expansion";
 import type { PageContent } from "./data";
 
@@ -7,8 +8,9 @@ export type MetroPage = {
   label: string; path: string; parentPath: string; source: string;
   operationsPrompt: string; content: PageContent;
 };
-// Explicit, researched pilot. No automatic city x trade expansion or inferred local offices.
-export const METRO_PAGES: MetroPage[] = [
+// Preserve individually authored pages. The later, explicitly approved twenty-city
+// trade matrix is scoped in trade-metro-research; no local offices are inferred.
+const ORIGINAL_METRO_PAGES: MetroPage[] = [
   {
     "trade": "cleaning",
     "state": "florida",
@@ -566,6 +568,9 @@ export const METRO_PAGES: MetroPage[] = [
     "operationsPrompt": "Separate cosmetic updates from load-bearing changes, additions, foundation work and demolition. Identify who disconnects plumbing, performs electrical work and protects the occupied home. Keep sales, W2 payroll and subcontractor costs separate."
   },
   ...POOL_METRO_EXPANSION
+];
+export const METRO_PAGES: MetroPage[] = [...ORIGINAL_METRO_PAGES,
+  ...TRADE_METRO_PAGES.filter(p => !ORIGINAL_METRO_PAGES.some(existing => existing.path === p.path)),
 ];
 export function getMetroPage(trade: string, state: string, city: string): MetroPage | undefined {
   return METRO_PAGES.find(p => p.trade === trade && p.state === state && p.city === city);

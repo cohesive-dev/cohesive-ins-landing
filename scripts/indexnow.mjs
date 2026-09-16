@@ -3,9 +3,11 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const manifestPath='/.well-known/cohesive-content-release.json';
+// IndexNow protocol permits up to 10,000 URLs per POST. All local origin,
+// path, exact public release and per-page readback checks still apply.
 export function prepare(config,manifest,key){
  if(config.host!=='www.cohesiveinsure.com'||!/^([a-f0-9]{32})\.txt$/.test(config.keyFile)||key.trim()+'.txt'!==config.keyFile)throw new Error('invalid_site_configuration');
- if(!manifest.release||!Array.isArray(manifest.paths)||!manifest.paths.length||manifest.paths.length>100)throw new Error('invalid_release_manifest');
+ if(!manifest.release||!Array.isArray(manifest.paths)||!manifest.paths.length||manifest.paths.length>10000)throw new Error('invalid_release_manifest');
  const origin='https://'+config.host;
  const urls=manifest.paths.map(p=>{if(typeof p!=='string'||!/^\/(guides|insurance)(\/[a-z0-9-]+)*$/.test(p))throw new Error('invalid_content_path');return origin+p;});
  if(new Set(urls).size!==urls.length)throw new Error('duplicate_content_path');
