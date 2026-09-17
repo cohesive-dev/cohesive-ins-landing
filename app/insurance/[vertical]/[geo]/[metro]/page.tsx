@@ -7,7 +7,7 @@ import { contractorStateBuildable } from "@/lib/seo/contractor-states";
 
 export const dynamicParams = false;
 type Params = { vertical: string; geo: string; metro: string };
-export function generateStaticParams({ params = {} }: { params?: Partial<Params> } = {}): Params[] {
+export function generateStaticParams({ params = {} }: { params: Partial<Params> }): Params[] {
   return METRO_PAGES.filter(p => contractorStateBuildable(p.trade, p.state) &&
     (!params.vertical || p.trade === params.vertical) && (!params.geo || p.state === params.geo))
     .map(p => ({ vertical: p.trade, geo: p.state, metro: p.city }));

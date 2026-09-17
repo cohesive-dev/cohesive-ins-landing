@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
+import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
@@ -248,6 +249,16 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [contactError, setContactError] = useState(false);
+  const attributionRef = useRef<Attribution>({});
+  useEffect(() => { attributionRef.current = captureAttribution(); }, []);
+  const sourceDetails = useCallback(() => {
+    const attr = { ...captureAttribution(), ...attributionRef.current };
+    return [
+      ...attributionDetails(attr),
+      { label: "Submission page", value: window.location.pathname },
+      ...(attr.referrer ? [{ label: "Referrer", value: attr.referrer }] : []),
+    ];
+  }, []);
 
   // ── Partial-fill capture ──────────────────────────────────────────────────
   // Once the visitor has typed a usable contact handle, autosave silently in
@@ -268,7 +279,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
     const timer = setTimeout(() => {
       const f = fieldsRef.current;
       if (submittedRef.current || !hasContactHandle(f)) return;
-      const payload = JSON.stringify({ ...f, partial: true });
+      const payload = JSON.stringify({ ...f, source: "website-form", details: sourceDetails(), partial: true });
       if (payload === lastAutosaveRef.current) return;
       lastAutosaveRef.current = payload;
       void fetch("/api/intake", {
@@ -279,7 +290,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       }).catch(() => { });
     }, 2500);
     return () => clearTimeout(timer);
-  }, [name, email, phone, businessType, zip, submitted]);
+  }, [name, email, phone, businessType, zip, submitted, sourceDetails]);
 
   useEffect(() => {
     // One abandonment alert per browser session, across tab switches too —
@@ -295,7 +306,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       // otherwise a later exit event gets another chance.
       const queued = navigator.sendBeacon(
         "/api/intake",
-        new Blob([JSON.stringify({ ...f, partial: true, final: true })], {
+        new Blob([JSON.stringify({ ...f, source: "website-form", details: sourceDetails(), partial: true, final: true })], {
           type: "application/json",
         }),
       );
@@ -313,7 +324,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       window.removeEventListener("pagehide", flush);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, []);
+  }, [sourceDetails]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -331,7 +342,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
     void fetch("/api/intake", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, businessType, zip }),
+      body: JSON.stringify({ name, email, phone, businessType, zip, source: "website-form", details: sourceDetails() }),
     }).catch(() => { });
     // Meta Pixel standard Lead event — lets ad campaigns optimize on form fills.
     (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead");
