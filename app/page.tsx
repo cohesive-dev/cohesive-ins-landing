@@ -249,6 +249,8 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [contactError, setContactError] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const attributionRef = useRef<Attribution>({});
   useEffect(() => { attributionRef.current = captureAttribution(); }, []);
   const sourceDetails = useCallback(() => {
@@ -326,27 +328,41 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
     };
   }, [sourceDetails]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Re-entry guard: a double-click must not double-POST or double-fire the
-    // Meta Pixel Lead event.
     if (submittedRef.current) return;
-    // Minimum to work a lead: at least one way to reach them.
     if (!hasContactHandle({ email, phone })) {
       setContactError(true);
       return;
     }
     submittedRef.current = true;
-    // Fire-and-forget: record the submission if we can, but never block the
-    // customer or surface an error — they always see the confirmation.
-    void fetch("/api/intake", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, businessType, zip, source: "website-form", details: sourceDetails() }),
-    }).catch(() => { });
-    // Meta Pixel standard Lead event — lets ad campaigns optimize on form fills.
-    (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead");
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, businessType, zip, source: "website-form", details: sourceDetails() }),
+      });
+      const result = await response.json();
+      if (!response.ok || result?.ok !== true ||
+          (result.crm !== "sent" && result.notification !== "sent")) {
+        throw new Error("Intake was not accepted");
+      }
+      // Email fallback is an accepted request, but not a confirmed CRM save.
+      // Keep it out of the browser Lead count until the CRM has saved it.
+      if (result.crm === "sent" && result.conversion?.eligible !== false) {
+        try {
+          (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead");
+        } catch { /* Analytics failure must not turn a saved inquiry into a retry. */ }
+      }
+      setSubmitted(true);
+    } catch {
+      submittedRef.current = false;
+      setSubmitError("We could not confirm your request. Please try again or call (929) 594-5450.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -377,6 +393,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
           <input required type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Smith"
             className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
         </label>
+        {submitError && <p role="alert" className="text-sm text-red-600 text-left">{submitError}</p>}
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="font-normal text-[#6B6D71]">(email or phone required)</span></span>
@@ -414,8 +431,8 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
           <div className="flex items-end">
-            <button type="submit" className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors whitespace-nowrap">
-              Get a Quote
+            <button type="submit" disabled={submitting} className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors whitespace-nowrap">
+              {submitting ? "Sending..." : "Get a Quote"}
             </button>
           </div>
         </div>
