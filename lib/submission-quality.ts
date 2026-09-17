@@ -1,4 +1,5 @@
 import { createHash, createHmac } from 'node:crypto';
+import { acceptedPhoneShape } from './phone-shape';
 
 export type QualityInput = {name?:string;email?:string;phone?:string;company?:string;honeypot?:unknown};
 export type QualityDecision = {kind:'accept'|'reject'|'review';reason:string};
@@ -10,7 +11,7 @@ export function assessSubmission(input:QualityInput,blockedHashes:string[]=[]):Q
  if(typeof input.honeypot==='string'&&input.honeypot.trim())return {kind:'reject',reason:'honeypot'};
  const email=clean(input.email),phone=(input.phone||'').replace(/\D/g,'');
  if(!email||! /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email))return {kind:'reject',reason:'invalid_email'};
- const phoneShape=/^1?[2-9]\d{2}[2-9]\d{6}$/.test(phone)||(input.phone?.startsWith('+')&&!phone.startsWith('1')&&/^[2-9]\d{7,14}$/.test(phone));
+ const phoneShape=acceptedPhoneShape(input.phone);
  if(!phoneShape||/^(\d)\1+$/.test(phone))return {kind:'reject',reason:'invalid_phone'};
  if(!clean(input.name)||!clean(input.company))return {kind:'reject',reason:'missing_identity'};
  const blocked=new Set([...confirmedFakeHashes,...blockedHashes]);
