@@ -22,7 +22,7 @@ const sitemap=require('../app/sitemap.ts').default();const manifest=JSON.parse(f
   assert.doesNotMatch(JSON.stringify(p.content.costRows),/\$|\/mo|from /i);assert.ok(p.content.metaDescription.length<=210);
   assert.ok(sitemap.some(e=>e.url.endsWith(p.path)&&e.lastModified==='2026-09-16'));
  }
- assert.equal(route.generateStaticParams().length,183);
+ assert.equal(route.generateStaticParams({params:{}}).length,183);
  assert.deepEqual(route.generateStaticParams({params:{vertical:'pool',geo:'texas'}}),['dallas','houston','austin','san-antonio'].map(metro=>({vertical:'pool',geo:'texas',metro})));
  assert.deepEqual(route.generateStaticParams({params:{vertical:'pool',geo:'california'}}),[]);
  for(const params of [{vertical:'pool',geo:'florida',metro:'dallas'},{vertical:'cleaning',geo:'florida',metro:'orlando'},{vertical:'pool',geo:'california',metro:'los-angeles'}]){
