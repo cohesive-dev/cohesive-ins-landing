@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
+import { acceptedPhoneShape } from "@/lib/phone-shape";
 
 /**
  * /contractors - deep intake landing page for the high-value contractor GL
@@ -238,6 +239,7 @@ export default function ContractorsLandingPage() {
   };
 
   const emailValid = EMAIL_RE.test((f.email ?? "").trim());
+  const phoneValid = acceptedPhoneShape(f.phone);
 
   // No qualifier gate on the landing page (Kevin 2026-08-13): ad traffic is
   // business owners; the personal-DQ mechanic only pays on the FB form where
@@ -269,7 +271,7 @@ export default function ContractorsLandingPage() {
   const canSubmit =
     f.fullName?.trim() &&
     emailValid &&
-    f.phone?.trim() &&
+    phoneValid &&
     f.legalName?.trim() &&
     f.address?.trim() &&
     !!f.trade &&
@@ -315,10 +317,10 @@ export default function ContractorsLandingPage() {
 
   // Funnel milestone driven by state.
   useEffect(() => {
-    if (f.fullName?.trim() && emailValid && f.phone?.trim()) {
+    if (f.fullName?.trim() && emailValid && phoneValid) {
       track("ContactDone");
     }
-  }, [f.fullName, f.phone, emailValid, track]);
+  }, [f.fullName, phoneValid, emailValid, track]);
 
   // Keep a live snapshot so the capture handlers don't read a stale closure.
   const latest = useRef({ f, details, status, disqualified });
@@ -432,9 +434,12 @@ export default function ContractorsLandingPage() {
           ...(largeBusinessEventId ? { largeBusinessEventId } : {}),
         }),
       });
-      if (!res.ok) throw new Error(`Request failed (${res.status})`);
       const result = await res.json();
-      if (!result.ok) throw new Error('We could not save your request. Please try again.');
+      if (!res.ok || result.ok !== true) {
+        throw new Error(typeof result.error === "string"
+          ? result.error
+          : "We could not save your request. Please try again.");
+      }
       const conversionId = result.conversion?.eventId;
       if (result.conversion?.eligible !== true || typeof conversionId !== 'string') {setStatus('done');return;}
       // Server acceptance and shared ID gate all acquisition signals.
@@ -511,9 +516,16 @@ export default function ContractorsLandingPage() {
                 </p>
               )}
             </div>
-            <Field label="Phone" required>
-              <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="(929) 594-5450" autoComplete="tel" inputMode="tel" />
-            </Field>
+            <div>
+              <Field label="Phone" required>
+                <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="(929) 594-5450" autoComplete="tel" inputMode="tel" />
+              </Field>
+              {f.phone && !phoneValid && (
+                <p className="mt-1 text-xs text-red-600">
+                  Please enter a valid phone number.
+                </p>
+              )}
+            </div>
           </div>
         </Section>
 
