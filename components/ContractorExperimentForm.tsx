@@ -96,8 +96,8 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    ];
    try{
     const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||''})});
-    if(!res.ok)throw new Error('Unable to save your request. Please try again.');
-    const result=await res.json();if(result.ok!==true)throw new Error('Unable to confirm your request. Please try again.');
+    const result=await res.json();
+    if(!res.ok||result.ok!==true)throw new Error(typeof result.error==='string' ? result.error : 'Unable to save your request. Please try again.');
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
     if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
      (window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});

@@ -13,6 +13,7 @@ function load(file){
   if(id==='@/lib/guides/states')return {STARTUP_STATES:[]};
   if(id==='@/lib/guides/eligibility')return {startupPlacementRestriction:()=>null};
   if(id.startsWith('@/'))return load(path.join(process.cwd(),id.slice(2)+'.ts'));
+  if(id.startsWith('.'))return load(path.resolve(path.dirname(file),id+'.ts'));
   return require(id);
  };
  vm.runInThisContext('(function(require,module,exports){'+js+'\n})',{filename:file})(req,module,module.exports);return module.exports;
@@ -20,10 +21,15 @@ function load(file){
 global.fetch=async(url,opts)=>{calls.push({url,body:JSON.parse(opts.body)});return String(url).includes('graph.facebook.com')?Response.json({events_received:1}):Response.json({ok:crm,notificationDelivery:duplicate?'duplicate':'sent'});};
 process.env.META_CAPI_TOKEN='test-only-no-network';process.env.INTAKE_CONVERSION_SECRET='test-only-conversion-secret';
 const {POST}=load('app/api/intake/route.ts'),{identityHash,acquisitionEventId,assessSubmission}=load('lib/submission-quality.ts');
+const {validField}=load('lib/contractor-experiment.ts');
 const body={name:'Oscar',email:'real.owner@gmail.com',phone:'+16189224049',company:'Real Business LLC',source:'contractors-landing',eventId:'client-id',details:[{label:'Annual W2 payroll',value:'$0'}]};
 const capis=()=>calls.filter(c=>c.url?.includes('graph.facebook.com'));
 async function submit(b){calls=[];const req=new Request('https://www.cohesiveinsure.com/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});req.cookies={get:()=>undefined};const res=await POST(req);return {status:res.status,body:await res.json()};}
 (async()=>{
+ for (const [phone, accepted] of [['2025550123',true],['+1 (202) 555-0123',true],['12025550123',true],['+442079460123',true],['2021234567',false],['22025550123',false],['1111111111',false],['202555012',false]]) {
+  assert.equal(validField('phone',phone),accepted,phone);
+  assert.equal(assessSubmission({...body,phone}).kind==='accept',accepted,phone);
+ }
  let r=await submit(body);assert.equal(r.status,200);assert.equal(r.body.conversion.eligible,true);assert.equal(capis().length,1);assert.equal(capis()[0].body.data[0].event_id,r.body.conversion.eventId);
  const event=r.body.conversion.eventId;r=await submit({...body,eventId:'different-client-retry'});assert.equal(r.body.conversion.eventId,event);
  duplicate=true;r=await submit(body);assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,1);assert.equal(capis()[0].body.data[0].event_id,event);duplicate=false;

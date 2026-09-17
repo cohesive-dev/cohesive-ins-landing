@@ -1,3 +1,4 @@
+import { acceptedPhoneShape } from './phone-shape';
 export const INDUSTRIES = {
   pool:'Pool construction', remodel:'Remodeling', roof:'Roofing',
   tree:'Tree services', painting:'Painting', hvac:'HVAC',
@@ -23,7 +24,7 @@ export function fieldsFor(_a:Answers,layout:'step'|'long') {
 export function validField(field:string,value:string|undefined) {
   if(!value?.trim())return false;
   if(field==='email')return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
-  if(field==='phone')return /^\+?[\d\s().-]+$/.test(value)&&[10,11].includes(value.replace(/\D/g,'').length);
+  if(field==='phone')return acceptedPhoneShape(value);
   if(field in QUESTION_OPTIONS)return QUESTION_OPTIONS[field as keyof typeof QUESTION_OPTIONS].includes(value);
   return value.trim().length>=2&&value.length<=200;
 }
