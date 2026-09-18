@@ -5,6 +5,7 @@ import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers
 import {captureAttribution,attributionDetails} from '@/lib/attribution';
 import {attachFunnelTracker} from '@/lib/funnel-tracker';
 import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-landing';
+import {ContractorFormActions,ContractorFormSuccess} from '@/components/ContractorFormPresentation';
 import ContractorQuestionSet from '@/components/ContractorQuestionSet';
 import ContractorPageHero,{contractorMainClass,contractorFormClass,contractorButtonClass} from '@/components/ContractorPageTheme';
 import {FULL_LABELS,fullScreens,validFullField,normalizeFull} from '@/lib/contractor-full-form';
@@ -125,31 +126,32 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    try{
     const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||''})});
     const result=await res.json();
-    if(!res.ok||result.ok!==true)throw new Error(typeof result.error==='string' ? result.error : 'Unable to save your request. Please try again.');
+    if(!res.ok||result.ok!==true)throw new Error(typeof result.error==='string' ? result.error : 'We could not save your request. Please try again.');
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
     if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
      (window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
     setStatus('done');
-   }catch(err){tracker.current?.emit('submit_error');setStatus('error');setError(err instanceof Error?err.message:'Please try again.');}
+   }catch(err){tracker.current?.emit('submit_error');setStatus('error');setError(err instanceof Error?err.message:'Something went wrong. Please try again.');}
  }
+ if(status==='done'&&!coldLayout&&!preview)return <ContractorFormSuccess/>;
  if(status==='done')return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">{preview?'Preview complete. Nothing sent.':'Thanks - we received your request.'}</h1><p>We’ll contact you about your business insurance{offer?' and the free lead gen offer':''}.</p></main>;
- return <main className={coldLayout?'mx-auto max-w-2xl p-6 text-slate-900':contractorMainClass}>{coldLayout?<><p>Cohesive Insurance Services</p><h1 className="my-6 text-3xl font-bold">{offer?`${label}: free lead gen. Up to 6 leads.`:`Get a ${label.toLowerCase()} insurance quote.`}</h1></>:<ContractorPageHero title={offer?`${label}: free lead gen. Up to 6 leads.`:undefined}/>}
+ return <main className={coldLayout?'mx-auto max-w-2xl p-6 text-slate-900':contractorMainClass}>{coldLayout?<><p>Cohesive Insurance Services</p><h1 className="my-6 text-3xl font-bold">{offer?`${label}: free lead gen. Up to 6 leads.`:`Get a ${label.toLowerCase()} insurance quote.`}</h1></>:<ContractorPageHero/>}
  <div className={coldLayout?undefined:'mx-auto max-w-2xl px-5 sm:px-6'}>
- {offer&&<p className="mb-6">Bind your business insurance with us and we’ll run an email outreach campaign to property and facility managers in your service area at no extra charge.</p>}
- {offer&&<figure className="mb-6"><img src={`/contractor-proof/${industry}-reply.png`} alt={`Actual ${label.toLowerCase()} outreach reply excerpt`} className="w-full rounded-lg border"/><figcaption className="text-xs mt-2 text-slate-600">Actual outreach reply - excerpt. An interested reply is not a booked job.</figcaption></figure>}
+ {offer&&coldLayout&&<p className="mb-6">Bind your business insurance with us and we’ll run an email outreach campaign to property and facility managers in your service area at no extra charge.</p>}
+ {offer&&coldLayout&&<figure className="mb-6"><img src={`/contractor-proof/${industry}-reply.png`} alt={`Actual ${label.toLowerCase()} outreach reply excerpt`} className="w-full rounded-lg border"/><figcaption className="text-xs mt-2 text-slate-600">Actual outreach reply - excerpt. An interested reply is not a booked job.</figcaption></figure>}
  {preview&&<p role="status">Preview only - no lead will be sent.</p>}
  </div>
  <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===lastStep?'true':'false'} className={coldLayout?"space-y-6":contractorFormClass}>
  <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
  {layout==='step'&&<div><p>Step {step+1} of {screens.length}</p><div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}><div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/></div></div>}
- {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst visible={layout==='step'?shown:undefined}/>{shown.includes('mailingAddress')&&<div data-funnel-field="mailingAddress"><label htmlFor="mailingAddress" className="block text-sm font-medium text-[#131517] mb-1.5">Mailing address (optional)</label><AddressAutocomplete id="mailingAddress" value={answers.mailingAddress} onChange={v=>update('mailingAddress',v)} ariaLabel="Mailing address" placeholder="Street, city, state, ZIP"/></div>}</>:<>
+ {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst visible={layout==='step'?shown:undefined}/></>:<>
  {shown.map(k=><div key={k} data-funnel-field={k}><label htmlFor={k} className="block font-semibold mb-2">{LABELS[k]}{k==='mailingAddress'?' (optional)':' *'}</label>
  {k==='payroll'&&<p>Select $0 if you have no W2 payroll. Do not include subcontractor payments.</p>}
  {k==='trade'?<select id={k} name={k} required value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"><option value="" disabled>Select your primary trade</option>{TRADES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select>:k==='mailingAddress'?<AddressAutocomplete id={k} value={answers[k]} onChange={v=>update(k,v)} ariaLabel={LABELS[k]} placeholder="Street, city, state, ZIP"/>:k in QUESTION_OPTIONS?<div id={k} role="group" aria-label={LABELS[k]} className="flex flex-wrap gap-2">{QUESTION_OPTIONS[k as keyof typeof QUESTION_OPTIONS].map(v=><button type="button" key={v} aria-pressed={answers[k]===v} onClick={()=>update(k,v)} className={'min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition '+(answers[k]===v?'border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]':'border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]')}>{v}</button>)}</div>:
  <input id={k} name={k} required maxLength={200} type={k==='email'?'email':k==='phone'?'tel':'text'} autoComplete={k==='fullName'?'name':k==='email'?'email':k==='phone'?'tel':'organization'} value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"/>}</div>)}
  </>}
- {error&&<p role="alert">{error}</p>}
+ {!coldLayout?<ContractorFormActions status={status} error={error} enabled={status!=='sending'&&shown.every(k=>fieldValid(k,answers[k]))} next={layout==='step'&&step<lastStep} onBack={layout==='step'&&step>0?()=>setStep(step-1):undefined}/>:<> {error&&<p role="alert">{error}</p>}
  <div className="flex gap-4">{layout==='step'&&step>0&&<button type="button" onClick={()=>setStep(step-1)} className="border rounded p-4">Back</button>}<button disabled={status==='sending'} className={coldLayout?"bg-blue-700 text-white rounded p-4":contractorButtonClass} type="submit">{status==='sending'?'Sending…':layout==='step'&&step<lastStep?'Next':'Get my insurance quote'}</button></div>
- <PartialCaptureDisclosure>By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}</PartialCaptureDisclosure>
+ <PartialCaptureDisclosure>By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}</PartialCaptureDisclosure></>}
  </form></main>;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import ContractorPageHero, {contractorMainClass,contractorFormClass,contractorButtonClass} from '@/components/ContractorPageTheme';
+import {ContractorFormActions,ContractorFormSuccess} from '@/components/ContractorFormPresentation';
 import ContractorQuestionSet from "@/components/ContractorQuestionSet";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 
@@ -441,26 +442,7 @@ export default function ContractorsLandingPage() {
     }
   }
 
-  if (status === "done") {
-    return (
-      <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF1FF] text-3xl">
-          🛠️
-        </div>
-        <h1 className="mt-6 text-3xl font-bold text-[#131517]">
-          Thanks - we&rsquo;ve got it.
-        </h1>
-        <p className="mt-3 max-w-md text-[#6B6D71]">
-          A licensed agent will run your quote and reach out shortly - most
-          come back within a day. Want to talk now? Call{" "}
-          <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
-            (929) 594-5450
-          </a>
-          .
-        </p>
-      </main>
-    );
-  }
+  if (status === 'done') return <ContractorFormSuccess />;
 
   return (
     <main className={contractorMainClass}>
@@ -469,26 +451,7 @@ export default function ContractorsLandingPage() {
       <form onSubmit={submit} className={contractorFormClass}>
         <ContractorQuestionSet f={f} set={set} />
 
-        {status === "error" && (
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-            {errMsg}
-          </p>
-        )}
-
-        {!disqualified && (
-          <>
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className={contractorButtonClass}
-            >
-              {status === "sending" ? "Sending…" : "Get my quote"}
-            </button>
-            
-          </>
-        )}
-      <PartialCaptureDisclosure>We&rsquo;ll only use your details to prepare and send your
-              insurance quote.</PartialCaptureDisclosure>
+        <ContractorFormActions status={status} error={errMsg} enabled={!!canSubmit} />
       </form>
     </main>
   );
