@@ -289,10 +289,12 @@ export async function POST(request: NextRequest) {
     ];
   }
 
+  const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d=>d.label==='Form version'&&['2026-09-18-contact-v3','2026-09-18-theme-v4'].includes(d.value));
+
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
     if (isFinal && reachable) {
-      await sendIntakeNotification({
+      const partialSaved = await sendIntakeNotification({
         name,
         email,
         phone,
@@ -307,6 +309,7 @@ export async function POST(request: NextRequest) {
         // so the abandon path is precisely where it has any value.
         details,
       });
+      if(contactFirstExperiment)return NextResponse.json({ok:partialSaved,crm:"skipped",notification:partialSaved?"sent":"failed",conversion:{eligible:false}}, {status:partialSaved?200:503});
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
@@ -471,7 +474,7 @@ export async function POST(request: NextRequest) {
     details,
   })]);
   const forwarded=crmResult.ok;
-  const conversionEligible=!guardedLane||(quality.kind==='accept'&&!!acceptedEventId&&!crmResult.duplicate);
+  const conversionEligible=(!contactFirstExperiment||forwarded)&&(!guardedLane||(quality.kind==='accept'&&!!acceptedEventId&&!crmResult.duplicate));
 
   if (!forwarded && !emailed) {
     return NextResponse.json({
@@ -491,7 +494,7 @@ export async function POST(request: NextRequest) {
   const capi =
     // A CRM duplicate may retry the SAME CAPI event ID after an earlier send failure.
     // Never mint another event ID for a same-day repeat; browser emission stays suppressed.
-    eventId && reachable && (conversionEligible||(guardedLane&&quality.kind==='accept'&&!!acceptedEventId))
+    eventId && reachable && (!contactFirstExperiment||forwarded) && (conversionEligible||(guardedLane&&quality.kind==='accept'&&!!acceptedEventId))
       ? await sendCapiEvent(request, eventName, eventId, email, phone)
       : "skipped";
   // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead

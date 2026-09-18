@@ -1,5 +1,7 @@
 "use client";
 
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+
 import {
   cloneElement,
   isValidElement,
@@ -10,6 +12,7 @@ import {
   useState,
 } from "react";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
+import {TRADES} from "@/lib/contractor-trades";
 import { acceptedPhoneShape } from "@/lib/phone-shape";
 
 /**
@@ -41,31 +44,7 @@ type Option = { label: string; value: string };
 
 // Web-form trade taxonomy. Keep paid-ad trade targets as first-class choices so
 // they do not collapse into "Other trade" and lose downstream attribution.
-const TRADES: Option[] = [
-  { label: "General contractor", value: "General contractor" },
-  { label: "Remodeling / renovations", value: "Remodeling / renovations" },
-  { label: "Roofing", value: "Roofing" },
-  { label: "HVAC / heating and air conditioning", value: "HVAC / heating and air conditioning" },
-  { label: "Plumbing", value: "Plumbing" },
-  { label: "Electrical", value: "Electrical" },
-  { label: "Painting", value: "Painting" },
-  { label: "Carpentry / framing", value: "Carpentry / framing" },
-  { label: "Masonry / concrete", value: "Masonry / concrete" },
-  { label: "Siding / gutters", value: "Siding / gutters" },
-  { label: "Flooring / tile", value: "Flooring / tile" },
-  { label: "Excavation / grading / site work", value: "Excavation / grading / site work" },
-  { label: "Demolition", value: "Demolition" },
-  { label: "Deck construction", value: "Deck construction" },
-  { label: "Fence installation / repair", value: "Fence installation / repair" },
-  { label: "Paving / asphalt", value: "Paving / asphalt" },
-  { label: "Tree service", value: "Tree service" },
-  { label: "Restoration (water / fire damage)", value: "Restoration (water / fire damage)" },
-  { label: "Waterproofing", value: "Waterproofing" },
-  { label: "Foundation repair / underpinning", value: "Foundation repair / underpinning" },
-  { label: "Pool construction / service", value: "Pool construction / service" },
-  { label: "Welding / metal fabrication", value: "Welding / metal fabrication" },
-  { label: "Other trade", value: "Other trade" },
-];
+
 
 const OTHER_TRADES: Option[] = [
   { label: "None - just my primary trade", value: "None" },
@@ -618,12 +597,11 @@ export default function ContractorsLandingPage() {
             >
               {status === "sending" ? "Sending…" : "Get my quote"}
             </button>
-            <p className="text-center text-xs text-[#6B6D71]">
-              We&rsquo;ll only use your details to prepare and send your
-              insurance quote.
-            </p>
+            
           </>
         )}
+      <PartialCaptureDisclosure>We&rsquo;ll only use your details to prepare and send your
+              insurance quote.</PartialCaptureDisclosure>
       </form>
     </main>
   );

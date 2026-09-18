@@ -1,5 +1,7 @@
 "use client";
 
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
@@ -356,10 +358,9 @@ export default function RateCheckPage() {
         >
           {status === "sending" ? "Uploading…" : "Check my rate"}
         </button>
-        <p className="text-center text-xs text-[#6B6D71]">
-          Commercial policies only. We&rsquo;ll only use your policy to check
-          your rate - nothing else.
-        </p>
+        
+      <PartialCaptureDisclosure>Commercial policies only. We&rsquo;ll only use your policy to check
+          your rate - nothing else.</PartialCaptureDisclosure>
       </form>
     </main>
   );

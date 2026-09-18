@@ -1,5 +1,7 @@
 "use client";
 
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+
 import {
   cloneElement,
   isValidElement,
@@ -918,12 +920,11 @@ export default function RestaurantIntakeForm({
         >
           {status === "sending" ? "Sending…" : "Get my quote"}
         </button>
-        <p className="text-center text-xs text-[#6B6D71]">
-          We&rsquo;ll only use your details to prepare and send your insurance
-          quote.
-        </p>
+        
         </>
         )}
+      <PartialCaptureDisclosure>We&rsquo;ll only use your details to prepare and send your insurance
+          quote.</PartialCaptureDisclosure>
       </form>
     </Root>
   );

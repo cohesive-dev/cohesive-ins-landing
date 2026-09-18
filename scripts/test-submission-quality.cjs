@@ -40,6 +40,11 @@ async function submit(b){calls=[];const req=new Request('https://www.cohesiveins
  r=await submit({...body,partial:true,final:true});assert.equal(r.status,200);assert.equal(capis().length,0);assert.equal(calls.filter(c=>c.url).length,0);
  crm=false;r=await submit(body);assert.equal(r.status,200);assert.equal(r.body.crm,'failed');
  mail=false;r=await submit(body);assert.equal(r.status,503);assert.equal(capis().length,0);mail=true;crm=true;
+ const contactBody={...body,details:[...body.details,{label:'Form version',value:'2026-09-18-contact-v3'}]};
+ r=await submit({...contactBody,partial:true,final:true});assert.equal(r.body.notification,'sent');assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);assert.equal(calls.filter(c=>c.url).length,0);
+ mail=false;r=await submit({...contactBody,partial:true,final:true});assert.equal(r.status,503);assert.equal(r.body.ok,false);assert.equal(capis().length,0);mail=true;
+ crm=false;r=await submit(contactBody);assert.equal(r.status,200);assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);crm=true;
+ r=await submit(contactBody);assert.equal(r.body.conversion.eligible,true);assert.equal(capis().length,1);
  delete process.env.INTAKE_CONVERSION_SECRET;delete process.env.META_CAPI_TOKEN;r=await submit(body);assert.equal(r.status,200);assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);
  assert.equal(assessSubmission({...body,phone:'+442079460123'}).kind,'accept');
  assert.equal(acquisitionEventId(body,'secret',new Date('2026-09-12T12:00:00Z')),acquisitionEventId(body,'secret',new Date('2026-09-12T23:59:00Z')));

@@ -1,5 +1,7 @@
 "use client";
 
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+
 import { useEffect, useRef, useState } from "react";
 
 const NEXT_BASE =
@@ -411,6 +413,7 @@ export default function QuoteSplash({ config }: { config: SplashConfig }) {
                 >
                   See your price →
                 </button>
+                {config.captureEmail && <PartialCaptureDisclosure />}
                 <p className="hidden lg:block text-xs text-[#6B6D71] text-center mt-3">
                   Free to check - we compare our insurance partners to find you
                   the lowest rate and the right coverage, in under 10 minutes.
