@@ -223,7 +223,7 @@ export default function ContractorIntake({ adapter, offer }: { adapter?: Contrac
     if (formStartedAt.current === null && typeof performance !== "undefined") {
       formStartedAt.current = performance.now();
     }
-    if (k === "trade") track("TradeSelected");
+    if (k === "trade" && v) track("TradeSelected");
     if (!adapter && TRACKED_QUESTION_FIELDS.has(k) && v && !answeredQuestions.current.has(k)) {
       answeredQuestions.current.add(k);
       const elapsedSeconds = formStartedAt.current === null
