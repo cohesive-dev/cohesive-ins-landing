@@ -32,7 +32,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const capturePartial=useRef<()=>Promise<void>>(async()=>{});
  const honeypot=useRef<HTMLInputElement>(null);
  const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
- const formVersion=coldLayout?'2026-09-12-v1':'2026-09-18-theme-v4';
+ const formVersion=coldLayout?'2026-09-12-v1':'2026-09-18-trade-v5';
  const labels=coldLayout?LABELS:FULL_LABELS;
  const sourceDetails=useMemo(()=>cold?[{label:'Acquisition channel',value:'Cold email landing'},
    {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:fallbackReason?[
@@ -51,7 +51,9 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
       {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,value])=>({label:labels[k],value})),
-      ...attributionDetails(captureAttribution())];
+      ...attributionDetails(captureAttribution()),
+      ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
+      ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!}))];
     const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||''});
     if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return;}
     partialInFlight.current=true;
@@ -94,7 +96,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const fields=screens.flat(),shown=layout==='step'?screens[Math.min(step,lastStep)]:fields;
  const fieldValid=coldLayout?validField:validFullField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
- function update(k:string,v:string){setError('');if(answers[k]!==v&&fieldValid(k,v)&&v)tracker.current?.emit('field_complete',k);setAnswers(a=>coldLayout?normalizeAnswers({...a,[k]:v}):normalizeFull(a,k,v));}
+ function update(k:string,v:string){setError('');if(!k.endsWith('RawText')&&answers[k]!==v&&fieldValid(k,v)&&v)tracker.current?.emit('field_complete',k);setAnswers(a=>coldLayout?normalizeAnswers({...a,[k]:v}):normalizeFull(a,k,v));}
  function showFieldError(k:string){
    setError(k in QUESTION_OPTIONS?'Please select an option to continue.':`Please enter a valid ${labels[k].toLowerCase()}.`);
    tracker.current?.emit('field_error',k);
@@ -121,6 +123,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     {label:'Actual work and business state',value:'Confirm during follow-up before quoting'},
     ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,v])=>({label:labels[k],value:v})),
     ...attributionDetails(captureAttribution()),
+    ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
     ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!})),
    ];
    try{

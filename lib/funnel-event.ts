@@ -14,7 +14,7 @@ export function validateFunnelEvent(input:unknown):FunnelEvent|null {
   const allowed=new Set(['eventId','sessionId','cellId','version','event','field','elapsedMs','adId','adsetId','campaignId','submissionId']);
   if(Object.keys(v).some(k=>!allowed.has(k)))return null;
   if(typeof v.eventId!=='string'||!UUID.test(v.eventId)||typeof v.sessionId!=='string'||!UUID.test(v.sessionId))return null;
-  if(typeof v.cellId!=='string'||!CELL.test(v.cellId)||!['2026-09-12-v1','2026-09-18-params-v2','2026-09-18-contact-v3','2026-09-18-theme-v4'].includes(String(v.version)))return null;
+  if(typeof v.cellId!=='string'||!CELL.test(v.cellId)||!['2026-09-12-v1','2026-09-18-params-v2','2026-09-18-contact-v3','2026-09-18-theme-v4','2026-09-18-trade-v5'].includes(String(v.version)))return null;
   if(!FUNNEL_EVENTS.includes(v.event as typeof FUNNEL_EVENTS[number]))return null;
   if(!Number.isInteger(v.elapsedMs)||(v.elapsedMs as number)<0||(v.elapsedMs as number)>86400000)return null;
   if(v.field!==undefined&&(typeof v.field!=='string'||!FIELDS.has(v.field)))return null;
