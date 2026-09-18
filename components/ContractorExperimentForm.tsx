@@ -1,15 +1,19 @@
 'use client';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {useSearchParams} from 'next/navigation';
-import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers,experimentValid,validExperiment,type Answers} from '@/lib/contractor-experiment';
+import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers,validExperiment,contractorScreens,contractorFields,validContractorField,type Answers} from '@/lib/contractor-experiment';
 import {captureAttribution,attributionDetails} from '@/lib/attribution';
 import {attachFunnelTracker} from '@/lib/funnel-tracker';
 import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-landing';
+import {TRADES} from '@/lib/contractor-trades';
+import AddressAutocomplete from '@/components/AddressAutocomplete';
+import PartialCaptureDisclosure from '@/components/PartialCaptureDisclosure';
 import {contractorFallbackReason} from '@/lib/contractor-landing-params';
 
 export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
  const query=useSearchParams();
  const cold=useMemo(()=>coldLayout?coldEmailContext(query,coldLayout):null,[query,coldLayout]);
+ const needsTrade=!coldLayout&&!isColdIndustry(query.get('industry')||'');
  const fallbackReason=coldLayout?null:contractorFallbackReason(query);
  const industry=cold?.industry||(fallbackReason?'contractor':query.get('industry')||'');
  const angle=coldLayout?'coi':fallbackReason?(fallbackReason.startsWith('missing_')?'missing_params':'invalid_params'):query.get('angle')||'';
@@ -20,10 +24,11 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const [step,setStep]=useState(0),[status,setStatus]=useState('idle'),[error,setError]=useState('');
  const form=useRef<HTMLFormElement>(null),tracker=useRef<ReturnType<typeof attachFunnelTracker>|null>(null);
  const submission=useRef<string>('');
- const sentPartial=useRef(false);
+ const sentPartial=useRef(false),partialInFlight=useRef(false);
+ const capturePartial=useRef<()=>Promise<void>>(async()=>{});
  const honeypot=useRef<HTMLInputElement>(null);
  const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
- const formVersion=coldLayout?'2026-09-12-v1':'2026-09-18-params-v2';
+ const formVersion=coldLayout?'2026-09-12-v1':'2026-09-18-contact-v3';
  const sourceDetails=useMemo(()=>cold?[{label:'Acquisition channel',value:'Cold email landing'},
    {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:fallbackReason?[
      {label:'Landing fallback reason',value:fallbackReason},
@@ -31,8 +36,8 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    ]:[],[cold,coldLayout,fallbackReason]);
  useEffect(()=>{
    if(!layout||!valid||query.get('preview')==='1')return;
-   const capture=()=>{
-    if(sentPartial.current||status==='sending'||status==='done')return;
+   const capture=async()=>{
+    if(sentPartial.current||partialInFlight.current||status==='sending'||status==='done')return;
     const email=validField('email',answers.email)?answers.email:undefined;
     const phone=validField('phone',answers.phone)?answers.phone:undefined;
     if(!email&&!phone)return;
@@ -42,14 +47,23 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
       {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,value])=>({label:LABELS[k],value})),
       ...attributionDetails(captureAttribution())];
-    const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details});
-    sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));
+    const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||''});
+    if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return;}
+    partialInFlight.current=true;
+    try{const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});
+      const result=await res.json();if(res.ok&&result.ok===true&&result.notification==='sent'){sentPartial.current=true;tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();}
+    }catch{/* retain leave/idle retry; never block completion */}finally{partialInFlight.current=false;}
    };
+   capturePartial.current=capture;
    const hidden=()=>{if(document.visibilityState==='hidden')capture();};
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
- },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion]);
+ },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout]);
+ useEffect(()=>{
+   if(coldLayout||layout!=='long'||query.get('preview')==='1'||!['email','phone','fullName'].every(k=>validField(k,answers[k])))return;
+   const timer=setTimeout(()=>void capturePartial.current(),400);return()=>clearTimeout(timer);
+ },[answers,coldLayout,layout,query]);
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
@@ -71,7 +85,10 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  },[layout,query,cellId,coldLayout,valid,formVersion]);
  if(!valid&&coldLayout)return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">Get a contractor insurance quote</h1><p className="my-4">What type of work do you do?</p><ul className="space-y-3">{Object.entries(INDUSTRIES).map(([id,name])=><li key={id}><a className="underline" href={`?${new URLSearchParams({...Object.fromEntries(query),industry:id})}`}>{name}</a></li>)}</ul><a className="mt-6 inline-block underline" href="/contractors">Another trade</a></main>;
  if(!layout)return <main className="p-8">Loading your quote request…</main>;
- const fields=fieldsFor(answers,layout),shown=layout==='step'?[fields[Math.min(step,fields.length-1)]]:fields;
+ const fields=coldLayout?fieldsFor(answers,layout):contractorFields(layout,needsTrade);
+ const screens=coldLayout?fields.map(k=>[k]):contractorScreens(needsTrade),lastStep=screens.length-1;
+ const shown=layout==='step'?screens[Math.min(step,lastStep)]:fields;
+ const fieldValid=coldLayout?validField:validContractorField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
  function update(k:string,v:string){setError('');if(k in QUESTION_OPTIONS&&answers[k]!==v)tracker.current?.emit('field_complete',k);setAnswers(a=>normalizeAnswers({...a,[k]:v}));}
  function showFieldError(k:string){
@@ -83,8 +100,9 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  }
  async function submit(e:React.FormEvent){
    e.preventDefault();
-   if(layout==='step'&&step<fields.length-1){if(validField(fields[step],answers[fields[step]])){setError('');setStep(step+1);}else showFieldError(fields[step]);return;}
-   if(!experimentValid(answers)){showFieldError(fields.find(k=>!validField(k,answers[k]))!);return;}
+   if(layout==='step'&&step<lastStep){const invalid=shown.find(k=>!fieldValid(k,answers[k]));if(invalid){showFieldError(invalid);return;}
+    if(!coldLayout&&step===0&&!preview)void capturePartial.current();setError('');setStep(step+1);return;}
+   const invalid=fields.find(k=>!fieldValid(k,answers[k]));if(invalid){showFieldError(invalid);return;}
    if(preview){setStatus('done');return;}
    if(status==='sending')return;
    setStatus('sending');setError('');
@@ -116,16 +134,15 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  {offer&&<p className="mb-6">Bind your business insurance with us and we’ll run an email outreach campaign to property and facility managers in your service area at no extra charge.</p>}
  {offer&&<figure className="mb-6"><img src={`/contractor-proof/${industry}-reply.png`} alt={`Actual ${label.toLowerCase()} outreach reply excerpt`} className="w-full rounded-lg border"/><figcaption className="text-xs mt-2 text-slate-600">Actual outreach reply - excerpt. An interested reply is not a booked job.</figcaption></figure>}
  {preview&&<p role="status">Preview only - no lead will be sent.</p>}
- <p className="text-sm mb-4">Contact details you enter may be saved before submission to help recover an unfinished quote request. <a href="/privacy" className="underline">Privacy policy</a></p>
- <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===fields.length-1?'true':'false'} className="space-y-6">
+ <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===lastStep?'true':'false'} className="space-y-6">
  <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
- {layout==='step'&&<div><p>Question {step+1} of {fields.length}</p><div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={fields.length} aria-valuenow={step+1}><div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/fields.length)*100}%`}}/></div></div>}
- {shown.map(k=><div key={k} data-funnel-field={k}><label htmlFor={k} className="block font-semibold mb-2">{LABELS[k]} *</label>
+ {layout==='step'&&<div><p>Question {step+1} of {screens.length}</p><div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}><div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/></div></div>}
+ {shown.map(k=><div key={k} data-funnel-field={k}><label htmlFor={k} className="block font-semibold mb-2">{LABELS[k]}{k==='mailingAddress'?' (optional)':' *'}</label>
  {k==='payroll'&&<p>Select $0 if you have no W2 payroll. Do not include subcontractor payments.</p>}
- {k in QUESTION_OPTIONS?<div id={k} role="group" aria-label={LABELS[k]} className="flex flex-wrap gap-2">{QUESTION_OPTIONS[k as keyof typeof QUESTION_OPTIONS].map(v=><button type="button" key={v} aria-pressed={answers[k]===v} onClick={()=>update(k,v)} className={'min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition '+(answers[k]===v?'border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]':'border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]')}>{v}</button>)}</div>:
+ {k==='trade'?<select id={k} name={k} required value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"><option value="" disabled>Select your primary trade</option>{TRADES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select>:k==='mailingAddress'?<AddressAutocomplete id={k} value={answers[k]} onChange={v=>update(k,v)} ariaLabel={LABELS[k]} placeholder="Street, city, state, ZIP"/>:k in QUESTION_OPTIONS?<div id={k} role="group" aria-label={LABELS[k]} className="flex flex-wrap gap-2">{QUESTION_OPTIONS[k as keyof typeof QUESTION_OPTIONS].map(v=><button type="button" key={v} aria-pressed={answers[k]===v} onClick={()=>update(k,v)} className={'min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition '+(answers[k]===v?'border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]':'border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]')}>{v}</button>)}</div>:
  <input id={k} name={k} required maxLength={200} type={k==='email'?'email':k==='phone'?'tel':'text'} autoComplete={k==='fullName'?'name':k==='email'?'email':k==='phone'?'tel':'organization'} value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"/>}</div>)}
  {error&&<p role="alert">{error}</p>}
- {(layout==='long'||step===fields.length-1)&&<p className="text-sm">By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}<a href="/privacy" className="underline">Privacy policy</a></p>}
- <div className="flex gap-4">{layout==='step'&&step>0&&<button type="button" onClick={()=>setStep(step-1)} className="border rounded p-4">Back</button>}<button disabled={status==='sending'} className="bg-blue-700 text-white rounded p-4" type="submit">{status==='sending'?'Sending…':layout==='step'&&step<fields.length-1?'Next':'Get my insurance quote'}</button></div>
+ <div className="flex gap-4">{layout==='step'&&step>0&&<button type="button" onClick={()=>setStep(step-1)} className="border rounded p-4">Back</button>}<button disabled={status==='sending'} className="bg-blue-700 text-white rounded p-4" type="submit">{status==='sending'?'Sending…':layout==='step'&&step<lastStep?'Next':'Get my insurance quote'}</button></div>
+ <PartialCaptureDisclosure>By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}</PartialCaptureDisclosure>
  </form></main>;
 }

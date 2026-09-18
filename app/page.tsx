@@ -1,5 +1,7 @@
 "use client";
 
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
@@ -442,7 +444,8 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         {" "}or call{" "}
         <a href="tel:+19295945450" className="text-[#2040E7] font-semibold hover:underline">+1 (929) 594-5450</a>
       </p>
-    </form>
+    <PartialCaptureDisclosure />
+      </form>
   );
 }
 

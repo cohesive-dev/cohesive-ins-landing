@@ -1,3 +1,4 @@
+import {TRADES} from './contractor-trades';
 import { acceptedPhoneShape } from './phone-shape';
 export const INDUSTRIES = {
   pool:'Pool construction', remodel:'Remodeling', roof:'Roofing',
@@ -16,7 +17,7 @@ export const QUESTION_OPTIONS = {
   subcontractorCosts:['$0 - no subcontractors','Under $25k','$25k-$50k','$50k-$100k','$100k-$250k','$250k-$500k','$500k-$1M','$1M+'],
   currentGl:['Insured - renewing within 30 days','Insured - renewing later','Not insured - need coverage within 30 days','Not insured - comparing options'],
 };
-export const LABELS:Record<string,string>={email:'Email address',phone:'Phone number',fullName:'Full name',legalName:'Business name',revenue:'Annual revenue',payroll:'Annual W2 payroll',subcontractorCosts:'Annual subcontractor spend',currentGl:'Current insurance / renewal timing'};
+export const LABELS:Record<string,string>={email:'Email address',phone:'Phone number',fullName:'Full name',legalName:'Business name',revenue:'Annual revenue',payroll:'Annual W2 payroll',subcontractorCosts:'Annual subcontractor spend',currentGl:'Current insurance / renewal timing',mailingAddress:'Mailing address',trade:'Primary trade'};
 export function fieldsFor(_a:Answers,layout:'step'|'long') {
   const business=['revenue','payroll','subcontractorCosts','currentGl'];
   return layout==='step'?[...business,'legalName','fullName','email','phone']:['email','phone','fullName','legalName',...business];
@@ -38,3 +39,8 @@ export function experimentValid(a:Answers) {return fieldsFor(a,'long').every(k=>
 export function validExperiment(industry:string,angle:string):industry is Industry {
   return Object.hasOwn(INDUSTRIES,industry)&&ANGLES[industry as Industry].includes(angle);
 }
+
+// Paid contact-first release only; cold-email layouts retain their existing order.
+export function contractorScreens(needsTrade=false):string[][] {return [['email','phone','fullName'],[...(needsTrade?['trade']:[]),'revenue'],['payroll'],['subcontractorCosts'],['currentGl'],['legalName','mailingAddress']];}
+export function contractorFields(layout:'step'|'long',needsTrade=false):string[] {if(layout==='step')return contractorScreens(needsTrade).flat();const fields=[...fieldsFor({},'long'),'mailingAddress'];if(needsTrade)fields.splice(3,0,'trade');return fields;}
+export function validContractorField(field:string,value:string|undefined){return field==='trade'?TRADES.some(t=>t.value===value):field==='mailingAddress'?(!value?.trim()||value.trim().length>=5&&value.length<=200):validField(field,value);}

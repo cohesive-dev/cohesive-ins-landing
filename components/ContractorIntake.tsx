@@ -1,5 +1,7 @@
 "use client";
 
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+
 import {
   cloneElement,
   isValidElement,
@@ -618,11 +620,10 @@ export default function ContractorIntake({ adapter, offer }: { adapter?: Contrac
             >
               {status === "sending" ? "Sending…" : "Get my quote"}
             </button>
-            <p className="text-center text-xs text-[#6B6D71]">
-              {adapter ? "Progress is saved as you edit. By submitting, you ask Cohesive to contact you about your quote. Coverage is not bound by this form." : "We’ll only use your details to prepare and send your insurance quote."}
-            </p>
+            
           </>
         )}
+      <PartialCaptureDisclosure>{adapter ? "Progress is saved as you edit. By submitting, you ask Cohesive to contact you about your quote. Coverage is not bound by this form." : "We’ll only use your details to prepare and send your insurance quote."}</PartialCaptureDisclosure>
       </form>
     </main>
   );
