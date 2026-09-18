@@ -6,7 +6,7 @@ export type FunnelEvent = {
   adId?:string; adsetId?:string; campaignId?:string; submissionId?:string;
 };
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-const FIELDS=new Set(['email','phone','fullName','legalName','revenue','employees','payroll','subcontractorCosts','currentGl','mailingAddress','trade']);
+const FIELDS=new Set(['email','phone','fullName','legalName','revenue','employees','payroll','subcontractorCosts','currentGl','mailingAddress','trade','address','otherTrades','primaryPct','otherTradeDescription','usesSubcontractors','structure','yearStarted','currentPremium']);
 const CELL=/^(pool|remodel|roof|tree|painting|hvac|contractor)__([a-z_]+)__(step|long)__v1$/;
 export function validateFunnelEvent(input:unknown):FunnelEvent|null {
   if (!input || typeof input!=='object') return null;
