@@ -5,7 +5,7 @@ import {trafficSession} from './traffic-session';
  * Never sends answers. Missing/rejected endpoint retains queued events for retry.
  * Integration and durable endpoint must pass QA before advertising this as live.
  */
-export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string;adId?:string;adsetId?:string;campaignId?:string}) {
+export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string;adId?:string;adsetId?:string;campaignId?:string;version?:string}) {
   const sessionId=trafficSession();
   if(process.env.NEXT_PUBLIC_FB_FUNNEL_ENABLED!=='true')return {sessionId,emit(_event:FunnelEvent['event'],_field?:string,_submissionId?:string){},async flush(){},dispose(){}};
   const start=performance.now();
@@ -17,7 +17,7 @@ export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string
   const seen=new Set<string>();
   let inflight=false, disposed=false;
   function emit(event:FunnelEvent['event'],field?:string,submissionId?:string) {
-    const item=validateFunnelEvent({...context,eventId:crypto.randomUUID(),sessionId,version:'2026-09-12-v1',event,
+    const item=validateFunnelEvent({...context,eventId:crypto.randomUUID(),sessionId,version:context.version||'2026-09-12-v1',event,
       elapsedMs:Math.min(86400000,Math.round(performance.now()-start)),...(field?{field}:{}),...(submissionId?{submissionId}:{})});
     if(item&&queue.length<250){queue.push(item);saveQueue();}
   }

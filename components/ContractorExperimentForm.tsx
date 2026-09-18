@@ -5,12 +5,16 @@ import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers
 import {captureAttribution,attributionDetails} from '@/lib/attribution';
 import {attachFunnelTracker} from '@/lib/funnel-tracker';
 import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-landing';
+import {contractorFallbackReason} from '@/lib/contractor-landing-params';
 
 export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
  const query=useSearchParams();
  const cold=useMemo(()=>coldLayout?coldEmailContext(query,coldLayout):null,[query,coldLayout]);
- const industry=cold?.industry||query.get('industry')||'',angle=coldLayout?'coi':query.get('angle')||'';
- const valid=isColdIndustry(industry)&&validExperiment(industry,angle);
+ const fallbackReason=coldLayout?null:contractorFallbackReason(query);
+ const industry=cold?.industry||(fallbackReason?'contractor':query.get('industry')||'');
+ const angle=coldLayout?'coi':fallbackReason?(fallbackReason.startsWith('missing_')?'missing_params':'invalid_params'):query.get('angle')||'';
+ const valid=!!fallbackReason||(isColdIndustry(industry)&&validExperiment(industry,angle));
+ const industryLabel=INDUSTRIES[industry as keyof typeof INDUSTRIES]||'Contractor';
  const [assignedLayout,setLayout]=useState<'step'|'long'|null>(null),[answers,setAnswers]=useState<Answers>({});
  const layout=coldLayout||assignedLayout;
  const [step,setStep]=useState(0),[status,setStatus]=useState('idle'),[error,setError]=useState('');
@@ -19,8 +23,12 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const sentPartial=useRef(false);
  const honeypot=useRef<HTMLInputElement>(null);
  const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
+ const formVersion=coldLayout?'2026-09-12-v1':'2026-09-18-params-v2';
  const sourceDetails=useMemo(()=>cold?[{label:'Acquisition channel',value:'Cold email landing'},
-   {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:[],[cold,coldLayout]);
+   {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:fallbackReason?[
+     {label:'Landing fallback reason',value:fallbackReason},
+     {label:'Landing form mode',value:'Generic contractor fallback; trade not inferred'},
+   ]:[],[cold,coldLayout,fallbackReason]);
  useEffect(()=>{
    if(!layout||!valid||query.get('preview')==='1')return;
    const capture=()=>{
@@ -29,9 +37,9 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     const phone=validField('phone',answers.phone)?answers.phone:undefined;
     if(!email&&!phone)return;
     submission.current ||=crypto.randomUUID();
-    const details=[{label:'Experiment cell',value:cellId},
+    const details=[{label:'Experiment cell',value:cellId},{label:'Form version',value:formVersion},
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
-      {label:'Advertised industry (not confirmed trade)',value:INDUSTRIES[industry]},...sourceDetails,
+      {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,value])=>({label:LABELS[k],value})),
       ...attributionDetails(captureAttribution())];
     const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details});
@@ -41,7 +49,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
- },[answers,status,layout,industry,query,cellId,valid,sourceDetails]);
+ },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion]);
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
@@ -57,15 +65,14 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    if(!layout||!form.current||!valid||query.get('preview')==='1')return;
    const ids:Record<string,string>={};
    if(!coldLayout)for(const [q,k]of [['ad_id','adId'],['adset_id','adsetId'],['campaign_id','campaignId']]){const v=query.get(q);if(v&&/^\d{5,30}$/.test(v))ids[k]=v;}
-   tracker.current=attachFunnelTracker(form.current,{cellId,...ids});
+   tracker.current=attachFunnelTracker(form.current,{cellId,version:formVersion,...ids});
    if(coldLayout){tracker.current.emit('page_view');void tracker.current.flush();}
    return()=>{tracker.current?.dispose();tracker.current=null;};
- },[layout,query,cellId,coldLayout,valid]);
+ },[layout,query,cellId,coldLayout,valid,formVersion]);
  if(!valid&&coldLayout)return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">Get a contractor insurance quote</h1><p className="my-4">What type of work do you do?</p><ul className="space-y-3">{Object.entries(INDUSTRIES).map(([id,name])=><li key={id}><a className="underline" href={`?${new URLSearchParams({...Object.fromEntries(query),industry:id})}`}>{name}</a></li>)}</ul><a className="mt-6 inline-block underline" href="/contractors">Another trade</a></main>;
- if(!valid)return <main className="p-8">This test link is not valid. <a href="/contractors">Get a contractor insurance quote.</a></main>;
  if(!layout)return <main className="p-8">Loading your quote request…</main>;
  const fields=fieldsFor(answers,layout),shown=layout==='step'?[fields[Math.min(step,fields.length-1)]]:fields;
- const offer=angle==='free_gen',label=INDUSTRIES[industry],preview=query.get('preview')==='1';
+ const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
  function update(k:string,v:string){setError('');if(k in QUESTION_OPTIONS&&answers[k]!==v)tracker.current?.emit('field_complete',k);setAnswers(a=>normalizeAnswers({...a,[k]:v}));}
  function showFieldError(k:string){
    setError(k in QUESTION_OPTIONS?'Please select an option to continue.':`Please enter a valid ${LABELS[k].toLowerCase()}.`);
@@ -84,7 +91,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    submission.current ||=crypto.randomUUID();
    const details=[
     {label:'Experiment cell',value:cellId},
-    {label:'Form version',value:'2026-09-12-v1'},
+    {label:'Form version',value:formVersion},
     {label:'Session id',value:tracker.current?.sessionId||'unavailable'},
     {label:'Submission id',value:submission.current},
     {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,
