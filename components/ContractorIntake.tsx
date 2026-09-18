@@ -1,5 +1,7 @@
 "use client";
 
+import TradeSearch from '@/components/TradeSearch';
+import {filterTrades} from '@/lib/trade-search';
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 
 import {
@@ -517,13 +519,14 @@ export default function ContractorIntake({ adapter, offer }: { adapter?: Contrac
               <AddressAutocomplete disabledAutocomplete={!!adapter} value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, San Antonio, TX 78216" />
             </Field>
             <Field label="What's your primary trade?" required>
-              <Select value={f.trade} onChange={(v) => set("trade", v)} options={TRADES} placeholder="Select one" />
+              <TradeSearch value={f.trade} onChange={(v) => set("trade", v)} onRawChange={(v)=>set("tradeRawText",v)} options={TRADES} placeholder="Type to search trades" />
             </Field>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Any other trades?" required alignOnDesktop>
                 <MultiSelect
                   values={selectedOtherTrades}
                   onToggle={toggleOtherTrade}
+                  onRawChange={(v)=>set("otherTradesRawText",v)}
                   options={otherTradeOptions}
                   placeholder="Select all that apply"
                 />
@@ -937,16 +940,19 @@ function Select({
 function MultiSelect({
   values,
   onToggle,
+  onRawChange,
   options,
   placeholder,
   ariaLabel,
 }: {
   values: string[];
   onToggle: (value: string) => void;
+  onRawChange?: (value:string)=>void;
   options: Option[];
   placeholder?: string;
   ariaLabel?: string;
 }) {
+  const [query,setQuery]=useState('');
   const detailsRef = useRef<HTMLDetailsElement>(null);
 
   useEffect(() => {
@@ -988,7 +994,8 @@ function MultiSelect({
         <span aria-hidden="true" className="shrink-0 text-[#6B6D71] transition group-open:rotate-180">⌄</span>
       </summary>
       <div className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-[#D8DEF5] bg-white p-2 shadow-lg">
-        {options.map((option) => {
+        {onRawChange&&<input aria-label="Search other trades" value={query} onChange={e=>{setQuery(e.target.value);if(e.target.value)onRawChange(e.target.value);}} placeholder="Type to search trades" className={inputClasses} />}
+        {(onRawChange?filterTrades(options,query):options).map((option) => {
           const selected = values.includes(option.value);
           return (
             <button

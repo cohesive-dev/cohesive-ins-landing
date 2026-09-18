@@ -1,5 +1,6 @@
 "use client";
 
+import {filterTrades} from '@/lib/trade-search';
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
@@ -121,7 +122,7 @@ function Navbar({ onOpenQuote }: { onOpenQuote: () => void }) {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-function TradeSelect({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
+function TradeSelect({ options, value, onChange, onRawChange }: { options: string[]; value: string; onChange: (v: string) => void; onRawChange:(v:string)=>void }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -144,7 +145,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
     }
   }, [open]);
 
-  const filtered = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
+  const filtered = filterTrades(options.map(value=>({value,label:value})),query).map(o=>o.value);
 
   return (
     <div ref={ref} className="relative">
@@ -166,7 +167,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
               ref={searchRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {setQuery(e.target.value);if(e.target.value)onRawChange(e.target.value);}}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -247,6 +248,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const rawTradeRef=useRef('');
   const [businessType, setBusinessType] = useState("");
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -259,6 +261,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
     const attr = { ...captureAttribution(), ...attributionRef.current };
     return [
       ...attributionDetails(attr),
+      ...(rawTradeRef.current?[{label:"Primary trade search text",value:rawTradeRef.current}]:[]),
       { label: "Submission page", value: window.location.pathname },
       ...(attr.referrer ? [{ label: "Referrer", value: attr.referrer }] : []),
     ];
@@ -424,7 +427,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Type of business</span>
-            <TradeSelect options={trades} value={businessType} onChange={setBusinessType} />
+            <TradeSelect options={trades} value={businessType} onChange={setBusinessType} onRawChange={v=>{rawTradeRef.current=v;}} />
           </div>
           <label className="sm:w-36 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">ZIP code</span>

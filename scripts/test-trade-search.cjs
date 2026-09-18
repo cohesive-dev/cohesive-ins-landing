@@ -1,0 +1,8 @@
+const fs=require('fs'),vm=require('vm'),ts=require('typescript'),assert=require('assert/strict');function load(p){const module={exports:{}};vm.runInThisContext('(function(exports){'+ts.transpileModule(fs.readFileSync(p,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText+'})')(module.exports);return module.exports;}
+const {filterTrades}=load('lib/trade-search.ts'),{TRADES}=load('lib/contractor-trades.ts');
+for(const[q,value]of[['ac','HVAC / heating and air conditioning'],['A/C','HVAC / heating and air conditioning'],['roofer','Roofing'],['painter','Painting'],['electrician','Electrical'],['reno','Remodeling / renovations'],['gunite','Pool construction / service'],['pool cleaning','Pool construction / service']])assert(filterTrades(TRADES,q).some(x=>x.value===value),q);
+assert.deepEqual(filterTrades(TRADES,'unlisted specialist').map(x=>x.value),['Other trade']);
+assert.deepEqual(filterTrades(TRADES,'cleaning').map(x=>x.value),['Other trade']);
+const separate=['Pool construction','Pool service','Janitorial & Cleaning','Other'].map(value=>({label:value,value}));
+assert.deepEqual(filterTrades(separate,'gunite').map(x=>x.value),['Pool construction','Other']);assert.deepEqual(filterTrades(separate,'pool cleaning').map(x=>x.value),['Pool service','Other']);assert.equal(filterTrades(separate,'pool').filter(x=>x.value!=='Other').length,2);assert(filterTrades(separate,'cleaner').some(x=>x.value==='Janitorial & Cleaning'));
+assert.equal(TRADES.length,23);assert.deepEqual(filterTrades(TRADES,''),TRADES);console.log('PASS: aliases, pool separation, unchanged canonical lists, ordinary Other fallback.');

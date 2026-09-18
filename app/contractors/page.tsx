@@ -279,6 +279,8 @@ export default function ContractorsLandingPage() {
     push("Legal business name", f.legalName);
     push("Business address", f.address);
     push("Primary trade", f.trade);
+    push("Primary trade search text", f.tradeRawText);
+    push("Other trades search text", f.otherTradesRawText);
     push("Other trades", f.otherTrades);
     if (f.trade === "Other trade" || (f.otherTrades ?? "").split(", ").includes("Other trade")) {
       push("Other trade description", f.otherTradeDescription);

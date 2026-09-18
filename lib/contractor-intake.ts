@@ -39,7 +39,7 @@ export function contractorCanSubmit(input: ContractorFields): boolean {
 export function contractorDetails(input: ContractorFields) {
   const f = normalizeContractor(input);
   const mapping: Record<string, string> = {
-    legalName: "Legal business name", address: "Business address", trade: "Primary trade",
+    legalName: "Legal business name", address: "Business address", trade: "Primary trade", tradeRawText: "Primary trade search text", otherTradesRawText: "Other trades search text",
     otherTrades: "Other trades", otherTradeDescription: "Other trade description", primaryPct: "Primary trade % of work",
     workMarket: "Residential / commercial work", projectTypes: "Project types", developmentWork: "Apartment / townhome / tract-development work",
     poolWork: "Pool operations (including subcontracted work)", poolWorkDescription: "Other pool work description",
