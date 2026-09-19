@@ -1,0 +1,558 @@
+[
+  {
+    "id": "120250682685570660",
+    "name": "CP - landing STEP form /commercial-property-quote (22 states) - $150/day",
+    "campaign_id": "120250540492410660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "daily_budget": "11719",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "age_range": [
+        18,
+        65
+      ],
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3875",
+            "name": "New York",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1787041751,
+      "status": "SUCCESS"
+    },
+    "created_time": "2026-08-18T00:14:32-0400",
+    "start_time": "2026-08-18T00:14:32-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 3201.55,
+    "impressions": 113651,
+    "link_clicks": 1061,
+    "CPM": 28.17,
+    "link_CTR_pct": 0.934,
+    "link_CPC": 3.02,
+    "completed_saved": 149,
+    "new_acquisitions": 144,
+    "observed_starts": null,
+    "observed_sessions": 225,
+    "CPL_saved": 21.49,
+    "CPL_new": 22.23,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120250540493670660",
+    "name": "CP - landing page (23 states) - $50/day",
+    "campaign_id": "120250540492410660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "daily_budget": "3281",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "age_range": [
+        18,
+        65
+      ],
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3875",
+            "name": "New York",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1789225678,
+      "status": "SUCCESS"
+    },
+    "created_time": "2026-08-11T23:42:56-0400",
+    "start_time": "2026-08-11T23:42:56-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 2588.19,
+    "impressions": 58178,
+    "link_clicks": 697,
+    "CPM": 44.49,
+    "link_CTR_pct": 1.198,
+    "link_CPC": 3.71,
+    "completed_saved": 97,
+    "new_acquisitions": 96,
+    "observed_starts": null,
+    "observed_sessions": 39,
+    "CPL_saved": 26.68,
+    "CPL_new": 26.96,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120250540492550660",
+    "name": "CP - instant form (23 states) - $50/day",
+    "campaign_id": "120250540492410660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "15000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "age_range": [
+        18,
+        65
+      ],
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3875",
+            "name": "New York",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "LEAD_GENERATION",
+    "promoted_object": {
+      "page_id": "1187206524478693",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "last_sig_edit_ts": 1787021114
+    },
+    "created_time": "2026-08-11T23:42:54-0400",
+    "start_time": "2026-08-11T23:42:54-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "spend": 0,
+    "impressions": 0,
+    "link_clicks": 0,
+    "CPM": null,
+    "link_CTR_pct": null,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  }
+]

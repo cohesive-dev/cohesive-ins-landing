@@ -1,0 +1,11 @@
+{
+  "cutoff": "2026-09-19T04:00:00Z",
+  "account_timezone": "America/New_York",
+  "sessions_begin": "2026-09-12T05:50:00Z",
+  "property_starts": "Unrecorded before Sep19 instrumentation fix; no backfill",
+  "retained_starts": "Incomplete legacy instrumentation",
+  "completion_definition": "Confirmed completed intakes attributed by exact stored campaign/ad IDs; includes returning clients. New acquisitions separately deduplicated. Full main/retained histories each include one accepted email intake without matching CRM save.",
+  "unreconciled_server_events": "564 server Lead events versus 276 CRM web saves in Sep3–16, gap288. Aggregate discrepancy only; not 288 proven false events. Event-ID reconciliation unavailable.",
+  "attribution": "Occurrence-date outcomes divided into same-period delivery spend, not acquisition-cohort causal CPA. Allow attribution lag.",
+  "UI": "Fresh cloud browser redirected to business login. Drafts, score, recommendations and push-delivery not inspected. Six API previews returned iframe HTML but browser frames rendered blank. Actual assets were fetched successfully."
+}

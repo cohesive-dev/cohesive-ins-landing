@@ -1,0 +1,21 @@
+{
+  "ads_expected_in_nine_campaigns": 734,
+  "ads_exported": 734,
+  "unique_ad_ids": 734,
+  "creative_objects_present": 734,
+  "public_assets_present": 734,
+  "rollup_spend_checks": "All9 campaign totals equal summed ad spend within $0.01",
+  "archived_query": "40 account archived ads returned; none belong to these9campaigns",
+  "deleted_query_error": {
+    "call": "GET /act_1801236427919384/ads?effective_status=[ARCHIVED,DELETED]",
+    "literal_error": "Requesting for deleted objects is not supported in this endpoint.",
+    "code": 100,
+    "error_subcode": 1815001
+  },
+  "scope": "Every retrievable current and archived ad in seven live funded campaigns plus HVAC/painting. Deleted historical objects cannot be enumerated by this endpoint; all historical delivery IDs and completion-evidence IDs in nine campaigns resolve to exported inventory.",
+  "today_delivery_capture": "2026-09-19T19:19:49.543301+00:00",
+  "whole_account_spend_without_completion": 5153.93,
+  "whole_account_period_spend": 20204.72,
+  "final_inventory_verified_at": "2026-09-19T19:26:46.594367+00:00",
+  "final_inventory_differences": 0
+}

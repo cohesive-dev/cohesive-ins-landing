@@ -1,0 +1,19 @@
+level,campaign_id,campaign_name,status,budget_mode,configured_daily_budget_active_sets,funded_daily_budget,active_adsets,all_adsets
+CAMPAIGN,120251080550890660,CT Themes 20260913 | hvac,PAUSED,Campaign (CBO),120.0,0,8,13
+CAMPAIGN,120251080550480660,CT Themes 20260913 | painting,PAUSED,Campaign (CBO),120.0,0,8,13
+CAMPAIGN,120251080550210660,CT Themes 20260913 | tree,ACTIVE,Campaign (CBO),100.0,100.0,8,12
+CAMPAIGN,120251080550110660,CT Themes 20260913 | roof,ACTIVE,Campaign (CBO),100.0,100.0,8,13
+CAMPAIGN,120251080550020660,CT Themes 20260913 | remodel,ACTIVE,Campaign (CBO),250.0,250.0,8,12
+CAMPAIGN,120251080549940660,CT Themes 20260913 | pool,ACTIVE,Campaign (CBO),370.0,370.0,9,14
+CAMPAIGN,120251073255950660,CT Sprint 20260912,ACTIVE,Ad set (ABO),0,0,0,46
+CAMPAIGN,120251001083740660,CP - Metro repricing test - 20 x $20 - 2026-09-08,ACTIVE,Ad set (ABO),40.0,40.0,2,20
+CAMPAIGN,120250714570810660,Local Service Network - free leads (high-premium trades),PAUSED,Ad set (ABO),10.0,0,1,1
+CAMPAIGN,120250602165530660,Contractors HIGH-VALUE - hybrid Foxquilt/Hedge,ACTIVE,Ad set (ABO),180.0,180.0,3,27
+CAMPAIGN,120250540492410660,Commercial Property - form vs landing (2-cell),ACTIVE,Ad set (ABO),150.0,150.0,2,3
+CAMPAIGN,120250513372720660,Restaurants - Landing Page (Website Leads),ACTIVE,Ad set (ABO),0,0,0,10
+CAMPAIGN,120250465734500660,Religious - Landing Page (Website Leads),ACTIVE,Ad set (ABO),0,0,0,3
+CAMPAIGN,120250412284720660,Contractors — Foxquilt (9 states),PAUSED,Ad set (ABO),0,0,0,5
+CAMPAIGN,120250214453700660,LRO / Building owners - leads,PAUSED,Ad set (ABO),0,0,0,2
+CAMPAIGN,120249822083780660,Gate-free → Next - Website Leads (multi-industry),PAUSED,Ad set (ABO),0,0,0,4
+CAMPAIGN,120249667362340660,Form Fill Leads - NY (instant form),PAUSED,Ad set (ABO),300.0,0,1,16
+CAMPAIGN,120249655386740660,website ad - Leads,PAUSED,Ad set (ABO),0,0,0,2
