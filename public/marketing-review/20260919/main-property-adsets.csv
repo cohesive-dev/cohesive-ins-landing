@@ -1,0 +1,4 @@
+id,name,status,configured_budget,active_ads,configured_active_ads,spend,impressions,link_clicks,CPM,link_CTR,link_CPC,form_starts,completions,CPL
+120250682685570660,CP - landing STEP form /commercial-property-quote (22 states) - $150/day,ACTIVE,125.0,26,26,764.94,22473,229,34.04,1.019,3.34,Not measured: before September 19 fix,32,23.9
+120250540493670660,CP - landing page (23 states) - $50/day,ACTIVE,35.0,22,22,212.22,3447,42,61.57,1.218,5.05,Not measured: before September 19 fix,7,30.32
+120250540492550660,CP - instant form (23 states) - $50/day,PAUSED,150.0,0,22,0,0,0,,,,Not measured: before September 19 fix,0,
