@@ -15,6 +15,7 @@ import {
 } from "react";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
+import { createPropertyFunnel } from "@/lib/property-funnel";
 
 /**
  * /commercial-property — deep intake landing page for commercial building
@@ -355,12 +356,19 @@ export default function CommercialPropertyForm({
     "idle",
   );
   const [errMsg, setErrMsg] = useState("");
+  const propertyFunnel = useRef<ReturnType<typeof createPropertyFunnel> | null>(null);
+  useEffect(() => {
+    const tracker = createPropertyFunnel();
+    propertyFunnel.current = tracker;
+    return () => { tracker.dispose(); propertyFunnel.current = null; };
+  }, []);
 
   // Funnel instrumentation: fire each milestone once per session so we can
   // measure abandonment (FormStart -> ContactDone -> PropertyQualified ->
   // PropertyStarted -> Lead) and see exactly where people drop off.
   const fired = useRef<Set<string>>(new Set());
   const track = useCallback((name: string) => {
+    if (name === "FormStart") propertyFunnel.current?.start();
     if (fired.current.has(name)) return;
     fired.current.add(name);
     fbq("trackCustom", name);
@@ -729,6 +737,10 @@ export default function CommercialPropertyForm({
 
       <form
         onSubmit={submit}
+        onFocusCapture={(e) => {
+          if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement || e.target instanceof HTMLTextAreaElement)
+            propertyFunnel.current?.start();
+        }}
         onKeyDown={stepped ? onStepKey : undefined}
         className="mx-auto max-w-2xl space-y-8 px-5 py-8 sm:px-6 sm:py-10"
       >
