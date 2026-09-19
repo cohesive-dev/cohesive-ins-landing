@@ -9,7 +9,7 @@ export function WebsiteTraffic(){
   if(process.env.NEXT_PUBLIC_FB_FUNNEL_ENABLED!=='true'||query.get('preview')==='1')return;
   // Cold-email pages emit their own campaign/layout cell through the form tracker.
   if(path==='/email/contractors/long'||path==='/email/contractors/step')return;
-  const routes:Record<string,string>={'/':'home','/contractors':'contractors','/contractor':'contractor','/contractor-test':'contractor_test','/commercial-property-quote':'commercial_property','/roofers-free-leads':'roofer_offer','/religious':'religious'};
+  const routes:Record<string,string>={'/':'home','/contractors':'contractors','/contractor':'contractor','/contractor-test':'contractor_test','/commercial-property':'commercial_property','/commercial-property-quote':'commercial_property','/roofers-free-leads':'roofer_offer','/religious':'religious'};
   const ids:Record<string,string>={};for(const [key,value]of [['ad_id','adId'],['adset_id','adsetId'],['campaign_id','campaignId']]){const id=query.get(key);if(id&&/^\d{5,30}$/.test(id))ids[value]=id;}
   const event={eventId:crypto.randomUUID(),sessionId:trafficSession(),cellId:`site__${routes[path]||'other'}__page__v1`,version:'2026-09-12-v1',event:'page_view',elapsedMs:0,...ids};
   // One event per mounted navigation; StrictMode cleanup cancels the initial dev effect.
