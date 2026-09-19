@@ -1,0 +1,10 @@
+Vertical,Completed total (14 days),Completions/day mean,Completions/day median,New acquisitions (14 days),Starts/day mean (14 days),Starts/day median (14 days),Current 6-day completions/day,Current 6-day starts/day
+Pool,11,0.79,0.0,10,1.36,0.0,1.833,3.167
+Tree,11,0.79,0.0,10,1.43,0.0,1.833,3.333
+Remodeling / GC,25,1.79,0.0,25,2.57,0.0,4.167,6
+Roofing,6,0.43,0.0,6,0.93,0.0,1,2.167
+Main property,112,8,7.5,110,Not measured,Not measured,6.667,Not measured
+Retained HIGH-VALUE,31,2.21,2.0,30,Not measured,Not measured,1.333,Not measured
+HVAC,5,0.36,0.0,5,0.57,0.0,0.833,1.333
+Painting,4,0.29,0.0,4,0.64,0.0,0.667,1.5
+Metro property,34,2.43,1.0,32,Not measured,Not measured,0.667,Not measured
