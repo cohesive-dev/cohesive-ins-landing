@@ -3,6 +3,9 @@
 // Keep the public labels useful to a visitor; outcome counts belong in private
 // analytics, not in page copy.
 export const OUTCOME_PRIORITY_LINKS = [
+  { href: "/insurance/restaurant/wisconsin", label: "Restaurant insurance in Wisconsin" },
+  { href: "/insurance/restaurant/pennsylvania", label: "Restaurant insurance in Pennsylvania" },
+  { href: "/insurance/commercial-property", label: "Commercial property insurance for building owners" },
   { href: "/insurance/welding/maine", label: "Welding insurance in Maine" },
   { href: "/insurance/cleaning/new-jersey", label: "Cleaning insurance in New Jersey" },
   { href: "/insurance/snow-removal/virginia", label: "Snow-removal insurance in Virginia" },

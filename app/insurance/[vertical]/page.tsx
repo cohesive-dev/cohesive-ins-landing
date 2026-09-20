@@ -49,6 +49,7 @@ export async function generateMetadata({
     title: content.title,
     description: content.metaDescription,
     alternates: { canonical: `/insurance/${vertical}` },
+    ...(vertical === "bar" ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -71,7 +72,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   if (trade) {
     const content = getContractorNationalContent(slug);
     if (!content) notFound();
-    const states = CONTRACTOR_STATE_SLUGS.filter((s) =>
+    const states = (trade.nationalOnly ? [] : CONTRACTOR_STATE_SLUGS).filter((s) =>
       contractorStateBuildable(slug, s),
     )
       .map((s) => getContractorState(s))

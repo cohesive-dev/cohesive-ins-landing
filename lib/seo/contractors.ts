@@ -26,6 +26,12 @@ export type Trade = {
   name: string; // Title Case display name
   intakeLabel?: string; // Preserve an established intake value when display wording changes.
   noun: string; // lowercase noun for sentences ("an electrician's business")
+  // New or narrow demand can prove itself on a national page before the site
+  // creates dozens of state variants with too little distinct evidence.
+  nationalOnly?: boolean;
+  // The intake is accepted, but the exact carrier class/market needs a human
+  // review before the page can promise an instant path.
+  requiresReview?: boolean;
   // Monthly starting FLOORS shown as "from $X/mo".
   glFrom: number; // general liability only, cheapest owner-op
   bopFrom?: number; // GL + tools/property bundle (omit for pure-service trades)
@@ -670,6 +676,46 @@ export const TRADES: Trade[] = [
     driversExtra: ["Abatement/pollution exposure and licensing"],
     cobs: [],
   },
+  // Search Console exposed these distinct operations through broader pages.
+  // Keep them national-only until each earns enough demand for researched
+  // state pages; this avoids multiplying near-duplicate state content.
+  {
+    slug: "arborist",
+    name: "Arborist",
+    noun: "arborist",
+    nationalOnly: true,
+    requiresReview: true,
+    glFrom: 148,
+    bopFrom: 175,
+    esRoute: true,
+    alsoCovers: "For pruning, tree-health work, cabling, consulting, and removal. Describe climbing, crane, pesticide, and utility-line work separately.",
+    driversExtra: ["Tree height, climbing, rigging, crane use, and work near utilities", "Whether you provide tree-health opinions or pesticide applications"],
+    cobs: [{ label: "Arborist / tree service", id: "Tree service" }],
+  },
+  {
+    slug: "cabinet-maker",
+    name: "Cabinet Maker",
+    noun: "cabinet maker",
+    nationalOnly: true,
+    requiresReview: true,
+    glFrom: 52,
+    bopFrom: 69,
+    alsoCovers: "For cabinet shops that fabricate, finish, deliver, or install their own work. Installation-only contractors can use the cabinet-installation guide.",
+    driversExtra: ["Shop fabrication and finishing versus installation only", "Products/completed-work exposure and any subcontracted installation"],
+    cobs: [{ label: "Cabinet maker / installation", id: "Cabinet installation" }],
+  },
+  {
+    slug: "pool-inspector",
+    name: "Pool Inspector",
+    noun: "pool inspector",
+    nationalOnly: true,
+    requiresReview: true,
+    glFrom: 55,
+    needsEO: true,
+    alsoCovers: "For visual pool and spa inspections, written reports, and pre-purchase reviews. Repair, leak detection, diving, or engineering work needs separate review.",
+    driversExtra: ["Whether you provide written condition or safety reports", "Any repair, leak detection, diving, engineering, or code-certification work"],
+    cobs: [{ label: "Pool inspector", id: "Pool inspector" }],
+  },
 ];
 
 // ---- shared copy spine ------------------------------------------------------
@@ -722,15 +768,19 @@ function priceDrivers(t: Trade): string[] {
 function sharedFaqs(t: Trade): { q: string; a: string }[] {
   const bind = t.hedgeOnly
     ? "This one doesn't quote through the instant online carriers, so we run it through our specialty desk. Usually a day or two for a quote, but we can still get a COI out fast once terms are set."
+    : t.requiresReview
+      ? "Send the work description and requested coverage first. A licensed agent reviews the class and available markets before giving a timing estimate; do not rely on an instant-quote promise for this operation."
     : t.esRoute
       ? "Higher-risk trades like this go through a specialty market, so give it a business day or two. We can usually still get a COI out fast once the terms are set."
       : "Most trades bind same-day, and we send the COI the minute you bind. Often the same day the GC or property manager asks for it.";
   return [
     {
       q: `How much does ${t.noun} insurance cost?`,
-      a: `General liability for ${an(t.noun)} ${t.noun} starts as low as ${money(t.glFrom)}/mo if you're a small owner-operator${
-        t.bopFrom ? `, or about ${money(t.bopFrom)}/mo with your tools added` : ""
-      }. What you actually pay comes down to payroll, sales, the work you do, and your claims. If you're paying way more than that right now, it's usually how you got classified, not the risk itself.`,
+      a: t.requiresReview
+        ? `There is no responsible price to give without the work description, payroll, sales, equipment, contracts, requested limits, and loss history. Keep those facts consistent and compare the complete proposals, not a generic starting price.`
+        : `General liability for ${an(t.noun)} ${t.noun} starts as low as ${money(t.glFrom)}/mo if you're a small owner-operator${
+            t.bopFrom ? `, or about ${money(t.bopFrom)}/mo with your tools added` : ""
+          }. What you actually pay comes down to payroll, sales, the work you do, and your claims. If you're paying way more than that right now, it's usually how you got classified, not the risk itself.`,
     },
     {
       q: `What does a GC need me to carry?`,
@@ -754,6 +804,8 @@ export function buildContractorNational(t: Trade): PageContent {
   const bundle = t.bopFrom ? money(t.bopFrom) : null;
   const marketNote = t.hedgeOnly
     ? "This one doesn't quote through the online carriers, so we run it through our specialty desk, the market that writes it every day, and shop it to keep the number down."
+    : t.requiresReview
+      ? "The exact operations need review before selecting a carrier class or promising quote timing."
     : t.esRoute
       ? "It's a higher-risk trade, so the best rates come from specialty markets that write it every day, not a standard small-business carrier."
       : "It quotes fast, and a solo operator with no crew lands near the low end.";
@@ -765,20 +817,57 @@ export function buildContractorNational(t: Trade): PageContent {
       : "";
 
   return withConstructionHazardReview({
-    title: `${t.name} Insurance - Costs from ${floor}/mo & Instant Quotes`,
-    metaDescription: `What ${t.noun} insurance really costs (from ${floor}/mo), what GCs make you carry, and how to get a quote in minutes. Licensed contractor insurance agency.`,
+    title: t.requiresReview
+      ? `${t.name} Insurance - Coverage & Quote Checklist`
+      : `${t.name} Insurance - Costs from ${floor}/mo & Instant Quotes`,
+    metaDescription: t.requiresReview
+      ? `What to prepare for a ${t.noun} insurance review, which operations change the market, and how to request an individual quote.`
+      : `What ${t.noun} insurance really costs (from ${floor}/mo), what GCs make you carry, and how to get a quote in minutes. Licensed contractor insurance agency.`,
     heroH1: `${t.name} Insurance`,
-    heroSub: t.hedgeOnly
+    heroSub: t.requiresReview
+      ? `Prepare the operations, payroll, sales, equipment, contracts, and loss details a licensed agent needs to request an individual quote.`
+      : t.hedgeOnly
       ? `See what ${plural(t.noun)} pay, starting around ${floor}/mo, and tell us about your work to get a quote back fast.`
       : `See what ${plural(t.noun)} actually pay, starting as low as ${floor}/mo, and get your own quote in a few minutes.`,
     alsoCovers: t.alsoCovers,
-    costNarrative: [
-      `${t.name} general liability starts as low as ${floor}/mo if you're a small owner-operator${
-        bundle ? `, or about ${bundle}/mo once you add your tools` : ""
-      }.${ownBook} ${marketNote}`,
-      `Most ${plural(t.noun)} who get a high quote aren't paying for the risk. They're paying for how they got classified. Your payroll, the work you actually do, and your claims move the price a lot more than your zip code does.`,
-    ],
-    costRows: [
+    costNarrative: t.requiresReview
+      ? [
+          `${t.name} pricing depends on the exact work, customer types, contracts, payroll, sales, equipment and loss history. ${marketNote}`,
+          `Keep those facts and requested limits consistent across proposals. Compare accepted operations, exclusions, deductibles, endorsements and total cost instead of treating a generic online starting price as your quote.`,
+        ]
+      : [
+          `${t.name} general liability starts as low as ${floor}/mo if you're a small owner-operator${
+            bundle ? `, or about ${bundle}/mo once you add your tools` : ""
+          }.${ownBook} ${marketNote}`,
+          `Most ${plural(t.noun)} who get a high quote aren't paying for the risk. They're paying for how they got classified. Your payroll, the work you actually do, and your claims move the price a lot more than your zip code does.`,
+        ],
+    costDisclaimer: t.requiresReview
+      ? "Pricing is individual to the operation and proposed policy. This checklist is not a quote or an offer of insurance."
+      : undefined,
+    costRows: t.requiresReview ? [
+      {
+        coverage: "General liability",
+        range: "Individual quote",
+        note: "Match the work description, customer types, limits, and endorsements to the actual contracts you take.",
+      },
+      {
+        coverage: "Tools & equipment",
+        range: "Selected limit",
+        note: "List owned, rented, borrowed, mobile, and shop equipment separately where applicable.",
+      },
+      {
+        coverage: "Workers' comp",
+        range: "Priced on payroll",
+        note: "Report employees, owners, and hired businesses accurately and review the applicable state rules.",
+      },
+      {
+        coverage: t.needsEO ? "Professional liability (E&O)" : "Commercial auto",
+        range: "Policy-specific",
+        note: t.needsEO
+          ? "Review written reports, professional opinions, and any exclusions separately from general liability."
+          : "Identify business vehicles, drivers, radius, and how vehicles are used for the work.",
+      },
+    ] : [
       {
         coverage: "General liability",
         range: `from ${floor}/mo`,

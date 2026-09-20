@@ -6,10 +6,11 @@ import type { Metadata } from "next";
 // restaurant landing page show a restaurant card — not the site-wide
 // contractor blurb it would otherwise inherit from the root layout.
 export const metadata: Metadata = {
-  title: "Restaurant & Bar Insurance | Cohesive Insurance",
+  title: "Restaurant Insurance | Cohesive Insurance",
   description:
     "General liability and property coverage for restaurants, cafes, and food businesses. Fast quotes, A-rated carriers, and plain-English guidance.",
   alternates: { canonical: "/restaurant" },
+  robots: { index: false, follow: true },
   openGraph: {
     type: "website",
     url: "/restaurant",

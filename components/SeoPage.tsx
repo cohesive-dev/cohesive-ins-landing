@@ -6,6 +6,7 @@ import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources"
 import Link from "next/link";
 import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
 import ContractorQuoteForm from "@/components/ContractorQuoteForm";
+import CommercialPropertyForm from "@/components/CommercialPropertyForm";
 import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
 import type { PageContent } from "@/lib/seo/data";
 
@@ -35,9 +36,9 @@ export default function SeoPage({
   eyebrow: string;
   source: string;
   areaServed: string;
-  // "restaurant"/"bar" render the deep restaurant intake; "contractor" renders
-  // the trades intake (tradeLabel required in that case).
-  formMode: "restaurant" | "bar" | "contractor";
+  // Restaurant, contractor and building-owner pages keep their own intake
+  // contracts while sharing the same crawlable editorial shell.
+  formMode: "restaurant" | "bar" | "contractor" | "property";
   tradeLabel?: string;
   tradeSlug?: string;
   stateSlug?: string;
@@ -297,6 +298,8 @@ export default function SeoPage({
         </div>
         {formMode === "contractor" ? (
           <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} />
+        ) : formMode === "property" ? (
+          <CommercialPropertyForm embedded source={source} />
         ) : (
           <RestaurantIntakeForm embedded source={source} mode={formMode} />
         )}

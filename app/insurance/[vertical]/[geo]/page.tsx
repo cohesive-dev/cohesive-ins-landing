@@ -30,7 +30,7 @@ export function generateStaticParams(): Params[] {
     STATES.map((s) => ({ vertical: v, geo: s.slug })),
   );
   const trades = TRADES.flatMap((t) =>
-    CONTRACTOR_STATE_SLUGS.filter((s) =>
+    (t.nationalOnly ? [] : CONTRACTOR_STATE_SLUGS).filter((s) =>
       contractorStateBuildable(t.slug, s),
     ).map((s) => ({ vertical: t.slug, geo: s })),
   );
@@ -57,6 +57,7 @@ export async function generateMetadata({
     title: content.title,
     description: content.metaDescription,
     alternates: { canonical: `/insurance/${vertical}/${geo}` },
+    ...(vertical === "bar" ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
@@ -79,6 +80,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   // --- contractor trade x state page ---
   const trade = getTrade(verticalSlug);
   if (trade) {
+    if (trade.nationalOnly) notFound();
     const cs = getContractorState(geoSlug);
     if (!cs || !contractorStateBuildable(verticalSlug, geoSlug)) notFound();
     const content = buildContractorState(cs, trade);

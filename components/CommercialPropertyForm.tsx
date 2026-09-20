@@ -337,17 +337,22 @@ type StepDef = {
 
 export default function CommercialPropertyForm({
   layout = "long",
+  source,
+  embedded = false,
 }: {
   layout?: "long" | "steps";
+  source?: string;
+  embedded?: boolean;
 }) {
   // Distinct source per cell. Both cells are the same component posting to the
   // same route, so without this every lead reads "commercial-property-landing"
   // and the A/B is unmeasurable — we would know the split cost but not which
   // cell produced the leads.
-  const sourceLabel =
+  const sourceLabel = source ?? (
     layout === "steps"
       ? "commercial-property-steps"
-      : "commercial-property-landing";
+      : "commercial-property-landing"
+  );
   // Claims defaults to "None" — the common case, and it means the detail
   // block always carries a claims answer even if untouched.
   const [f, setF] = useState<FormState>({ claims: "None" });
@@ -692,8 +697,9 @@ export default function CommercialPropertyForm({
   }
 
   if (status === "done") {
+    const DoneRoot = embedded ? "section" : "main";
     return (
-      <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
+      <DoneRoot className={`mx-auto flex max-w-2xl flex-col items-center justify-center px-6 text-center ${embedded ? "py-12" : "min-h-screen"}`}>
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF1FF] text-3xl">
           🏢
         </div>
@@ -708,7 +714,7 @@ export default function CommercialPropertyForm({
           </a>
           .
         </p>
-      </main>
+      </DoneRoot>
     );
   }
 
@@ -716,11 +722,12 @@ export default function CommercialPropertyForm({
   // back to long-form rendering, which dumps every remaining question on someone
   // we just told we can't help. The Notice is not a Field, so it still renders
   // beside the answer that disqualified them.
+  const Root = embedded ? "div" : "main";
   return (
     <StepCtx.Provider value={stepped ? cur.key : null}>
-    <main className="min-h-screen bg-white">
+    <Root className={embedded ? "bg-white" : "min-h-screen bg-white"}>
       {/* Hero */}
-      <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
+      {!embedded && <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
         <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 sm:py-7">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
             For commercial building owners
@@ -733,7 +740,7 @@ export default function CommercialPropertyForm({
             better rate, reviewed by a licensed agent.
           </p>
         </div>
-      </section>
+      </section>}
 
       <form
         onSubmit={submit}
@@ -1015,7 +1022,7 @@ export default function CommercialPropertyForm({
       <PartialCaptureDisclosure>We&rsquo;ll only use your details to prepare and send your
               insurance quote.</PartialCaptureDisclosure>
       </form>
-    </main>
+    </Root>
     </StepCtx.Provider>
   );
 }

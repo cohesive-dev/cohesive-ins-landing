@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   description:
     "Property coverage for the commercial building you own, retail, office, mixed-use, warehouse, religious institution. Fast quotes from A-rated carriers.",
   alternates: { canonical: "/commercial-property-quote" },
+  robots: { index: false, follow: true },
   openGraph: {
     type: "website",
     url: "/commercial-property-quote",
