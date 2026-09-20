@@ -7,7 +7,9 @@ export const SERVICE_STATE_NAMES: Record<string, string> = {
   "florida": "Florida",
   "arizona": "Arizona",
   "north-carolina": "North Carolina",
-  "georgia": "Georgia"
+  "georgia": "Georgia",
+  "michigan": "Michigan",
+  "washington": "Washington"
 };
 export type ServiceProfile = { intro: string; facts: Fact[]; questions: string[]; faq: { q: string; a: string } };
 export type InsuranceService = {
@@ -652,6 +654,89 @@ export const INSURANCE_SERVICES: InsuranceService[] = [
     }
   }
 ];
+
+const EXPANSION_SERVICE_STATES = {
+  michigan: {
+    name: "Michigan",
+    abbr: "MI",
+    workerFact: {
+      title: "Michigan uses two workers' compensation triggers",
+      body: "Michigan generally requires coverage when a private employer regularly has three employees at one time, including part-time staff, or one employee works at least 35 hours a week for 13 weeks or longer. Describe owners, officers, employees, and hired businesses separately.",
+      source: {
+        label: "Michigan workers' compensation insurance requirements",
+        href: "https://www.michigan.gov/leo/bureaus-agencies/wdca/Insurance-Requirements/Pages/workers-disability-compensation-insurance-requirements",
+      },
+    },
+  },
+  washington: {
+    name: "Washington",
+    abbr: "WA",
+    workerFact: {
+      title: "Washington worker coverage runs through Labor & Industries",
+      body: "Washington generally requires industrial insurance for employees and other covered workers. Private workers' compensation policies are not allowed unless the employer is certified to self-insure, and calling a worker an independent contractor does not by itself decide the classification.",
+      source: {
+        label: "Washington L&I workers' compensation account guidance",
+        href: "https://www.lni.wa.gov/insurance/insurance-requirements/do-i-need-a-workers-comp-account/",
+      },
+    },
+  },
+} as const;
+
+function expansionServiceProfile(
+  service: InsuranceService,
+  state: (typeof EXPANSION_SERVICE_STATES)[keyof typeof EXPANSION_SERVICE_STATES],
+): ServiceProfile {
+  const isPool = service.slug === "pool-service";
+  const isCommercial = service.slug === "commercial-cleaning";
+  const operation = isPool
+    ? "cleaning, chemicals, equipment repair, resurfacing, and new construction"
+    : isCommercial
+      ? "ordinary offices, medical or food facilities, post-construction cleanup, floor care, and work above ground level"
+      : "occupied homes, move-outs, short-term rentals, windows, and specialist cleaning";
+  const boundaryFact: Fact = isPool
+    ? state.abbr === "MI"
+      ? {
+          title: "Michigan separates pool maintenance from licensed construction scope",
+          body: "Michigan lists swimming pools within its residential maintenance-and-alteration contractor trades. If routine service expands into structural alteration or construction, verify the required license and make sure the insurance submission describes that work.",
+          source: {
+            label: "Michigan LARA maintenance-and-alteration contractor trades",
+            href: "https://www.michigan.gov/lara/bureau-list/bcc/sections/licensing-section/residential-builders/lic-info/maintenance-alteration-contractor-license-information",
+          },
+        }
+      : {
+          title: "Washington construction work requires contractor registration",
+          body: "Washington requires construction contractors to register with L&I and maintain a bond and liability insurance. Routine pool service should be separated from repair, alteration, or construction work so the registration and quote match the actual scope.",
+          source: {
+            label: "Washington L&I contractor registration",
+            href: "https://www.lni.wa.gov/licensing-permits/contractors/register-as-a-contractor/",
+          },
+        }
+    : {
+        title: `Describe the ${state.name} cleaning contract, not just the business label`,
+        body: isCommercial
+          ? "List each facility type, after-hours access, customer-property requirements, staffing model, equipment, chemicals, and any specialist or post-construction work. Send the customer's insurance exhibit for comparison with the proposal."
+          : "List the homes and rentals served, surfaces, products, equipment, key or alarm access, workers, and any window, carpet, post-construction, or remediation work. Ask how the proposal treats property being cleaned.",
+      };
+
+  return {
+    intro: `For ${state.name} ${service.noun} insurance, separate ${operation}. Include receipts, payroll, hired-business costs, customer types, claims, and contract requirements before comparing terms.`,
+    facts: [state.workerFact, boundaryFact],
+    questions: [
+      `Which services and customer types make up the ${state.abbr} operation?`,
+      "Which work is performed by employees versus hired businesses?",
+    ],
+    faq: {
+      q: `What should a ${state.name} ${service.noun} send for an insurance review?`,
+      a: "Send the current policy if handy, service and customer breakdown, receipts, payroll, subcontractor costs, claims, requested limits, and any customer contract or insurance exhibit. Identify occasional or higher-hazard work separately.",
+    },
+  };
+}
+
+for (const service of INSURANCE_SERVICES) {
+  for (const [slug, state] of Object.entries(EXPANSION_SERVICE_STATES)) {
+    service.stateProfiles[slug] = expansionServiceProfile(service, state);
+  }
+}
 
 export function getInsuranceService(slug: string): InsuranceService | undefined {
   return INSURANCE_SERVICES.find(s => s.slug === slug);

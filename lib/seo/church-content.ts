@@ -114,10 +114,10 @@ const FEATURED_BY_SLUG = new Map(
   FEATURED_CHURCH_STATES.map((state) => [state.slug, state]),
 );
 
-// The contractor SEO footprint is also the agency's placeable footprint:
-// 47 states plus DC (California, Michigan, and Washington are excluded there
-// because the agency cannot currently place them). Church pages use that same
-// boundary so a search page never promises service where it cannot be placed.
+// The contractor SEO footprint is also the agency's placeable footprint.
+// California remains excluded because the agency cannot currently place it.
+// Church pages use that same boundary so a search page never promises service
+// where it cannot be placed.
 export const CHURCH_STATES: ChurchStateProfile[] = CONTRACTOR_STATE_SLUGS.map(
   (slug) => {
     const featured = FEATURED_BY_SLUG.get(slug);
@@ -135,6 +135,8 @@ export const CHURCH_STATES: ChurchStateProfile[] = CONTRACTOR_STATE_SLUGS.map(
         "Maine generally requires workers' compensation when an organization has employees, subject to statutory exclusions. Confirm the treatment of clergy, officers, and any separately organized ministry or school.",
       massachusetts:
         "Massachusetts generally requires workers' compensation for employees, including part-time employees, with limited statutory exceptions. Confirm how clergy and officers are treated for the congregation's structure.",
+      michigan:
+        "Michigan generally requires workers' compensation when an organization regularly employs three or more people at one time, including part-time employees, or one or more people at least 35 hours a week for 13 weeks or longer. Confirm how clergy and officers are counted.",
       missouri:
         "Missouri generally requires workers' compensation for an employer with five or more employees. Confirm how clergy, officers, and separately organized ministry or school staff affect the count.",
       "new-mexico":
@@ -145,6 +147,8 @@ export const CHURCH_STATES: ChurchStateProfile[] = CONTRACTOR_STATE_SLUGS.map(
         "South Dakota does not generally require every private employer to buy workers' compensation, but carrying it can protect employees and limit uninsured injury exposure. Confirm the organization's duties and any contractual requirements.",
       wisconsin:
         "Wisconsin generally requires workers' compensation once an employer has three employees or pays at least $500 in wages in a calendar quarter. Confirm how clergy, officers, and ministry staff are counted.",
+      washington:
+        "Washington generally requires workers' compensation for employees and other covered workers through Labor & Industries. Confirm how clergy, officers, volunteers, and any separately organized ministry, school, or daycare are classified.",
       wyoming:
         "Wyoming's mandatory workers' compensation system applies by industry and work classification rather than one simple employee threshold. Confirm whether the congregation's employees and operations fall within required coverage.",
     };

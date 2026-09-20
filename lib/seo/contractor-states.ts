@@ -15,10 +15,10 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 //      for any elevated work, FL wind/AOB for exterior trades.
 //
 // ACCURACY: seeded entries are facts I'm confident about; every other state
-// falls back to a TRUE generic template (no fabricated statute). The full 48-
+// falls back to a TRUE generic template (no fabricated statute). The full 50-
 // jurisdiction licensing/bond/WC table should be researched + verified before
 // the state pages go fully live — see the note in the build report. Placement
-// footprint = 47 states + DC (everything except CA, MI, WA). Roofing drops NY
+// footprint = 49 states + DC (everything except CA). Roofing drops NY
 // (Scaffold Law) + FL (wind/AOB) on top.
 
 import type { Fact, PageContent } from "./data";
@@ -27,7 +27,7 @@ import type { Trade } from "./contractors";
 import { buildContractorNational, plural } from "./contractors";
 
 // Not placeable — no license, so no page.
-export const EXCLUDED_STATES = new Set(["california", "michigan", "washington"]);
+export const EXCLUDED_STATES = new Set(["california"]);
 // Roofing-specific knockouts on top of the general footprint.
 export const ROOFING_EXCLUDED_STATES = new Set(["new-york", "florida"]);
 
@@ -49,7 +49,7 @@ export type ContractorState = {
   verified?: boolean;
 };
 
-// --- per-jurisdiction facts (all 48; researched 2026-08-14) ------------------
+// --- per-jurisdiction facts (all 50; researched, MI/WA refreshed 2026-09-20) -
 // wc = when workers' comp becomes mandatory; license = the contractor-licensing
 // regime; bond = a license/permit bond when there is one. Regimes are accurate;
 // dollar thresholds are stated only where confident and softened to "larger
@@ -157,6 +157,11 @@ const FACTS: Record<string, StateFact> = {
     wc: "Maryland makes you carry workers' comp from your first employee.",
     license: "Maryland licenses home-improvement contractors through the MHIC and licenses electrical, plumbing, and HVAC trades.",
     bond: "Maryland's MHIC license comes with a Guaranty Fund, and a bond in some cases.",
+  },
+  michigan: {
+    verified: true,
+    wc: "Michigan makes you carry workers' comp if you regularly employ three or more people at one time, including part-time employees, or one or more people at least 35 hours a week for 13 weeks or longer.",
+    license: "Michigan licenses residential builders and residential maintenance-and-alteration contractors through LARA. Electrical, plumbing, mechanical, and other regulated trades have separate license requirements.",
   },
   minnesota: {
     verified: true,
@@ -284,6 +289,12 @@ const FACTS: Record<string, StateFact> = {
     wc: "Virginia makes you carry workers' comp once you have three or more employees, and subcontractors count.",
     license: "Virginia licenses contractors through DPOR by class (A, B, or C) based on job size, and licenses electrical, plumbing, and HVAC trades.",
   },
+  washington: {
+    verified: true,
+    wc: "Washington generally requires workers' compensation for employees and other covered workers through Labor & Industries; private workers' compensation policies are not allowed unless the employer is certified to self-insure.",
+    license: "Washington requires construction contractors to register with Labor & Industries. General and specialty contractors must carry liability insurance and keep the registration active before they advertise, bid, or perform work.",
+    bond: "Washington requires a continuous contractor bond of $30,000 for general contractors or $15,000 for specialty contractors.",
+  },
   "west-virginia": {
     verified: true,
     wc: "West Virginia makes you carry workers' comp from your first employee.",
@@ -301,7 +312,7 @@ const FACTS: Record<string, StateFact> = {
   },
 };
 
-// Display names for every placeable jurisdiction (47 states + DC).
+// Display names for every placeable jurisdiction (49 states + DC).
 const KNOWN_STATES: Record<string, { name: string; abbr: string }> = {
   alabama: { name: "Alabama", abbr: "AL" },
   arkansas: { name: "Arkansas", abbr: "AR" },
@@ -314,6 +325,7 @@ const KNOWN_STATES: Record<string, { name: string; abbr: string }> = {
   kentucky: { name: "Kentucky", abbr: "KY" },
   louisiana: { name: "Louisiana", abbr: "LA" },
   maryland: { name: "Maryland", abbr: "MD" },
+  michigan: { name: "Michigan", abbr: "MI" },
   minnesota: { name: "Minnesota", abbr: "MN" },
   missouri: { name: "Missouri", abbr: "MO" },
   "north-carolina": { name: "North Carolina", abbr: "NC" },
@@ -326,6 +338,7 @@ const KNOWN_STATES: Record<string, { name: string; abbr: string }> = {
   tennessee: { name: "Tennessee", abbr: "TN" },
   texas: { name: "Texas", abbr: "TX" },
   virginia: { name: "Virginia", abbr: "VA" },
+  washington: { name: "Washington", abbr: "WA" },
   wisconsin: { name: "Wisconsin", abbr: "WI" },
   // --- expansion footprint (generic fallback until researched) ---
   alaska: { name: "Alaska", abbr: "AK" },
@@ -364,7 +377,7 @@ export function getContractorState(slug: string): ContractorState | undefined {
   const facts = FACTS[slug];
   if (facts) return { slug, name: base.name, abbr: base.abbr, ...facts };
   // Truthful generic fallback (no fabricated statute) - should not be hit now
-  // that FACTS covers all 48, but kept so a new slug never renders empty.
+  // that FACTS covers the footprint, but kept so a new slug never renders empty.
   return {
     slug,
     name: base.name,

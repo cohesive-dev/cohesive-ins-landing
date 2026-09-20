@@ -1,6 +1,6 @@
 // Programmatic SEO data layer for /insurance pages.
 //
-// Structure: 24 licensed-state profiles (real per-state facts: dram shop law,
+// Structure: 26 state profiles (real per-state facts: dram shop law,
 // WC threshold, wind, market notes) + per-vertical builders that compose full
 // page content from them. Pages exist for:
 //   /insurance/restaurant/[state] and /insurance/bar/[state]  (24 each)
@@ -267,6 +267,30 @@ export const STATES: StateProfile[] = [
     },
   },
   {
+    slug: "michigan",
+    name: "Michigan",
+    abbr: "MI",
+    costBand: "mid",
+    wcWhen: "once you regularly employ 3 people at one time, or 1 person at least 35 hours a week for 13 weeks or longer",
+    dramShopType: "full",
+    liquorFact: {
+      title: "Michigan requires proof of liquor financial responsibility",
+      body: "Michigan retail liquor licensees must file proof of financial responsibility with the Liquor Control Commission. Liquor liability insurance is one accepted method, and the Commission requires its LC-95 form rather than an ACORD certificate. Compare the policy limit with the statutory minimum, lease, and actual alcohol exposure.",
+      source: {
+        label: "Michigan Liquor Control Commission: liquor liability insurance",
+        href: "https://www.michigan.gov/lara/bureau-list/lcc/faq/retailer-faq/insurance",
+      },
+    },
+    marketFact: {
+      title: "Michigan uses two workers' compensation triggers",
+      body: "Michigan's agency says coverage generally applies when a private employer regularly has three employees at one time, including part-time staff, or one employee works at least 35 hours a week for 13 weeks or longer. Confirm owners, officers, and the actual schedule.",
+      source: {
+        label: "Michigan workers' compensation insurance requirements",
+        href: "https://www.michigan.gov/leo/bureaus-agencies/wdca/Insurance-Requirements/Pages/workers-disability-compensation-insurance-requirements",
+      },
+    },
+  },
+  {
     slug: "minnesota",
     name: "Minnesota",
     abbr: "MN",
@@ -436,6 +460,30 @@ export const STATES: StateProfile[] = [
     windFact: {
       title: "Tidewater locations see wind deductibles",
       body: "Virginia Beach, Norfolk, and the coastal Tidewater area carry wind/hail or named-storm deductibles. The rest of the state prices normally.",
+    },
+  },
+  {
+    slug: "washington",
+    name: "Washington",
+    abbr: "WA",
+    costBand: "high",
+    wcWhen: "for employees and other covered workers through the state Labor & Industries system",
+    dramShopType: "full",
+    liquorFact: {
+      title: "Washington prohibits service to apparently intoxicated customers",
+      body: "Washington liquor rules prohibit selling or serving alcohol to an apparently intoxicated person and require the business to stop further service. Liquor liability should be compared separately from general liability, including the limits, exclusions, defense treatment, and any lease requirement.",
+      source: {
+        label: "Washington Liquor and Cannabis Board: public safety laws",
+        href: "https://lcb.wa.gov/enforcement/public-safety-laws",
+      },
+    },
+    marketFact: {
+      title: "Workers' compensation runs through Washington L&I",
+      body: "Washington does not allow private workers' compensation coverage. Employers generally obtain industrial insurance through Labor & Industries unless certified to self-insure, and worker classification can extend beyond a simple employee label.",
+      source: {
+        label: "Washington L&I: workers' compensation account requirements",
+        href: "https://www.lni.wa.gov/insurance/insurance-requirements/do-i-need-a-workers-comp-account/",
+      },
     },
   },
   {
@@ -779,7 +827,7 @@ export const NATIONAL_CONTENT: Record<string, PageContent> = {
   restaurant: {
     title: "Restaurant Insurance - Costs & Instant Quotes",
     metaDescription:
-      "What restaurant insurance costs, what's required, and how to get a quote in minutes. Licensed in 24 states.",
+      "What restaurant insurance costs, what's required, and how to get a quote in minutes. State-specific guidance for 26 states.",
     heroH1: "Restaurant Insurance",
     heroSub:
       "See what restaurants pay, what's required, and get your own quote in a few minutes. No spam, no obligation.",
@@ -864,7 +912,7 @@ export const NATIONAL_CONTENT: Record<string, PageContent> = {
   bar: {
     title: "Bar & Tavern Insurance - Costs & Quotes",
     metaDescription:
-      "What bar insurance costs, including liquor liability and assault & battery coverage, and how to get a quote. Licensed in 24 states.",
+      "What bar insurance costs, including liquor liability and assault & battery coverage, and how to get a quote. State-specific guidance for 26 states.",
     heroH1: "Bar & Tavern Insurance",
     heroSub:
       "See what bars pay for coverage including liquor liability, and get your own quote in a few minutes. No spam, no obligation.",
@@ -949,7 +997,7 @@ export const NATIONAL_CONTENT: Record<string, PageContent> = {
   "food-truck": {
     title: "Food Truck Insurance - Costs & Quotes",
     metaDescription:
-      "What food truck insurance costs, why commercial auto is the big line, and how to get a quote. Licensed in 24 states.",
+      "What food truck insurance costs, why commercial auto is the big line, and how to get a quote. Coverage guidance from a licensed insurance agency.",
     heroH1: "Food Truck Insurance",
     heroSub:
       "See what food trucks pay, what commissaries and events require, and get your own quote in a few minutes. No spam, no obligation.",
@@ -1033,7 +1081,7 @@ export const NATIONAL_CONTENT: Record<string, PageContent> = {
   catering: {
     title: "Catering Insurance - Costs & Quotes",
     metaDescription:
-      "What catering insurance costs, what venues require, and how to get a quote, including single-event coverage. Licensed in 24 states.",
+      "What catering insurance costs, what venues require, and how to get a quote, including single-event coverage. Coverage guidance from a licensed insurance agency.",
     heroH1: "Catering Insurance",
     heroSub:
       "See what caterers pay, what venues require, and get your own quote in a few minutes. No spam, no obligation.",
@@ -1116,7 +1164,7 @@ export const NATIONAL_CONTENT: Record<string, PageContent> = {
   bakery: {
     title: "Bakery Insurance - Costs & Quotes",
     metaDescription:
-      "What bakery insurance costs, what coverage a bakery needs, and how to get a quote in minutes. Licensed in 24 states.",
+      "What bakery insurance costs, what coverage a bakery needs, and how to get a quote in minutes. Coverage guidance from a licensed insurance agency.",
     heroH1: "Bakery Insurance",
     heroSub:
       "See what bakeries pay, what coverage you need, and get your own quote in a few minutes. No spam, no obligation.",

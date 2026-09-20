@@ -18,7 +18,7 @@ import {
 } from "@/lib/seo/contractor-states";
 
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
-// /insurance/{trade}/{state} (58 trades x 48 jurisdictions, minus roofing NY/FL).
+// /insurance/{trade}/{state} (trades x 50 jurisdictions, minus roofing NY/FL).
 // Content is composed per-combo; unknown combos 404.
 
 export const dynamicParams = false;
