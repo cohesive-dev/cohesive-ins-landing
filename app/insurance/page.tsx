@@ -6,6 +6,7 @@ import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data"
 import { TRADES } from "@/lib/seo/contractors";
 import { OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
 import { churchStateLinks } from "@/lib/seo/church-content";
+import { RESTAURANT_TYPES } from "@/lib/seo/restaurant-types";
 
 // /insurance — index hub for the SEO pages. Links every vertical page and
 // every state page so crawlers have a full path to all of them.
@@ -98,6 +99,24 @@ export default function Page() {
                 Costs, coverage, and quotes
               </div>
             </a>
+          ))}
+        </div>
+
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">
+          Restaurant insurance by type
+        </h2>
+        <p className="mb-5 max-w-3xl text-sm leading-6 text-[#6B6D71]">
+          Match the guide to the actual menu, cooking equipment, service model, delivery, and alcohol exposure.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+          {RESTAURANT_TYPES.map((type) => (
+            <Link
+              key={type.slug}
+              href={`/insurance/${type.slug}`}
+              className="rounded-xl border border-slate-200 p-4 text-sm font-semibold text-[#2040E7] hover:border-[#2040E7] hover:underline transition-colors"
+            >
+              {type.name} insurance
+            </Link>
           ))}
         </div>
 

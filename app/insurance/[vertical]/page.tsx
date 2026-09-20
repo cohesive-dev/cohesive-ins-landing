@@ -19,6 +19,12 @@ import {
   getContractorState,
   contractorStateBuildable,
 } from "@/lib/seo/contractor-states";
+import {
+  RESTAURANT_TYPES,
+  buildRestaurantTypeNational,
+  getRestaurantType,
+  restaurantTypeStateLinks,
+} from "@/lib/seo/restaurant-types";
 
 // National pages: /insurance/{restaurant|bar|food-truck|...} (food verticals)
 // and /insurance/{electrician|plumber|roofer|...} (58 contractor trades).
@@ -31,6 +37,7 @@ type Params = { vertical: string };
 export function generateStaticParams(): Params[] {
   return [
     ...VERTICALS.map((v) => ({ vertical: v.slug })),
+    ...RESTAURANT_TYPES.map((type) => ({ vertical: type.slug })),
     ...TRADES.map((t) => ({ vertical: t.slug })),
     ...INSURANCE_SERVICES.map((s) => ({ vertical: s.slug })),
   ];
@@ -42,8 +49,10 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { vertical } = await params;
-  const content =
-    serviceContent(vertical) ?? getNationalContent(vertical) ?? getContractorNationalContent(vertical);
+  const restaurantType = getRestaurantType(vertical);
+  const content = restaurantType
+    ? buildRestaurantTypeNational(restaurantType)
+    : serviceContent(vertical) ?? getNationalContent(vertical) ?? getContractorNationalContent(vertical);
   if (!content) return {};
   return {
     title: content.title,
@@ -55,6 +64,26 @@ export async function generateMetadata({
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { vertical: slug } = await params;
+
+  const restaurantType = getRestaurantType(slug);
+  if (restaurantType) {
+    const content = buildRestaurantTypeNational(restaurantType);
+    return (
+      <SeoPage
+        content={content}
+        eyebrow={restaurantType.name}
+        source={`seo-${restaurantType.slug}-national`}
+        areaServed="United States"
+        formMode="restaurant"
+        costHeading={`How a ${restaurantType.noun} quote is built`}
+        coverageHeading={`Coverage questions for a ${restaurantType.noun}`}
+        stateFactsHeading="Prepare a more specific restaurant submission"
+        resourceScopeLabel="Coverage resources checked"
+        stateLinksHeading={`${restaurantType.name} insurance by state`}
+        stateLinks={restaurantTypeStateLinks(restaurantType)}
+      />
+    );
+  }
 
   const service = getInsuranceService(slug);
   if (service) {

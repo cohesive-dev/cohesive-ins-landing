@@ -5,8 +5,8 @@
 // page content from them. Pages exist for:
 //   /insurance/restaurant/[state] and /insurance/bar/[state]  (24 each)
 //   /insurance/[vertical]                                     (5 national pages)
-// Verticals with thin standalone search demand (pizzeria, deli, coffee shop,
-// brewery, fine dining) are consolidated into restaurant/bar pages, not built.
+// Cuisine and operating-model pages live in restaurant-types.ts. They use
+// materially different underwriting content instead of keyword-only aliases.
 //
 // Copy rules: plain short sentences, no em dashes (use "-" or a period), no
 // marketing filler. Cost figures are stated plainly as ranges. "From our own
@@ -832,7 +832,7 @@ export const NATIONAL_CONTENT: Record<string, PageContent> = {
     heroSub:
       "See what restaurants pay, what's required, and get your own quote in a few minutes. No spam, no obligation.",
     alsoCovers:
-      "Also for pizzerias, delis, cafes, coffee shops, food counters, and quick service.",
+      "For restaurants that do not fit one of the cuisine or operating-model guides below.",
     costNarrative: [
       "The national median for a restaurant businessowners policy (general liability + property) is about $224-251/mo. Most owners who get quoted high aren't overpaying because of where they are. They're overpaying because of how their restaurant was classified.",
       "A benchmark from our own book: a recent full-service restaurant bind came in at $1,153/yr for the BOP, and full-service tenant quotes we've run recently range from about $2,300/yr to $4,500/yr depending on state and size. Counter-service comes in under that. Heavy cooking, high alcohol, or building coverage push it up.",
