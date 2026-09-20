@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
 import { TRADES } from "@/lib/seo/contractors";
+import { OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
 
 // /insurance — index hub for the SEO pages. Links every vertical page and
 // every state page so crawlers have a full path to all of them.
@@ -48,6 +49,20 @@ export default function Page() {
           <span className="block font-bold">Starting a business?</span>
           <span className="text-sm">Explore restaurant and service-business startup guides for all 50 states →</span>
         </Link>
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">
+          Popular state insurance guides
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+          {OUTCOME_PRIORITY_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-xl border border-slate-200 p-4 text-sm font-semibold text-[#2040E7] hover:border-[#2040E7] hover:underline transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
         <h2 className="text-2xl font-extrabold text-[#131517] mb-4">Explore city insurance guides</h2>
         <div className="space-y-3 mb-12">{[...new Set(METRO_PAGES.map(p => p.trade))].map(trade => <details key={trade} className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer font-semibold text-[#2040E7]">{METRO_PAGES.find(p => p.trade === trade)?.label}</summary><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{METRO_PAGES.filter(p => p.trade === trade).map(p => <Link key={p.path} href={p.path} className="text-[#2040E7] underline">{p.cityName}, {p.stateName}</Link>)}</div></details>)}</div>
 
