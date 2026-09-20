@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
 import { TRADES } from "@/lib/seo/contractors";
 import { OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
+import { churchStateLinks } from "@/lib/seo/church-content";
 
 // /insurance — index hub for the SEO pages. Links every vertical page and
 // every state page so crawlers have a full path to all of them.
@@ -71,6 +72,13 @@ export default function Page() {
         </h2>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
           <Link
+            href="/insurance/church"
+            className="rounded-xl border border-slate-200 p-5 hover:border-[#2040E7] transition-colors"
+          >
+            <div className="font-bold text-[#131517] mb-1">Church &amp; house of worship insurance</div>
+            <div className="text-sm text-[#6B6D71]">For ministries, people, property, and activities</div>
+          </Link>
+          <Link
             href="/insurance/commercial-property"
             className="rounded-xl border border-slate-200 p-5 hover:border-[#2040E7] transition-colors"
           >
@@ -90,6 +98,17 @@ export default function Page() {
                 Costs, coverage, and quotes
               </div>
             </a>
+          ))}
+        </div>
+
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">
+          Church insurance by state
+        </h2>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm mb-12">
+          {churchStateLinks().map((state) => (
+            <Link key={state.href} href={state.href} className="text-[#2040E7] hover:underline">
+              {state.label}
+            </Link>
           ))}
         </div>
 

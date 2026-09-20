@@ -31,6 +31,16 @@ function fbq(...args: unknown[]) {
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
+// Preserve the SEO page that handed a visitor into this deeper intake without
+// allowing an arbitrary query string to become a CRM attribution label.
+function attributionSource() {
+  if (typeof window === "undefined") return "religious-landing";
+  const candidate = new URLSearchParams(window.location.search).get("source");
+  return candidate && /^seo-church-[a-z-]{2,40}$/.test(candidate)
+    ? candidate
+    : "religious-landing";
+}
+
 // Google Places autocomplete on the address field. Public, build-time-inlined
 // key; when unset the address field is just a plain input (dark-safe).
 const GMAPS_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -252,7 +262,7 @@ export default function ReligiousLandingPage() {
       phone: phone || undefined,
       businessType: "House of worship",
       zip: extractZip(cur.address),
-      source: "religious-landing",
+      source: attributionSource(),
       partial: true,
       final: true,
       details: det,
@@ -324,7 +334,7 @@ export default function ReligiousLandingPage() {
         name: f.fullName,
         email: f.email,
         phone: f.phone,
-        business_type: "House of worship — via religious-landing",
+        business_type: `House of worship — via ${attributionSource()}`,
         zip: extractZip(f.address),
       }),
     }).catch(() => {});
@@ -338,7 +348,7 @@ export default function ReligiousLandingPage() {
           phone: f.phone,
           businessType: "House of worship",
           zip: extractZip(f.address),
-          source: "religious-landing",
+          source: attributionSource(),
           details,
           eventId,
         }),

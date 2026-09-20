@@ -11,6 +11,7 @@ import {
   contractorStateBuildable,
 } from "@/lib/seo/contractor-states";
 import { COMMERCIAL_PROPERTY_UPDATED } from "@/lib/seo/commercial-property-content";
+import { CHURCH_STATES, CHURCH_UPDATED } from "@/lib/seo/church-content";
 
 const BASE = "https://www.cohesiveinsure.com";
 
@@ -25,6 +26,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: COMMERCIAL_PROPERTY_UPDATED,
     changeFrequency: "monthly" as const,
   }];
+
+  const church = [
+    {
+      url: `${BASE}/insurance/church`,
+      lastModified: CHURCH_UPDATED,
+      changeFrequency: "monthly" as const,
+    },
+    ...CHURCH_STATES.map((state) => ({
+      url: `${BASE}/insurance/church/${state.slug}`,
+      lastModified: CHURCH_UPDATED,
+      changeFrequency: "monthly" as const,
+    })),
+  ];
 
   const hub = [{ url: `${BASE}/insurance`, changeFrequency: "monthly" as const }];
 
@@ -62,7 +76,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
   }));
 
-  return [...core, ...hub, ...commercialProperty, ...verticals, ...foodStates, ...tradeStates, ...guides,
+  return [...core, ...hub, ...commercialProperty, ...church, ...verticals, ...foodStates, ...tradeStates, ...guides,
     ...SERVICE_PATHS.map(path => ({ url: `${BASE}${path}`, lastModified: SERVICE_UPDATED, changeFrequency: "monthly" as const })),
     ...METRO_PAGES.map(p => ({ url: `${BASE}${p.path}`, lastModified: METRO_UPDATED, changeFrequency: "monthly" as const })),
   ].map(entry => {

@@ -31,6 +31,7 @@ export default function SeoPage({
   stateFactsHeading,
   stateLinks,
   stateLinksHeading,
+  quoteHref,
 }: {
   content: PageContent;
   eyebrow: string;
@@ -38,7 +39,7 @@ export default function SeoPage({
   areaServed: string;
   // Restaurant, contractor and building-owner pages keep their own intake
   // contracts while sharing the same crawlable editorial shell.
-  formMode: "restaurant" | "bar" | "contractor" | "property";
+  formMode: "restaurant" | "bar" | "contractor" | "property" | "church";
   tradeLabel?: string;
   tradeSlug?: string;
   stateSlug?: string;
@@ -51,6 +52,7 @@ export default function SeoPage({
   stateFactsHeading?: string;
   stateLinks?: { label: string; href: string }[];
   stateLinksHeading?: string;
+  quoteHref?: string;
 }) {
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
   const growthLink = tradeSlug === "pool" && stateSlug && metroSlug
@@ -296,7 +298,19 @@ export default function SeoPage({
             hours of your time.
           </p>
         </div>
-        {formMode === "contractor" ? (
+        {formMode === "church" ? (
+          <div className="mx-auto mt-8 max-w-xl rounded-xl border border-blue-200 bg-[#F7F9FF] p-6 text-center">
+            <p className="mb-4 text-sm leading-relaxed text-[#27455C]">
+              Answer only the questions that apply to your ministry and property. You can start without every document.
+            </p>
+            <a
+              href={quoteHref ?? "/religious?source=seo-church-national"}
+              className="inline-block rounded-md bg-[#2040E7] px-7 py-3 font-bold text-white transition-colors hover:bg-[#1A33B9]"
+            >
+              Continue to the church quote form →
+            </a>
+          </div>
+        ) : formMode === "contractor" ? (
           <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} />
         ) : formMode === "property" ? (
           <CommercialPropertyForm embedded source={source} />

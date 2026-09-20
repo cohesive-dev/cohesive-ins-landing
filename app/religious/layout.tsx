@@ -9,7 +9,8 @@ export const metadata: Metadata = {
   title: "Church & House of Worship Insurance | Cohesive Insurance",
   description:
     "General liability and property coverage for houses of worship. Fast quotes, A-rated carriers, and plain-English guidance.",
-  alternates: { canonical: "/religious" },
+  alternates: { canonical: "/insurance/church" },
+  robots: { index: false, follow: true },
   openGraph: {
     type: "website",
     url: "/religious",
