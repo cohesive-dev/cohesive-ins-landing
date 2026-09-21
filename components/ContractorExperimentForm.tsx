@@ -63,14 +63,13 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    };
    capturePartial.current=capture;
    const hidden=()=>{if(document.visibilityState==='hidden')capture();};
+   // Wait for a real abandonment signal or 120 seconds without another answer.
+   // Capturing immediately after the contact screen used to freeze the partial
+   // before any later underwriting answers could be included.
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
  },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout,labels]);
- useEffect(()=>{
-   if(coldLayout||layout!=='long'||query.get('preview')==='1'||!['email','phone','fullName'].every(k=>validField(k,answers[k])))return;
-   const timer=setTimeout(()=>void capturePartial.current(),400);return()=>clearTimeout(timer);
- },[answers,coldLayout,layout,query]);
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
@@ -107,7 +106,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  async function submit(e:React.FormEvent){
    e.preventDefault();
    if(layout==='step'&&step<lastStep){const invalid=shown.find(k=>!fieldValid(k,answers[k]));if(invalid){showFieldError(invalid);return;}
-    if(!coldLayout&&step===0&&!preview)void capturePartial.current();setError('');setStep(step+1);return;}
+    setError('');setStep(step+1);return;}
    const invalid=fields.find(k=>!fieldValid(k,answers[k]));if(invalid){showFieldError(invalid);return;}
    if(preview){setStatus('done');return;}
    if(status==='sending')return;

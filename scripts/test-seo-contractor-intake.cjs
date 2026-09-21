@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),originalLoad=Module._load;
 let states=[],cursor=0,effectRan=false,crmCalls=[],emails=[],mode='success',payload;
 for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true},fileName:f}).outputText,f);
 Module._load=function(req,parent,isMain){
- if(req==='react'){const real=originalLoad.call(this,req,parent,isMain);return {...real,useState(init){const i=cursor++;if(!(i in states))states[i]=init;return[states[i],v=>{states[i]=typeof v==='function'?v(states[i]):v;}];},useEffect(fn){if(!effectRan){effectRan=true;fn();}}};}
+ if(req==='react'){const real=originalLoad.call(this,req,parent,isMain);return {...real,useState(init){const i=cursor++;if(!(i in states))states[i]=init;return[states[i],v=>{states[i]=typeof v==='function'?v(states[i]):v;}];},useRef(init){return{current:init};},useCallback(fn){return fn;},useEffect(fn){if(!effectRan){effectRan=true;fn();}}};}
  if(req==='@/lib/notify')return {sendIntakeNotification:async f=>{emails.push(f);return true;}};
  if(req.startsWith('@/'))req=path.join(root,req.slice(2));return originalLoad.call(this,req,parent,isMain);
 };

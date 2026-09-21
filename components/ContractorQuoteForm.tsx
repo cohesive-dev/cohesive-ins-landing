@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 
 // Minimal contractor intake for the /insurance/<trade> SEO pages. Posts to the
 // same /api/intake webhook under the contractor lane, with automated first touch
@@ -33,6 +34,82 @@ export default function ContractorQuoteForm({
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
   useEffect(() => { captureAttribution(); }, []);
+
+  const sentPartial = useRef(false);
+  const partialInFlight = useRef(false);
+  const capturePartial = useCallback(() => {
+    if (sentPartial.current || partialInFlight.current) return;
+    if (done || sending) return;
+    const email = f.email.trim().toLowerCase();
+    const phone = f.phone.trim();
+    const validEmail = EMAIL_RE.test(email) ? email : undefined;
+    if (!validEmail && !phone) return;
+    const captured = captureAttribution();
+    const attribution = {
+      ...captured,
+      landing_page: captured.landing_page || window.location.pathname,
+      referrer: captured.referrer || document.referrer || undefined,
+    };
+    const body = JSON.stringify({
+      name: f.name.trim() || undefined,
+      email: validEmail,
+      phone: phone || undefined,
+      zip: f.zip.trim() || undefined,
+      businessType: tradeLabel,
+      company: f.company.trim() || undefined,
+      source: "contractors-landing",
+      partial: true,
+      final: true,
+      details: [
+        f.company.trim() && { label: "Business", value: f.company.trim() },
+        { label: "Trade", value: tradeLabel },
+        operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
+        { label: "Page source", value: source },
+        ...attributionDetails(attribution),
+        attribution.referrer && { label: "Referrer", value: attribution.referrer },
+      ].filter(Boolean),
+    });
+    try {
+      const accepted = navigator.sendBeacon(
+        "/api/intake",
+        new Blob([body], { type: "application/json" }),
+      );
+      if (!accepted) throw new Error("beacon refused");
+      sentPartial.current = true;
+    } catch {
+      partialInFlight.current = true;
+      fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body,
+        keepalive: true,
+      }).then((response) => {
+        if (response.ok) sentPartial.current = true;
+      }).catch(() => {}).finally(() => {
+        partialInFlight.current = false;
+      });
+    }
+  }, [done, f, operationsPrompt, sending, source, tradeLabel]);
+
+  useEffect(() => {
+    const onHide = () => capturePartial();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") capturePartial();
+    };
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", onHide);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, [capturePartial]);
+
+  // Reset after every edit, so this captures the latest snapshot only after
+  // 120 seconds without another answer.
+  useEffect(() => {
+    const timer = setTimeout(() => capturePartial(), 120_000);
+    return () => clearTimeout(timer);
+  }, [capturePartial]);
 
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
@@ -170,6 +247,7 @@ export default function ContractorQuoteForm({
         We shop your {tradeLabel.toLowerCase()} risk across our markets and send
         the best price back. No obligation to bind.
       </p>
+      <PartialCaptureDisclosure />
     </form>
   );
 }
