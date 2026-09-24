@@ -400,7 +400,14 @@ export async function POST(request: NextRequest) {
   // quotes@ exactly as before.
   const fbc = request.cookies.get("_fbc")?.value;
   const fbp = request.cookies.get("_fbp")?.value;
-  const isRestaurantLane = source === "restaurant-landing";
+  // "bar-landing" is the paid bar route (/bar), the restaurant lane's sibling: same
+  // RestaurantIntakeForm in mode="bar", same quote loop, so it must inherit the same
+  // suppression. Without it a bar fill would trigger the CRM's automated SMS/dial and
+  // beat our own quote to the client, breaking the standing "never auto-text leads"
+  // rule. Kept as an explicit list rather than a prefix so /insurance/bar's
+  // "seo-bar-national" source is NOT swept in by accident.
+  const isRestaurantLane =
+    source === "restaurant-landing" || source === "bar-landing";
   // The contractor lane records the contact in the CRM but suppresses the automated
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
   // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
