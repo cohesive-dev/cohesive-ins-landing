@@ -86,7 +86,7 @@ export default function Page() {
             <div className="font-bold text-[#131517] mb-1">Commercial property insurance</div>
             <div className="text-sm text-[#6B6D71]">For owners of commercial buildings</div>
           </Link>
-          {VERTICALS.filter((v) => v.slug !== "bar").map((v) => (
+          {VERTICALS.map((v) => (
             <a
               key={v.slug}
               href={`/insurance/${v.slug}`}
@@ -149,7 +149,7 @@ export default function Page() {
         <h2 className="text-2xl font-extrabold text-[#131517] mb-4">Cleaning and pool maintenance</h2>
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm mb-12">{INSURANCE_SERVICES.map(service => <Link key={service.slug} href={`/insurance/${service.slug}`} className="text-[#2040E7] hover:underline">{service.name} insurance</Link>)}</div>
 
-        {STATE_VERTICALS.filter((vs) => vs !== "bar").map((vs) => {
+        {STATE_VERTICALS.map((vs) => {
           const v = getVertical(vs)!;
           return (
             <div key={vs} className="mb-10">

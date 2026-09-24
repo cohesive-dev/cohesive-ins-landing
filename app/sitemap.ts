@@ -47,8 +47,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const hub = [{ url: `${BASE}/insurance`, changeFrequency: "monthly" as const }];
 
+  // Bars were held out of the sitemap and carried robots noindex while we had no market that
+  // would write them: Rainbow declines bars and the paid restaurant form disqualifies them, so
+  // ranking for bar searches would only have bought traffic we had to turn away. The Corgi E&S
+  // appointment (signed 2026-09-22) writes Hospitality/Food & Beverage, and the SEO bar pages
+  // already run RestaurantIntakeForm in mode="bar", which captures bar/high-alcohol answers as
+  // E&S leads instead of disqualifying them. So the reason for the exclusion is gone.
   const verticals = [
-    ...VERTICALS.filter((v) => v.slug !== "bar").map((v) => v.slug),
+    ...VERTICALS.map((v) => v.slug),
     ...TRADES.map((t) => t.slug),
   ].map(
     (slug) => ({
@@ -58,7 +64,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }),
   );
 
-  const foodStates = STATE_VERTICALS.filter((vs) => vs !== "bar").flatMap((vs) =>
+  const foodStates = STATE_VERTICALS.flatMap((vs) =>
     STATES.map((s) => ({
       url: `${BASE}/insurance/${vs}/${s.slug}`,
       changeFrequency: "monthly" as const,

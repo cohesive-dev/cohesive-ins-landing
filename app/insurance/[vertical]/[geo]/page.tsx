@@ -78,7 +78,6 @@ export async function generateMetadata({
     title: content.title,
     description: content.metaDescription,
     alternates: { canonical: `/insurance/${vertical}/${geo}` },
-    ...(vertical === "bar" ? { robots: { index: false, follow: true } } : {}),
   };
 }
 
