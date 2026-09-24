@@ -625,11 +625,19 @@ export default function RestaurantIntakeForm({
               what we have for contractors page (smaller)"). "No spam" removed per the standing
               copy rule (never say "no spam" - it adds nothing). */}
           <div className="mx-auto max-w-2xl px-5 py-5 sm:px-6 sm:py-7">
+            {/* Message match: a visitor arriving from a BAR ad must not land on a
+                headline that says "restaurants". Ad-to-page mismatch is the cheapest
+                way to lose a fill, and /bar exists specifically to be the paid bar
+                destination (Kevin 2026-09-24). barOk is mode === "bar". */}
             <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
-              For restaurants, bars, cafes &amp; food businesses
+              {barOk
+                ? "For bars, taverns, breweries \u0026 pubs"
+                : "For restaurants, bars, cafes \u0026 food businesses"}
             </span>
             <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
-              Business insurance built for restaurants
+              {barOk
+                ? "Business insurance built for bars"
+                : "Business insurance built for restaurants"}
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
               We use AI to automatically shop your coverage and find you a
