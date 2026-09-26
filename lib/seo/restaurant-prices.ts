@@ -29,6 +29,32 @@ const CONCEPT_BINDS: Record<string, BoundPrice> = {
   "seafood-restaurant": { usd: 3278, line: "General liability", business: "a Mexican seafood restaurant" },
 };
 
+// Kevin 2026-09-26: "We can include not just binded prices but rainbow's auto bindable prices for
+// SEO purposes." An auto-bindable quote is one the carrier (Rainbow) rated instantly and marked
+// bindable, with no underwriter referral: a real price the restaurant could have bought that day.
+// Always labelled "instant quote, bindable", never "bound". Each is a $1M/$2M liability + $50,000
+// equipment-and-contents businessowners policy for a tenant, verified bindable in the CRM quote row.
+export const BINDABLE_PKG_FLOOR: BoundPrice = {
+  usd: 1167, line: "Businessowners policy (liability + property)",
+  business: "a quick-service restaurant renting its space in Massachusetts, no alcohol",
+};
+
+const CONCEPT_BINDABLE: Record<string, BoundPrice> = {
+  "coffee-shop": { usd: 1485, line: "Businessowners policy", business: "a café-bakery in Chicago open less than a year" },
+  bakery: { usd: 1485, line: "Businessowners policy", business: "a café-bakery in Chicago open less than a year" },
+  "vietnamese-restaurant": { usd: 1534, line: "Businessowners policy", business: "a full-service pho restaurant in Wisconsin" },
+  "indian-restaurant": { usd: 1549, line: "Businessowners policy", business: "a full-service Indian restaurant in Utah (with $1M liquor liability)" },
+  pizzeria: { usd: 1642, line: "Businessowners policy", business: "a pizzeria in upstate New York" },
+  "fast-food-restaurant": { usd: 1167, line: "Businessowners policy", business: BINDABLE_PKG_FLOOR.business },
+  "barbecue-restaurant": { usd: 1889, line: "Businessowners policy", business: "a BBQ restaurant in New Mexico" },
+  "burger-restaurant": { usd: 2098, line: "Businessowners policy", business: "a full-service burger restaurant in Arkansas" },
+  "thai-restaurant": { usd: 2370, line: "Businessowners policy", business: "a Thai noodle and sushi restaurant in Illinois" },
+};
+
+export function conceptBindable(slug: string): BoundPrice | undefined {
+  return CONCEPT_BINDABLE[slug];
+}
+
 export const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 export const floorPhrase = () => `${usd(RESTAURANT_FLOOR.gl.usd)}/yr`;
 
@@ -58,6 +84,19 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
       note: `Our lowest bind for ${concept.business}.`,
     });
   }
+  const bindable = slug ? conceptBindable(slug) : undefined;
+  if (bindable && bindable.usd !== BINDABLE_PKG_FLOOR.usd) {
+    rows.push({
+      coverage: "Liability + property for this concept (instant quote, bindable)",
+      range: `from ${usd(bindable.usd)}/yr`,
+      note: `Our lowest instant, bindable quote for ${bindable.business}: $1M/$2M liability plus equipment and contents.`,
+    });
+  }
+  rows.push({
+    coverage: "Liability + property BOP (instant quote, bindable)",
+    range: `from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr`,
+    note: `Our lowest instant restaurant quote a carrier issued ready to bind, with no underwriter referral, for ${BINDABLE_PKG_FLOOR.business}: $1M/$2M liability plus $50,000 of equipment and contents.`,
+  });
   rows.push({
     coverage: "Liability + property BOP (bound)",
     range: `from ${usd(RESTAURANT_FLOOR.pkg.usd)}/yr`,
@@ -67,15 +106,20 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
 }
 
 export const BOUND_PRICE_DISCLAIMER =
-  `These are the lowest premiums we have actually bound for restaurants, as of ${RESTAURANT_PRICES_AS_OF}. ` +
-  "Each is a real policy, labelled by line of business. Your price depends on your menu, cooking, alcohol, " +
+  `These are the lowest premiums we have actually bound for restaurants, as of ${RESTAURANT_PRICES_AS_OF}, ` +
+  "plus the lowest instant quotes a carrier issued ready to bind (marked \"instant quote, bindable\"; those are real quotes, not bound policies). " +
+  "Each is labelled by line of business. Your price depends on your menu, cooking, alcohol, " +
   "sales, payroll, property, location, and claims. They are not an offer of insurance.";
 
 // Answer-first cost reply: the number leads, because that is what the searcher asked.
 export function costAnswer(noun: string, slug?: string): string {
   const c = slug ? conceptBind(slug) : undefined;
   const concept = c && c.usd !== RESTAURANT_FLOOR.gl.usd ? ` Our lowest bind for ${c.business} was ${usd(c.usd)}/yr (${c.line.toLowerCase()}).` : "";
-  return `The lowest restaurant general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr, and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept} A ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
+  const b = slug ? conceptBindable(slug) : undefined;
+  const forConcept = b && b.usd !== BINDABLE_PKG_FLOOR.usd ? `; for ${b.business} it was ${usd(b.usd)}/yr` : "";
+  const pkg = `Liability and property together start at ${usd(BINDABLE_PKG_FLOOR.usd)}/yr on an instant, bindable quote${forConcept}.`;
+  const article = /^[aeiou]/i.test(noun) ? "An" : "A";
+  return `The lowest restaurant general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr, and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept} ${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
 }
 
 // Apply the bound-price treatment to an existing food page (national or profiled state) without
@@ -90,7 +134,7 @@ export function withBoundPrices(c: PageContent, name: string, noun: string, stat
   return {
     ...c,
     title: `${name} Insurance${stateName ? ` in ${stateName}` : ""}: From ${floorPhrase()}`,
-    metaDescription: `Real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from ${usd(RESTAURANT_FLOOR.wc.usd)}/yr. ${c.metaDescription}`,
+    metaDescription: `Real prices: restaurant liability from ${floorPhrase()} bound, liability + property from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr on an instant bindable quote. ${c.metaDescription}`,
     costNarrative: [costAnswer(noun), ...c.costNarrative],
     costDisclaimer: c.costDisclaimer ? `${BOUND_PRICE_DISCLAIMER} ${c.costDisclaimer}` : BOUND_PRICE_DISCLAIMER,
     costRows: [...boundPriceRows(), ...(stateName ? stateQuoteRow(stateName) : []), ...c.costRows],

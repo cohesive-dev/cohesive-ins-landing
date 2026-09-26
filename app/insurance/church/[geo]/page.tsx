@@ -1,3 +1,4 @@
+import { withAbbrArticle } from "@/lib/seo/restaurant-cities";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SeoPage from "@/components/SeoPage";
@@ -47,7 +48,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       formMode="church"
       quoteHref={`/religious?source=seo-church-${state.slug}`}
       costHeading={`How a church insurance quote is built in ${state.name}`}
-      coverageHeading={`Coverage questions for a ${state.abbr} house of worship`}
+      coverageHeading={`Coverage questions for ${withAbbrArticle(state.abbr)} house of worship`}
       stateFactsHeading={`What to check in ${state.name}`}
       resourceScopeLabel="State and federal resources checked"
       stateLinksHeading="Church insurance in other states"

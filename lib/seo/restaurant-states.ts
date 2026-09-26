@@ -6,12 +6,20 @@ import { STATE_CODES } from "@/lib/licenses";
 // 1. Our own lowest restaurant QUOTE per state, from the CRM, labelled as a quote and by line of
 //    business (the headline price stays the lowest national BIND - see restaurant-prices.ts).
 //    Property-only and umbrella quotes are excluded: they are not comparable to a restaurant policy.
+//    Kevin 2026-09-26: Rainbow's instant, auto-bindable quotes count too ("bindable": true), where
+//    one is lower - IL, NY, MA, WI and NM come from those, each checked bindable with no referral.
 // 2. Workers' comp rule and liquor-licensing agency for the 23 licensed states that data.ts does not
 //    profile. Each is sourced to the state's official agency. Liquor is stated as WHO licenses, not
 //    as a characterisation of dram shop law, which was not verified for these states.
 export const STATE_QUOTES_AS_OF = "2026-09-26";
 
-export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string; n: number }> = {
+export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string; n: number; bindable?: boolean }> = {
+  "NM": {
+    "usd": 1889,
+    "line": "liability + property",
+    "n": 1,
+    "bindable": true
+  },
   "GA": {
     "usd": 1815,
     "line": "liability + property",
@@ -58,9 +66,10 @@ export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string
     "n": 4
   },
   "NY": {
-    "usd": 1814,
-    "line": "general liability",
-    "n": 13
+    "usd": 1642,
+    "line": "liability + property",
+    "n": 14,
+    "bindable": true
   },
   "AZ": {
     "usd": 3755,
@@ -73,9 +82,10 @@ export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string
     "n": 5
   },
   "IL": {
-    "usd": 2577,
+    "usd": 1485,
     "line": "liability + property",
-    "n": 4
+    "n": 5,
+    "bindable": true
   },
   "OR": {
     "usd": 550,
@@ -118,9 +128,10 @@ export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string
     "n": 2
   },
   "WI": {
-    "usd": 2260,
+    "usd": 1534,
     "line": "liability + property",
-    "n": 4
+    "n": 5,
+    "bindable": true
   },
   "IA": {
     "usd": 1812,
@@ -143,9 +154,10 @@ export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string
     "n": 11
   },
   "MA": {
-    "usd": 2249,
+    "usd": 1167,
     "line": "liability + property",
-    "n": 3
+    "n": 4,
+    "bindable": true
   },
   "ID": {
     "usd": 700,
@@ -193,9 +205,9 @@ export function stateQuoteRow(stateName: string) {
   const q = stateQuote(stateName);
   if (!q) return [];
   return [{
-    coverage: `${stateName} restaurant quote (quote, not bound)`,
+    coverage: `${stateName} restaurant quote (${q.bindable ? "instant quote, bindable" : "quote, not bound"})`,
     range: `from ${usd(q.usd)}/yr`,
-    note: `Our lowest ${stateName} restaurant quote, for ${q.line}, out of ${q.n} we have written there as of ${STATE_QUOTES_AS_OF}.`,
+    note: `Our lowest ${stateName} restaurant quote, for ${q.line}, out of ${q.n} we have written there as of ${STATE_QUOTES_AS_OF}.${q.bindable ? " The carrier issued it ready to bind, with no underwriter referral." : ""}`,
   }];
 }
 
@@ -204,7 +216,7 @@ export function stateQuoteFact(stateName: string): Fact[] {
   if (!q) return [];
   return [{
     title: `What we've quoted restaurants in ${stateName}`,
-    body: `Our lowest ${stateName} restaurant quote is ${usd(q.usd)} a year for ${q.line}, out of ${q.n} ${stateName} restaurant quotes we have written. It's a quote, not a bound policy, and your number depends on your own menu, sales, payroll and property.`,
+    body: `Our lowest ${stateName} restaurant quote is ${usd(q.usd)} a year for ${q.line}, out of ${q.n} ${stateName} restaurant quotes we have written. ${q.bindable ? "The carrier issued it ready to bind, with no underwriter referral, but it is a quote, not a bound policy" : "It's a quote, not a bound policy"}, and your number depends on your own menu, sales, payroll and property.`,
   }];
 }
 
