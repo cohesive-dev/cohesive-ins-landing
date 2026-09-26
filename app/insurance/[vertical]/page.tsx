@@ -79,7 +79,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         areaServed="United States"
         formMode="restaurant"
         costHeading={`How ${withArticle(restaurantType.noun)} quote is built`}
-        coverageHeading={`Coverage questions for a ${restaurantType.noun}`}
+        coverageHeading={`Coverage questions for ${withArticle(restaurantType.noun)}`}
         stateFactsHeading="Prepare a more specific restaurant submission"
         resourceScopeLabel="Coverage resources checked"
         stateLinksHeading={`${restaurantType.name} insurance by state`}

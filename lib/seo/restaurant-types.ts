@@ -2,7 +2,7 @@ import type { Fact, PageContent } from "./data";
 import { getState, STATES } from "./data";
 import { CONTRACTOR_STATE_SLUGS } from "./contractor-states";
 import { STARTUP_STATES, type StartupState } from "@/lib/guides/states";
-import { BOUND_PRICE_DISCLAIMER, boundPriceRows, costAnswer, floorPhrase } from "./restaurant-prices";
+import { BINDABLE_PKG_FLOOR, BOUND_PRICE_DISCLAIMER, boundPriceRows, costAnswer, floorPhrase, usd } from "./restaurant-prices";
 import { typeDetail } from "./restaurant-type-details";
 import { extraLiquorFact, extraWcFact, stateQuoteFact, stateQuoteRow, stateQuote } from "./restaurant-states";
 import { type RestaurantCity, restaurantCitiesIn, RESTAURANT_CITIES, withArticle } from "./restaurant-cities";
@@ -663,7 +663,7 @@ function questionsFact(type: RestaurantType, where?: string): Fact[] {
 export function buildRestaurantTypeNational(type: RestaurantType): PageContent {
   return {
     title: `${type.name} Insurance: Liability From ${floorPhrase()}`,
-    metaDescription: `Real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What drives ${withArticle(type.noun)} quote and what underwriters ask.`,
+    metaDescription: `Real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr instant-bindable. What drives ${withArticle(type.noun)} quote and what underwriters ask.`,
     heroH1: `${type.name} insurance`,
     heroSub: `Build a quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     ...commonContent(type),
@@ -695,7 +695,7 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
   return {
     ...base,
     title: `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
-    metaDescription: `${state.name} ${type.noun} insurance with real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What ${state.name} underwriters ask.`,
+    metaDescription: `${state.name} ${type.noun} insurance with real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr instant-bindable. What ${state.name} underwriters ask.`,
     heroH1: `${type.name} insurance in ${state.name}`,
     heroSub: `Build ${withArticle(state.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     costNarrative: stateQuote(state.name)
@@ -783,7 +783,7 @@ export function buildRestaurantTypeCity(type: RestaurantType, city: RestaurantCi
   return {
     ...base,
     title: `${type.name} Insurance in ${city.name}, ${abbr}: From ${floorPhrase()}`,
-    metaDescription: `${city.name} ${type.noun} insurance with real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. Who permits restaurants in ${city.name} and what underwriters ask.`,
+    metaDescription: `${city.name} ${type.noun} insurance with real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr instant-bindable. Who permits restaurants in ${city.name} and what underwriters ask.`,
     heroH1: `${type.name} insurance in ${city.name}`,
     heroSub: `Build ${withArticle(city.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     // City pages carry the city's own facts. State-wide rules (workers' comp, liquor, the state
