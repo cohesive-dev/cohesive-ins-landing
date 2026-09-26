@@ -12,18 +12,21 @@ export const RESTAURANT_PRICES_AS_OF = "2026-09-26";
 export type BoundPrice = { usd: number; line: string; business: string };
 
 // Lowest bound restaurant premium per line of business, across every restaurant we have placed.
+// Kevin 2026-09-26 confirmed the July "Recently bound in NY" binds (caterer GL $597, restaurant BOP
+// $1,153, bakery GL $849) as real, although they predate the CRM's policy rows.
 export const RESTAURANT_FLOOR = {
-  gl: { usd: 749, line: "General liability", business: "a sandwich shop" } as BoundPrice,
+  gl: { usd: 597, line: "General liability", business: "a caterer in New York" } as BoundPrice,
   wc: { usd: 509, line: "Workers' compensation", business: "a sandwich shop" } as BoundPrice,
-  // Kevin 2026-09-26: the first cut used a $5,052 buffet package; the cheaper real example is a
-  // full-service restaurant businessowners policy (general liability + property together).
-  pkg: { usd: 1897, line: "Businessowners policy (liability + property)", business: "a full-service restaurant" } as BoundPrice,
+  // Kevin 2026-09-26: the first cut used a $5,052 buffet package, then a $1,897 full-service BOP in
+  // Missouri; the lowest confirmed bind is the July New York full-service restaurant BOP.
+  pkg: { usd: 1153, line: "Businessowners policy (liability + property)", business: "a full-service restaurant in New York" } as BoundPrice,
 };
 
 // The lowest bind we hold for a specific concept, where one exists. Shown BESIDE the restaurant
 // floor, never instead of it: the headline stays the lowest real bind.
 const CONCEPT_BINDS: Record<string, BoundPrice> = {
   deli: { usd: 749, line: "General liability", business: "a sandwich shop" },
+  bakery: { usd: 849, line: "General liability", business: "a bakery in New York" },
   "mexican-restaurant": { usd: 1027, line: "General liability", business: "a full-service Mexican restaurant" },
   "barbecue-restaurant": { usd: 2932, line: "General liability", business: "a BBQ smokehouse" },
   "seafood-restaurant": { usd: 3278, line: "General liability", business: "a Mexican seafood restaurant" },
@@ -36,7 +39,7 @@ const CONCEPT_BINDS: Record<string, BoundPrice> = {
 // equipment-and-contents businessowners policy for a tenant, verified bindable in the CRM quote row.
 export const BINDABLE_PKG_FLOOR: BoundPrice = {
   usd: 1167, line: "Businessowners policy (liability + property)",
-  business: "a quick-service restaurant renting its space in Massachusetts, no alcohol",
+  business: "a quick-service restaurant in Massachusetts (renting, no alcohol)",
 };
 
 const CONCEPT_BINDABLE: Record<string, BoundPrice> = {
@@ -55,6 +58,19 @@ export function conceptBindable(slug: string): BoundPrice | undefined {
   return CONCEPT_BINDABLE[slug];
 }
 
+// The cheaper of the bound package and the instant-bindable package, labelled as whichever it is.
+export function pkgFloor(): { usd: number; label: string } {
+  return BINDABLE_PKG_FLOOR.usd < RESTAURANT_FLOOR.pkg.usd
+    ? { usd: BINDABLE_PKG_FLOOR.usd, label: "instant-bindable" }
+    : { usd: RESTAURANT_FLOOR.pkg.usd, label: "bound" };
+}
+function pkgFloorPhrase(suffix = ""): string {
+  const f = pkgFloor();
+  return f.label === "bound"
+    ? `Liability and property together start at ${usd(f.usd)}/yr on a bound businessowners policy${suffix}.`
+    : `Liability and property together start at ${usd(f.usd)}/yr on an instant, bindable quote${suffix}.`;
+}
+
 export const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 export const floorPhrase = () => `${usd(RESTAURANT_FLOOR.gl.usd)}/yr`;
 
@@ -68,7 +84,7 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
     {
       coverage: "General liability (bound)",
       range: `from ${usd(RESTAURANT_FLOOR.gl.usd)}/yr`,
-      note: `Our lowest bound restaurant liability policy, for ${RESTAURANT_FLOOR.gl.business}. Cooking, alcohol, sales, and claims move it up from there.`,
+      note: `Our lowest bound food-service liability policy, for ${RESTAURANT_FLOOR.gl.business}. Cooking, alcohol, sales, and claims move it up from there.`,
     },
     {
       coverage: "Workers' compensation (bound)",
@@ -85,14 +101,14 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
     });
   }
   const bindable = slug ? conceptBindable(slug) : undefined;
-  if (bindable && bindable.usd !== BINDABLE_PKG_FLOOR.usd) {
+  if (bindable && bindable.usd !== pkgFloor().usd) {
     rows.push({
       coverage: "Liability + property for this concept (instant quote, bindable)",
       range: `from ${usd(bindable.usd)}/yr`,
       note: `Our lowest instant, bindable quote for ${bindable.business}: $1M/$2M liability plus equipment and contents.`,
     });
   }
-  rows.push({
+  if (BINDABLE_PKG_FLOOR.usd < RESTAURANT_FLOOR.pkg.usd) rows.push({
     coverage: "Liability + property BOP (instant quote, bindable)",
     range: `from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr`,
     note: `Our lowest instant restaurant quote a carrier issued ready to bind, with no underwriter referral, for ${BINDABLE_PKG_FLOOR.business}: $1M/$2M liability plus $50,000 of equipment and contents.`,
@@ -116,10 +132,10 @@ export function costAnswer(noun: string, slug?: string): string {
   const c = slug ? conceptBind(slug) : undefined;
   const concept = c && c.usd !== RESTAURANT_FLOOR.gl.usd ? ` Our lowest bind for ${c.business} was ${usd(c.usd)}/yr (${c.line.toLowerCase()}).` : "";
   const b = slug ? conceptBindable(slug) : undefined;
-  const forConcept = b && b.usd !== BINDABLE_PKG_FLOOR.usd ? `; for ${b.business} it was ${usd(b.usd)}/yr` : "";
-  const pkg = `Liability and property together start at ${usd(BINDABLE_PKG_FLOOR.usd)}/yr on an instant, bindable quote${forConcept}.`;
+  const forConcept = b && b.usd !== pkgFloor().usd ? `; for ${b.business} it was ${usd(b.usd)}/yr` : "";
+  const pkg = pkgFloorPhrase(forConcept);
   const article = /^[aeiou]/i.test(noun) ? "An" : "A";
-  return `The lowest restaurant general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr, and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept} ${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
+  return `The lowest food-service general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr (${RESTAURANT_FLOOR.gl.business}), and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept} ${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
 }
 
 // Apply the bound-price treatment to an existing food page (national or profiled state) without
@@ -134,7 +150,7 @@ export function withBoundPrices(c: PageContent, name: string, noun: string, stat
   return {
     ...c,
     title: `${name} Insurance${stateName ? ` in ${stateName}` : ""}: From ${floorPhrase()}`,
-    metaDescription: `Real prices: restaurant liability from ${floorPhrase()} bound, liability + property from ${usd(BINDABLE_PKG_FLOOR.usd)}/yr on an instant bindable quote. ${c.metaDescription}`,
+    metaDescription: `Real prices: restaurant liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. ${c.metaDescription}`,
     costNarrative: [costAnswer(noun), ...c.costNarrative],
     costDisclaimer: c.costDisclaimer ? `${BOUND_PRICE_DISCLAIMER} ${c.costDisclaimer}` : BOUND_PRICE_DISCLAIMER,
     costRows: [...boundPriceRows(), ...(stateName ? stateQuoteRow(stateName) : []), ...c.costRows],

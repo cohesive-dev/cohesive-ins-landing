@@ -135,7 +135,7 @@ export const TYPE_DETAILS: Record<string, TypeDetail> = {
       { name: "Refrigerated cases and spoilage", desc: "Meat, cheese and prepared foods are perishable stock; spoilage coverage for a cooler failure is worth asking about." },
     ],
     questions: ["Any cooking: fryers, grills, panini presses?", "How many slicers, and are guards in place?", "Catering platters or delivery?", "Beer and wine?", "Value of refrigerated stock?"],
-    faq: { q: "How cheap can deli insurance be?", a: "Our lowest bound restaurant policy is a sandwich shop: general liability at $749 a year and workers' comp at $509 a year. Limited cooking is the reason. Fryers, alcohol or high sales move it up." },
+    faq: { q: "How cheap can deli insurance be?", a: "Our lowest bound sandwich shop policies are general liability at $749 a year and workers' comp at $509 a year. Limited cooking is the reason. Fryers, alcohol or high sales move it up." },
   },
   "fast-food-restaurant": {
     risks: [

@@ -13,7 +13,7 @@ import { STATE_CODES } from "@/lib/licenses";
 //    as a characterisation of dram shop law, which was not verified for these states.
 export const STATE_QUOTES_AS_OF = "2026-09-26";
 
-export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string; n: number; bindable?: boolean }> = {
+export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string; n: number; bindable?: boolean; bound?: boolean }> = {
   "NM": {
     "usd": 1889,
     "line": "liability + property",
@@ -66,10 +66,10 @@ export const STATE_RESTAURANT_QUOTES: Record<string, { usd: number; line: string
     "n": 4
   },
   "NY": {
-    "usd": 1642,
-    "line": "liability + property",
+    "usd": 1153,
+    "line": "businessowners policy (liability + property)",
     "n": 14,
-    "bindable": true
+    "bound": true
   },
   "AZ": {
     "usd": 3755,
@@ -205,9 +205,11 @@ export function stateQuoteRow(stateName: string) {
   const q = stateQuote(stateName);
   if (!q) return [];
   return [{
-    coverage: `${stateName} restaurant quote (${q.bindable ? "instant quote, bindable" : "quote, not bound"})`,
+    coverage: q.bound ? `${stateName} restaurant policy (bound)` : `${stateName} restaurant quote (${q.bindable ? "instant quote, bindable" : "quote, not bound"})`,
     range: `from ${usd(q.usd)}/yr`,
-    note: `Our lowest ${stateName} restaurant quote, for ${q.line}, out of ${q.n} we have written there as of ${STATE_QUOTES_AS_OF}.${q.bindable ? " The carrier issued it ready to bind, with no underwriter referral." : ""}`,
+    note: q.bound
+      ? `Our lowest ${stateName} restaurant premium, a bound ${q.line}, out of ${q.n} ${stateName} restaurant quotes we have written as of ${STATE_QUOTES_AS_OF}.`
+      : `Our lowest ${stateName} restaurant quote, for ${q.line}, out of ${q.n} we have written there as of ${STATE_QUOTES_AS_OF}.${q.bindable ? " The carrier issued it ready to bind, with no underwriter referral." : ""}`,
   }];
 }
 
@@ -216,7 +218,9 @@ export function stateQuoteFact(stateName: string): Fact[] {
   if (!q) return [];
   return [{
     title: `What we've quoted restaurants in ${stateName}`,
-    body: `Our lowest ${stateName} restaurant quote is ${usd(q.usd)} a year for ${q.line}, out of ${q.n} ${stateName} restaurant quotes we have written. ${q.bindable ? "The carrier issued it ready to bind, with no underwriter referral, but it is a quote, not a bound policy" : "It's a quote, not a bound policy"}, and your number depends on your own menu, sales, payroll and property.`,
+    body: q.bound
+      ? `Our lowest ${stateName} restaurant premium is ${usd(q.usd)} a year, a bound ${q.line}, out of ${q.n} ${stateName} restaurant quotes we have written. Your number depends on your own menu, sales, payroll and property.`
+      : `Our lowest ${stateName} restaurant quote is ${usd(q.usd)} a year for ${q.line}, out of ${q.n} ${stateName} restaurant quotes we have written. ${q.bindable ? "The carrier issued it ready to bind, with no underwriter referral, but it is a quote, not a bound policy" : "It's a quote, not a bound policy"}, and your number depends on your own menu, sales, payroll and property.`,
   }];
 }
 
