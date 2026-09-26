@@ -22,8 +22,10 @@ import {
 import {
   RESTAURANT_TYPES,
   buildRestaurantTypeNational,
-  getRestaurantType,
+  getRestaurantTypeNational as getRestaurantType,
+  getRestaurantType as getAnyRestaurantType,
   restaurantTypeStateLinks,
+  allRestaurantStateLinks,
 } from "@/lib/seo/restaurant-types";
 
 // National pages: /insurance/{restaurant|bar|food-truck|...} (food verticals)
@@ -37,7 +39,7 @@ type Params = { vertical: string };
 export function generateStaticParams(): Params[] {
   return [
     ...VERTICALS.map((v) => ({ vertical: v.slug })),
-    ...RESTAURANT_TYPES.map((type) => ({ vertical: type.slug })),
+    ...RESTAURANT_TYPES.filter((type) => !type.stateOnly).map((type) => ({ vertical: type.slug })),
     ...TRADES.map((t) => ({ vertical: t.slug })),
     ...INSURANCE_SERVICES.map((s) => ({ vertical: s.slug })),
   ];
@@ -144,7 +146,11 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       coverageHeading={`The coverage a ${vertical.noun} needs`}
       stateLinksHeading={`${vertical.name} insurance by state`}
       stateLinks={
-        hasStates
+        vertical.slug === "restaurant"
+          ? allRestaurantStateLinks()
+          : getAnyRestaurantType(vertical.slug)
+            ? restaurantTypeStateLinks(getAnyRestaurantType(vertical.slug)!)
+          : hasStates
           ? STATES.map((s) => ({
               label: s.name,
               href: `/insurance/${vertical.slug}/${s.slug}`,
