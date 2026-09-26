@@ -50,7 +50,7 @@ export function licenseLine(stateName: string, abbr: string): string | null {
 // Full name -> code map. Deliberately independent of lib/seo/data.ts STATES, which lists only the
 // food-vertical states (27): contractor pages cover every state, and a partial map silently
 // dropped the line on Wyoming, Oregon, Vermont and North Dakota in the first build.
-const STATE_CODES: Record<string, string> = {
+export const STATE_CODES: Record<string, string> = {
   Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR", California: "CA", Colorado: "CO",
   Connecticut: "CT", Delaware: "DE", "District of Columbia": "DC", Florida: "FL", Georgia: "GA",
   Hawaii: "HI", Idaho: "ID", Illinois: "IL", Indiana: "IN", Iowa: "IA", Kansas: "KS",
