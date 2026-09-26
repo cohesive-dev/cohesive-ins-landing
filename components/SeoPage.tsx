@@ -326,12 +326,13 @@ export default function SeoPage({
       {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => tradeSlug === industry.insuranceSlug).map((industry) => (
         <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}${stateSlug ? `-in-${stateSlug}` : ""}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
       ))}
-      {source.startsWith("seo-restaurant-") && (
+      {(formMode === "restaurant" || formMode === "bar") && (
         <section className="border-t border-slate-100">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
             <h2 className="font-bold text-[#131517]">Opening a restaurant?</h2>
             <p className="mt-2 text-sm text-[#6B6D71]">Plan the steps before your first service, from the opening budget to approvals and lease requirements.</p>
             <Link href="/guides/how-to-open-a-restaurant" className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Read the restaurant opening guide →</Link>
+            <Link href="/guides/restaurant-lease-insurance-requirements" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What your landlord&apos;s lease will ask for, with real examples →</Link>
           </div>
         </section>
       )}
