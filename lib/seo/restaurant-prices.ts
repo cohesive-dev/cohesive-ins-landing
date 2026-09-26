@@ -15,7 +15,9 @@ export type BoundPrice = { usd: number; line: string; business: string };
 export const RESTAURANT_FLOOR = {
   gl: { usd: 749, line: "General liability", business: "a sandwich shop" } as BoundPrice,
   wc: { usd: 509, line: "Workers' compensation", business: "a sandwich shop" } as BoundPrice,
-  pkg: { usd: 5052, line: "Liability + property package", business: "a buffet restaurant" } as BoundPrice,
+  // Kevin 2026-09-26: the first cut used a $5,052 buffet package; the cheaper real example is a
+  // full-service restaurant businessowners policy (general liability + property together).
+  pkg: { usd: 1897, line: "Businessowners policy (liability + property)", business: "a full-service restaurant" } as BoundPrice,
 };
 
 // The lowest bind we hold for a specific concept, where one exists. Shown BESIDE the restaurant
@@ -57,9 +59,9 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
     });
   }
   rows.push({
-    coverage: "Liability + property package (bound)",
+    coverage: "Liability + property BOP (bound)",
     range: `from ${usd(RESTAURANT_FLOOR.pkg.usd)}/yr`,
-    note: `Our lowest bound package, for ${RESTAURANT_FLOOR.pkg.business}. Building, equipment and contents values set this one.`,
+    note: `Our lowest bound businessowners policy, for ${RESTAURANT_FLOOR.pkg.business}. Building, equipment and contents values set this one.`,
   });
   return rows;
 }
