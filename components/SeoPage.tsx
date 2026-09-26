@@ -9,6 +9,7 @@ import ContractorQuoteForm from "@/components/ContractorQuoteForm";
 import CommercialPropertyForm from "@/components/CommercialPropertyForm";
 import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
 import type { PageContent } from "@/lib/seo/data";
+import { licenseLineForArea } from "@/lib/licenses";
 
 // Shared layout for the /insurance SEO pages (state pages + national vertical
 // pages). Server component; the only client island is the intake form.
@@ -54,6 +55,7 @@ export default function SeoPage({
   stateLinksHeading?: string;
   quoteHref?: string;
 }) {
+  const stateLicense = licenseLineForArea(areaServed);
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
   const growthLink = tradeSlug === "pool" && stateSlug && metroSlug
     ? { href: poolLeadGuidePath({ state: stateSlug, city: metroSlug }), label: `How to find pool construction leads in ${areaServed}` }
@@ -359,6 +361,7 @@ export default function SeoPage({
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
           <span>Cohesive Insurance Services - licensed insurance agency</span>
+          {stateLicense && <span>{stateLicense}</span>}
           <Link href="/insurance" className="hover:underline">
             Insurance guides
           </Link>
