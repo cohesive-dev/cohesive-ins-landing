@@ -642,6 +642,10 @@ function commonContent(type: RestaurantType): Omit<PageContent, "title" | "metaD
         q: `What information should ${withArticle(type.noun)} gather for a quote?`,
         a: "Start with the current policy if handy, loss runs, menu, equipment list, sales split, payroll, hours, seating, square footage, alcohol and delivery details, property values, hood and suppression records, lease requirements, and requested effective date. Estimates are fine when labeled as estimates.",
       },
+      {
+        q: `Will the policy meet my landlord's lease requirements?`,
+        a: "Usually, for the most common request: $1,000,000 per occurrence and $2,000,000 aggregate in general liability, the landlord named as an additional insured, and a certificate of insurance. Send the insurance section of your lease with the quote request so the limits, additional insured wording, damage to rented premises, liquor and umbrella limits can be checked against it before you buy.",
+      },
     ],
   };
 }

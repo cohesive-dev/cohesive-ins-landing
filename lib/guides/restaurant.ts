@@ -104,31 +104,48 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
   },
   {
     slug: "restaurant-lease-insurance-requirements",
-    title: "Restaurant lease insurance requirements: what to check before signing",
-    description: "Understand a restaurant lease's insurance checklist: policy limits, additional insureds, certificates, property responsibilities, and coverage start dates.",
-    intro: "Before signing a restaurant lease, send the complete insurance clause to your broker and have your legal adviser review the lease. Compare what the landlord requests with the coverage and endorsements an insurer can actually provide, including when they must take effect.",
+    updatedAt: "2026-09-26",
+    title: "Restaurant lease insurance requirements: what landlords ask for, with real examples",
+    description: "What restaurant landlords actually require: $1M/$2M liability, additional insured, damage to rented premises, umbrellas up to $5M. Real 2026 examples and how each was handled.",
+    intro: "Restaurant owners often ask us one thing before they buy: will this policy satisfy my landlord? Below is what landlords have actually asked our restaurant clients for in 2026, what each request means, and how we handled the ones that didn't fit a standard policy. Send the full insurance section of your lease with any quote request so it can be checked line by line.",
     category: "Before signing a lease",
     insurancePath: insurance,
     sections: [
-      { id: "extract", title: "Turn the clause into a checklist", paragraphs: [
-        "Copy each requested policy, limit, deductible condition, endorsement, named party, and document deadline into a checklist. Include the exact legal name and address of the landlord and any property manager. Read provisions elsewhere in the lease about repairs, equipment, improvements, indemnity, and early access with your adviser; the insurance paragraph may not describe every obligation.",
-        "For each item, record whether the broker has confirmed it, whether additional information is needed, and whether the landlord needs to consider alternative wording. Resolve the differences before treating a quote as evidence that the entire lease is satisfied.",
-      ], checklist: ["Policy types and requested limits", "Additional insured names and requested endorsements", "Property, equipment, and improvement responsibilities", "Effective date, certificate deadline, and renewal requirements"] },
-      { id: "example", title: "Worked example: a fictional lease request", paragraphs: [
-        "Illustration only, not a standard lease requirement: a landlord asks for $1 million per occurrence and $2 million aggregate in general liability, additional insured status, and a certificate before keys are released. This is a checklist exercise, not a recommended limit or a statement of what your landlord will accept.",
-        "First, ask the broker to confirm the quoted policy's limits. Next, provide the full clause and legal names so the relevant additional insured coverage can be checked. Finally, agree on the required evidence and timing. A price estimate by itself does not show that coverage has been bound or that the requested endorsement is included.",
+      { id: "real-requests", title: "What landlords asked our restaurant clients for", paragraphs: [
+        "The most common request, by far: general liability of $1,000,000 per occurrence and $2,000,000 aggregate, the landlord named as an additional insured, and a certificate of insurance sent to the landlord or property manager. A standard restaurant liability policy or businessowners policy usually covers that as written.",
+        "A counter-service ramen and hibachi restaurant in Florida, four employees and no alcohol, had a landlord who required a $5,000,000 umbrella and would not lower it. That limit sits above the instant-issue umbrellas admitted carriers offer a restaurant that size, so it had to go to an excess and surplus lines market. We also asked whether the lease would accept the $5,000,000 in layers, for example $3,000,000 of liability plus a $2,000,000 umbrella.",
+        "A BBQ restaurant was told by its landlord, \"you have to have building insurance.\" The quote already carried $75,000 for damage to the rented premises and $50,000 on the restaurant's own equipment and contents. The real question was which of two things the lease meant (see below).",
+        "A Florida restaurant with mostly outdoor dining and a bar needed the property company named as an additional insured. Added through a Managers or Lessors of Premises endorsement, it did not change the premium on that quote. The same review caught a liquor liability limit of $100,000; the revised quote carried $1,000,000.",
+      ], links: [{ label: "Restaurant insurance: real bound prices", href: insurance }, { label: "Bar insurance", href: "/insurance/bar" }] },
+      { id: "checklist", title: "The usual restaurant lease insurance list", paragraphs: [
+        "Copy each item your lease names into a checklist, with the landlord's and property manager's exact legal names and mailing addresses. Not every lease asks for everything below, and some ask for more; the lease wording decides.",
+      ], checklist: [
+        "General liability limits (commonly $1M per occurrence / $2M aggregate)",
+        "Landlord and property manager named as additional insureds",
+        "Damage to rented premises (fire legal liability) limit",
+        "Your equipment, contents, and improvements you paid for",
+        "Business income if a covered loss closes the restaurant",
+        "Liquor liability limit, if you serve alcohol",
+        "Umbrella or excess limit, if the lease names one",
+        "Workers' comp, if you have employees",
+        "Waiver of subrogation and primary, non-contributory wording, if requested",
+        "Certificate deadline, cancellation notice, and renewal evidence",
       ] },
-      { id: "certificate", title: "Certificate holder and additional insured are different", paragraphs: [
-        "A certificate summarizes insurance information; it does not itself amend the policy. Listing a landlord as a certificate holder does not, by itself, make that landlord an additional insured. The policy and applicable endorsement determine additional insured coverage.",
-        "Ask the broker which endorsement responds to the lease and whether its conditions fit your situation. Keep the certificate and relevant policy documents together so you can answer the landlord's follow-up questions without assuming one document replaces the other.",
+      { id: "building", title: "When the landlord says \"building insurance\"", paragraphs: [
+        "Landlords mean one of two things. Usually it is coverage for damage you cause to the space you rent, such as a kitchen fire that spreads into the landlord's walls. That is the damage to rented premises limit on your liability policy, and a restaurant policy normally includes it.",
+        "Some leases go further and make the tenant insure the building itself, usually in single-tenant or triple-net leases. That is a property policy on the building, priced on its replacement cost, and it is a different quote. Read the insurance section of the lease, not a summary of it, before assuming which one applies.",
+      ] },
+      { id: "high-limits", title: "When the lease limit is higher than the market will write", paragraphs: [
+        "Some restaurant leases ask for umbrella limits well above the standard $1,000,000; the highest we have seen this year was $5,000,000. For a small restaurant, limits that high can fall outside the umbrella products that quote instantly, and alcohol makes it harder.",
+        "There are three ways through it: an excess and surplus lines umbrella, a layered structure that reaches the same total, or asking the landlord to accept a lower limit. Landlords sometimes ask for written evidence that the limit is hard to obtain before they will reconsider, so keep the declinations and quotes your broker collected.",
+      ] },
+      { id: "certificate", title: "Additional insured, certificate holder, and what it costs", paragraphs: [
+        "A certificate summarizes insurance information; it does not itself amend the policy. Listing a landlord as a certificate holder does not make that landlord an additional insured. The policy and its endorsement do, most commonly a Managers or Lessors of Premises endorsement for a tenant's landlord.",
+        "Many restaurant policies add a landlord as an additional insured at little or no extra premium, and on the Florida quote above it cost nothing. It still depends on the carrier and the wording the lease asks for, so ask before you assume it's free.",
       ], links: [{ label: "IRMI: certificates and additional insured coverage", href: "https://www.irmi.com/articles/expert-commentary/questions-and-answers-on-additional-insured-issues-part-2" }] },
-      { id: "property", title: "Clarify who is responsible for the physical space", paragraphs: [
-        "Make an inventory of equipment, contents, and improvements, identifying what you own, lease, or use with the landlord's permission. Ask your legal adviser how the lease allocates responsibility for damage and repair. Give the inventory and lease language to the broker to discuss the insurance treatment.",
-        "Avoid assuming that the landlord's building coverage includes your equipment, your stock, or your lost income. Ask separately about the coverage proposed for each, including valuation, deductibles, exclusions, and any conditions that matter for your kitchen. Record unresolved questions instead of filling gaps with assumptions.",
-      ], links: [{ label: "Explore restaurant insurance coverage", href: insurance }] },
       { id: "timing", title: "Match coverage to possession and work dates", paragraphs: [
-        "Create a timeline for taking keys, storing equipment, starting construction, training employees, and opening to customers. Explain each stage to the broker. Ask whether the proposed policy accommodates the pre-opening activities or whether a different arrangement is needed.",
-        "If the landlord asks for cancellation notice, waiver wording, or coverage that applies before other insurance, send the exact request to the broker. Have the legal adviser address obligations the insurer cannot meet. Keep the agreed wording and final insurance evidence in the same lease file.",
+        "Many landlords want the certificate before they hand over keys, which can be weeks before opening. Build a timeline for taking keys, storing equipment, construction, training, and opening, and tell the broker the date you need coverage to start.",
+        "If the landlord asks for cancellation notice, waiver wording, or coverage that applies before other insurance, send the exact request to the broker. Have your legal adviser address anything the insurer cannot meet, and keep the agreed wording and final certificate in the same lease file.",
       ], links: [{ label: "Add deposits and premiums to your opening budget", href: "/guides/restaurant-startup-costs" }] },
     ],
   },
