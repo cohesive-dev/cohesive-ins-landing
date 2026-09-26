@@ -16,6 +16,7 @@ import {
   RESTAURANT_TYPES,
   RESTAURANT_TYPE_STATES,
   RESTAURANT_TYPES_UPDATED,
+  RESTAURANT_EXTRA_STATES,
 } from "@/lib/seo/restaurant-types";
 
 const BASE = "https://www.cohesiveinsure.com";
@@ -65,12 +66,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })),
   );
 
+  const extraRestaurantStates = RESTAURANT_EXTRA_STATES.map((st) => ({
+    url: `${BASE}/insurance/restaurant/${st.slug}`,
+    lastModified: RESTAURANT_TYPES_UPDATED,
+    changeFrequency: "monthly" as const,
+  }));
+
   const restaurantTypes = RESTAURANT_TYPES.flatMap((type) => [
-    {
+    // A state-only type (bakery) keeps its older national URL in the verticals list above.
+    ...(type.stateOnly ? [] : [{
       url: `${BASE}/insurance/${type.slug}`,
       lastModified: RESTAURANT_TYPES_UPDATED,
       changeFrequency: "monthly" as const,
-    },
+    }]),
     ...RESTAURANT_TYPE_STATES.map((state) => ({
       url: `${BASE}/insurance/${type.slug}/${state.slug}`,
       lastModified: RESTAURANT_TYPES_UPDATED,
@@ -94,7 +102,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "monthly" as const,
   }));
 
-  return [...core, ...hub, ...commercialProperty, ...church, ...verticals, ...foodStates, ...restaurantTypes, ...tradeStates, ...guides,
+  return [...core, ...hub, ...commercialProperty, ...church, ...verticals, ...foodStates, ...extraRestaurantStates, ...restaurantTypes, ...tradeStates, ...guides,
     ...SERVICE_PATHS.map(path => ({ url: `${BASE}${path}`, lastModified: SERVICE_UPDATED, changeFrequency: "monthly" as const })),
     ...METRO_PAGES.map(p => ({ url: `${BASE}${p.path}`, lastModified: METRO_UPDATED, changeFrequency: "monthly" as const })),
   ].map(entry => {

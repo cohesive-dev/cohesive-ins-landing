@@ -1,3 +1,5 @@
+import { withBoundPrices } from "./restaurant-prices";
+
 // Programmatic SEO data layer for /insurance pages.
 //
 // Structure: 26 state profiles (real per-state facts: dram shop law,
@@ -1262,11 +1264,22 @@ export function getStateContent(
 ): PageContent | undefined {
   const s = getState(stateSlug);
   if (!s) return undefined;
-  if (vertical === "restaurant") return buildRestaurantContent(s);
+  if (vertical === "restaurant") return withBoundPrices(buildRestaurantContent(s), "Restaurant", "restaurant", s.name);
   if (vertical === "bar") return buildBarContent(s);
   return undefined;
 }
 
+// Food verticals that carry our real bound restaurant prices (Kevin 2026-09-26). Bar stays out:
+// its pages are noindexed pending the bar SEO decision, and its floor is a separate bind.
+const PRICED_FOOD: Record<string, [string, string]> = {
+  restaurant: ["Restaurant", "restaurant"],
+  bakery: ["Bakery", "bakery"],
+  catering: ["Catering", "catering business"],
+  "food-truck": ["Food Truck", "food truck"],
+};
+
 export function getNationalContent(vertical: string): PageContent | undefined {
-  return NATIONAL_CONTENT[vertical];
+  const c = NATIONAL_CONTENT[vertical];
+  const priced = PRICED_FOOD[vertical];
+  return c && priced ? withBoundPrices(c, priced[0], priced[1]) : c;
 }

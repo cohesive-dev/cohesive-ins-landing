@@ -23,6 +23,10 @@ import {
   getRestaurantType,
   getRestaurantTypeState,
   restaurantTypeStateLinks,
+  RESTAURANT_EXTRA_STATES,
+  isExtraRestaurantState,
+  buildGenericRestaurantState,
+  allRestaurantStateLinks,
 } from "@/lib/seo/restaurant-types";
 
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
@@ -42,10 +46,11 @@ export function generateStaticParams(): Params[] {
       contractorStateBuildable(t.slug, s),
     ).map((s) => ({ vertical: t.slug, geo: s })),
   );
+  const extraRestaurant = RESTAURANT_EXTRA_STATES.map((st) => ({ vertical: "restaurant", geo: st.slug }));
   const restaurantTypes = RESTAURANT_TYPES.flatMap((type) =>
     RESTAURANT_TYPE_STATES.map((state) => ({ vertical: type.slug, geo: state.slug })),
   );
-  return [...food, ...restaurantTypes, ...trades, ...INSURANCE_SERVICES.flatMap(service => Object.keys(service.stateProfiles).map(geo => ({ vertical: service.slug, geo })))];
+  return [...food, ...extraRestaurant, ...restaurantTypes, ...trades, ...INSURANCE_SERVICES.flatMap(service => Object.keys(service.stateProfiles).map(geo => ({ vertical: service.slug, geo })))];
 }
 
 export async function generateMetadata({
@@ -54,6 +59,10 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { vertical, geo } = await params;
+  if (vertical === "restaurant" && isExtraRestaurantState(geo)) {
+    const content = buildGenericRestaurantState(getRestaurantTypeState(geo)!);
+    return { title: content.title, description: content.metaDescription, alternates: { canonical: `/insurance/${vertical}/${geo}` } };
+  }
   const restaurantType = getRestaurantType(vertical);
   const restaurantState = getRestaurantTypeState(geo);
   if (restaurantType && restaurantState) {
@@ -84,6 +93,24 @@ export async function generateMetadata({
 
 export default async function Page({ params }: { params: Promise<Params> }) {
   const { vertical: verticalSlug, geo: geoSlug } = await params;
+
+  if (verticalSlug === "restaurant" && isExtraRestaurantState(geoSlug)) {
+    const st = getRestaurantTypeState(geoSlug)!;
+    return (
+      <SeoPage
+        content={buildGenericRestaurantState(st)}
+        eyebrow={`Restaurant · ${st.name}`}
+        source={`seo-restaurant-${st.slug}`}
+        areaServed={st.name}
+        formMode="restaurant"
+        costHeading={`What restaurant insurance costs in ${st.name}`}
+        coverageHeading={`The coverage a ${st.name} restaurant needs`}
+        stateFactsHeading={`What to check in ${st.name}`}
+        stateLinksHeading="Restaurant insurance in other states"
+        stateLinks={allRestaurantStateLinks(st.slug)}
+      />
+    );
+  }
 
   const restaurantType = getRestaurantType(verticalSlug);
   if (restaurantType) {
@@ -175,10 +202,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       coverageHeading={`The coverage a ${state.abbr} ${vertical.noun} needs`}
       stateFactsHeading={`What's different about ${state.name}`}
       stateLinksHeading={`${vertical.name} insurance in other states`}
-      stateLinks={STATES.filter((s) => s.slug !== state.slug).map((s) => ({
-        label: s.name,
-        href: `/insurance/${vertical.slug}/${s.slug}`,
-      }))}
+      stateLinks={vertical.slug === "restaurant"
+        ? allRestaurantStateLinks(state.slug)
+        : STATES.filter((s) => s.slug !== state.slug).map((s) => ({
+            label: s.name,
+            href: `/insurance/${vertical.slug}/${s.slug}`,
+          }))}
     />
   );
 }

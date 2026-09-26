@@ -1,9 +1,11 @@
 import type { Fact, PageContent } from "./data";
-import { getState } from "./data";
+import { getState, STATES } from "./data";
 import { CONTRACTOR_STATE_SLUGS } from "./contractor-states";
 import { STARTUP_STATES, type StartupState } from "@/lib/guides/states";
+import { BOUND_PRICE_DISCLAIMER, boundPriceRows, costAnswer, floorPhrase } from "./restaurant-prices";
+import { typeDetail } from "./restaurant-type-details";
 
-export const RESTAURANT_TYPES_UPDATED = "2026-09-20";
+export const RESTAURANT_TYPES_UPDATED = "2026-09-26";
 
 export type RestaurantType = {
   slug: string;
@@ -16,6 +18,10 @@ export type RestaurantType = {
   coverageFocus: { name: string; desc: string }[];
   faq: { q: string; a: string };
   alcoholCommon?: boolean;
+  // "stage" pages cover where the business is (opening, growing, buying), not what it cooks.
+  kind?: "concept" | "stage";
+  // State pages only: the national URL already belongs to an older food-vertical page (bakery).
+  stateOnly?: boolean;
 };
 
 // Each row represents a materially different operation, not a keyword alias.
@@ -315,6 +321,252 @@ export const RESTAURANT_TYPES: RestaurantType[] = [
     ],
     faq: { q: "Is a donut shop treated like a coffee shop?", a: "Not if it fries or manufactures on site. Fryers, proofers, ovens, overnight production, wholesale sales, and delivery can make the risk different from a beverage-and-pastry café." },
   },
+  {
+    slug: "korean-restaurant",
+    name: "Korean Restaurant",
+    noun: "Korean restaurant",
+    alsoCovers: "For Korean BBQ, tabletop grill, and traditional Korean kitchens.",
+    operations: "tabletop gas or charcoal grills, table ventilation, frying, soju and beer service, and takeout",
+    property: "Tabletop grills, individual ventilation, hoods, refrigeration and tenant improvements should be scheduled individually.",
+    driversExtra: ["Tabletop grills and fuel type", "Alcohol share of sales", "Table ventilation and gas shutoffs"],
+    coverageFocus: [
+      { name: "Guest-facing grills", desc: "Grills at every table put open flame within reach of guests. Describe ventilation, shutoffs and staff procedures." },
+    ],
+    faq: { q: "How many tabletop grills should I list?", a: "List every grill with its fuel. The count drives both the property schedule and the liability questions." },
+    alcoholCommon: true,
+  },
+  {
+    slug: "hibachi-restaurant",
+    name: "Hibachi Restaurant",
+    noun: "hibachi restaurant",
+    alsoCovers: "For teppanyaki and hibachi grill restaurants with tableside chefs.",
+    operations: "teppan grills with tableside chefs, open-flame performance cooking, sushi or kitchen lines, and alcohol service",
+    property: "Teppan grills, hoods over each grill, suppression, and dining-room improvements should be valued.",
+    driversExtra: ["Number of teppan grills", "Chef flame-trick training", "Alcohol share of sales"],
+    coverageFocus: [
+      { name: "Tableside performance cooking", desc: "Flame and knife work next to guests is the defining exposure. Document grill suppression and chef training." },
+    ],
+    faq: { q: "Does every teppan grill need suppression?", a: "Carriers expect each cooking surface under the hood and covered by the suppression system, with cleaning on the NFPA 96 schedule." },
+    alcoholCommon: true,
+  },
+  {
+    slug: "vietnamese-restaurant",
+    name: "Vietnamese Restaurant",
+    noun: "Vietnamese restaurant",
+    alsoCovers: "For pho shops, banh mi counters, and Vietnamese restaurants.",
+    operations: "long-simmered broth, woks and fryers, banh mi prep, takeout, and beer service",
+    property: "Stock pots, ranges, fryers, refrigeration and tenant improvements should be described individually.",
+    driversExtra: ["Overnight broth cooking", "Fryers and woks", "Takeout share"],
+    coverageFocus: [
+      { name: "Broth and scald exposure", desc: "Large pots of hot broth are the main kitchen injury and an unattended-cooking question." },
+    ],
+    faq: { q: "Is a pho shop a limited-cooking risk?", a: "Not if it simmers broth for hours and fries egg rolls. Describe the full line so the class is right." },
+  },
+  {
+    slug: "ramen-restaurant",
+    name: "Ramen Restaurant",
+    noun: "ramen shop",
+    alsoCovers: "For ramen counters and noodle shops.",
+    operations: "long-cooked broths, noodle boiling, fryers or flat-tops, counter service, and beer or sake",
+    property: "Stock pots, noodle cookers, fryers, refrigeration and improvements should be valued.",
+    driversExtra: ["Overnight broth cooking", "Counter seating near hot service", "Fryers"],
+    coverageFocus: [
+      { name: "Hot broth served over the counter", desc: "Counter seating puts guests close to hot soup handoffs; procedures matter for burn claims." },
+    ],
+    faq: { q: "Does counter seating matter for a ramen shop quote?", a: "It can. Counter service puts guests close to hot handoffs, so carriers ask about layout and procedures." },
+    alcoholCommon: true,
+  },
+  {
+    slug: "steakhouse",
+    name: "Steakhouse",
+    noun: "steakhouse",
+    alsoCovers: "For steakhouses, chophouses, and grill restaurants.",
+    operations: "infrared broilers, charbroilers or wood grills, dry-aging, a full bar, and private dining",
+    property: "Broilers, walk-ins, aging cabinets, wine and meat inventory, and improvements should be valued at replacement cost.",
+    driversExtra: ["Broiler type", "Alcohol share", "Meat and wine inventory value"],
+    coverageFocus: [
+      { name: "High-value inventory", desc: "Dry-aged beef and wine are valuable stock; schedule them and ask about spoilage." },
+    ],
+    faq: { q: "Should I insure my meat inventory separately?", a: "It belongs on the property schedule as stock, with spoilage coverage for refrigeration failure." },
+    alcoholCommon: true,
+  },
+  {
+    slug: "wing-restaurant",
+    name: "Wing Restaurant",
+    noun: "wing shop",
+    alsoCovers: "For wing shops, wing bars, and takeout wing concepts.",
+    operations: "constant frying, sauces, delivery, sports-bar service, and beer",
+    property: "Fryers, hoods, suppression, refrigeration and improvements should be described.",
+    driversExtra: ["Fryer count", "Alcohol share and sports-bar format", "Delivery share"],
+    coverageFocus: [
+      { name: "Fryer-heavy menu", desc: "Fryers run all service, which is the main fire exposure carriers price." },
+    ],
+    faq: { q: "Why does my wing shop's alcohol share matter?", a: "Past about a third of sales, carriers treat it more like a bar; below that it's a fryer-heavy restaurant." },
+    alcoholCommon: true,
+  },
+  {
+    slug: "bagel-shop",
+    name: "Bagel Shop",
+    noun: "bagel shop",
+    alsoCovers: "For bagel shops, bagel bakeries, and bagel caf\u00e9s.",
+    operations: "boiling and baking bagels, slicing, spreads and sandwiches, coffee, and early production",
+    property: "Kettles, ovens, mixers, slicers, refrigeration and improvements should be valued.",
+    driversExtra: ["On-site boiling and baking", "Early production", "Catering and wholesale"],
+    coverageFocus: [
+      { name: "Boiling and baking", desc: "Kettles and ovens create scald and burn exposures before the shop even opens." },
+    ],
+    faq: { q: "Is a bagel shop a bakery or a restaurant for insurance?", a: "It sits between them. Describe the boiling and baking and the counter service so it's classed correctly." },
+  },
+  {
+    slug: "juice-bar",
+    name: "Juice Bar",
+    noun: "juice bar",
+    alsoCovers: "For juice bars, smoothie shops, and a\u00e7a\u00ed bowl counters.",
+    operations: "fresh juicing, blending, produce prep, supplements, and grab-and-go service",
+    property: "Juicers, blenders, refrigeration and improvements should be scheduled.",
+    driversExtra: ["Unpasteurized juice", "Supplements", "Bottled or wholesale products"],
+    coverageFocus: [
+      { name: "Fresh and bottled product", desc: "Unpasteurized juice and any bottled product for resale carry product liability questions." },
+    ],
+    faq: { q: "Does selling bottled juice change my insurance?", a: "It can: bottled product sold through other stores is product liability beyond your counter. Tell the carrier." },
+  },
+  {
+    slug: "bubble-tea-shop",
+    name: "Bubble Tea Shop",
+    noun: "bubble tea shop",
+    alsoCovers: "For boba, bubble tea, and tea-drink shops.",
+    operations: "tapioca cooking, tea brewing, blended drinks, snacks, and delivery apps",
+    property: "Pearl cookers, sealing machines, refrigeration and improvements should be valued.",
+    driversExtra: ["On-site pearl cooking", "Fried snacks", "Delivery apps"],
+    coverageFocus: [
+      { name: "Pearl cooking and choking warnings", desc: "Boiling pearls is the main burn exposure, and some carriers ask about choking warnings." },
+    ],
+    faq: { q: "Do bubble tea shops need special insurance?", a: "Mostly standard caf\u00e9 coverage, with attention to pearl cooking and any fried snacks." },
+  },
+  {
+    slug: "caribbean-restaurant",
+    name: "Caribbean Restaurant",
+    noun: "Caribbean restaurant",
+    alsoCovers: "For Jamaican, Trinidadian, Haitian, and other Caribbean restaurants.",
+    operations: "jerk grills and smokers, frying, patties, catering, and events",
+    property: "Grills, smokers, fryers, refrigeration and improvements should be described.",
+    driversExtra: ["Jerk grill fuel and location", "Fryers", "Catering and festivals"],
+    coverageFocus: [
+      { name: "Solid-fuel jerk grills", desc: "Charcoal and wood grills are open-flame, solid-fuel cooking with clearance questions." },
+    ],
+    faq: { q: "Can I insure a charcoal jerk grill?", a: "Yes, with documented clearances, ventilation and ash handling." },
+    alcoholCommon: true,
+  },
+  {
+    slug: "halal-restaurant",
+    name: "Halal Restaurant",
+    noun: "halal restaurant",
+    alsoCovers: "For halal restaurants, grills, and kebab shops.",
+    operations: "grills, vertical broilers, frying, carts or trucks, and late-night service",
+    property: "Grills, rotisseries, fryers, refrigeration and any carts should be scheduled.",
+    driversExtra: ["Grills and rotisseries", "Carts or trucks", "Late-night hours"],
+    coverageFocus: [
+      { name: "Carts and trucks", desc: "A cart or truck alongside the storefront needs its own auto and off-premises coverage." },
+    ],
+    faq: { q: "Does my halal cart go on the restaurant policy?", a: "The liability can extend to it if disclosed; a driven truck still needs commercial auto." },
+  },
+  {
+    slug: "soul-food-restaurant",
+    name: "Soul Food Restaurant",
+    noun: "soul food restaurant",
+    alsoCovers: "For soul food, Southern, and home-style kitchens.",
+    operations: "frying, steam tables, cafeteria lines, catering, and church or family events",
+    property: "Fryers, steam tables, refrigeration and improvements should be described.",
+    driversExtra: ["Fryers", "Steam table holding", "Catering share"],
+    coverageFocus: [
+      { name: "Catering and repasts", desc: "Off-site catering needs the policy to extend to events and vehicles to be covered." },
+    ],
+    faq: { q: "Is a cafeteria-style line a different risk?", a: "It adds holding-temperature exposure. Carriers ask about steam-table temperatures and service." },
+  },
+  {
+    slug: "bakery",
+    name: "Bakery",
+    noun: "bakery",
+    alsoCovers: "For retail bakeries, bakery caf\u00e9s, and cake shops.",
+    operations: "ovens, mixers, early production, custom orders, wholesale, and caf\u00e9 seating",
+    property: "Ovens, mixers, proofers, refrigeration, stock and improvements should be valued.",
+    driversExtra: ["Ovens versus fryers", "Wholesale accounts", "Custom orders and allergens"],
+    coverageFocus: [
+      { name: "Wholesale and custom orders", desc: "Wholesale supply and custom cakes add product and allergen exposure." },
+    ],
+    faq: { q: "Does a home-based bakery need business insurance?", a: "Yes. A homeowners policy typically excludes business activity, so a home bakery needs its own general liability, including products." },
+    stateOnly: true,
+  },
+  {
+    slug: "new-restaurant",
+    name: "New Restaurant",
+    noun: "new restaurant",
+    alsoCovers: "For restaurants opening their first location, pre-opening through the first year.",
+    operations: "build-out, equipment delivery, lease requirements, pre-opening staff, and the planned menu and service",
+    property: "Tenant improvements, equipment and stock should be insured from possession, not from opening day.",
+    driversExtra: ["No loss history", "Owner restaurant experience", "Build-out value and possession date"],
+    coverageFocus: [
+      { name: "Coverage from possession", desc: "Your improvements and pre-opening liability need coverage from the day you take possession." },
+    ],
+    faq: { q: "What do insurers want from a brand-new restaurant?", a: "Owner experience, the business plan, the build-out and equipment list, the lease requirements, and the planned menu, hours and alcohol." },
+    kind: "stage",
+  },
+  {
+    slug: "growing-restaurant",
+    name: "Growing Restaurant",
+    noun: "growing restaurant",
+    alsoCovers: "For restaurants adding locations, staff, delivery, catering, or alcohol.",
+    operations: "new locations, rising payroll, new service lines, and higher contract limits",
+    property: "Each location's equipment and improvements should be scheduled separately on one program.",
+    driversExtra: ["Number of locations", "Payroll growth", "New alcohol, delivery or catering"],
+    coverageFocus: [
+      { name: "One program, many locations", desc: "Scheduling locations on one program is usually simpler and cheaper than separate policies." },
+    ],
+    faq: { q: "When should I tell my insurer about a new location?", a: "Before you take possession of it, so the new address is covered from day one." },
+    kind: "stage",
+  },
+  {
+    slug: "buying-a-restaurant",
+    name: "Buying a Restaurant",
+    noun: "restaurant purchase",
+    alsoCovers: "For buyers taking over an existing restaurant.",
+    operations: "takeover date, seller's loss history, equipment condition, lease assignment, and liquor license transfer",
+    property: "The equipment and improvements you're buying should be valued at replacement cost from the takeover date.",
+    driversExtra: ["Seller's loss runs", "Hood and suppression condition", "Liquor license transfer"],
+    coverageFocus: [
+      { name: "Coverage from takeover", desc: "The seller's policy doesn't transfer; yours has to start the day you take over." },
+    ],
+    faq: { q: "Do I need insurance before closing on a restaurant?", a: "You need it in force on the takeover date, so start the quote before closing." },
+    kind: "stage",
+  },
+  {
+    slug: "ghost-kitchen",
+    name: "Ghost Kitchen",
+    noun: "ghost kitchen",
+    alsoCovers: "For delivery-only kitchens, virtual brands, and commissary tenants.",
+    operations: "delivery-only production, virtual brands, shared or commissary kitchens, and delivery apps",
+    property: "Your equipment in a shared kitchen needs its own coverage; the facility insures its building.",
+    driversExtra: ["Own or shared kitchen", "Number of virtual brands", "Delivery apps and drivers"],
+    coverageFocus: [
+      { name: "Shared-kitchen contracts", desc: "Commissary agreements set required limits and additional insureds; bring the contract." },
+    ],
+    faq: { q: "Can one policy cover several virtual brands?", a: "Usually, if every brand is listed on the application." },
+    kind: "stage",
+  },
+  {
+    slug: "restaurant-delivery",
+    name: "Restaurant Delivery",
+    noun: "restaurant with delivery",
+    alsoCovers: "For restaurants adding or running their own delivery.",
+    operations: "own drivers, personal vehicles, business-owned vehicles, delivery radius, and third-party apps",
+    property: "Business-owned delivery vehicles need a commercial auto policy; the restaurant policy doesn't cover them.",
+    driversExtra: ["Own drivers versus apps", "Personal versus business vehicles", "Delivery share of sales"],
+    coverageFocus: [
+      { name: "Drivers' vehicles", desc: "Hired and non-owned auto covers the business when staff deliver in their own cars." },
+    ],
+    faq: { q: "Does restaurant insurance cover delivery?", a: "Not the vehicles. Add hired and non-owned auto, and commercial auto for any vehicle the business owns." },
+    kind: "stage",
+  },
 ];
 
 export type RestaurantTypeState = StartupState;
@@ -344,24 +596,28 @@ export function getRestaurantType(slug: string) {
   return RESTAURANT_TYPES.find((type) => type.slug === slug);
 }
 
+export function getRestaurantTypeNational(slug: string) {
+  return RESTAURANT_TYPES.find((type) => type.slug === slug && !type.stateOnly);
+}
+
 export function getRestaurantTypeState(slug: string) {
   return RESTAURANT_TYPE_STATES.find((state) => state.slug === slug);
 }
 
 function commonContent(type: RestaurantType): Omit<PageContent, "title" | "metaDescription" | "heroH1" | "heroSub" | "stateFacts"> {
+  const detail = typeDetail(type.slug);
   return {
     reviewedOn: RESTAURANT_TYPES_UPDATED,
     alsoCovers: type.alsoCovers,
+    // Answer-first: the searcher asked what it costs, so the real bound price leads (Kevin 2026-09-26).
     costNarrative: [
-      `A useful ${type.noun} quote starts with the real operation: ${type.operations}. The cuisine or concept helps route the request, but the menu, equipment, service model, sales, people, and property determine the insurance terms.`,
-      `Keep every quote based on the same facts. ${type.property} Then compare accepted operations, valuation, deductibles, exclusions, business-income treatment, fees, and liability limits alongside premium.`,
+      costAnswer(type.noun, type.slug),
+      `A useful ${type.noun} quote starts with the real operation: ${type.operations}. ${type.property}`,
     ],
-    costDisclaimer: "Pricing is individual to the restaurant, property, sales, cooking, alcohol, delivery, people, claims, location, and requested coverage. These are quote components, not premium estimates or an offer of insurance.",
+    costDisclaimer: BOUND_PRICE_DISCLAIMER,
     costRows: [
-      { coverage: "Businessowners policy", range: "Individual quote", note: `General liability and property should reflect the actual ${type.noun} operation.` },
-      { coverage: "Building / contents / improvements", range: "Selected limits", note: type.property },
-      { coverage: "Business income and equipment breakdown", range: "Policy-specific", note: "Compare covered causes, waiting periods, restoration time, utility terms, spoilage, and the actual equipment schedule." },
-      { coverage: "Liquor, auto, workers' compensation, and umbrella", range: "As applicable", note: "Review each exposure separately; a restaurant package does not automatically include every line." },
+      ...boundPriceRows(type.slug),
+      { coverage: "Liquor, auto, and umbrella", range: "As applicable", note: "Each is priced on its own exposure; a restaurant package does not automatically include every line." },
     ],
     priceDrivers: [
       "Annual sales, payroll, seating, square footage, hours, years in business, and loss history",
@@ -370,33 +626,37 @@ function commonContent(type: RestaurantType): Omit<PageContent, "title" | "metaD
       "Building or tenant-property values, refrigeration, equipment, spoilage, and requested deductibles",
     ],
     coverages: [
-      { name: "General liability and products", desc: "Review customer injury, foodborne illness, products, premises, delivery, catering, and contractual requirements against the actual operations." },
-      { name: "Property and business income", desc: "Value equipment, contents, stock, improvements, signs, and income exposure. Compare valuation, coinsurance, deductibles, water, wind, spoilage, and restoration terms." },
+      ...(detail?.risks ?? []),
       ...type.coverageFocus,
-      { name: "Workers, vehicles, and umbrella", desc: "Employees, owners, delivery, catering vehicles, hired or non-owned autos, and higher liability limits require separate facts and sometimes separate policies." },
+      { name: "General liability and products", desc: "Customer injury, foodborne illness, allergens, premises, delivery and catering, checked against what you actually do." },
+      { name: "Property and business income", desc: "Equipment, contents, stock, improvements and lost income after a covered loss. Compare valuation, deductibles, spoilage and restoration time." },
     ],
     faqs: [
-      {
-        q: `How much does ${type.noun} insurance cost?`,
-        a: `There is no reliable price from the concept name alone. Insurers need sales, payroll, menu, cooking equipment, alcohol, delivery, property values, protection, location, claims, and requested limits. Compare proposals built from the same facts.`,
-      },
+      { q: `How much does ${type.noun} insurance cost?`, a: costAnswer(type.noun, type.slug) },
+      ...(detail ? [detail.faq] : []),
       type.faq,
       {
         q: `What information should a ${type.noun} gather for a quote?`,
-        a: "Start with the current policy if handy, loss runs, menu, equipment list, sales split, payroll, hours, seating, square footage, alcohol and delivery details, property values, hood and suppression records, lease requirements, and requested effective date. Estimates are acceptable when labeled honestly.",
-      },
-      {
-        q: "Does a landlord's certificate request tell me what policy to buy?",
-        a: "No. It identifies evidence the landlord wants, but it does not replace a review of the lease, operations, property, exclusions, deductibles, and limits. Compare the actual proposal with the written requirement before binding.",
+        a: "Start with the current policy if handy, loss runs, menu, equipment list, sales split, payroll, hours, seating, square footage, alcohol and delivery details, property values, hood and suppression records, lease requirements, and requested effective date. Estimates are fine when labeled as estimates.",
       },
     ],
   };
 }
 
+// The questions an underwriter asks this concept - unique per type, so pages don't read alike.
+function questionsFact(type: RestaurantType, where?: string): Fact[] {
+  const detail = typeDetail(type.slug);
+  if (!detail) return [];
+  return [{
+    title: `What an underwriter will ask a ${type.noun}${where ? ` in ${where}` : ""}`,
+    body: detail.questions.join(" "),
+  }];
+}
+
 export function buildRestaurantTypeNational(type: RestaurantType): PageContent {
   return {
-    title: `${type.name} Insurance | Coverage & Quote Guide`,
-    metaDescription: `Compare ${type.noun} insurance for cooking, property, food liability, employees, delivery, alcohol, equipment, and business income.`,
+    title: `${type.name} Insurance: Liability From ${floorPhrase()}`,
+    metaDescription: `Real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What drives a ${type.noun} quote and what underwriters ask.`,
     heroH1: `${type.name} insurance`,
     heroSub: `Build a quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     ...commonContent(type),
@@ -405,6 +665,7 @@ export function buildRestaurantTypeNational(type: RestaurantType): PageContent {
         title: `Describe the ${type.noun}, not just the category`,
         body: `Tell the underwriter about ${type.operations}. Send the menu and equipment list and separate sales by dine-in, takeout, delivery, catering, alcohol, retail, or wholesale when those operations apply.`,
       },
+      ...questionsFact(type),
     ],
   };
 }
@@ -426,8 +687,8 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
   const wcFact = workersCompFact(state.slug);
   return {
     ...base,
-    title: `${type.name} Insurance in ${state.name} | Coverage Guide`,
-    metaDescription: `Compare ${state.name} ${type.noun} insurance for cooking, property, food liability, employees, delivery, alcohol, equipment, and business income.`,
+    title: `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
+    metaDescription: `${state.name} ${type.noun} insurance with real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What ${state.name} underwriters ask.`,
     heroH1: `${type.name} insurance in ${state.name}`,
     heroSub: `Build a ${state.name} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     stateFacts: [
@@ -440,6 +701,7 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
         title: `${type.name} details to send with the request`,
         body: `For a ${state.name} quote, describe ${type.operations}. Include the menu, equipment and fuel, sales split, protection records, property values, staffing, claims, and requested effective date.`,
       },
+      ...questionsFact(type, state.name),
       ...(wcFact ? [wcFact] : []),
       ...(type.alcoholCommon && stateProfile ? [stateProfile.liquorFact] : []),
     ],
@@ -448,7 +710,7 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
         q: `What information is needed for ${type.noun} insurance in ${state.name}?`,
         a: `Prepare the current policy if handy, loss runs, menu, cooking and refrigeration equipment, ${state.name} location, sales and payroll, seating and hours, alcohol and delivery details, property values, protection records, lease requirements, and requested effective date.`,
       },
-      ...base.faqs.slice(1),
+      ...base.faqs,
     ],
   };
 }
@@ -457,5 +719,42 @@ export function restaurantTypeStateLinks(type: RestaurantType, exclude?: string)
   return RESTAURANT_TYPE_STATES.filter((state) => state.slug !== exclude).map((state) => ({
     label: state.name,
     href: `/insurance/${type.slug}/${state.slug}`,
+  }));
+}
+
+// General restaurant pages for licensed states that have no hand-profiled restaurant page yet
+// (Kevin 2026-09-26). The 26 profiled states keep /insurance/restaurant/{state} from data.ts; the
+// rest get the same page shape as a concept page, with the state's official food-establishment
+// source, so "{state} restaurant insurance" lands on a restaurant page instead of a pizzeria page.
+export const GENERIC_RESTAURANT: RestaurantType = {
+  slug: "restaurant",
+  name: "Restaurant",
+  noun: "restaurant",
+  alsoCovers: "For full-service, quick-service, counter, café, and takeout restaurants.",
+  operations: "the menu and cooking line, seating and hours, alcohol, delivery, catering, and staff",
+  property: "Kitchen equipment, refrigeration, furniture, tenant improvements and stock should be valued at replacement cost.",
+  driversExtra: ["Cooking class: fryers and open flame versus limited cooking", "Alcohol share of sales", "Delivery and catering"],
+  coverageFocus: [
+    { name: "Liquor liability", desc: "If you serve alcohol, liquor liability is priced off your share of alcohol sales and is required by most leases." },
+  ],
+  faq: { q: "What insurance does a restaurant need?", a: "Most need general liability and property (often together as a businessowners policy), workers' comp once they have employees, liquor liability if they serve alcohol, and hired and non-owned auto if staff deliver." },
+};
+
+const PROFILED = new Set(STATES.map((st) => st.slug));
+export const RESTAURANT_EXTRA_STATES: RestaurantTypeState[] = RESTAURANT_TYPE_STATES.filter((st) => !PROFILED.has(st.slug));
+
+export function isExtraRestaurantState(slug: string) {
+  return RESTAURANT_EXTRA_STATES.some((st) => st.slug === slug);
+}
+
+export function buildGenericRestaurantState(state: RestaurantTypeState): PageContent {
+  return buildRestaurantTypeState(GENERIC_RESTAURANT, state);
+}
+
+// Every licensed restaurant state, profiled or not, for cross-links.
+export function allRestaurantStateLinks(exclude?: string) {
+  return RESTAURANT_TYPE_STATES.filter((st) => st.slug !== exclude).map((st) => ({
+    label: st.name,
+    href: `/insurance/restaurant/${st.slug}`,
   }));
 }
