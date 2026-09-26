@@ -27,7 +27,10 @@ import {
   isExtraRestaurantState,
   buildGenericRestaurantState,
   allRestaurantStateLinks,
+  restaurantTypeCityLinks,
+  GENERIC_RESTAURANT,
 } from "@/lib/seo/restaurant-types";
+import { withAbbrArticle, withArticle } from "@/lib/seo/restaurant-cities";
 
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
 // /insurance/{trade}/{state} (trades x 50 jurisdictions, minus roofing NY/FL).
@@ -104,10 +107,10 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         areaServed={st.name}
         formMode="restaurant"
         costHeading={`What restaurant insurance costs in ${st.name}`}
-        coverageHeading={`The coverage a ${st.name} restaurant needs`}
+        coverageHeading={`The coverage ${withArticle(st.name)} restaurant needs`}
         stateFactsHeading={`What to check in ${st.name}`}
         stateLinksHeading="Restaurant insurance in other states"
-        stateLinks={allRestaurantStateLinks(st.slug)}
+        stateLinks={[...restaurantTypeCityLinks(GENERIC_RESTAURANT, st.slug), ...allRestaurantStateLinks(st.slug)]}
       />
     );
   }
@@ -124,12 +127,12 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-${restaurantType.slug}-${state.slug}`}
         areaServed={state.name}
         formMode="restaurant"
-        costHeading={`How a ${restaurantType.noun} quote is built in ${state.name}`}
-        coverageHeading={`Coverage questions for a ${state.name} ${restaurantType.noun}`}
+        costHeading={`How ${withArticle(restaurantType.noun)} quote is built in ${state.name}`}
+        coverageHeading={`Coverage questions for ${withArticle(state.name)} ${restaurantType.noun}`}
         stateFactsHeading={`What to check in ${state.name}`}
         resourceScopeLabel="State food resources checked"
         stateLinksHeading={`${restaurantType.name} insurance in other states`}
-        stateLinks={restaurantTypeStateLinks(restaurantType, state.slug)}
+        stateLinks={[...restaurantTypeCityLinks(restaurantType, state.slug), ...restaurantTypeStateLinks(restaurantType, state.slug)]}
         breadcrumbs={[
           { label: "Insurance guides", href: "/insurance" },
           { label: `${restaurantType.name} insurance`, href: `/insurance/${restaurantType.slug}` },
@@ -174,7 +177,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         tradeSlug={trade.slug}
         stateSlug={cs.slug}
         costHeading={`What ${trade.noun} insurance costs in ${cs.name}`}
-        coverageHeading={`The coverage a ${cs.abbr} ${trade.noun} needs`}
+        coverageHeading={`The coverage ${withAbbrArticle(cs.abbr)} ${trade.noun} needs`}
         stateFactsHeading={`What's different about ${cs.name}`}
         stateLinksHeading={`${trade.name} insurance in other states`}
         stateLinks={others.map((s) => ({
@@ -199,11 +202,11 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       areaServed={state.name}
       formMode={vertical.slug === "bar" ? "bar" : "restaurant"}
       costHeading={`What ${vertical.noun} insurance costs in ${state.name}`}
-      coverageHeading={`The coverage a ${state.abbr} ${vertical.noun} needs`}
+      coverageHeading={`The coverage ${withAbbrArticle(state.abbr)} ${vertical.noun} needs`}
       stateFactsHeading={`What's different about ${state.name}`}
       stateLinksHeading={`${vertical.name} insurance in other states`}
       stateLinks={vertical.slug === "restaurant"
-        ? allRestaurantStateLinks(state.slug)
+        ? [...restaurantTypeCityLinks(GENERIC_RESTAURANT, state.slug), ...allRestaurantStateLinks(state.slug)]
         : STATES.filter((s) => s.slug !== state.slug).map((s) => ({
             label: s.name,
             href: `/insurance/${vertical.slug}/${s.slug}`,

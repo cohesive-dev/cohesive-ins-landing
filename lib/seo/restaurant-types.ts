@@ -4,6 +4,9 @@ import { CONTRACTOR_STATE_SLUGS } from "./contractor-states";
 import { STARTUP_STATES, type StartupState } from "@/lib/guides/states";
 import { BOUND_PRICE_DISCLAIMER, boundPriceRows, costAnswer, floorPhrase } from "./restaurant-prices";
 import { typeDetail } from "./restaurant-type-details";
+import { extraLiquorFact, extraWcFact, stateQuoteFact, stateQuoteRow, stateQuote } from "./restaurant-states";
+import { type RestaurantCity, restaurantCitiesIn, RESTAURANT_CITIES, withArticle } from "./restaurant-cities";
+import { STATE_CODES } from "@/lib/licenses";
 
 export const RESTAURANT_TYPES_UPDATED = "2026-09-26";
 
@@ -633,10 +636,10 @@ function commonContent(type: RestaurantType): Omit<PageContent, "title" | "metaD
     ],
     faqs: [
       { q: `How much does ${type.noun} insurance cost?`, a: costAnswer(type.noun, type.slug) },
-      ...(detail ? [detail.faq] : []),
+      ...(detail && detail.faq.q !== type.faq.q ? [detail.faq] : []),
       type.faq,
       {
-        q: `What information should a ${type.noun} gather for a quote?`,
+        q: `What information should ${withArticle(type.noun)} gather for a quote?`,
         a: "Start with the current policy if handy, loss runs, menu, equipment list, sales split, payroll, hours, seating, square footage, alcohol and delivery details, property values, hood and suppression records, lease requirements, and requested effective date. Estimates are fine when labeled as estimates.",
       },
     ],
@@ -648,7 +651,7 @@ function questionsFact(type: RestaurantType, where?: string): Fact[] {
   const detail = typeDetail(type.slug);
   if (!detail) return [];
   return [{
-    title: `What an underwriter will ask a ${type.noun}${where ? ` in ${where}` : ""}`,
+    title: `What an underwriter will ask ${withArticle(type.noun)}${where ? ` in ${where}` : ""}`,
     body: detail.questions.join(" "),
   }];
 }
@@ -656,7 +659,7 @@ function questionsFact(type: RestaurantType, where?: string): Fact[] {
 export function buildRestaurantTypeNational(type: RestaurantType): PageContent {
   return {
     title: `${type.name} Insurance: Liability From ${floorPhrase()}`,
-    metaDescription: `Real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What drives a ${type.noun} quote and what underwriters ask.`,
+    metaDescription: `Real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What drives ${withArticle(type.noun)} quote and what underwriters ask.`,
     heroH1: `${type.name} insurance`,
     heroSub: `Build a quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     ...commonContent(type),
@@ -690,8 +693,13 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
     title: `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
     metaDescription: `${state.name} ${type.noun} insurance with real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. What ${state.name} underwriters ask.`,
     heroH1: `${type.name} insurance in ${state.name}`,
-    heroSub: `Build a ${state.name} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
+    heroSub: `Build ${withArticle(state.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
+    costNarrative: stateQuote(state.name)
+      ? [base.costNarrative[0], `In ${state.name}, our lowest restaurant quote so far is $${stateQuote(state.name)!.usd.toLocaleString("en-US")} a year for ${stateQuote(state.name)!.line}.`, ...base.costNarrative.slice(1)]
+      : base.costNarrative,
+    costRows: [...base.costRows.slice(0, 2), ...stateQuoteRow(state.name), ...base.costRows.slice(2)],
     stateFacts: [
+      ...stateQuoteFact(state.name),
       {
         title: `Confirm the food-establishment route in ${state.name}`,
         body: state.food.note,
@@ -699,11 +707,13 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
       },
       {
         title: `${type.name} details to send with the request`,
-        body: `For a ${state.name} quote, describe ${type.operations}. Include the menu, equipment and fuel, sales split, protection records, property values, staffing, claims, and requested effective date.`,
+        body: `For ${withArticle(state.name)} quote, describe ${type.operations}. Include the menu, equipment and fuel, sales split, protection records, property values, staffing, claims, and requested effective date.`,
       },
       ...questionsFact(type, state.name),
-      ...(wcFact ? [wcFact] : []),
-      ...(type.alcoholCommon && stateProfile ? [stateProfile.liquorFact] : []),
+      ...(wcFact ? [wcFact] : extraWcFact(state.slug, state.name)),
+      ...(type.alcoholCommon || type.slug === "restaurant"
+        ? (stateProfile ? [stateProfile.liquorFact] : extraLiquorFact(state.slug, state.name))
+        : []),
     ],
     faqs: [
       {
@@ -758,3 +768,56 @@ export function allRestaurantStateLinks(exclude?: string) {
     href: `/insurance/restaurant/${st.slug}`,
   }));
 }
+
+// City pages: /insurance/{type}/{state}/{city} (Kevin 2026-09-26). Built on the state page, with the
+// city's own permitting authority first - the one fact that genuinely differs city to city.
+export function buildRestaurantTypeCity(type: RestaurantType, city: RestaurantCity): PageContent | undefined {
+  const state = getRestaurantTypeState(city.stateSlug);
+  if (!state) return undefined;
+  const base = buildRestaurantTypeState(type, state);
+  const abbr = STATE_CODES[state.name] ?? "";
+  return {
+    ...base,
+    title: `${type.name} Insurance in ${city.name}, ${abbr}: From ${floorPhrase()}`,
+    metaDescription: `${city.name} ${type.noun} insurance with real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from $509/yr. Who permits restaurants in ${city.name} and what underwriters ask.`,
+    heroH1: `${type.name} insurance in ${city.name}`,
+    heroSub: `Build ${withArticle(city.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
+    // City pages carry the city's own facts. State-wide rules (workers' comp, liquor, the state
+    // food regulator, our state quote) live on the state page and are linked, not repeated: repeating
+    // them made same-state city pages 84% identical, against 36-63% for the trade city pages that rank.
+    stateFacts: [
+      { title: `Who permits restaurants in ${city.name}`, body: city.fact, source: city.authority },
+      {
+        title: `Opening or renewing in ${city.name}`,
+        body: city.checklist.join(" "),
+        source: city.local ?? city.authority,
+      },
+      ...questionsFact(type, city.name),
+      {
+        title: `${state.name} rules that also apply`,
+        body: `Workers' comp, liquor licensing and the state food code are set at the ${state.name} level. See the ${state.name} ${type.noun} insurance page for those, and for what we've quoted restaurants across ${state.name}.`,
+      },
+    ],
+    faqs: [
+      { q: `Who issues restaurant permits in ${city.name}?`, a: city.fact },
+      { q: `How much does ${type.noun} insurance cost in ${city.name}?`, a: costAnswer(type.noun, type.slug) },
+      ...base.faqs.filter((f) => !/how much|cost/i.test(f.q) && !f.q.includes(state.name)),
+    ],
+  };
+}
+
+export function restaurantTypeCityLinks(type: RestaurantType, stateSlug: string, excludeCity?: string) {
+  return restaurantCitiesIn(stateSlug).filter((c) => c.slug !== excludeCity).map((c) => ({
+    label: `${c.name}`,
+    href: `/insurance/${type.slug}/${c.stateSlug}/${c.slug}`,
+  }));
+}
+
+// Every concept that gets city pages: the general restaurant page plus every type.
+export const RESTAURANT_CITY_TYPES: RestaurantType[] = [GENERIC_RESTAURANT, ...RESTAURANT_TYPES];
+
+export function getRestaurantCityType(slug: string) {
+  return RESTAURANT_CITY_TYPES.find((t) => t.slug === slug);
+}
+
+export { RESTAURANT_CITIES };

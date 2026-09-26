@@ -27,6 +27,7 @@ import {
   restaurantTypeStateLinks,
   allRestaurantStateLinks,
 } from "@/lib/seo/restaurant-types";
+import { withArticle } from "@/lib/seo/restaurant-cities";
 
 // National pages: /insurance/{restaurant|bar|food-truck|...} (food verticals)
 // and /insurance/{electrician|plumber|roofer|...} (58 contractor trades).
@@ -77,7 +78,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-${restaurantType.slug}-national`}
         areaServed="United States"
         formMode="restaurant"
-        costHeading={`How a ${restaurantType.noun} quote is built`}
+        costHeading={`How ${withArticle(restaurantType.noun)} quote is built`}
         coverageHeading={`Coverage questions for a ${restaurantType.noun}`}
         stateFactsHeading="Prepare a more specific restaurant submission"
         resourceScopeLabel="Coverage resources checked"

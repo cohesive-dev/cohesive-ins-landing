@@ -82,6 +82,7 @@ export function costAnswer(noun: string, slug?: string): string {
 // rewriting its content: price in the title and meta, answer-first narrative, bound rows first,
 // one cost FAQ that leads with the real number (no duplicate question for FAQ markup).
 import type { PageContent } from "./data";
+import { stateQuoteFact, stateQuoteRow } from "./restaurant-states";
 
 export function withBoundPrices(c: PageContent, name: string, noun: string, stateName?: string): PageContent {
   const costQ = `How much does ${noun} insurance cost${stateName ? ` in ${stateName}` : ""}?`;
@@ -92,7 +93,8 @@ export function withBoundPrices(c: PageContent, name: string, noun: string, stat
     metaDescription: `Real bound prices: restaurant liability from ${floorPhrase()}, workers' comp from ${usd(RESTAURANT_FLOOR.wc.usd)}/yr. ${c.metaDescription}`,
     costNarrative: [costAnswer(noun), ...c.costNarrative],
     costDisclaimer: c.costDisclaimer ? `${BOUND_PRICE_DISCLAIMER} ${c.costDisclaimer}` : BOUND_PRICE_DISCLAIMER,
-    costRows: [...boundPriceRows(), ...c.costRows],
+    costRows: [...boundPriceRows(), ...(stateName ? stateQuoteRow(stateName) : []), ...c.costRows],
+    stateFacts: stateName ? [...stateQuoteFact(stateName), ...c.stateFacts] : c.stateFacts,
     faqs: [{ q: costQ, a: costAnswer(noun) }, ...c.faqs.filter((f) => !isCostQ(f.q))],
   };
 }
