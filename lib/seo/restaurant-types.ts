@@ -694,7 +694,9 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
   const wcFact = workersCompFact(state.slug);
   return {
     ...base,
-    title: `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
+    title: type.slug === "restaurant"
+      ? `${state.name} Restaurant Insurance: From ${floorPhrase()}`
+      : `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
     metaDescription: `${state.name} ${type.noun} insurance with real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. What ${state.name} underwriters ask.`,
     heroH1: `${type.name} insurance in ${state.name}`,
     heroSub: `Build ${withArticle(state.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
@@ -827,3 +829,18 @@ export function getRestaurantCityType(slug: string) {
 }
 
 export { RESTAURANT_CITIES };
+
+
+// Hub-and-spoke links (SEO audit 2026-09-29): 18 of 32 sampled restaurant URLs were not indexed and
+// "{state} restaurant insurance" searches landed on concept pages 62% of the time, because the state
+// page linked only to other states and concept pages never linked up to their state.
+export function restaurantTypesInStateLinks(stateSlug: string, stateName: string) {
+  return RESTAURANT_TYPES.map((type) => ({
+    label: `${type.name} insurance in ${stateName}`,
+    href: `/insurance/${type.slug}/${stateSlug}`,
+  }));
+}
+
+export function restaurantStateHubLink(stateSlug: string, stateName: string) {
+  return { label: `${stateName} restaurant insurance`, href: `/insurance/restaurant/${stateSlug}` };
+}

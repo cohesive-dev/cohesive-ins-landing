@@ -32,6 +32,8 @@ export default function SeoPage({
   stateFactsHeading,
   stateLinks,
   stateLinksHeading,
+  relatedLinks,
+  relatedLinksHeading,
   quoteHref,
 }: {
   content: PageContent;
@@ -53,6 +55,8 @@ export default function SeoPage({
   stateFactsHeading?: string;
   stateLinks?: { label: string; href: string }[];
   stateLinksHeading?: string;
+  relatedLinks?: { label: string; href: string }[];
+  relatedLinksHeading?: string;
   quoteHref?: string;
 }) {
   const stateLicense = licenseLineForArea(areaServed);
@@ -333,6 +337,22 @@ export default function SeoPage({
             <p className="mt-2 text-sm text-[#6B6D71]">Plan the steps before your first service, from the opening budget to approvals and lease requirements.</p>
             <Link href="/guides/how-to-open-a-restaurant" className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Read the restaurant opening guide →</Link>
             <Link href="/guides/restaurant-lease-insurance-requirements" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What your landlord&apos;s lease will ask for, with real examples →</Link>
+          </div>
+        </section>
+      )}
+      {relatedLinks && relatedLinks.length > 0 && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="text-sm font-bold text-[#27455C] uppercase tracking-wide mb-3">
+              {relatedLinksHeading ?? "Related pages"}
+            </h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+              {relatedLinks.map((l) => (
+                <a key={l.href} href={l.href} className="text-[#2040E7] hover:underline">
+                  {l.label}
+                </a>
+              ))}
+            </div>
           </div>
         </section>
       )}

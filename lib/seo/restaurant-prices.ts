@@ -149,7 +149,9 @@ export function withBoundPrices(c: PageContent, name: string, noun: string, stat
   const isCostQ = (q: string) => /how much|cost/i.test(q);
   return {
     ...c,
-    title: `${name} Insurance${stateName ? ` in ${stateName}` : ""}: From ${floorPhrase()}`,
+    // State first, matching how owners search ("wisconsin restaurant insurance"; 18 state/concept queries sat
+    // at positions 8-30 with 0 clicks in the 28 days to 2026-09-28). The price stays the lowest real bind.
+    title: stateName ? `${stateName} ${name} Insurance: From ${floorPhrase()}` : `${name} Insurance: From ${floorPhrase()}`,
     metaDescription: `Real prices: restaurant liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. ${c.metaDescription}`,
     costNarrative: [costAnswer(noun), ...c.costNarrative],
     costDisclaimer: c.costDisclaimer ? `${BOUND_PRICE_DISCLAIMER} ${c.costDisclaimer}` : BOUND_PRICE_DISCLAIMER,

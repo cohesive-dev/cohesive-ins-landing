@@ -1200,7 +1200,7 @@ function Footer() {
             <ul className="space-y-2 text-sm">
               {/* Instant-quote splash pages (Next appetite verticals) */}
               {[
-                { label: "Restaurants & Food Service", href: "/restaurants" },
+                { label: "Restaurants & Food Service", href: "/insurance/restaurant" },
                 { label: "Cleaning & Janitorial", href: "/cleaning" },
                 { label: "Salons & Beauty", href: "/beauty" },
                 { label: "Fitness & Studios", href: "/fitness" },
