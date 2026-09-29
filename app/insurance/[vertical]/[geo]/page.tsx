@@ -27,10 +27,22 @@ import {
   isExtraRestaurantState,
   buildGenericRestaurantState,
   allRestaurantStateLinks,
+  restaurantTypesInStateLinks,
+  restaurantStateHubLink,
   restaurantTypeCityLinks,
   GENERIC_RESTAURANT,
 } from "@/lib/seo/restaurant-types";
 import { withAbbrArticle, withArticle } from "@/lib/seo/restaurant-cities";
+import { STARTUP_STATES } from "@/lib/guides/states";
+
+// The state's restaurant opening guide, when one exists (those guides already rank ~10-18 for
+// "<state> restaurants for lease"), plus the lease-requirements guide.
+function restaurantGuideLinks(stateSlug: string, stateName: string) {
+  const opening = STARTUP_STATES.some((st) => st.slug === stateSlug)
+    ? [{ label: `How to open a restaurant in ${stateName}`, href: `/guides/how-to-open-a-restaurant-in-${stateSlug}` }]
+    : [];
+  return [...opening, { label: "What your lease will require", href: "/guides/restaurant-lease-insurance-requirements" }];
+}
 
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
 // /insurance/{trade}/{state} (trades x 50 jurisdictions, minus roofing NY/FL).
@@ -109,6 +121,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         costHeading={`What restaurant insurance costs in ${st.name}`}
         coverageHeading={`The coverage ${withArticle(st.name)} restaurant needs`}
         stateFactsHeading={`What to check in ${st.name}`}
+        relatedLinksHeading={`Restaurant types in ${st.name}`}
+        relatedLinks={[...restaurantTypesInStateLinks(st.slug, st.name), ...restaurantGuideLinks(st.slug, st.name)]}
         stateLinksHeading="Restaurant insurance in other states"
         stateLinks={[...restaurantTypeCityLinks(GENERIC_RESTAURANT, st.slug), ...allRestaurantStateLinks(st.slug)]}
       />
@@ -131,6 +145,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         coverageHeading={`Coverage questions for ${withArticle(state.name)} ${restaurantType.noun}`}
         stateFactsHeading={`What to check in ${state.name}`}
         resourceScopeLabel="State food resources checked"
+        relatedLinksHeading={`More for ${state.name} restaurants`}
+        relatedLinks={[restaurantStateHubLink(state.slug, state.name), ...restaurantGuideLinks(state.slug, state.name)]}
         stateLinksHeading={`${restaurantType.name} insurance in other states`}
         stateLinks={[...restaurantTypeCityLinks(restaurantType, state.slug), ...restaurantTypeStateLinks(restaurantType, state.slug)]}
         breadcrumbs={[
@@ -204,6 +220,10 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       costHeading={`What ${vertical.noun} insurance costs in ${state.name}`}
       coverageHeading={`The coverage ${withAbbrArticle(state.abbr)} ${vertical.noun} needs`}
       stateFactsHeading={`What's different about ${state.name}`}
+      relatedLinksHeading={vertical.slug === "restaurant" ? `Restaurant types in ${state.name}` : undefined}
+      relatedLinks={vertical.slug === "restaurant"
+        ? [...restaurantTypesInStateLinks(state.slug, state.name), ...restaurantGuideLinks(state.slug, state.name)]
+        : undefined}
       stateLinksHeading={`${vertical.name} insurance in other states`}
       stateLinks={vertical.slug === "restaurant"
         ? [...restaurantTypeCityLinks(GENERIC_RESTAURANT, state.slug), ...allRestaurantStateLinks(state.slug)]
