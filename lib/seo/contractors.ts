@@ -20,6 +20,7 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 // without us publishing a fake "typical."
 
 import type { PageContent } from "./data";
+import { PRICE_FREE_TRADES, tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
 
 export type Trade = {
   slug: string;
@@ -799,7 +800,26 @@ function sharedFaqs(t: Trade): { q: string; a: string }[] {
 
 // ---- national builder -------------------------------------------------------
 
+// Real-price layer (Kevin 2026-10-02): trades with a verified price in trade-prices.ts lead with it,
+// labelled bound or quote; handyman, concrete and roofing publish no number. Every other trade keeps
+// its legacy page until it has a real price.
+export function finalizeTradePricing(
+  c: PageContent,
+  t: Trade,
+  place?: { name: string; abbr: string; city?: string },
+  metaTails?: string[],
+): PageContent {
+  if (tradePrice(t.slug)) return withTradePrice(c, t.slug, { name: t.name, noun: t.noun, place, metaTails });
+  if (PRICE_FREE_TRADES.has(t.slug)) return withoutPrice(c, { name: t.name, noun: t.noun, plural: plural(t.noun), place });
+  return c;
+}
+
 export function buildContractorNational(t: Trade): PageContent {
+  return finalizeTradePricing(buildContractorNationalBase(t), t);
+}
+
+// The page before the real-price layer; state pages build on this so the price is applied once.
+export function buildContractorNationalBase(t: Trade): PageContent {
   const floor = money(t.glFrom);
   const bundle = t.bopFrom ? money(t.bopFrom) : null;
   const marketNote = t.hedgeOnly

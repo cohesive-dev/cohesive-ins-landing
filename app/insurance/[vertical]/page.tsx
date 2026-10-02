@@ -29,6 +29,19 @@ import {
 } from "@/lib/seo/restaurant-types";
 import { withArticle } from "@/lib/seo/restaurant-cities";
 
+// Hub-and-spoke (2026-10-02): concept pages link up to the restaurant hub, and the hub links down to
+// every concept. Neither link existed before.
+const RESTAURANT_BREADCRUMBS = [
+  { label: "Insurance guides", href: "/insurance" },
+  { label: "Restaurant insurance", href: "/insurance/restaurant" },
+];
+function restaurantTypeNationalLinks() {
+  return RESTAURANT_TYPES.filter((type) => !type.stateOnly).map((type) => ({
+    label: `${type.name} insurance`,
+    href: `/insurance/${type.slug}`,
+  }));
+}
+
 // National pages: /insurance/{restaurant|bar|food-truck|...} (food verticals)
 // and /insurance/{electrician|plumber|roofer|...} (58 contractor trades).
 // Restaurant/bar/trades also act as hubs linking their state pages.
@@ -84,6 +97,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         resourceScopeLabel="Coverage resources checked"
         stateLinksHeading={`${restaurantType.name} insurance by state`}
         stateLinks={restaurantTypeStateLinks(restaurantType)}
+        breadcrumbs={RESTAURANT_BREADCRUMBS}
       />
     );
   }
@@ -145,6 +159,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       formMode={vertical.slug === "bar" ? "bar" : "restaurant"}
       costHeading={`What ${vertical.noun} insurance costs`}
       coverageHeading={`The coverage a ${vertical.noun} needs`}
+      relatedLinksHeading={vertical.slug === "restaurant" ? "Restaurant insurance by type" : undefined}
+      relatedLinks={vertical.slug === "restaurant" ? restaurantTypeNationalLinks() : undefined}
       stateLinksHeading={`${vertical.name} insurance by state`}
       stateLinks={
         vertical.slug === "restaurant"

@@ -2,7 +2,7 @@ import type { Fact, PageContent } from "./data";
 import { getState, STATES } from "./data";
 import { CONTRACTOR_STATE_SLUGS } from "./contractor-states";
 import { STARTUP_STATES, type StartupState } from "@/lib/guides/states";
-import { BOUND_PRICE_DISCLAIMER, pkgFloor, boundPriceRows, costAnswer, floorPhrase, usd } from "./restaurant-prices";
+import { BOUND_PRICE_DISCLAIMER, boundPriceRows, costAnswer, floorPhrase, fitTitle, restaurantMeta } from "./restaurant-prices";
 import { typeDetail } from "./restaurant-type-details";
 import { extraLiquorFact, extraWcFact, stateQuoteFact, stateQuoteRow, stateQuote } from "./restaurant-states";
 import { type RestaurantCity, restaurantCitiesIn, RESTAURANT_CITIES, withArticle } from "./restaurant-cities";
@@ -660,10 +660,25 @@ function questionsFact(type: RestaurantType, where?: string): Fact[] {
   }];
 }
 
+// Shorter names for titles only, so the price is not cut off at ~60 characters in search results.
+const TITLE_NAMES: Record<string, string> = {
+  "fast-food-restaurant": "Fast Food Restaurant",
+  "breakfast-restaurant": "Breakfast Restaurant",
+  "ice-cream-shop": "Ice Cream Shop",
+  "vegan-restaurant": "Vegan Restaurant",
+  deli: "Deli",
+};
+const titleName = (type: RestaurantType) => TITLE_NAMES[type.slug] ?? type.name;
+const capFirst = (s: string) => `${s[0].toUpperCase()}${s.slice(1)}`;
+
 export function buildRestaurantTypeNational(type: RestaurantType): PageContent {
   return {
-    title: `${type.name} Insurance: Liability From ${floorPhrase()}`,
-    metaDescription: `Real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. What drives ${withArticle(type.noun)} quote and what underwriters ask.`,
+    title: fitTitle([
+      `${type.name} Insurance: Liability From ${floorPhrase()}`,
+      `${titleName(type)} Insurance: Liability From ${floorPhrase()}`,
+      `${titleName(type)} Insurance: From ${floorPhrase()}`,
+    ]),
+    metaDescription: restaurantMeta(`${capFirst(type.noun)} insurance`, ["Quotes in minutes."]),
     heroH1: `${type.name} insurance`,
     heroSub: `Build a quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     ...commonContent(type),
@@ -696,8 +711,13 @@ export function buildRestaurantTypeState(type: RestaurantType, state: Restaurant
     ...base,
     title: type.slug === "restaurant"
       ? `${state.name} Restaurant Insurance: From ${floorPhrase()}`
-      : `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
-    metaDescription: `${state.name} ${type.noun} insurance with real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. What ${state.name} underwriters ask.`,
+      : fitTitle([
+        `${type.name} Insurance in ${state.name}: From ${floorPhrase()}`,
+        `${titleName(type)} Insurance in ${state.name}: From ${floorPhrase()}`,
+        `${state.name} ${titleName(type)} Insurance: ${floorPhrase()}`,
+        `${titleName(type)} Insurance in ${STATE_CODES[state.name] ?? state.name}: From ${floorPhrase()}`,
+      ]),
+    metaDescription: restaurantMeta(`${state.name} ${type.noun} insurance`, [`What ${state.name} underwriters ask.`]),
     heroH1: `${type.name} insurance in ${state.name}`,
     heroSub: `Build ${withArticle(state.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     costNarrative: stateQuote(state.name)
@@ -786,8 +806,13 @@ export function buildRestaurantTypeCity(type: RestaurantType, city: RestaurantCi
   const abbr = STATE_CODES[state.name] ?? "";
   return {
     ...base,
-    title: `${type.name} Insurance in ${city.name}, ${abbr}: From ${floorPhrase()}`,
-    metaDescription: `${city.name} ${type.noun} insurance with real prices: liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. Who permits restaurants in ${city.name} and what underwriters ask.`,
+    title: fitTitle([
+      `${type.name} Insurance in ${city.name}, ${abbr}: From ${floorPhrase()}`,
+      `${titleName(type)} Insurance in ${city.name}, ${abbr}: From ${floorPhrase()}`,
+      `${titleName(type)} Insurance in ${city.name}, ${abbr}: ${floorPhrase()}`,
+      `${city.name} ${titleName(type)} Insurance: ${floorPhrase()}`,
+    ]),
+    metaDescription: restaurantMeta(`${city.name}, ${abbr} ${type.noun} insurance`, [`Who permits restaurants in ${city.name}.`]),
     heroH1: `${type.name} insurance in ${city.name}`,
     heroSub: `Build ${withArticle(city.name)} quote around the menu, equipment, service model, people, property, and off-premises work your ${type.noun} actually has.`,
     // City pages carry the city's own facts. State-wide rules (workers' comp, liquor, the state

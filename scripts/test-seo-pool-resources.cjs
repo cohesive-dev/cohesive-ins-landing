@@ -14,8 +14,11 @@ assert.equal(pool.intakeLabel, 'Pool & Spa');
 const pages = [buildContractorNational(pool), ...CONTRACTOR_STATE_SLUGS.filter(s => contractorStateBuildable('pool', s)).map(s => buildContractorState(getContractorState(s), pool))];
 for (const page of pages) {
   assert.match(page.title, /Swimming Pool Contractor|Pool Construction/);
-  assert.doesNotMatch(page.title, /\$|Instant|Pool & Spa/);
-  assert.doesNotMatch(JSON.stringify(page.costRows), /69|89|from \$/);
+  // Kevin 2026-10-02: the lowest real BOUND pool premium ($916/yr) leads; legacy monthly floors never return.
+  assert.match(page.title, /\$916\/yr/);
+  assert.doesNotMatch(page.title, /Instant|Pool & Spa|\/mo/);
+  assert.doesNotMatch(JSON.stringify(page.costRows), /\/mo|\$69|\$89/);
+  assert.match(JSON.stringify(page.costRows), /General liability \(bound\)/);
   assert.ok(page.faqs.length && page.priceDrivers.length);
 }
 assert.match(buildContractorState(getContractorState('texas'), pool).heroSub, /gunite/);

@@ -1,4 +1,6 @@
 import type { Fact, PageContent } from "./data";
+import { withTradePrice } from "./trade-prices";
+import { STATE_CODES } from "@/lib/licenses";
 
 // Editorial page scope only. These are not carrier classes, licensing rulings or quote guarantees.
 export const SERVICE_UPDATED = "2026-09-14";
@@ -752,7 +754,9 @@ export function serviceContent(slug: string, state?: string): PageContent | unde
   if (!service || (state && !Object.hasOwn(service.stateProfiles, state))) return undefined;
   const profile = state ? service.stateProfiles[state] : undefined;
   const where = state ? ` in ${SERVICE_STATE_NAMES[state]}` : "";
-  return {
+  const stateName = state ? SERVICE_STATE_NAMES[state] : undefined;
+  // Real-price layer (Kevin 2026-10-02): only services with a verified price in trade-prices.ts change.
+  return withTradePrice({
     title: `${service.name} Insurance${where}: Coverage & Quotes`,
     metaDescription: `Review ${service.name.toLowerCase()} insurance${where}, customer-property coverage, job details and quote requirements.`,
     heroH1: `${service.name} Insurance${where}`,
@@ -769,7 +773,7 @@ export function serviceContent(slug: string, state?: string): PageContent | unde
     coverages: service.coverages,
     stateFacts: [...(profile?.facts ?? []), ...service.facts],
     faqs: [...(profile ? [profile.faq] : []), ...service.faqs],
-  };
+  }, slug, { name: service.name, noun: service.noun, place: stateName ? { name: stateName, abbr: STATE_CODES[stateName] ?? "" } : undefined });
 }
 
 // Structured route identity avoids matching pool-service as if it were pool construction.

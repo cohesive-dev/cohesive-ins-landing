@@ -44,6 +44,12 @@ function restaurantGuideLinks(stateSlug: string, stateName: string) {
   return [...opening, { label: "What your lease will require", href: "/guides/restaurant-lease-insurance-requirements" }];
 }
 
+// State pages link up to their national hub (2026-10-02): contractor and restaurant state pages
+// previously linked only sideways to other states.
+function hubBreadcrumbs(label: string, href: string) {
+  return [{ label: "Insurance guides", href: "/insurance" }, { label, href }];
+}
+
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
 // /insurance/{trade}/{state} (trades x 50 jurisdictions, minus roofing NY/FL).
 // Content is composed per-combo; unknown combos 404.
@@ -125,6 +131,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         relatedLinks={[...restaurantTypesInStateLinks(st.slug, st.name), ...restaurantGuideLinks(st.slug, st.name)]}
         stateLinksHeading="Restaurant insurance in other states"
         stateLinks={[...restaurantTypeCityLinks(GENERIC_RESTAURANT, st.slug), ...allRestaurantStateLinks(st.slug)]}
+        breadcrumbs={hubBreadcrumbs("Restaurant insurance", "/insurance/restaurant")}
       />
     );
   }
@@ -200,6 +207,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           label: s.name,
           href: `/insurance/${trade.slug}/${s.slug}`,
         }))}
+        breadcrumbs={hubBreadcrumbs(`${trade.name} insurance`, `/insurance/${trade.slug}`)}
       />
     );
   }
@@ -231,6 +239,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
             label: s.name,
             href: `/insurance/${vertical.slug}/${s.slug}`,
           }))}
+      breadcrumbs={vertical.slug === "restaurant" ? hubBreadcrumbs("Restaurant insurance", "/insurance/restaurant") : undefined}
     />
   );
 }

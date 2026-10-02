@@ -54,6 +54,17 @@ const CONCEPT_BINDABLE: Record<string, BoundPrice> = {
   "thai-restaurant": { usd: 2370, line: "Businessowners policy", business: "a Thai noodle and sushi restaurant in Illinois" },
 };
 
+// Ordinary carrier quotes for a concept, shown only where they say something the binds do not
+// (2026-10-02: coffee shop GL $686/yr, a real Next quote for a coffee house in North Carolina).
+// Always labelled "quote": nobody has bought these yet.
+const CONCEPT_QUOTES: Record<string, BoundPrice> = {
+  "coffee-shop": { usd: 686, line: "General liability", business: "a coffee house in North Carolina" },
+};
+
+export function conceptQuote(slug: string): BoundPrice | undefined {
+  return CONCEPT_QUOTES[slug];
+}
+
 export function conceptBindable(slug: string): BoundPrice | undefined {
   return CONCEPT_BINDABLE[slug];
 }
@@ -72,6 +83,28 @@ function pkgFloorPhrase(suffix = ""): string {
 }
 
 export const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
+
+// Price-first restaurant meta description within ~155 characters (Kevin 2026-10-02). "A policy we
+// wrote" sits next to the bound number; an instant-bindable package is labelled as a quote.
+export function restaurantMeta(lead: string, tails: string[] = []): string {
+  const f = pkgFloor();
+  const gl = `${lead}: liability from ${usd(RESTAURANT_FLOOR.gl.usd)}/yr`;
+  const pkgLong = f.label === "bound" ? `also a policy we wrote` : `a real instant quote, bindable`;
+  const pkgShort = f.label === "bound" ? `also bound` : `instant quote, bindable`;
+  const candidates = [
+    ...tails.map((t) => `${gl}, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}. Liability + property from ${usd(f.usd)}/yr, ${pkgLong}. ${t}`),
+    `${gl}, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}. Liability + property from ${usd(f.usd)}/yr, ${pkgLong}.`,
+    `${gl}, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}. Liability + property from ${usd(f.usd)}/yr, ${pkgShort}.`,
+    `${gl}, a policy we wrote. Liability + property from ${usd(f.usd)}/yr, ${pkgShort}.`,
+    `${gl}, a policy we wrote. With property from ${usd(f.usd)}/yr, ${pkgShort}.`,
+  ];
+  return candidates.find((c) => c.length <= 155) ?? candidates[candidates.length - 1];
+}
+
+// First title within ~60 characters, else the shortest, so the price is not cut off in results.
+export function fitTitle(candidates: string[]): string {
+  return candidates.find((c) => c.length <= 60) ?? [...candidates].sort((a, b) => a.length - b.length)[0];
+}
 export const floorPhrase = () => `${usd(RESTAURANT_FLOOR.gl.usd)}/yr`;
 
 export function conceptBind(slug: string): BoundPrice | undefined {
@@ -100,6 +133,14 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
       note: `Our lowest bind for ${concept.business}.`,
     });
   }
+  const quote = slug ? conceptQuote(slug) : undefined;
+  if (quote) {
+    rows.push({
+      coverage: `${quote.line} for this concept (quote)`,
+      range: `from ${usd(quote.usd)}/yr`,
+      note: `A real quote for ${quote.business}. It is a quote, not a policy we have bound.`,
+    });
+  }
   const bindable = slug ? conceptBindable(slug) : undefined;
   if (bindable && bindable.usd !== pkgFloor().usd) {
     rows.push({
@@ -123,7 +164,8 @@ export function boundPriceRows(slug?: string): { coverage: string; range: string
 
 export const BOUND_PRICE_DISCLAIMER =
   `These are the lowest premiums we have actually bound for restaurants, as of ${RESTAURANT_PRICES_AS_OF}, ` +
-  "plus the lowest instant quotes a carrier issued ready to bind (marked \"instant quote, bindable\"; those are real quotes, not bound policies). " +
+  "plus the lowest instant quotes a carrier issued ready to bind (marked \"instant quote, bindable\"; those are real quotes, not bound policies) " +
+  "and, where marked \"quote\", an ordinary carrier quote. " +
   "Each is labelled by line of business. Your price depends on your menu, cooking, alcohol, " +
   "sales, payroll, property, location, and claims. They are not an offer of insurance.";
 
@@ -133,9 +175,11 @@ export function costAnswer(noun: string, slug?: string): string {
   const concept = c && c.usd !== RESTAURANT_FLOOR.gl.usd ? ` Our lowest bind for ${c.business} was ${usd(c.usd)}/yr (${c.line.toLowerCase()}).` : "";
   const b = slug ? conceptBindable(slug) : undefined;
   const forConcept = b && b.usd !== pkgFloor().usd ? `; for ${b.business} it was ${usd(b.usd)}/yr` : "";
+  const q = slug ? conceptQuote(slug) : undefined;
+  const quoted = q ? ` For ${q.business}, a real ${q.line.toLowerCase()} quote was ${usd(q.usd)}/yr (a quote, not a bound policy).` : "";
   const pkg = pkgFloorPhrase(forConcept);
   const article = /^[aeiou]/i.test(noun) ? "An" : "A";
-  return `The lowest food-service general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr (${RESTAURANT_FLOOR.gl.business}), and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept} ${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
+  return `The lowest food-service general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}, and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept}${quoted} ${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
 }
 
 // Apply the bound-price treatment to an existing food page (national or profiled state) without
@@ -151,8 +195,13 @@ export function withBoundPrices(c: PageContent, name: string, noun: string, stat
     ...c,
     // State first, matching how owners search ("wisconsin restaurant insurance"; 18 state/concept queries sat
     // at positions 8-30 with 0 clicks in the 28 days to 2026-09-28). The price stays the lowest real bind.
-    title: stateName ? `${stateName} ${name} Insurance: From ${floorPhrase()}` : `${name} Insurance: From ${floorPhrase()}`,
-    metaDescription: `Real prices: restaurant liability from ${floorPhrase()} bound, liability + property from ${usd(pkgFloor().usd)}/yr ${pkgFloor().label}. ${c.metaDescription}`,
+    title: stateName
+      ? fitTitle([`${stateName} ${name} Insurance: From ${floorPhrase()}`, `${name} Insurance in ${stateName}: ${floorPhrase()}`])
+      : fitTitle([`${name} Insurance from ${floorPhrase()} | Cohesive Insurance`, `${name} Insurance: From ${floorPhrase()}`]),
+    metaDescription: restaurantMeta(
+      stateName ? `${stateName} ${noun} insurance` : `${noun[0].toUpperCase()}${noun.slice(1)} insurance`,
+      [stateName ? `What ${stateName} requires.` : "Quotes in minutes."],
+    ),
     costNarrative: [costAnswer(noun), ...c.costNarrative],
     costDisclaimer: c.costDisclaimer ? `${BOUND_PRICE_DISCLAIMER} ${c.costDisclaimer}` : BOUND_PRICE_DISCLAIMER,
     costRows: [...boundPriceRows(), ...(stateName ? stateQuoteRow(stateName) : []), ...c.costRows],

@@ -24,7 +24,7 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 import type { Fact, PageContent } from "./data";
 import { priorityStateContent } from "./priority-state-content";
 import type { Trade } from "./contractors";
-import { buildContractorNational, plural } from "./contractors";
+import { buildContractorNationalBase, finalizeTradePricing, plural } from "./contractors";
 
 // Not placeable — no license, so no page.
 export const EXCLUDED_STATES = new Set(["california"]);
@@ -410,9 +410,9 @@ function stateFacts(cs: ContractorState, t: Trade): Fact[] {
 }
 
 export function buildContractorState(cs: ContractorState, t: Trade): PageContent {
-  const base = buildContractorNational(t);
+  const base = buildContractorNationalBase(t);
   const floor = `$${t.glFrom}`;
-  return withConstructionHazardReview({
+  return finalizeTradePricing(withConstructionHazardReview({
     ...base,
     title: `${t.name} Insurance in ${cs.name} - Costs from ${floor}/mo`,
     metaDescription: `What ${t.noun} insurance costs in ${cs.name} (from ${floor}/mo), plus ${cs.abbr} licensing, workers' comp, and bond rules. Licensed ${cs.abbr} contractor insurance agency.`,
@@ -423,7 +423,7 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
     stateFacts: stateFacts(cs, t),
     ...(t.slug === "pool" ? swimmingPoolContent(cs.name) : {}),
     ...priorityStateContent(t.slug, cs.slug),
-  }, t.slug);
+  }, t.slug), t, { name: cs.name, abbr: cs.abbr }, [`Plus ${cs.abbr} licensing, workers' comp and bond rules.`, "Get a quote."]);
 }
 
 // Is this (trade, state) combo buildable?

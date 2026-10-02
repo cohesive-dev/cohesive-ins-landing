@@ -1,6 +1,8 @@
 import { TRADE_METRO_PAGES } from "./trade-metro-content";
 import { POOL_METRO_EXPANSION } from "./pool-metro-expansion";
 import type { PageContent } from "./data";
+import { getTrade, finalizeTradePricing } from "./contractors";
+import { STATE_CODES } from "@/lib/licenses";
 
 export const METRO_UPDATED = "2026-09-16";
 export type MetroPage = {
@@ -569,9 +571,18 @@ const ORIGINAL_METRO_PAGES: MetroPage[] = [
   },
   ...POOL_METRO_EXPANSION
 ];
+// Real-price layer (Kevin 2026-10-02): a city page for a trade with a verified price carries the
+// same labelled national floor; the city facts stay as researched.
+function withMetroPrice(p: MetroPage): MetroPage {
+  const trade = getTrade(p.trade);
+  if (!trade) return p;
+  const name = p.label.replace(/ insurance$/i, "");
+  const priced = finalizeTradePricing(p.content, { ...trade, name }, { name: p.stateName, abbr: STATE_CODES[p.stateName] ?? "", city: p.cityName });
+  return priced === p.content ? p : { ...p, content: priced };
+}
 export const METRO_PAGES: MetroPage[] = [...ORIGINAL_METRO_PAGES,
   ...TRADE_METRO_PAGES.filter(p => !ORIGINAL_METRO_PAGES.some(existing => existing.path === p.path)),
-];
+].map(withMetroPrice);
 export function getMetroPage(trade: string, state: string, city: string): MetroPage | undefined {
   return METRO_PAGES.find(p => p.trade === trade && p.state === state && p.city === city);
 }
