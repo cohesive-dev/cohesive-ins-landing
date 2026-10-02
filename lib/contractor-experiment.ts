@@ -3,13 +3,15 @@ import { acceptedPhoneShape } from './phone-shape';
 export const INDUSTRIES = {
   pool:'Pool construction', remodel:'Remodeling', roof:'Roofing',
   tree:'Tree services', painting:'Painting', hvac:'HVAC',
+  electrical:'Electrical', plumbing:'Plumbing', welding:'Welding',
 } as const;
 export type Industry = keyof typeof INDUSTRIES;
 export type Answers = Record<string,string>;
 export const ANGLES:Record<Industry,string[]> = {
   pool:['percent','dollars','installation','coi'],
   remodel:['percent','dollars','trade_mix','coi'], roof:['percent','coi','free_gen'],
-  tree:['coverage','savings','coi'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen'],
+  tree:['coverage','savings','coi'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen','dollars'],
+  electrical:['dollars','coi'],plumbing:['dollars','coi'],welding:['dollars','coi'],
 };
 export const QUESTION_OPTIONS = {
   revenue:['Under $250k','$250k-$500k','$500k-$1M','$1M-$2M','$2M-$4M','$4M-$8M','Over $8M'],

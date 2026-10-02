@@ -22,5 +22,5 @@ export function coldEmailUrl(layout: ColdLayout, campaign: keyof typeof COLD_CAM
   return `https://www.cohesiveinsure.com/email/contractors/${layout}?${query}`;
 }
 export function isColdIndustry(value: string): value is Industry {
-  return ['pool', 'remodel', 'roof', 'tree', 'painting', 'hvac'].includes(value);
+  return ['pool', 'remodel', 'roof', 'tree', 'painting', 'hvac', 'electrical', 'plumbing', 'welding'].includes(value);
 }
