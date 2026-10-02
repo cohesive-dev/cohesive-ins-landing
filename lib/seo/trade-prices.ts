@@ -187,7 +187,10 @@ export function withoutPrice(
     ...c,
     title: legacyTitle ? priceFreeTitle(opts.name, opts.place) : c.title,
     metaDescription: hasLegacyFloor(c.metaDescription)
-      ? `${opts.name} insurance${where ? ` in ${where}` : ""}: what ${opts.plural} need to carry, what moves the price, and quotes from several carriers.`
+      ? fit([
+          `${opts.name} insurance${where ? ` in ${where}` : ""}: what ${opts.plural} need to carry, what moves the price, and quotes from several carriers.`,
+          `${opts.name} insurance${where ? ` in ${where}` : ""}: what to carry, what moves the price, and quotes from several carriers.`,
+        ], 155)
       : c.metaDescription,
     heroSub: hasLegacyFloor(c.heroSub)
       ? `See what moves the price for ${opts.plural}, then tell us about your work and we will compare quotes from several carriers.`
