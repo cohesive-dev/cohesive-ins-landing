@@ -1,6 +1,6 @@
 {
-  "release": "seo-20261002-real-price-titles-v1",
-  "updatedAt": "2026-10-02",
+  "release": "seo-20261003-entity-alternatives-v1",
+  "updatedAt": "2026-10-03",
   "paths": [
     "/insurance/restaurant",
     "/insurance/restaurant/north-carolina",
@@ -63,6 +63,11 @@
     "/insurance/tree-service/north-carolina",
     "/insurance/pool",
     "/insurance/pool/texas",
-    "/insurance/roofer"
+    "/insurance/roofer",
+    "/guides/next-insurance-alternatives",
+    "/guides/thimble-alternatives",
+    "/guides/simply-business-alternatives",
+    "/guides/hiscox-alternatives",
+    "/guides/biberk-alternatives"
   ]
 }
