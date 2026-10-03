@@ -7,7 +7,7 @@ Module._load = function (req, parent, main) { return originalLoad.call(this, req
 const { getTrade, buildContractorNational } = require('../lib/seo/contractors.ts');
 const { CONTRACTOR_STATE_SLUGS, getContractorState, buildContractorState, contractorStateBuildable } = require('../lib/seo/contractor-states.ts');
 const { STARTUP_GUIDES } = require('../lib/guides/catalog.ts');
-const sitemap = require('../app/sitemap.ts').default();
+const sitemap = require('../lib/seo/sitemap-sections.ts').allSitemapEntries();
 const { metroUpdatedForPath } = require('../lib/seo/metro-pages.ts');
 const pool = getTrade('pool');
 assert.equal(pool.intakeLabel, 'Pool & Spa');

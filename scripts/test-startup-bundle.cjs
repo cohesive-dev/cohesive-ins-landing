@@ -33,7 +33,7 @@ global.fetch=async(url,opt)=>{
  const {METRO_PAGES}=require('../lib/seo/metro-pages.ts');
  const growth=STARTUP_GUIDES.filter(g=>g.kind==='growth');assert.equal(growth.length,181);
  assert.equal(growth.filter(g=>g.industry==='Pool construction').length,20);
- const sitemap=require('../app/sitemap.ts').default();
+ const sitemap=require('../lib/seo/sitemap-sections.ts').allSitemapEntries();
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/.well-known/cohesive-content-release.json')));
  for(const g of growth){
   const page=await growthRoute.default({params:Promise.resolve({slug:g.slug})});

@@ -11,6 +11,7 @@ import { STARTUP_STATES } from "@/lib/guides/states";
 import BudgetCalculator from "@/components/guides/BudgetCalculator";
 import { GuideQuoteLink, PrintGuide } from "@/components/guides/GuideActions";
 import { GUIDE_UPDATED } from "@/lib/guides/restaurant";
+import { ORG_REF, PERSON_REF, PRODUCER_NAME, PRODUCER_PATH } from "@/lib/entity";
 import { getStartupGuide, getRelatedGuides, getStateGuides, STARTUP_GUIDES } from "@/lib/guides/catalog";
 
 export const dynamicParams = false;
@@ -33,14 +34,14 @@ export default async function GuidePage({ params }: Props) {
   const sources = guide.sections.flatMap((s) => [...(s.links ?? []), ...(s.comparison?.rows.map((row) => ({ label: row.name, href: row.href })) ?? [])]).filter((link, i, all) => all.findIndex((other) => other.href === link.href) === i);
   const url = `https://www.cohesiveinsure.com/guides/${guide.slug}`;
   const structuredData = { "@context": "https://schema.org", "@graph": [
-    { "@type": "Article", headline: guide.title, description: guide.description, mainEntityOfPage: url, dateModified: guide.updatedAt ?? GUIDE_UPDATED, author: { "@type": "Organization", name: "Cohesive Insurance Services", url: "https://www.cohesiveinsure.com" }, publisher: { "@type": "Organization", name: "Cohesive Insurance Services", url: "https://www.cohesiveinsure.com" } },
+    { "@type": "Article", headline: guide.title, description: guide.description, mainEntityOfPage: url, dateModified: guide.updatedAt ?? GUIDE_UPDATED, author: PERSON_REF, publisher: ORG_REF },
     { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: guide.kind === "growth" ? "Business growth guides" : "Startup guides", item: "https://www.cohesiveinsure.com/guides" }, { "@type": "ListItem", position: 2, name: guide.title, item: url }] },
   ] };
   return <main className="guide-article">
     <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
     <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
       <nav aria-label="Breadcrumb" className="mb-7 text-sm text-slate-600 print:hidden"><Link href="/guides" className="text-blue-700 hover:underline">{guide.kind === "growth" ? "Business growth guides" : "Startup guides"}</Link><span aria-hidden="true" className="mx-2">/</span><span>{guide.industry}{guide.cityName ? ` · ${guide.cityName}` : ""}{guide.stateSlug ? ` · ${STARTUP_STATES.find((s) => s.slug === guide.stateSlug)?.name}` : ""}</span></nav>
-      <header className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-widest text-blue-700">{guide.category}</p><h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{guide.title}</h1><p className="mt-5 text-lg leading-8 text-slate-700">{guide.intro}</p><p className="mt-5 text-sm text-slate-500">By Cohesive Insurance Services · Updated <time dateTime={guide.updatedAt ?? GUIDE_UPDATED}>{new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${guide.updatedAt ?? GUIDE_UPDATED}T00:00:00Z`))}</time></p></header>
+      <header className="max-w-3xl"><p className="text-xs font-bold uppercase tracking-widest text-blue-700">{guide.category}</p><h1 className="mt-3 text-3xl font-extrabold leading-tight tracking-tight sm:text-5xl">{guide.title}</h1><p className="mt-5 text-lg leading-8 text-slate-700">{guide.intro}</p><p className="mt-5 text-sm text-slate-500">By Cohesive Insurance Services · licensed producer <Link href={PRODUCER_PATH} className="underline hover:text-blue-700">{PRODUCER_NAME}</Link> · Updated <time dateTime={guide.updatedAt ?? GUIDE_UPDATED}>{new Intl.DateTimeFormat("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" }).format(new Date(`${guide.updatedAt ?? GUIDE_UPDATED}T00:00:00Z`))}</time></p></header>
       {bundle && <StartupBundle slug={guide.slug} growth={guide.kind === "growth"} />}
       <div className="mt-10 grid items-start gap-10 lg:grid-cols-[minmax(0,1fr)_260px]">
         <article className="min-w-0 max-w-3xl">
