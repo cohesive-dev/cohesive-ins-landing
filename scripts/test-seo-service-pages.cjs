@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),load=Module._load;
 for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true},fileName:f}).outputText,f);
 Module._load=function(req,parent,main){return load.call(this,req.startsWith('@/')?path.join(root,req.slice(2)):req,parent,main);};
 const {INSURANCE_SERVICES,SERVICE_PATHS,serviceContent,relatedServiceLinks}=require('../lib/seo/service-industries.ts');
-const national=require('../app/insurance/[vertical]/page.tsx'),state=require('../app/insurance/[vertical]/[geo]/page.tsx'),sitemap=require('../app/sitemap.ts').default();
+const national=require('../app/insurance/[vertical]/page.tsx'),state=require('../app/insurance/[vertical]/[geo]/page.tsx'),sitemap=require('../lib/seo/sitemap-sections.ts').allSitemapEntries();
 const SeoPage=require('../components/SeoPage.tsx').default;
 const {metroUpdatedForPath}=require('../lib/seo/metro-pages.ts');
 function nodes(n){if(!n||typeof n!=='object')return[];if(Array.isArray(n))return n.flatMap(nodes);return[n,...nodes(n.props?.children)];}

@@ -5,7 +5,7 @@ Module._load=function(req,parent,main){return load.call(this,req.startsWith('@/'
 const {METRO_PAGES,metroLinksFor,METRO_RELEASE_PATHS}=require('../lib/seo/metro-pages.ts');
 const route=require('../app/insurance/[vertical]/[geo]/[metro]/page.tsx');
 const {getTrade}=require('../lib/seo/contractors.ts');const stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
-const sitemap=require('../app/sitemap.ts').default();const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/.well-known/cohesive-content-release.json')));
+const sitemap=require('../lib/seo/sitemap-sections.ts').allSitemapEntries();const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/.well-known/cohesive-content-release.json')));
 (async()=>{
  assert.equal(METRO_PAGES.length,183);assert.equal(new Set(METRO_PAGES.map(p=>p.path)).size,183);assert.equal(route.dynamicParams,false);
  for(const t of ['remodeler','siding','glass-glazing','electrician','plumber','handyman','hvac','painter'])assert.equal(METRO_PAGES.filter(p=>p.trade===t).length,20,t+' cohort');

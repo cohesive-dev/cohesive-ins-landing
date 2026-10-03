@@ -9,7 +9,9 @@ import ContractorQuoteForm from "@/components/ContractorQuoteForm";
 import CommercialPropertyForm from "@/components/CommercialPropertyForm";
 import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
 import type { PageContent } from "@/lib/seo/data";
-import { licenseLineForArea } from "@/lib/licenses";
+import { licenseLineForArea, PRIMARY_NPN } from "@/lib/licenses";
+import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164, PRODUCER_PATH, ORG_NAME, PRODUCER_NAME } from "@/lib/entity";
+import { TRADE_PRICES_AS_OF, tradePrice, tradePriceRow } from "@/lib/seo/trade-prices";
 
 // Shared layout for the /insurance SEO pages (state pages + national vertical
 // pages). Server component; the only client island is the intake form.
@@ -76,13 +78,13 @@ export default function SeoPage({
     })),
   };
 
-  const agencyJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "InsuranceAgency",
-    name: "Cohesive Insurance Services",
-    url: "https://www.cohesiveinsure.com",
-    areaServed,
-  };
+  const agencyJsonLd = organizationJsonLd(areaServed);
+
+  // "prices as of" only where this page actually carries a dated trade price row (trade-prices.ts).
+  const pagePrice = formMode === "contractor" && tradeSlug ? tradePrice(tradeSlug) : undefined;
+  const pricesAsOf = pagePrice && content.costRows.some((row) => row.coverage === tradePriceRow(pagePrice).coverage)
+    ? TRADE_PRICES_AS_OF
+    : undefined;
 
   const quoteCta = (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -94,8 +96,8 @@ export default function SeoPage({
       </a>
       <p className="text-sm text-[#6B6D71]">
         Prefer to talk? Call{" "}
-        <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
-          (929) 594-5450
+        <a href={`tel:${PHONE_E164}`} className="font-semibold text-[#2040E7]">
+          {PHONE_DISPLAY}
         </a>
       </p>
     </div>
@@ -154,13 +156,18 @@ export default function SeoPage({
             <p className="text-sm text-[#6B6D71]">
               Prefer to talk? Call{" "}
               <a
-                href="tel:+19295945450"
+                href={`tel:${PHONE_E164}`}
                 className="font-semibold text-[#2040E7]"
               >
-                (929) 594-5450
+                {PHONE_DISPLAY}
               </a>
             </p>
           </div>
+          <p className="mt-3 text-xs text-[#6B6D71]">
+            {ORG_NAME} · licensed producer{" "}
+            <Link href={PRODUCER_PATH} className="underline hover:text-[#2040E7]">{PRODUCER_NAME}</Link>, NPN {PRIMARY_NPN}
+            {pricesAsOf && <> · prices as of {pricesAsOf}</>}
+          </p>
         </div>
       </section>
 
