@@ -4,9 +4,15 @@
 //   1. Say whether it is BOUND (a policy we wrote) or a QUOTE (a real quote, not proof anyone bought it).
 //   2. Match the line of business: every figure here is general liability, never workers' comp.
 //
-// Business descriptions only, never a client's name. Trades not listed here have no verified price.
-// Roofing is excluded on purpose (Kevin 2026-09-22: "depends on subs"); handyman and concrete have no
-// clean bind or quote in their own class yet, so their pages publish no number at all.
+// Business descriptions only, never a client's name. Trades not listed here have no verified price
+// and publish no number at all (contractors.ts finalizeTradePricing removes the legacy $/mo floors).
+// Roofing is excluded on purpose (Kevin 2026-09-22: "depends on subs").
+//
+// Second release (Kevin 2026-10-02 "OK"): the other trade families. Each figure was read from the CRM
+// on 2026-10-02 and matched to the business's own work and the class the carrier rated, not a name
+// keyword. Quotes exclude superseded, do-not-present, declined, indication, stale, unverified and
+// rehearsal rows. A trade whose only evidence was a rehearsal, a preview, a class mismatch, a
+// withdrawn price or an unknown carrier stays price-free.
 import type { PageContent } from "./data";
 
 export const TRADE_PRICES_AS_OF = "2026-10-02";
@@ -28,10 +34,17 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   "tree-service": { usd: 1500, kind: "bound", line: GL, business: "a tree service in Colorado" },
   pool: { usd: 916, kind: "bound", line: GL, business: "a pool contractor in Texas" },
   hvac: { usd: 885, kind: "bound", line: GL, business: "an HVAC contractor in Florida" },
+  // Second release, 2026-10-02.
+  flooring: { usd: 500, kind: "bound", line: GL, business: "a flooring contractor in Nebraska" },
+  "pest-control": { usd: 650, kind: "bound", line: GL, business: "a pest control company in Pennsylvania" },
+  carpenter: { usd: 500, kind: "quote", line: GL, business: "a carpentry contractor in Pennsylvania" },
+  landscaper: { usd: 560, kind: "quote", line: GL, business: "a lawn care and landscaping business in Maryland" },
+  framing: { usd: 674, kind: "quote", line: GL, business: "a framing contractor in Texas" },
+  "pressure-washing": { usd: 779, kind: "quote", line: GL, business: "a pressure washing company in Texas" },
+  tile: { usd: 1011, kind: "quote", line: GL, business: "a tile installer in New York" },
+  siding: { usd: 1301, kind: "quote", line: GL, business: "a residential siding contractor" },
+  welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
 };
-
-// Trades in this release with no verified price: their titles, heroes and cost blocks carry no number.
-export const PRICE_FREE_TRADES = new Set(["handyman", "concrete", "roofer"]);
 
 export function tradePrice(slug: string): TradePrice | undefined {
   return TRADE_PRICES[slug];
@@ -160,7 +173,7 @@ export function withTradePrice(
   };
 }
 
-// Trades with no verified price (handyman, concrete, roofing): remove the legacy monthly floors from
+// Trades with no verified price: remove the legacy monthly floors from
 // the title, hero, cost block and FAQ instead of publishing a number we cannot stand behind.
 export function withoutPrice(
   c: PageContent,
@@ -174,7 +187,10 @@ export function withoutPrice(
     ...c,
     title: legacyTitle ? priceFreeTitle(opts.name, opts.place) : c.title,
     metaDescription: hasLegacyFloor(c.metaDescription)
-      ? `${opts.name} insurance${where ? ` in ${where}` : ""}: what ${opts.plural} need to carry, what moves the price, and quotes from several carriers.`
+      ? fit([
+          `${opts.name} insurance${where ? ` in ${where}` : ""}: what ${opts.plural} need to carry, what moves the price, and quotes from several carriers.`,
+          `${opts.name} insurance${where ? ` in ${where}` : ""}: what to carry, what moves the price, and quotes from several carriers.`,
+        ], 155)
       : c.metaDescription,
     heroSub: hasLegacyFloor(c.heroSub)
       ? `See what moves the price for ${opts.plural}, then tell us about your work and we will compare quotes from several carriers.`

@@ -18,9 +18,12 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 // $1,263); the rest are realistic small-op minimums to be firmed up as we bind
 // more. Still the lowest honest number, so a prospect paying more feels overpriced
 // without us publishing a fake "typical."
+//
+// SUPERSEDED 2026-10-02: glFrom/bopFrom/realAnnual are no longer published. A page shows
+// only the labelled real price in trade-prices.ts, or no number (finalizeTradePricing).
 
 import type { PageContent } from "./data";
-import { PRICE_FREE_TRADES, tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
+import { tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
 
 export type Trade = {
   slug: string;
@@ -801,8 +804,8 @@ function sharedFaqs(t: Trade): { q: string; a: string }[] {
 // ---- national builder -------------------------------------------------------
 
 // Real-price layer (Kevin 2026-10-02): trades with a verified price in trade-prices.ts lead with it,
-// labelled bound or quote; handyman, concrete and roofing publish no number. Every other trade keeps
-// its legacy page until it has a real price.
+// labelled bound or quote. Every other trade publishes no number: the legacy $/mo floors below were
+// not from our own book, so withoutPrice removes them from the title, meta, hero, cost block and FAQ.
 export function finalizeTradePricing(
   c: PageContent,
   t: Trade,
@@ -810,8 +813,7 @@ export function finalizeTradePricing(
   metaTails?: string[],
 ): PageContent {
   if (tradePrice(t.slug)) return withTradePrice(c, t.slug, { name: t.name, noun: t.noun, place, metaTails });
-  if (PRICE_FREE_TRADES.has(t.slug)) return withoutPrice(c, { name: t.name, noun: t.noun, plural: plural(t.noun), place });
-  return c;
+  return withoutPrice(c, { name: t.name, noun: t.noun, plural: plural(t.noun), place });
 }
 
 export function buildContractorNational(t: Trade): PageContent {
