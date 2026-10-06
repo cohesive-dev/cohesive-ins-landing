@@ -43,7 +43,7 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   "pressure-washing": { usd: 779, kind: "quote", line: GL, business: "a pressure washing company in Texas" },
   tile: { usd: 1011, kind: "quote", line: GL, business: "a tile installer in New York" },
   siding: { usd: 1301, kind: "quote", line: GL, business: "a residential siding contractor" },
-  welding: { usd: 4247, kind: "quote", line: GL, business: "a welding and fabrication business" },
+  welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
 };
 
 export function tradePrice(slug: string): TradePrice | undefined {
