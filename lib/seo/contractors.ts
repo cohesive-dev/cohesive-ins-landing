@@ -786,10 +786,16 @@ function sharedFaqs(t: Trade): { q: string; a: string }[] {
             t.bopFrom ? `, or about ${money(t.bopFrom)}/mo with your tools added` : ""
           }. What you actually pay comes down to payroll, sales, the work you do, and your claims. If you're paying way more than that right now, it's usually how you got classified, not the risk itself.`,
     },
-    {
-      q: `What does a GC need me to carry?`,
-      a: `Almost always a $1M/$2M general liability policy with them added as additional insured, workers' comp if you've got a crew, and often a waiver of subrogation. Set the policy up with a blanket additional insured and we can turn those COIs around same-day.`,
-    },
+    // Inspectors and other professional-service trades don't work under a GC; their question is E&O vs GL.
+    t.needsEO
+      ? {
+          q: `Do I need errors and omissions as well as general liability?`,
+          a: `They cover different claims. General liability covers injury or property damage at a job site. Errors and omissions (professional liability) covers a claim that your inspection or report missed something. Most inspection businesses carry both, and some states and clients ask for proof before you work. We quote them together so you can compare.`,
+        }
+      : {
+          q: `What does a GC need me to carry?`,
+          a: `Almost always a $1M/$2M general liability policy with them added as additional insured, workers' comp if you've got a crew, and often a waiver of subrogation. Set the policy up with a blanket additional insured and we can turn those COIs around same-day.`,
+        },
     {
       q: `Do I legally need insurance as ${an(t.noun)} ${t.noun}?`,
       a: `Once you have employees, workers' comp is required in almost every state. A lot of states and cities also won't issue or renew your contractor license or permit without proof of general liability, and sometimes a bond. And even where the law doesn't require it, no GC or property manager will let you on the job without it.`,
