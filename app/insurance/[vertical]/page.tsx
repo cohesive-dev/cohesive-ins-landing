@@ -133,7 +133,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         tradeLabel={trade.intakeLabel ?? trade.name}
         tradeSlug={trade.slug}
         costHeading={`What ${trade.noun} insurance costs`}
-        coverageHeading={`The coverage ${trade.noun}s need`}
+        coverageHeading={`The coverage ${withArticle(trade.noun)} needs`}
         stateLinksHeading={`${trade.name} insurance by state`}
         stateLinks={states.map((s) => ({
           label: s.name,
