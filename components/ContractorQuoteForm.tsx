@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+import { TRADES } from "@/lib/contractor-trades";
+import { filterTrades } from "@/lib/trade-search";
 
 // Minimal contractor intake for the /insurance/<trade> SEO pages. Posts to the
 // same /api/intake webhook under the contractor lane, with automated first touch
@@ -12,6 +14,22 @@ import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 // per-trade carrier COB ids are confirmed; until then this owns the lead.
 
 const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+
+// ★ Kevin 2026-10-09 ("Fix yes"): the visitor states their trade. The page's trade is PAGE CONTEXT, not a client
+// fact - T&S Contracting arrived from /insurance/roofer/pennsylvania as "Roofer" and does general construction.
+// "Trade" = the visitor's pick (or their own words); "Page trade" = attribution only; nothing is pre-selected.
+// An abandoned form with no stated trade OMITS Trade/businessType entirely (C/B 2026-10-09): absent is read as absent by
+// every exact-key reader downstream, so the page trade can never be taken for the client's.
+export const SOMETHING_ELSE = "__something_else";
+export function tradeOptions(pageTrade: string): string[] {
+  const synonyms = new Set(filterTrades(TRADES, pageTrade).map((t) => t.value));
+  const rest = TRADES.map((t) => t.value)
+    .filter((v) => !synonyms.has(v) && !/^other(?: trade)?$/i.test(v) && v.toLowerCase() !== pageTrade.toLowerCase());
+  return [pageTrade, ...rest];
+}
+export function statedTrade(choice: string, other: string): string {
+  return choice === SOMETHING_ELSE ? other.trim() : choice.trim();
+}
 
 export default function ContractorQuoteForm({
   source,
@@ -29,6 +47,8 @@ export default function ContractorQuoteForm({
     phone: "",
     zip: "",
     operations: "",
+    trade: "",
+    otherTrade: "",
   });
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -55,14 +75,15 @@ export default function ContractorQuoteForm({
       email: validEmail,
       phone: phone || undefined,
       zip: f.zip.trim() || undefined,
-      businessType: tradeLabel,
+      ...(statedTrade(f.trade, f.otherTrade) ? { businessType: statedTrade(f.trade, f.otherTrade) } : {}),
       company: f.company.trim() || undefined,
       source: "contractors-landing",
       partial: true,
       final: true,
       details: [
         f.company.trim() && { label: "Business", value: f.company.trim() },
-        { label: "Trade", value: tradeLabel },
+        statedTrade(f.trade, f.otherTrade) && { label: "Trade", value: statedTrade(f.trade, f.otherTrade) },
+        { label: "Page trade", value: tradeLabel },
         operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
         { label: "Page source", value: source },
         ...attributionDetails(attribution),
@@ -111,7 +132,7 @@ export default function ContractorQuoteForm({
     return () => clearTimeout(timer);
   }, [capturePartial]);
 
-  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
     setF((p) => ({ ...p, [k]: e.target.value }));
 
   const submit = async (e: React.FormEvent) => {
@@ -124,6 +145,11 @@ export default function ContractorQuoteForm({
     }
     if (!f.phone.replace(/\D/g, "")) {
       setErr("Please add a phone number so our team can reach you.");
+      return;
+    }
+    const stated = statedTrade(f.trade, f.otherTrade);
+    if (!stated) {
+      setErr(f.trade === SOMETHING_ELSE ? "Please tell us what work you do." : "Please choose the work you do.");
       return;
     }
     const captured = captureAttribution();
@@ -139,12 +165,13 @@ export default function ContractorQuoteForm({
           email,
           phone: f.phone.trim(),
           zip: f.zip.trim() || undefined,
-          businessType: tradeLabel,
+          businessType: stated,
           company: f.company.trim() || undefined,
           source: "contractors-landing",
           details: [
             f.company.trim() && { label: "Business", value: f.company.trim() },
-            { label: "Trade", value: tradeLabel },
+            { label: "Trade", value: stated },
+            { label: "Page trade", value: tradeLabel },
             operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
             { label: "Page source", value: source },
             ...attributionDetails(attribution),
@@ -173,8 +200,7 @@ export default function ContractorQuoteForm({
           Got it - we&apos;re on it.
         </div>
         <p className="text-sm text-[#6B6D71]">
-          One of our licensed agents will get you a {tradeLabel.toLowerCase()}{" "}
-          quote shortly. Need a COI fast? Call{" "}
+          One of our licensed agents will get you a quote shortly. Need a COI fast? Call{" "}
           <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">
             (929) 594-5450
           </a>
@@ -199,6 +225,35 @@ export default function ContractorQuoteForm({
         onChange={set("company")}
         autoComplete="organization"
       />
+      <label className="block text-sm text-[#27455C]">
+        What work do you do?
+        <select
+          className={`${field} mt-1`}
+          value={f.trade}
+          onChange={set("trade")}
+          required
+        >
+          <option value="" disabled>
+            Choose your work
+          </option>
+          {tradeOptions(tradeLabel).map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+          <option value={SOMETHING_ELSE}>Something else</option>
+        </select>
+      </label>
+      {f.trade === SOMETHING_ELSE && (
+        <input
+          className={field}
+          placeholder="Describe your work"
+          value={f.otherTrade}
+          onChange={set("otherTrade")}
+          maxLength={200}
+          required
+        />
+      )}
       <div className="grid sm:grid-cols-2 gap-3">
         <input
           className={field}

@@ -29,7 +29,8 @@ function render(){cursor=0;return Form(formProps);}
 function nodes(n){if(!n||typeof n!=='object')return[];if(Array.isArray(n))return n.flatMap(nodes);return[n,...nodes(n.props?.children)];}
 function text(n){if(typeof n==='string')return n;if(!n||typeof n!=='object')return '';if(Array.isArray(n))return n.map(text).join('');return text(n.props?.children);}
 function reset(search=''){states=[];effectRan=false;store.clear();crmCalls=[];emails=[];window.location.search=search;render();}
-function fill(){for(const [placeholder,value] of Object.entries({'Business name':'QA TEST ONLY Painter','Your name':'QA TEST ONLY','ZIP code':'10001',Email:'seo-test@example.invalid',Phone:'2025550184'})){const input=nodes(render()).find(n=>n.type==='input'&&n.props.placeholder===placeholder);assert.ok(input);input.props.onChange({target:{value}});}}
+function choose(value){const select=nodes(render()).find(n=>n.type==='select');assert.ok(select,'trade select rendered');select.props.onChange({target:{value}});}
+function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Object.entries({'Business name':'QA TEST ONLY Painter','Your name':'QA TEST ONLY','ZIP code':'10001',Email:'seo-test@example.invalid',Phone:'2025550184'})){const input=nodes(render()).find(n=>n.type==='input'&&n.props.placeholder===placeholder);assert.ok(input);input.props.onChange({target:{value}});}if(trade!==null)choose(trade);}
 (async()=>{
  for(const search of ['', '?utm_source=facebook&utm_medium=paid_social&ad_id=120251012015050660']){
   mode='success';reset(search);fill();await render().props.onSubmit({preventDefault(){}});
@@ -37,6 +38,27 @@ function fill(){for(const [placeholder,value] of Object.entries({'Business name'
   assert.equal(crmCalls.length,1);assert.equal(crmCalls[0].suppress_first_touch,'true');assert.equal(emails.length,1);assert.equal(emails[0].partial,false);assert.match(text(render()),/Got it/);
   const d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(d['Page source'],'seo-painter-new-york');assert.equal(d['Landing page'],'/insurance/painter/new-york');assert.equal(d.Referrer,'https://www.google.com/');
   if(search)assert.equal(d['Ad id (Meta)'],'120251012015050660');else assert.equal(d['Ad id (Meta)'],undefined);
+ }
+ // ★ Kevin 2026-10-09: the visitor states the trade; the page trade is attribution only and never pre-selected.
+ {const FormMod=require('../components/ContractorQuoteForm.tsx');
+  mode='success';reset();
+  const select=nodes(render()).find(n=>n.type==='select');assert.ok(select);assert.equal(select.props.value,'','nothing pre-selected');assert.equal(select.props.required,true);
+  const opts=nodes(select).filter(n=>n.type==='option');assert.equal(opts[0].props.value,'');assert.equal(opts[0].props.disabled,true);
+  assert.equal(opts[1].props.value,'Painter','page trade listed first');assert.equal(opts.at(-1).props.value,FormMod.SOMETHING_ELSE);
+  assert.ok(!opts.some(o=>/^other(?: trade)?$/i.test(String(o.props.value))),'generic Other replaced by Something else');
+  const roof=FormMod.tradeOptions('Roofer');assert.equal(roof[0],'Roofer');assert.ok(!roof.includes('Roofing'),'page-trade synonym not listed twice');assert.ok(roof.includes('General contractor'));
+  // no choice -> refused, nothing sent
+  payload=undefined;fill(null);await render().props.onSubmit({preventDefault(){}});assert.equal(payload,undefined);assert.match(text(render()),/Please choose the work you do/);
+  // a different listed trade -> Trade = the visitor's pick; Page trade = the page
+  reset();fill('General contractor');await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  let d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(payload.businessType,'General contractor');assert.equal(d.Trade,'General contractor');assert.equal(d['Page trade'],'Painter');
+  assert.ok(crmCalls[0].business_type.startsWith('General contractor'),'CRM business_type carries the visitor trade');assert.ok(!crmCalls[0].business_type.includes('Painter'));
+  // Something else -> the visitor's own words are required and become the Trade
+  reset();fill(FormMod.SOMETHING_ELSE);payload=undefined;await render().props.onSubmit({preventDefault(){}});assert.equal(payload,undefined);assert.match(text(render()),/Please tell us what work you do/);
+  const other=nodes(render()).find(n=>n.type==='input'&&n.props.placeholder==='Describe your work');assert.ok(other);assert.equal(other.props.required,true);
+  other.props.onChange({target:{value:'  General construction, sole prop  '}});await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(d.Trade,'General construction, sole prop');assert.equal(payload.businessType,'General construction, sole prop');assert.equal(d['Page trade'],'Painter');
+  assert.equal(FormMod.statedTrade('',''),'');assert.equal(FormMod.NOT_STATED,undefined);
  }
  for(const service of require('../lib/seo/service-industries.ts').INSURANCE_SERVICES){
   formProps={source:`seo-${service.slug}-texas`,tradeLabel:service.intakeLabel,operationsPrompt:service.operationsPrompt};
