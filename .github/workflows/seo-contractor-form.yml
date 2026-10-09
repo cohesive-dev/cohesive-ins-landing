@@ -1,0 +1,34 @@
+# SEO contractor form suites (PR #67, B 2026-10-09 option (a)): the ops box's portal launch guard refuses these local
+# .cjs runs (TS closure / a real browser test), so they run here, off-box, and a green check is the merge proof.
+name: seo-contractor-form
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  suites:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # playwright is not a repo dependency; the suite drives the runner's system Chrome (/usr/bin/google-chrome)
+      - run: npm i --no-save playwright@1
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      - name: Unit - SEO contractor intake (form handlers + /api/intake, all external services stubbed)
+        run: node scripts/test-seo-contractor-intake.cjs
+      - run: npm run build
+      - name: Start the built site on :3021
+        run: |
+          npm run start -- -p 3021 > /tmp/next.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://localhost:3021/ > /dev/null && exit 0; sleep 2; done
+          cat /tmp/next.log; exit 1
+      - name: Browser - contractor partial capture (intake requests are intercepted; nothing real is sent)
+        run: node scripts/test-contractor-partial-capture.cjs http://localhost:3021
