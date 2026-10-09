@@ -104,7 +104,25 @@ function details(payload) {
       assert.equal(payloads.length, 1);
       const captured = details(payloads[0]);
       assert.equal(captured.Business, 'QA SEO Snapshot LLC');
+      // Kevin 2026-10-09: an abandoned SEO form never claims the page's trade as the client's.
+      assert.equal(captured.Trade, 'Not stated');
+      assert.equal(captured['Page trade'], 'Painter');
+      assert.equal(payloads[0].businessType, 'Not stated');
       if (await operations.count()) assert.equal(captured['Services described'], 'Interior and exterior painting work');
+      await context.close();
+    }
+
+    {
+      const { context, page, payloads } = await open(browser, '/insurance/roofer/pennsylvania');
+      await page.getByPlaceholder('Email').fill('partial-test@example.invalid');
+      await page.getByPlaceholder('Phone').fill('2025550123');
+      await page.locator('select').selectOption('General contractor');
+      await leave(page);
+      await page.waitForTimeout(300);
+      assert.equal(payloads.length, 1);
+      const captured = details(payloads[0]);
+      assert.equal(captured.Trade, 'General contractor');
+      assert.equal(captured['Page trade'], 'Roofer');
       await context.close();
     }
 
