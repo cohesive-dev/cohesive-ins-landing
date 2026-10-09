@@ -58,7 +58,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   const other=nodes(render()).find(n=>n.type==='input'&&n.props.placeholder==='Describe your work');assert.ok(other);assert.equal(other.props.required,true);
   other.props.onChange({target:{value:'  General construction, sole prop  '}});await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
   d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(d.Trade,'General construction, sole prop');assert.equal(payload.businessType,'General construction, sole prop');assert.equal(d['Page trade'],'Painter');
-  assert.equal(FormMod.statedTrade('',''),'');assert.equal(FormMod.NOT_STATED,'Not stated');
+  assert.equal(FormMod.statedTrade('',''),'');assert.equal(FormMod.NOT_STATED,undefined);
  }
  for(const service of require('../lib/seo/service-industries.ts').INSURANCE_SERVICES){
   formProps={source:`seo-${service.slug}-texas`,tradeLabel:service.intakeLabel,operationsPrompt:service.operationsPrompt};

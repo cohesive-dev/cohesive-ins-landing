@@ -104,10 +104,10 @@ function details(payload) {
       assert.equal(payloads.length, 1);
       const captured = details(payloads[0]);
       assert.equal(captured.Business, 'QA SEO Snapshot LLC');
-      // Kevin 2026-10-09: an abandoned SEO form never claims the page's trade as the client's.
-      assert.equal(captured.Trade, 'Not stated');
+      // Kevin 2026-10-09: an abandoned SEO form never claims the page's trade as the client's; with no stated trade, Trade is omitted.
+      assert.equal(captured.Trade, undefined, 'no stated trade -> Trade omitted');
       assert.equal(captured['Page trade'], 'Painter');
-      assert.equal(payloads[0].businessType, 'Not stated');
+      assert.equal(payloads[0].businessType, undefined, 'no stated trade -> businessType omitted');
       if (await operations.count()) assert.equal(captured['Services described'], 'Interior and exterior painting work');
       await context.close();
     }

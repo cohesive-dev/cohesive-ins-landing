@@ -18,8 +18,9 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 // ★ Kevin 2026-10-09 ("Fix yes"): the visitor states their trade. The page's trade is PAGE CONTEXT, not a client
 // fact - T&S Contracting arrived from /insurance/roofer/pennsylvania as "Roofer" and does general construction.
 // "Trade" = the visitor's pick (or their own words); "Page trade" = attribution only; nothing is pre-selected.
+// An abandoned form with no stated trade OMITS Trade/businessType entirely (C/B 2026-10-09): absent is read as absent by
+// every exact-key reader downstream, so the page trade can never be taken for the client's.
 export const SOMETHING_ELSE = "__something_else";
-export const NOT_STATED = "Not stated";
 export function tradeOptions(pageTrade: string): string[] {
   const synonyms = new Set(filterTrades(TRADES, pageTrade).map((t) => t.value));
   const rest = TRADES.map((t) => t.value)
@@ -74,14 +75,14 @@ export default function ContractorQuoteForm({
       email: validEmail,
       phone: phone || undefined,
       zip: f.zip.trim() || undefined,
-      businessType: statedTrade(f.trade, f.otherTrade) || NOT_STATED,
+      ...(statedTrade(f.trade, f.otherTrade) ? { businessType: statedTrade(f.trade, f.otherTrade) } : {}),
       company: f.company.trim() || undefined,
       source: "contractors-landing",
       partial: true,
       final: true,
       details: [
         f.company.trim() && { label: "Business", value: f.company.trim() },
-        { label: "Trade", value: statedTrade(f.trade, f.otherTrade) || NOT_STATED },
+        statedTrade(f.trade, f.otherTrade) && { label: "Trade", value: statedTrade(f.trade, f.otherTrade) },
         { label: "Page trade", value: tradeLabel },
         operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
         { label: "Page source", value: source },
