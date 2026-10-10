@@ -5,6 +5,7 @@ import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
 import {assessSubmission,acquisitionEventId} from '@/lib/submission-quality';
+import { REQUESTED_COVERAGE_ALLOWLIST, type RequestedCoverage } from "@/lib/requested-coverage";
 
 // This route no longer owns lead storage. A completed submission is forwarded to the CRM's
 // inbound-lead webhook, which is the single fan-out point for every lead source (FB Lead Ads,
@@ -76,13 +77,13 @@ type IntakePayload = {
   coverage?: unknown;
 };
 
-// The CRM normalises these line names (src/lib/insuranceLines.ts). Anything else is dropped so a
-// crafted body can't write an arbitrary line onto a lead.
-const REQUESTED_COVERAGE_ALLOWLIST = ["Workers Comp", "General Liability"];
-function requestedCoverage(raw: unknown): string[] | undefined {
-  if (!Array.isArray(raw) || raw.length === 0 || raw.length > REQUESTED_COVERAGE_ALLOWLIST.length) return undefined;
-  if (!raw.every((value) => typeof value === "string" && REQUESTED_COVERAGE_ALLOWLIST.includes(value))) return undefined;
-  return [...new Set(raw as string[])];
+// The allowlist lives in lib/requested-coverage.ts. Anything else is dropped so a crafted body
+// can't write an arbitrary line onto a lead.
+const ALLOWED: readonly string[] = REQUESTED_COVERAGE_ALLOWLIST;
+function requestedCoverage(raw: unknown): RequestedCoverage[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > ALLOWED.length) return undefined;
+  if (!raw.every((value) => typeof value === "string" && ALLOWED.includes(value))) return undefined;
+  return [...new Set(raw as RequestedCoverage[])];
 }
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].

@@ -1,4 +1,5 @@
 import type { RestaurantGuide } from "./restaurant";
+import type { RequestedCoverage } from "@/lib/requested-coverage";
 
 // Workers' comp guides for contractors (2026-10-10). The quote form on these pages records a
 // WORKERS' COMP request in the CRM (coverageRequested -> `coverage: ["Workers Comp"]`).
@@ -9,10 +10,11 @@ const ohio = { label: "Ohio Bureau of Workers' Compensation", href: "https://inf
 const washington = { label: "Washington L&I: workers' compensation insurance", href: "https://lni.wa.gov/insurance/" };
 const northDakota = { label: "North Dakota Workforce Safety & Insurance", href: "https://www.workforcesafety.com/" };
 const wyoming = { label: "Wyoming Department of Workforce Services: workers' compensation", href: "https://dws.wyo.gov/dws-division/workers-compensation/" };
+const workersComp: RequestedCoverage[] = ["Workers Comp"];
 const common = {
   quoteKind: "service" as const, updatedAt: "2026-10-10", nationalSlug: "contractor-quote-checklists",
   category: "Workers' compensation", industry: "Contractors", tradeLabel: "Contractor", insurancePath: "/insurance/general-contractor",
-  coverageRequested: ["Workers Comp"],
+  coverageRequested: workersComp,
 };
 const quoteInputs = [
   "Annual payroll, split by the type of work each person does.",
@@ -38,7 +40,8 @@ export const WORKERS_COMP_RESOURCES: RestaurantGuide[] = [
         "A customer can require it even when the state doesn't. Many GCs and property managers ask every contractor for a workers' comp certificate before work starts.",
       ], checklist: ["Check your state's rule for your number and type of workers.", "Read each contract's insurance section for a workers' comp requirement."], links: [stateOfficials] },
       { id: "state-fund-states", title: "Ohio, Washington, North Dakota and Wyoming: state fund only", paragraphs: [
-        "Ohio, Washington, North Dakota and Wyoming require workers' comp through the state fund. Private carriers and brokers, including us, can't sell workers' comp in those states. If your employees work there, you get coverage from the state agency.",
+        "In Ohio, Washington, North Dakota and Wyoming, the workers' comp the state requires comes from the state fund. Private carriers and brokers, including us, can't sell that coverage there. If your employees work in one of those states, get it from the state agency.",
+        "Who must be covered differs between those states. Wyoming, for example, requires coverage for work it classifies as extrahazardous, so check the agency's rules for your type of work.",
         "State fund coverage generally does not include employer's liability. If a contract in one of those states asks for employer's liability, ask about stop gap coverage.",
       ], links: [ohio, washington, northDakota, wyoming] },
       { id: "price-drivers", title: "What drives the price", paragraphs: [

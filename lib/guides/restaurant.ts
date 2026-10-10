@@ -1,3 +1,4 @@
+import type { RequestedCoverage } from "@/lib/requested-coverage";
 import type { VendorComparison } from "./vendors";
 export type GuideSection = {
   id: string;
@@ -30,7 +31,7 @@ export type RestaurantGuide = {
   updatedAt?: string;
   // When set, the guide renders the contractor quote form and records this coverage in the CRM
   // (e.g. ["Workers Comp"]). Values must be in the /api/intake coverage allowlist.
-  coverageRequested?: string[];
+  coverageRequested?: RequestedCoverage[];
 };
 
 // Editorial dates are changed deliberately when the content is checked, not at build time.
