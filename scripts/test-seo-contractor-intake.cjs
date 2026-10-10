@@ -60,6 +60,24 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(d.Trade,'General construction, sole prop');assert.equal(payload.businessType,'General construction, sole prop');assert.equal(d['Page trade'],'Painter');
   assert.equal(FormMod.statedTrade('',''),'');assert.equal(FormMod.NOT_STATED,undefined);
  }
+ // Workers' comp guides (2026-10-10): the form records coverage ["Workers Comp"] in the CRM; trade pages send none.
+ {const saved=formProps;
+  formProps={source:'seo-wc-contractor-workers-comp-insurance',tradeLabel:'Contractor',coverageRequested:['Workers Comp']};
+  mode='success';reset();
+  const opts=nodes(nodes(render()).find(n=>n.type==='select')).filter(n=>n.type==='option').map(o=>o.props.value);
+  assert.ok(!opts.includes('Contractor'),'generic page label is not offered as a trade');assert.ok(opts.includes('General contractor'));
+  fill('General contractor');await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  assert.deepEqual(payload.coverage,['Workers Comp']);
+  const wd=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(wd['Coverage requested'],"Workers' comp");assert.equal(wd['Page source'],'seo-wc-contractor-workers-comp-insurance');
+  assert.deepEqual(crmCalls[0].coverage,['Workers Comp'],'CRM forward carries the WC request');
+  formProps=saved;reset();fill();await render().props.onSubmit({preventDefault(){}});
+  assert.equal(payload.coverage,undefined);assert.equal(crmCalls[0].coverage,undefined,'trade pages send no coverage');
+  // the route drops anything outside the allowlist
+  const {NextRequest:NR}=require('next/server');crmCalls=[];
+  const bad={name:'QA TEST ONLY',email:'seo-test@example.invalid',phone:'2025550184',company:'QA TEST ONLY Co',businessType:'Painter',source:'contractors-landing',coverage:['Workers Comp','Cyber'],details:[{label:'Page source',value:'seo-painter-new-york'}]};
+  await POST(new NR('http://localhost/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bad)}));
+  assert.equal(crmCalls[0].coverage,undefined,'a non-allowlisted value drops the whole coverage key');
+ }
  for(const service of require('../lib/seo/service-industries.ts').INSURANCE_SERVICES){
   formProps={source:`seo-${service.slug}-texas`,tradeLabel:service.intakeLabel,operationsPrompt:service.operationsPrompt};
   window.location.pathname=`/insurance/${service.slug}/texas`;mode='success';reset();fill();

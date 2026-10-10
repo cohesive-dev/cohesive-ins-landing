@@ -1,6 +1,7 @@
 import { BUYING_RESOURCES } from "./buying-resources";
 import { TRADE_COVERAGE_RESOURCES } from "./trade-coverage-resources";
 import { CLEANING_RESOURCE } from "./cleaning-resource";
+import { WORKERS_COMP_RESOURCES } from "./workers-comp-resources";
 import type { RestaurantGuide } from "./restaurant";
 
 const liability = { label: "Texas Department of Insurance: general liability and quote comparisons", href: "https://www.tdi.texas.gov/pubs/pc/pcgenliab.html" };
@@ -11,6 +12,7 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
   ...BUYING_RESOURCES,
   CLEANING_RESOURCE,
   ...TRADE_COVERAGE_RESOURCES,
+  ...WORKERS_COMP_RESOURCES,
   {
     ...common, slug: "contractor-insurance-quote-comparison", title: "How to compare contractor insurance quotes", category: "Quote comparison", industry: "Contractors", tradeLabel: "General contractor", insurancePath: "/insurance/general-contractor",
     description: "Compare contractor insurance using the same work description, revenue, subcontractors, coverage and total cost. Download a blank quote-comparison worksheet.",

@@ -5,6 +5,7 @@ import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 import { TRADES } from "@/lib/contractor-trades";
 import { filterTrades } from "@/lib/trade-search";
+import type { RequestedCoverage } from "@/lib/requested-coverage";
 
 // Minimal contractor intake for the /insurance/<trade> SEO pages. Posts to the
 // same /api/intake webhook under the contractor lane, with automated first touch
@@ -21,7 +22,11 @@ const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 // An abandoned form with no stated trade OMITS Trade/businessType entirely (C/B 2026-10-09): absent is read as absent by
 // every exact-key reader downstream, so the page trade can never be taken for the client's.
 export const SOMETHING_ELSE = "__something_else";
+// A generic page label (the workers' comp guides pass "Contractor") is not a trade: list every
+// trade, list no "Contractor" option and keep "General contractor" (which the synonym filter would drop).
+const GENERIC_PAGE_TRADE = /^contractors?$/i;
 export function tradeOptions(pageTrade: string): string[] {
+  if (GENERIC_PAGE_TRADE.test(pageTrade.trim())) return TRADES.map((t) => t.value).filter((v) => !/^other(?: trade)?$/i.test(v));
   const synonyms = new Set(filterTrades(TRADES, pageTrade).map((t) => t.value));
   const rest = TRADES.map((t) => t.value)
     .filter((v) => !synonyms.has(v) && !/^other(?: trade)?$/i.test(v) && v.toLowerCase() !== pageTrade.toLowerCase());
@@ -31,14 +36,28 @@ export function statedTrade(choice: string, other: string): string {
   return choice === SOMETHING_ELSE ? other.trim() : choice.trim();
 }
 
+// Coverage a page asks the CRM to record (the workers' comp guides send ["Workers Comp"]). The
+// top-level `coverage` values are CRM line names and must be in /api/intake's allowlist; the
+// detail row is the human-readable version for quotes@ and the Slack card.
+const COVERAGE_LABELS: Record<RequestedCoverage, string> = { "Workers Comp": "Workers' comp", "General Liability": "General liability" };
+function coverageFields(coverageRequested?: RequestedCoverage[]) {
+  if (!coverageRequested?.length) return { payload: {}, detail: undefined };
+  return {
+    payload: { coverage: coverageRequested },
+    detail: { label: "Coverage requested", value: coverageRequested.map((c) => COVERAGE_LABELS[c]).join(", ") },
+  };
+}
+
 export default function ContractorQuoteForm({
   source,
   tradeLabel,
   operationsPrompt,
+  coverageRequested,
 }: {
   source: string;
   tradeLabel: string;
   operationsPrompt?: string;
+  coverageRequested?: RequestedCoverage[];
 }) {
   const [f, setF] = useState({
     company: "",
@@ -70,6 +89,7 @@ export default function ContractorQuoteForm({
       landing_page: captured.landing_page || window.location.pathname,
       referrer: captured.referrer || document.referrer || undefined,
     };
+    const coverage = coverageFields(coverageRequested);
     const body = JSON.stringify({
       name: f.name.trim() || undefined,
       email: validEmail,
@@ -78,12 +98,14 @@ export default function ContractorQuoteForm({
       ...(statedTrade(f.trade, f.otherTrade) ? { businessType: statedTrade(f.trade, f.otherTrade) } : {}),
       company: f.company.trim() || undefined,
       source: "contractors-landing",
+      ...coverage.payload,
       partial: true,
       final: true,
       details: [
         f.company.trim() && { label: "Business", value: f.company.trim() },
         statedTrade(f.trade, f.otherTrade) && { label: "Trade", value: statedTrade(f.trade, f.otherTrade) },
         { label: "Page trade", value: tradeLabel },
+        coverage.detail,
         operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
         { label: "Page source", value: source },
         ...attributionDetails(attribution),
@@ -110,7 +132,7 @@ export default function ContractorQuoteForm({
         partialInFlight.current = false;
       });
     }
-  }, [done, f, operationsPrompt, sending, source, tradeLabel]);
+  }, [coverageRequested, done, f, operationsPrompt, sending, source, tradeLabel]);
 
   useEffect(() => {
     const onHide = () => capturePartial();
@@ -154,6 +176,7 @@ export default function ContractorQuoteForm({
     }
     const captured = captureAttribution();
     const attribution = { ...captured, landing_page: captured.landing_page || window.location.pathname, referrer: captured.referrer || document.referrer || undefined };
+    const coverage = coverageFields(coverageRequested);
     setErr(null);
     setSending(true);
     try {
@@ -168,10 +191,12 @@ export default function ContractorQuoteForm({
           businessType: stated,
           company: f.company.trim() || undefined,
           source: "contractors-landing",
+          ...coverage.payload,
           details: [
             f.company.trim() && { label: "Business", value: f.company.trim() },
             { label: "Trade", value: stated },
             { label: "Page trade", value: tradeLabel },
+            coverage.detail,
             operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
             { label: "Page source", value: source },
             ...attributionDetails(attribution),
