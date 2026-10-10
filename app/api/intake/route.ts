@@ -71,7 +71,19 @@ type IntakePayload = {
   // for a $5K+ premium; fires ~2x as often as the premium self-report and catches the large
   // uninsured/underpaying businesses the premium filter drops.
   largeBusinessEventId?: unknown;
+  // Optional requested coverage (CRM line names), e.g. ["Workers Comp"] from the workers' comp
+  // guides. Forwarded ONLY when every value is in REQUESTED_COVERAGE_ALLOWLIST; see requestedCoverage().
+  coverage?: unknown;
 };
+
+// The CRM normalises these line names (src/lib/insuranceLines.ts). Anything else is dropped so a
+// crafted body can't write an arbitrary line onto a lead.
+const REQUESTED_COVERAGE_ALLOWLIST = ["Workers Comp", "General Liability"];
+function requestedCoverage(raw: unknown): string[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > REQUESTED_COVERAGE_ALLOWLIST.length) return undefined;
+  if (!raw.every((value) => typeof value === "string" && REQUESTED_COVERAGE_ALLOWLIST.includes(value))) return undefined;
+  return [...new Set(raw as string[])];
+}
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
 function sanitizeDetails(
@@ -420,6 +432,7 @@ export async function POST(request: NextRequest) {
   const isCommercialPropertyLane = (source ?? "").startsWith(
     "commercial-property",
   );
+  const askedCoverage = requestedCoverage(body.coverage);
   const crmDelivery = forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
@@ -437,7 +450,9 @@ export async function POST(request: NextRequest) {
     // coverage-based query or route (found while reconciling the 8/18-19 CP A/B: 9 real leads
     // in Slack, only 2 findable by coverage in the CRM). The lane is Property-first; GL is at
     // most a secondary line on a building owner, never the requested one.
-    ...(isCommercialPropertyLane ? { coverage: ["Property"] } : {}),
+    // Any other lane may name its requested coverage (workers' comp guides: ["Workers Comp"]); only
+    // allowlisted values pass, and the commercial-property line above always wins.
+    ...(isCommercialPropertyLane ? { coverage: ["Property"] } : askedCoverage ? { coverage: askedCoverage } : {}),
     // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
     // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
     // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this

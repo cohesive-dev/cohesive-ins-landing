@@ -28,6 +28,9 @@ export type RestaurantGuide = {
   noQuote?: boolean;
   noQuoteReason?: string;
   updatedAt?: string;
+  // When set, the guide renders the contractor quote form and records this coverage in the CRM
+  // (e.g. ["Workers Comp"]). Values must be in the /api/intake coverage allowlist.
+  coverageRequested?: string[];
 };
 
 // Editorial dates are changed deliberately when the content is checked, not at build time.
