@@ -134,28 +134,45 @@ export const HEADLINE_PRICES: Record<HeadlinePrice["key"], HeadlinePrice> = {
   },
 };
 
-// Page slug -> headline. Kevin's mapping (2026-10-12): coffee-shop, bakery, juice-bar -> coffee shop;
-// catering -> caterer; fast-food, deli, food-truck -> quick-service; restaurant, fine-dining ->
-// full-service. Other concepts follow the closest of those four (counter / limited cooking -> coffee
-// shop, counter service with a fryer or grill -> quick-service, everything else -> full-service).
+// Page slug -> headline. EVERY restaurant-family slug is listed on purpose: a new type gets no price until
+// someone maps it (headlinePrice returns undefined, the title drops the price), and
+// scripts/test-seo-restaurant-snippets.cjs fails if a generated restaurant page is unmapped.
+// Kevin's mapping (2026-10-12): coffee-shop, bakery, juice-bar -> coffee shop; catering -> caterer;
+// fast-food, deli, food-truck -> quick-service; restaurant, fine-dining -> full-service. The rest follow the
+// closest of those four: little or no cooking at a counter -> coffee shop; counter service with a fryer
+// or grill -> quick-service; table service -> full-service.
 // Bar has NO headline: $1,153 is a restaurant's price, and bar pages are noindexed.
 const HEADLINE_BY_SLUG: Record<string, HeadlinePrice["key"] | null> = {
+  // Coffee shop (quote): counters with little or no cooking.
   "coffee-shop": "coffeeShop", bakery: "coffeeShop", "juice-bar": "coffeeShop",
-  "bagel-shop": "coffeeShop", "bubble-tea-shop": "coffeeShop", "ice-cream-shop": "coffeeShop", "donut-shop": "coffeeShop",
+  "bagel-shop": "coffeeShop", "bubble-tea-shop": "coffeeShop", "ice-cream-shop": "coffeeShop",
+  // Caterer (bound).
   catering: "caterer",
+  // Quick-service (quote): counter service with fryers or grills.
   "fast-food-restaurant": "quickService", deli: "quickService", "food-truck": "quickService",
   "burger-restaurant": "quickService", "fried-chicken-restaurant": "quickService", "wing-restaurant": "quickService",
-  "ghost-kitchen": "quickService",
+  "donut-shop": "quickService", "ghost-kitchen": "quickService",
+  // Full-service (bound): table-service restaurants and the general restaurant / stage pages.
   restaurant: "fullService", "fine-dining-restaurant": "fullService",
+  "chinese-restaurant": "fullService", pizzeria: "fullService", "mexican-restaurant": "fullService",
+  "indian-restaurant": "fullService", "sushi-restaurant": "fullService", "thai-restaurant": "fullService",
+  "italian-restaurant": "fullService", "mediterranean-restaurant": "fullService", "barbecue-restaurant": "fullService",
+  "seafood-restaurant": "fullService", "breakfast-restaurant": "fullService", "vegan-restaurant": "fullService",
+  "korean-restaurant": "fullService", "hibachi-restaurant": "fullService", "vietnamese-restaurant": "fullService",
+  "ramen-restaurant": "fullService", steakhouse: "fullService", "caribbean-restaurant": "fullService",
+  "halal-restaurant": "fullService", "soul-food-restaurant": "fullService",
+  "new-restaurant": "fullService", "growing-restaurant": "fullService", "buying-a-restaurant": "fullService",
+  "restaurant-delivery": "fullService",
   bar: null,
 };
+export const HEADLINE_MAPPED_SLUGS = Object.keys(HEADLINE_BY_SLUG);
 // The page whose own type IS the headline's type, so its title can use the short tag.
 const HEADLINE_HOME: Record<HeadlinePrice["key"], string> = {
   coffeeShop: "coffee-shop", caterer: "catering", fullService: "restaurant", quickService: "fast-food-restaurant",
 };
 
 export function headlinePrice(slug: string): HeadlinePrice | undefined {
-  const key = slug in HEADLINE_BY_SLUG ? HEADLINE_BY_SLUG[slug] : "fullService";
+  const key = HEADLINE_BY_SLUG[slug];
   return key ? HEADLINE_PRICES[key] : undefined;
 }
 

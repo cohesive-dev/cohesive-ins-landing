@@ -83,7 +83,8 @@ type Answers = { company: string; renewal: string };
 // Detail rows for quotes@ and the CRM note. Only what the visitor gave, plus page context and attribution.
 function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | undefined) {
   const captured = captureAttribution();
-  const a = { ...captured, landing_page: captured.landing_page || window.location.pathname, referrer: captured.referrer || document.referrer || undefined };
+  // Referrer = the external referrer captureAttribution stored (own-site referrers are unknown, not a source).
+  const a = { ...captured, landing_page: captured.landing_page || window.location.pathname };
   const rainbowClass = stated ? rainbowClassFor(stated) : undefined;
   return [
     f.company.trim() && { label: "Business name", value: f.company.trim() },
@@ -190,6 +191,13 @@ export default function RestaurantQuickQuote({
     };
   }, [capturePartial, abandon]);
 
+  // Client-side navigation (a Next <Link> to another page) unmounts the form without pagehide: capture then too.
+  const onLeave = useRef(() => {});
+  useEffect(() => {
+    onLeave.current = () => { capturePartial(); abandon(); };
+  }, [capturePartial, abandon]);
+  useEffect(() => () => onLeave.current(), []);
+
   // Reset after every edit: captures the latest snapshot after 120 seconds without another answer.
   useEffect(() => {
     const timer = setTimeout(() => capturePartial(), 120_000);
@@ -276,7 +284,7 @@ export default function RestaurantQuickQuote({
   }
 
   const field =
-    "w-full rounded-md border border-slate-300 px-3.5 py-2.5 text-[15px] text-[#131517] placeholder-[#9AA0A6] focus:border-[#2040E7] focus:outline-none focus:ring-1 focus:ring-[#2040E7]";
+    "w-full rounded-md border border-slate-300 px-3.5 py-2.5 text-[15px] text-[#131517] placeholder-[#6B6D71] focus:border-[#2040E7] focus:outline-none focus:ring-1 focus:ring-[#2040E7]";
 
   return (
     <form onSubmit={submit} className="max-w-2xl mx-auto rounded-xl border border-slate-200 bg-white p-5 sm:p-6 space-y-3">

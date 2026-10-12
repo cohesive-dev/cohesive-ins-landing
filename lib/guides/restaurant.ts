@@ -249,13 +249,13 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
     slug: "restaurant-insurance-cost",
     updatedAt: "2026-10-12",
     title: "What restaurant insurance costs: real policies we placed",
-    description: "Real restaurant insurance prices by type of restaurant, what moves the price, and what to have ready for a quote. No averages and no ranges.",
-    intro: "Restaurant insurance is priced on your own sales, cooking, alcohol and building, so one national number would mislead you. Below are real prices for four types of restaurant, what moves the price, and what to have ready for a quote.",
+    description: "Real restaurant insurance prices by type of food business, what moves the price, and what to have ready for a quote. No averages and no ranges.",
+    intro: "Restaurant insurance is priced on your own sales, cooking, alcohol and building, so one national number would mislead you. Below are real prices for four kinds of food business, two from policies we placed and two from quotes, then what moves the price and what to have ready for a quote.",
     category: "Restaurant insurance cost",
     insurancePath: insurance,
     quoteForm: "restaurant-short",
     sections: [
-      { id: "real-prices", title: "Real prices by type of restaurant", paragraphs: [
+      { id: "real-prices", title: "Real prices by type of food business", paragraphs: [
         "A full-service restaurant we insure pays $1,153 a year for liability and property.",
         "A caterer we insure pays $597 a year for general liability.",
         "A coffee shop was quoted $686 a year for general liability. That was a quote, not a policy the owner bought.",

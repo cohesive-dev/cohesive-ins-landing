@@ -12,8 +12,8 @@ Module._load=function(req,parent,isMain){
   useState(init){const i=cursor++;if(!(i in states))states[i]=init;return[states[i],v=>{states[i]=typeof v==='function'?v(states[i]):v;}];},
   useRef(init){const i=cursor++;if(!(i in states))states[i]={current:init};return states[i];},
   useCallback(fn){return fn;},
-  // Effects run on every render; the previous run's cleanup runs first (listeners and timers stay balanced).
-  useEffect(fn){const i=effectCursor++;if(typeof effects[i]==='function')effects[i]();effects[i]=fn()||null;}};}
+  // Effects re-run when their deps change (or have none), after the previous run's cleanup, as React does.
+  useEffect(fn,deps){const i=effectCursor++;const prev=effects[i];if(prev&&deps&&prev.deps&&deps.length===prev.deps.length&&deps.every((d,k)=>Object.is(d,prev.deps[k])))return;if(prev&&typeof prev.cleanup==='function')prev.cleanup();effects[i]={deps,cleanup:fn()||null};}};}
  if(req==='@vercel/analytics')return {track:(name,props)=>tracked.push([name,props])};
  if(req==='@/lib/notify')return {sendIntakeNotification:async f=>{emails.push(f);return true;}};
  if(req.startsWith('@/'))req=path.join(root,req.slice(2));return originalLoad.call(this,req,parent,isMain);
@@ -40,7 +40,8 @@ let formProps;
 function render(){cursor=0;effectCursor=0;return Form(formProps);}
 function nodes(n){if(!n||typeof n!=='object')return[];if(Array.isArray(n))return n.flatMap(nodes);return[n,...nodes(n.props?.children)];}
 function text(n){if(typeof n==='string')return n;if(!n||typeof n!=='object')return '';if(Array.isArray(n))return n.map(text).join('');return text(n.props?.children);}
-function cleanup(){for(const c of effects)if(typeof c==='function')c();effects=[];}
+// Unmount: every effect's cleanup runs.
+function cleanup(){for(const e of effects)if(e&&typeof e.cleanup==='function')e.cleanup();effects=[];}
 function reset(props,search=''){cleanup();formProps=props;states=[];store.clear();crmCalls=[];emails=[];beacons=[];tracked=[];payload=undefined;window.location.search=search;render();}
 const input=placeholder=>nodes(render()).find(n=>n.type==='input'&&n.props.placeholder===placeholder);
 const selects=()=>nodes(render()).filter(n=>n.type==='select');
@@ -188,6 +189,12 @@ const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Al
  // Nothing reachable typed -> nothing sent; a completed submit never sends a partial afterwards.
  reset(coffeeProps);type('Your name','QA');render();listeners.pagehide();assert.equal(beacons.length,0);
  reset(coffeeProps);fillContact();await submit();render();listeners.pagehide();assert.equal(beacons.length,0);
+
+ // Client-side navigation away (unmount without pagehide) captures the partial too, once.
+ reset(coffeeProps);type('Email','seo-rest-nav@example.invalid');render();cleanup();
+ assert.equal(beacons.length,1);assert.equal(JSON.parse(await beacons[0].text()).email,'seo-rest-nav@example.invalid');
+ // Typing alone (re-renders) never fires the unmount capture.
+ reset(coffeeProps);type('Email','seo-rest-typing@example.invalid');type('Your name','QA');render();assert.equal(beacons.length,0);
 
  // ---- Failures never confirm, and the button comes back --------------------------------------------------
  for(const failure of ['network','http']){

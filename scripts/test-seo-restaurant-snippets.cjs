@@ -21,6 +21,10 @@ for(const [slug,key] of Object.entries(EXPECT))assert.equal(prices.headlinePrice
 assert.equal(prices.headlinePrice('bar'),undefined);
 
 const families=new Set([...RESTAURANT_CITY_TYPES.map(t=>t.slug),...VERTICALS.map(v=>v.slug)]);
+// Every restaurant-family slug is mapped explicitly; nothing inherits a price by omission.
+for(const slug of families)assert.ok(prices.HEADLINE_MAPPED_SLUGS.includes(slug),`${slug} has no explicit headline mapping`);
+assert.equal(prices.headlinePrice('not-a-mapped-type'),undefined);
+assert.equal(prices.headlinePrice('donut-shop'),H.quickService,'a donut shop fries: not the coffee-shop price');
 (async()=>{
  const pages=[
   ...vRoute.generateStaticParams().filter(p=>families.has(p.vertical)).map(p=>[vRoute,p]),
@@ -40,7 +44,13 @@ const families=new Set([...RESTAURANT_CITY_TYPES.map(t=>t.slug),...VERTICALS.map
   assert.doesNotMatch(snippet,/policy we wrote|caterer in New York/,url);
   if(params.geo!=='new-york')assert.doesNotMatch(snippet,/New York/,`${url}: New York on a non-NY page`);
   const h=prices.headlinePrice(params.vertical);
-  if(!h){assert.equal(params.vertical,'bar');assert.doesNotMatch(snippet,/\$\d/,`${url}: bar pages carry no price`);continue;}
+  if(!h){
+   assert.equal(params.vertical,'bar');assert.doesNotMatch(snippet,/\$\d/,`${url}: bar pages carry no price`);
+   assert.equal(md.robots?.index,false,`${url}: bar pages stay noindexed`);
+   const barBody=JSON.stringify((await route.default({params:Promise.resolve(params)})).props.content);
+   for(const p of Object.values(H))assert.ok(!barBody.includes(p.sentence)&&!barBody.includes(`$${p.usd.toLocaleString('en-US')}`),`${url}: bar body carries a restaurant headline price`);
+   continue;
+  }
   // The description carries this type's approved sentence, and no other type's price.
   assert.ok(description.includes(h.sentence)||description===`${h.sentence[0].toUpperCase()}${h.sentence.slice(1)}.`,`${url}: ${description}`);
   for(const other of Object.values(H))if(other!==h)assert.ok(!snippet.includes(`$${other.usd.toLocaleString('en-US')}`),`${url} shows another type's price`);
@@ -72,7 +82,8 @@ const families=new Set([...RESTAURANT_CITY_TYPES.map(t=>t.slug),...VERTICALS.map
  assert.ok(sitemap.some(e=>e.url==='https://www.cohesiveinsure.com/guides/restaurant-insurance-cost'),'guide in the guides sitemap');
  // The guide renders the short restaurant form, not the startup form (which demands a state).
  const pageSrc=fs.readFileSync(path.join(root,'app/guides/[slug]/page.tsx'),'utf8');
- assert.match(pageSrc,/guide\.quoteForm === "restaurant-short" \? <RestaurantQuickQuote source=\{`seo-guide-\$\{guide\.slug\}`\} \/>/);
+ assert.match(pageSrc,/guide\.quoteForm === "restaurant-short" \? <RestaurantQuickQuote source=\{`seo-guide-\$\{guide\.slug\}`\} \/> : <StartupQuoteForm bundleOffer=\{bundle\} slug=\{guide\.slug\}/,'both arms: short form for the cost guide, startup form for every other guide');
+assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
  // Linked from the restaurant SEO pages' existing guide links.
  assert.match(fs.readFileSync(path.join(root,'components/SeoPage.tsx'),'utf8'),/href="\/guides\/restaurant-insurance-cost"/);
  console.log(`PASS: ${seen.size} restaurant-family pages (${priced} titles priced): titles <=60 and descriptions <=155, each with its own type's approved price (bar: none), no "from $X", no New York caterer, no NY on non-NY pages; cost guide carries the four approved lines and is in the sitemap.`);
