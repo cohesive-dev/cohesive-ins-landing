@@ -347,7 +347,7 @@ export default function SeoPage({
             <p className="mt-2 text-sm text-[#6B6D71]">Plan the steps before your first service, from the opening budget to approvals and lease requirements.</p>
             <Link href="/guides/how-to-open-a-restaurant" className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Read the restaurant opening guide →</Link>
             <Link href="/guides/restaurant-lease-insurance-requirements" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What your landlord&apos;s lease will ask for, with real examples →</Link>
-            {formMode === "restaurant" && <Link href="/guides/restaurant-insurance-cost" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What restaurant insurance costs: real policies we placed →</Link>}
+            {formMode === "restaurant" && <Link href="/guides/restaurant-insurance-cost" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What restaurant insurance costs: real policies and quotes →</Link>}
           </div>
         </section>
       )}
