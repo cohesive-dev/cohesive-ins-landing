@@ -248,7 +248,7 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
     // scripts/test-seo-restaurant-snippets.cjs keeps them identical. No averages, ranges or savings claims.
     slug: "restaurant-insurance-cost",
     updatedAt: "2026-10-12",
-    title: "What restaurant insurance costs: real policies we placed",
+    title: "What restaurant insurance costs: real policies and quotes",
     description: "Real restaurant insurance prices by type of food business, what moves the price, and what to have ready for a quote. No averages and no ranges.",
     intro: "Restaurant insurance is priced on your own sales, cooking, alcohol and building, so one national number would mislead you. Below are real prices for four kinds of food business, two from policies we placed and two from quotes, then what moves the price and what to have ready for a quote.",
     category: "Restaurant insurance cost",
