@@ -6,7 +6,9 @@
 //   2. The line of business matches: a general-liability floor is never shown as a package price,
 //      and a workers' comp premium is never shown as liability.
 //
-// Business descriptions only - never a client's name. Refresh from the CRM before re-dating.
+// Business descriptions only - never a client's name and never a state (2026-10-12: these lines render
+// on every state and city page, so "a caterer in New York" appeared on Charlotte NC pages). State-specific
+// prices live in restaurant-states.ts and only render on that state's pages. Refresh from the CRM before re-dating.
 export const RESTAURANT_PRICES_AS_OF = "2026-09-26";
 
 export type BoundPrice = { usd: number; line: string; business: string };
@@ -15,18 +17,18 @@ export type BoundPrice = { usd: number; line: string; business: string };
 // Kevin 2026-09-26 confirmed the July "Recently bound in NY" binds (caterer GL $597, restaurant BOP
 // $1,153, bakery GL $849) as real, although they predate the CRM's policy rows.
 export const RESTAURANT_FLOOR = {
-  gl: { usd: 597, line: "General liability", business: "a caterer in New York" } as BoundPrice,
+  gl: { usd: 597, line: "General liability", business: "a caterer" } as BoundPrice,
   wc: { usd: 509, line: "Workers' compensation", business: "a sandwich shop" } as BoundPrice,
   // Kevin 2026-09-26: the first cut used a $5,052 buffet package, then a $1,897 full-service BOP in
   // Missouri; the lowest confirmed bind is the July New York full-service restaurant BOP.
-  pkg: { usd: 1153, line: "Businessowners policy (liability + property)", business: "a full-service restaurant in New York" } as BoundPrice,
+  pkg: { usd: 1153, line: "Businessowners policy (liability + property)", business: "a full-service restaurant" } as BoundPrice,
 };
 
 // The lowest bind we hold for a specific concept, where one exists. Shown BESIDE the restaurant
 // floor, never instead of it: the headline stays the lowest real bind.
 const CONCEPT_BINDS: Record<string, BoundPrice> = {
   deli: { usd: 749, line: "General liability", business: "a sandwich shop" },
-  bakery: { usd: 849, line: "General liability", business: "a bakery in New York" },
+  bakery: { usd: 849, line: "General liability", business: "a bakery" },
   "mexican-restaurant": { usd: 1027, line: "General liability", business: "a full-service Mexican restaurant" },
   "barbecue-restaurant": { usd: 2932, line: "General liability", business: "a BBQ smokehouse" },
   "seafood-restaurant": { usd: 3278, line: "General liability", business: "a Mexican seafood restaurant" },
@@ -39,26 +41,26 @@ const CONCEPT_BINDS: Record<string, BoundPrice> = {
 // equipment-and-contents businessowners policy for a tenant, verified bindable in the CRM quote row.
 export const BINDABLE_PKG_FLOOR: BoundPrice = {
   usd: 1167, line: "Businessowners policy (liability + property)",
-  business: "a quick-service restaurant in Massachusetts (renting, no alcohol)",
+  business: "a quick-service restaurant (renting, no alcohol)",
 };
 
 const CONCEPT_BINDABLE: Record<string, BoundPrice> = {
-  "coffee-shop": { usd: 1485, line: "Businessowners policy", business: "a café-bakery in Chicago open less than a year" },
-  bakery: { usd: 1485, line: "Businessowners policy", business: "a café-bakery in Chicago open less than a year" },
-  "vietnamese-restaurant": { usd: 1534, line: "Businessowners policy", business: "a full-service pho restaurant in Wisconsin" },
-  "indian-restaurant": { usd: 1549, line: "Businessowners policy", business: "a full-service Indian restaurant in Utah (with $1M liquor liability)" },
-  pizzeria: { usd: 1642, line: "Businessowners policy", business: "a pizzeria in upstate New York" },
+  "coffee-shop": { usd: 1485, line: "Businessowners policy", business: "a café-bakery open less than a year" },
+  bakery: { usd: 1485, line: "Businessowners policy", business: "a café-bakery open less than a year" },
+  "vietnamese-restaurant": { usd: 1534, line: "Businessowners policy", business: "a full-service pho restaurant" },
+  "indian-restaurant": { usd: 1549, line: "Businessowners policy", business: "a full-service Indian restaurant (with $1M liquor liability)" },
+  pizzeria: { usd: 1642, line: "Businessowners policy", business: "a pizzeria" },
   "fast-food-restaurant": { usd: 1167, line: "Businessowners policy", business: BINDABLE_PKG_FLOOR.business },
-  "barbecue-restaurant": { usd: 1889, line: "Businessowners policy", business: "a BBQ restaurant in New Mexico" },
-  "burger-restaurant": { usd: 2098, line: "Businessowners policy", business: "a full-service burger restaurant in Arkansas" },
-  "thai-restaurant": { usd: 2370, line: "Businessowners policy", business: "a Thai noodle and sushi restaurant in Illinois" },
+  "barbecue-restaurant": { usd: 1889, line: "Businessowners policy", business: "a BBQ restaurant" },
+  "burger-restaurant": { usd: 2098, line: "Businessowners policy", business: "a full-service burger restaurant" },
+  "thai-restaurant": { usd: 2370, line: "Businessowners policy", business: "a Thai noodle and sushi restaurant" },
 };
 
 // Ordinary carrier quotes for a concept, shown only where they say something the binds do not
 // (2026-10-02: coffee shop GL $686/yr, a real Next quote for a coffee house in North Carolina).
 // Always labelled "quote": nobody has bought these yet.
 const CONCEPT_QUOTES: Record<string, BoundPrice> = {
-  "coffee-shop": { usd: 686, line: "General liability", business: "a coffee house in North Carolina" },
+  "coffee-shop": { usd: 686, line: "General liability", business: "a coffee house" },
 };
 
 export function conceptQuote(slug: string): BoundPrice | undefined {
@@ -84,28 +86,104 @@ function pkgFloorPhrase(suffix = ""): string {
 
 export const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 
-// Price-first restaurant meta description within ~155 characters (Kevin 2026-10-02). "A policy we
-// wrote" sits next to the bound number; an instant-bindable package is labelled as a quote.
-export function restaurantMeta(lead: string, tails: string[] = []): string {
-  const f = pkgFloor();
-  const gl = `${lead}: liability from ${usd(RESTAURANT_FLOOR.gl.usd)}/yr`;
-  const pkgLong = f.label === "bound" ? `also a policy we wrote` : `a real instant quote, bindable`;
-  const pkgShort = f.label === "bound" ? `also bound` : `instant quote, bindable`;
-  const candidates = [
-    ...tails.map((t) => `${gl}, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}. Liability + property from ${usd(f.usd)}/yr, ${pkgLong}. ${t}`),
-    `${gl}, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}. Liability + property from ${usd(f.usd)}/yr, ${pkgLong}.`,
-    `${gl}, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}. Liability + property from ${usd(f.usd)}/yr, ${pkgShort}.`,
-    `${gl}, a policy we wrote. Liability + property from ${usd(f.usd)}/yr, ${pkgShort}.`,
-    `${gl}, a policy we wrote. With property from ${usd(f.usd)}/yr, ${pkgShort}.`,
-  ];
-  return candidates.find((c) => c.length <= 155) ?? candidates[candidates.length - 1];
+// ---- Per-type headline price (Kevin 2026-10-12) ----------------------------------------------------
+// Every restaurant-family title and meta description used to say "liability from $597/yr, a policy we
+// wrote for a caterer in New York", including Charlotte NC pages and coffee-shop pages. Search Console
+// (28 days to 2026-10-12): 5,382 restaurant-query impressions, 0 clicks. Each page now leads with the
+// approved real price for ITS type of business. Approved wording only: the business type, never a
+// client name, never a state. A quote is always worded as a quote ("was quoted"), never "from $X".
+export type HeadlinePrice = {
+  key: "coffeeShop" | "caterer" | "fullService" | "quickService";
+  usd: number;
+  bound: boolean;
+  // The approved sentence, lower-case first letter so it can follow "Coffee shop insurance:".
+  sentence: string;
+  // Title tags. `same` is used on the page for that exact type; `typed` names the type the price is
+  // for, so a deli title never implies a deli was quoted the quick-service price.
+  same: string;
+  typed: string;
+  // Shorter `typed` for long page names. Only bound prices get one: a quote always keeps "Quoted".
+  typedShort?: string;
+};
+
+const COFFEE_QUOTE = CONCEPT_QUOTES["coffee-shop"];
+export const HEADLINE_PRICES: Record<HeadlinePrice["key"], HeadlinePrice> = {
+  // A quote, not a bind.
+  coffeeShop: {
+    key: "coffeeShop", usd: COFFEE_QUOTE.usd, bound: false,
+    sentence: `a coffee shop was quoted ${usd(COFFEE_QUOTE.usd)} a year for general liability`,
+    same: `Quoted ${usd(COFFEE_QUOTE.usd)}/yr`, typed: `Coffee Shop Quoted ${usd(COFFEE_QUOTE.usd)}/yr`,
+  },
+  caterer: {
+    key: "caterer", usd: RESTAURANT_FLOOR.gl.usd, bound: true,
+    sentence: `a caterer we insure pays ${usd(RESTAURANT_FLOOR.gl.usd)} a year for general liability`,
+    same: `${usd(RESTAURANT_FLOOR.gl.usd)}/yr Real Policy`, typed: `Caterer Pays ${usd(RESTAURANT_FLOOR.gl.usd)}/yr`,
+    typedShort: `Caterer ${usd(RESTAURANT_FLOOR.gl.usd)}/yr`,
+  },
+  fullService: {
+    key: "fullService", usd: RESTAURANT_FLOOR.pkg.usd, bound: true,
+    sentence: `a full-service restaurant we insure pays ${usd(RESTAURANT_FLOOR.pkg.usd)} a year for liability and property`,
+    same: `${usd(RESTAURANT_FLOOR.pkg.usd)}/yr Real Policy`, typed: `Full-Service Pays ${usd(RESTAURANT_FLOOR.pkg.usd)}/yr`,
+    typedShort: `Full-Service ${usd(RESTAURANT_FLOOR.pkg.usd)}/yr`,
+  },
+  // A quote (instant, bindable), not a bind. Its property part is equipment and contents: "personal property".
+  quickService: {
+    key: "quickService", usd: BINDABLE_PKG_FLOOR.usd, bound: false,
+    sentence: `a quick-service restaurant was quoted ${usd(BINDABLE_PKG_FLOOR.usd)} a year for liability and personal property`,
+    same: `Quoted ${usd(BINDABLE_PKG_FLOOR.usd)}/yr`, typed: `Quick-Service Quoted ${usd(BINDABLE_PKG_FLOOR.usd)}/yr`,
+  },
+};
+
+// Page slug -> headline. Kevin's mapping (2026-10-12): coffee-shop, bakery, juice-bar -> coffee shop;
+// catering -> caterer; fast-food, deli, food-truck -> quick-service; restaurant, fine-dining ->
+// full-service. Other concepts follow the closest of those four (counter / limited cooking -> coffee
+// shop, counter service with a fryer or grill -> quick-service, everything else -> full-service).
+// Bar has NO headline: $1,153 is a restaurant's price, and bar pages are noindexed.
+const HEADLINE_BY_SLUG: Record<string, HeadlinePrice["key"] | null> = {
+  "coffee-shop": "coffeeShop", bakery: "coffeeShop", "juice-bar": "coffeeShop",
+  "bagel-shop": "coffeeShop", "bubble-tea-shop": "coffeeShop", "ice-cream-shop": "coffeeShop", "donut-shop": "coffeeShop",
+  catering: "caterer",
+  "fast-food-restaurant": "quickService", deli: "quickService", "food-truck": "quickService",
+  "burger-restaurant": "quickService", "fried-chicken-restaurant": "quickService", "wing-restaurant": "quickService",
+  "ghost-kitchen": "quickService",
+  restaurant: "fullService", "fine-dining-restaurant": "fullService",
+  bar: null,
+};
+// The page whose own type IS the headline's type, so its title can use the short tag.
+const HEADLINE_HOME: Record<HeadlinePrice["key"], string> = {
+  coffeeShop: "coffee-shop", caterer: "catering", fullService: "restaurant", quickService: "fast-food-restaurant",
+};
+
+export function headlinePrice(slug: string): HeadlinePrice | undefined {
+  const key = slug in HEADLINE_BY_SLUG ? HEADLINE_BY_SLUG[slug] : "fullService";
+  return key ? HEADLINE_PRICES[key] : undefined;
+}
+
+// Title within ~60 characters with the page's price. `subjects` are the page's name variants, longest
+// first ("Coffee Shop Insurance in North Carolina", "... in NC"). If no priced variant fits, the title
+// drops the price rather than cutting it or switching to a tag that would misdescribe the page type.
+export function restaurantTitle(slug: string, subjects: string[]): string {
+  const h = headlinePrice(slug);
+  if (!h) return fitTitle(subjects);
+  const tags = HEADLINE_HOME[h.key] === slug ? [h.same] : [h.typed, ...(h.typedShort ? [h.typedShort] : [])];
+  return fitTitle([...tags.flatMap((tag) => subjects.map((s) => `${s}: ${tag}`)), ...subjects]);
+}
+
+// Price-first meta description within ~155 characters: the page's own approved price sentence.
+export function restaurantMeta(slug: string, lead: string, tails: string[] = []): string {
+  const h = headlinePrice(slug);
+  if (!h) return fitDescription(tails.map((t) => `${lead}. ${t}`), `${lead}.`);
+  const priced = `${lead}: ${h.sentence}.`;
+  return fitDescription([...tails.map((t) => `${priced} ${t}`), priced], `${h.sentence[0].toUpperCase()}${h.sentence.slice(1)}.`);
+}
+function fitDescription(candidates: string[], fallback: string): string {
+  return candidates.find((c) => c.length <= 155) ?? fallback;
 }
 
 // First title within ~60 characters, else the shortest, so the price is not cut off in results.
 export function fitTitle(candidates: string[]): string {
   return candidates.find((c) => c.length <= 60) ?? [...candidates].sort((a, b) => a.length - b.length)[0];
 }
-export const floorPhrase = () => `${usd(RESTAURANT_FLOOR.gl.usd)}/yr`;
 
 export function conceptBind(slug: string): BoundPrice | undefined {
   return CONCEPT_BINDS[slug];
@@ -169,17 +247,26 @@ export const BOUND_PRICE_DISCLAIMER =
   "Each is labelled by line of business. Your price depends on your menu, cooking, alcohol, " +
   "sales, payroll, property, location, and claims. They are not an offer of insurance.";
 
-// Answer-first cost reply: the number leads, because that is what the searcher asked.
-export function costAnswer(noun: string, slug?: string): string {
+// Answer-first cost reply: the number leads, because that is what the searcher asked. The lead is the
+// page type's own approved price (2026-10-12); it used to be the New York caterer's $597 on every page.
+export function costAnswer(noun: string, slug?: string, headline: HeadlinePrice | undefined = slug ? headlinePrice(slug) : undefined): string {
+  const h = headline;
+  const lead = h
+    ? `${h.sentence[0].toUpperCase()}${h.sentence.slice(1)}${h.bound ? "." : " (a quote, not a bound policy)."}`
+    : `The lowest food-service general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}.`;
   const c = slug ? conceptBind(slug) : undefined;
-  const concept = c && c.usd !== RESTAURANT_FLOOR.gl.usd ? ` Our lowest bind for ${c.business} was ${usd(c.usd)}/yr (${c.line.toLowerCase()}).` : "";
+  const concept = c && c.usd !== RESTAURANT_FLOOR.gl.usd && c.usd !== h?.usd ? ` Our lowest bind for ${c.business} was ${usd(c.usd)}/yr (${c.line.toLowerCase()}).` : "";
   const b = slug ? conceptBindable(slug) : undefined;
-  const forConcept = b && b.usd !== pkgFloor().usd ? `; for ${b.business} it was ${usd(b.usd)}/yr` : "";
+  const bindable = b && b.usd !== pkgFloor().usd && b.usd !== h?.usd ? b : undefined;
   const q = slug ? conceptQuote(slug) : undefined;
-  const quoted = q ? ` For ${q.business}, a real ${q.line.toLowerCase()} quote was ${usd(q.usd)}/yr (a quote, not a bound policy).` : "";
-  const pkg = pkgFloorPhrase(forConcept);
+  const quoted = q && q.usd !== h?.usd ? ` For ${q.business}, a real ${q.line.toLowerCase()} quote was ${usd(q.usd)}/yr (a quote, not a bound policy).` : "";
+  // A liability-and-property headline already answers the package question; repeat only a concept's own quote.
+  const pkgInHeadline = h?.key === "fullService" || h?.key === "quickService";
+  const pkg = pkgInHeadline
+    ? (bindable ? ` For ${bindable.business}, an instant, bindable liability and property quote was ${usd(bindable.usd)}/yr.` : "")
+    : ` ${pkgFloorPhrase(bindable ? `; for ${bindable.business} it was ${usd(bindable.usd)}/yr` : "")}`;
   const article = /^[aeiou]/i.test(noun) ? "An" : "A";
-  return `The lowest food-service general liability policy we have bound is ${usd(RESTAURANT_FLOOR.gl.usd)}/yr, a policy we wrote for ${RESTAURANT_FLOOR.gl.business}, and our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept}${quoted} ${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
+  return `${lead} Our lowest restaurant workers' comp policy is ${usd(RESTAURANT_FLOOR.wc.usd)}/yr.${concept}${quoted}${pkg} ${article} ${noun} lands above or near those depending on cooking, alcohol, sales, payroll, property, and claims.`;
 }
 
 // Apply the bound-price treatment to an existing food page (national or profiled state) without
@@ -188,24 +275,26 @@ export function costAnswer(noun: string, slug?: string): string {
 import type { PageContent } from "./data";
 import { stateQuoteFact, stateQuoteRow } from "./restaurant-states";
 
-export function withBoundPrices(c: PageContent, name: string, noun: string, stateName?: string): PageContent {
+export function withBoundPrices(c: PageContent, slug: string, name: string, noun: string, stateName?: string): PageContent {
   const costQ = `How much does ${noun} insurance cost${stateName ? ` in ${stateName}` : ""}?`;
   const isCostQ = (q: string) => /how much|cost/i.test(q);
+  const headline = headlinePrice(slug);
   return {
     ...c,
     // State first, matching how owners search ("wisconsin restaurant insurance"; 18 state/concept queries sat
-    // at positions 8-30 with 0 clicks in the 28 days to 2026-09-28). The price stays the lowest real bind.
+    // at positions 8-30 with 0 clicks in the 28 days to 2026-09-28). The price is this page type's own.
     title: stateName
-      ? fitTitle([`${stateName} ${name} Insurance: From ${floorPhrase()}`, `${name} Insurance in ${stateName}: ${floorPhrase()}`])
-      : fitTitle([`${name} Insurance from ${floorPhrase()} | Cohesive Insurance`, `${name} Insurance: From ${floorPhrase()}`]),
+      ? restaurantTitle(slug, [`${stateName} ${name} Insurance`, `${name} Insurance in ${stateName}`])
+      : restaurantTitle(slug, [`${name} Insurance`]),
     metaDescription: restaurantMeta(
+      slug,
       stateName ? `${stateName} ${noun} insurance` : `${noun[0].toUpperCase()}${noun.slice(1)} insurance`,
       [stateName ? `What ${stateName} requires.` : "Quotes in minutes."],
     ),
-    costNarrative: [costAnswer(noun), ...c.costNarrative],
+    costNarrative: [costAnswer(noun, undefined, headline), ...c.costNarrative],
     costDisclaimer: c.costDisclaimer ? `${BOUND_PRICE_DISCLAIMER} ${c.costDisclaimer}` : BOUND_PRICE_DISCLAIMER,
     costRows: [...boundPriceRows(), ...(stateName ? stateQuoteRow(stateName) : []), ...c.costRows],
     stateFacts: stateName ? [...stateQuoteFact(stateName), ...c.stateFacts] : c.stateFacts,
-    faqs: [{ q: costQ, a: costAnswer(noun) }, ...c.faqs.filter((f) => !isCostQ(f.q))],
+    faqs: [{ q: costQ, a: costAnswer(noun, undefined, headline) }, ...c.faqs.filter((f) => !isCostQ(f.q))],
   };
 }
