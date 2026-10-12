@@ -69,7 +69,7 @@ assert.equal(prices.headlinePrice('donut-shop'),H.quickService,'a donut shop fri
 
  // The cost guide: same four approved lines, registered in the catalog and the guides sitemap.
  const guide=R('lib/guides/catalog.ts').getStartupGuide('restaurant-insurance-cost');assert.ok(guide);
- assert.equal(guide.title,'What restaurant insurance costs: real policies we placed');assert.equal(guide.quoteForm,'restaurant-short');
+ assert.equal(guide.title,'What restaurant insurance costs: real policies and quotes');assert.equal(guide.quoteForm,'restaurant-short');
  const lines=guide.sections.find(s=>s.id==='real-prices').paragraphs;
  for(const h of Object.values(H))assert.ok(lines.some(l=>l.startsWith(`${h.sentence[0].toUpperCase()}${h.sentence.slice(1)}.`)),h.sentence);
  const all=JSON.stringify(guide);
