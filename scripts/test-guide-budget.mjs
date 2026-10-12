@@ -22,7 +22,7 @@ assert.match(csv, /"Estimated total cash needed","161.28"/);
 for (const label of [...OPENING_COSTS, ...MONTHLY_COSTS]) assert.ok(csv.includes(label));
 
 // Every internal guide link and TOC target must resolve to an authored page/section.
-assert.equal(new Set(RESTAURANT_GUIDES.map((g) => g.slug)).size, 6);
+assert.equal(new Set(RESTAURANT_GUIDES.map((g) => g.slug)).size, 7);
 const paths = new Set(RESTAURANT_GUIDES.map((g) => `/guides/${g.slug}`));
 for (const guide of RESTAURANT_GUIDES) {
   assert.equal(new Set(guide.sections.map((s) => s.id)).size, guide.sections.length);

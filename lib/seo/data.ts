@@ -1264,7 +1264,7 @@ export function getStateContent(
 ): PageContent | undefined {
   const s = getState(stateSlug);
   if (!s) return undefined;
-  if (vertical === "restaurant") return withBoundPrices(buildRestaurantContent(s), "Restaurant", "restaurant", s.name);
+  if (vertical === "restaurant") return withBoundPrices(buildRestaurantContent(s), "restaurant", "Restaurant", "restaurant", s.name);
   if (vertical === "bar") return buildBarContent(s);
   return undefined;
 }
@@ -1281,5 +1281,5 @@ const PRICED_FOOD: Record<string, [string, string]> = {
 export function getNationalContent(vertical: string): PageContent | undefined {
   const c = NATIONAL_CONTENT[vertical];
   const priced = PRICED_FOOD[vertical];
-  return c && priced ? withBoundPrices(c, priced[0], priced[1]) : c;
+  return c && priced ? withBoundPrices(c, vertical, priced[0], priced[1]) : c;
 }

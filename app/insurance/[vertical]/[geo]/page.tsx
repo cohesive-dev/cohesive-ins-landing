@@ -124,6 +124,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-restaurant-${st.slug}`}
         areaServed={st.name}
         formMode="restaurant"
+        restaurantPageType={{ slug: "restaurant", noun: "restaurant" }}
         costHeading={`What restaurant insurance costs in ${st.name}`}
         coverageHeading={`The coverage ${withArticle(st.name)} restaurant needs`}
         stateFactsHeading={`What to check in ${st.name}`}
@@ -148,6 +149,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-${restaurantType.slug}-${state.slug}`}
         areaServed={state.name}
         formMode="restaurant"
+        restaurantPageType={{ slug: restaurantType.slug, noun: restaurantType.noun }}
         costHeading={`How ${withArticle(restaurantType.noun)} quote is built in ${state.name}`}
         coverageHeading={`Coverage questions for ${withArticle(state.name)} ${restaurantType.noun}`}
         stateFactsHeading={`What to check in ${state.name}`}
@@ -225,6 +227,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       source={`seo-${vertical.slug}-${state.slug}`}
       areaServed={state.name}
       formMode={vertical.slug === "bar" ? "bar" : "restaurant"}
+      restaurantPageType={{ slug: vertical.slug, noun: vertical.noun }}
       costHeading={`What ${vertical.noun} insurance costs in ${state.name}`}
       coverageHeading={`The coverage ${withAbbrArticle(state.abbr)} ${vertical.noun} needs`}
       stateFactsHeading={`What's different about ${state.name}`}

@@ -38,7 +38,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
     if (!content) notFound();
     return <SeoPage content={content} eyebrow={`${rType.name} · ${rCity.name}, ${rCity.stateName}`}
       source={`seo-${rType.slug}-${rCity.stateSlug}-${rCity.slug}`} areaServed={`${rCity.name}, ${rCity.stateName}`}
-      formMode="restaurant" costHeading={`What ${rType.noun} insurance costs in ${rCity.name}`}
+      formMode="restaurant" restaurantPageType={{ slug: rType.slug, noun: rType.noun }}
+      costHeading={`What ${rType.noun} insurance costs in ${rCity.name}`}
       coverageHeading={`The coverage ${withArticle(rCity.name)} ${rType.noun} needs`}
       stateFactsHeading={`What to check in ${rCity.name}`}
       breadcrumbs={[{ label: "Insurance guides", href: "/insurance" },
