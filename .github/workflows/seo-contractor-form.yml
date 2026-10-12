@@ -1,4 +1,4 @@
-# SEO contractor form suites (PR #67, B 2026-10-09 option (a)): the ops box's portal launch guard refuses these local
+# SEO contractor + restaurant form suites (PR #67, B 2026-10-09 option (a); restaurant short form 2026-10-12): the ops box's portal launch guard refuses these local
 # .cjs runs (TS closure / a real browser test), so they run here, off-box, and a green check is the merge proof.
 name: seo-contractor-form
 on:
@@ -24,6 +24,10 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       - name: Unit - SEO contractor intake (form handlers + /api/intake, all external services stubbed)
         run: node scripts/test-seo-contractor-intake.cjs
+      - name: Unit - SEO restaurant short form (RestaurantQuickQuote + /api/intake, all external services stubbed)
+        run: node scripts/test-seo-restaurant-short-form.cjs
+      - name: Unit - restaurant titles and meta descriptions carry each type's own approved price
+        run: node scripts/test-seo-restaurant-snippets.cjs
       - run: npm run build
       - name: Start the built site on :3021
         run: |

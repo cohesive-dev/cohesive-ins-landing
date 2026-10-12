@@ -91,6 +91,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         source={`seo-${restaurantType.slug}-national`}
         areaServed="United States"
         formMode="restaurant"
+        restaurantPageType={{ slug: restaurantType.slug, noun: restaurantType.noun }}
         costHeading={`How ${withArticle(restaurantType.noun)} quote is built`}
         coverageHeading={`Coverage questions for ${withArticle(restaurantType.noun)}`}
         stateFactsHeading="Prepare a more specific restaurant submission"
@@ -157,6 +158,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       source={`seo-${vertical.slug}-national`}
       areaServed="United States"
       formMode={vertical.slug === "bar" ? "bar" : "restaurant"}
+      restaurantPageType={{ slug: vertical.slug, noun: vertical.noun }}
       costHeading={`What ${vertical.noun} insurance costs`}
       coverageHeading={`The coverage a ${vertical.noun} needs`}
       relatedLinksHeading={vertical.slug === "restaurant" ? "Restaurant insurance by type" : undefined}

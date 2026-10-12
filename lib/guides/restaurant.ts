@@ -25,6 +25,9 @@ export type RestaurantGuide = {
   stateSlug?: string;
   nationalSlug?: string;
   quoteKind?: "restaurant" | "service";
+  // "restaurant-short": the guide renders the short restaurant quote form used on the restaurant SEO pages
+  // (components/RestaurantQuickQuote) instead of the startup form.
+  quoteForm?: "restaurant-short";
   tradeLabel?: string;
   noQuote?: boolean;
   noQuoteReason?: string;
@@ -237,6 +240,61 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
         "Run a mock service using a realistic mix of orders. Follow a delivery, a dine-in order, a payment issue, and a closing task from start to finish. Ask the team to flag missing tools and unclear decisions, then assign fixes before repeating the exercise.",
         "Hold a final opening meeting. Separate required approvals and safety issues from optional improvements. Do not treat a checked box on this worksheet as a substitute for the agency's approval or the insurer's confirmation of coverage.",
       ], checklist: ["Confirm required approvals with each responsible office.", "Resolve outstanding safety issues and inspection conditions.", "Check issued insurance documents and landlord evidence requirements.", "Confirm suppliers, staff assignments, and customer-facing hours.", "Assign a manager to review issues after the first service."], links: [{ label: "See the complete restaurant launch sequence", href: "/guides/how-to-open-a-restaurant" }] },
+    ],
+  },
+  {
+    // Kevin 2026-10-12. Real prices only: the business type and premium, never a client name or a state.
+    // The four lines are the approved headline prices in lib/seo/restaurant-prices.ts (HEADLINE_PRICES);
+    // scripts/test-seo-restaurant-snippets.cjs keeps them identical. No averages, ranges or savings claims.
+    slug: "restaurant-insurance-cost",
+    updatedAt: "2026-10-12",
+    title: "What restaurant insurance costs: real policies we placed",
+    description: "Real restaurant insurance prices by type of restaurant, what moves the price, and what to have ready for a quote. No averages and no ranges.",
+    intro: "Restaurant insurance is priced on your own sales, cooking, alcohol and building, so one national number would mislead you. Below are real prices for four types of restaurant, what moves the price, and what to have ready for a quote.",
+    category: "Restaurant insurance cost",
+    insurancePath: insurance,
+    quoteForm: "restaurant-short",
+    sections: [
+      { id: "real-prices", title: "Real prices by type of restaurant", paragraphs: [
+        "A full-service restaurant we insure pays $1,153 a year for liability and property.",
+        "A caterer we insure pays $597 a year for general liability.",
+        "A coffee shop was quoted $686 a year for general liability. That was a quote, not a policy the owner bought.",
+        "A quick-service restaurant was quoted $1,167 a year for liability and personal property. That was also a quote.",
+        "Each line is one real business, not an average. Your price depends on your own restaurant, and we can't promise a price until we see your details.",
+      ], links: [
+        { label: "Restaurant insurance", href: insurance },
+        { label: "Coffee shop insurance", href: "/insurance/coffee-shop" },
+        { label: "Catering insurance", href: "/insurance/catering" },
+        { label: "Fast food restaurant insurance", href: "/insurance/fast-food-restaurant" },
+      ] },
+      { id: "price-drivers", title: "What moves the price", paragraphs: [
+        "Sales come first. Restaurant liability is usually rated on yearly sales, so a busier restaurant pays more.",
+        "Alcohol share of sales comes next. The more of your sales that come from alcohol, the more liquor liability costs, and a high share can change which insurers will quote.",
+        "How you cook matters. Fryers, grills, woks and open flame raise the fire risk, so they cost more to insure than a kitchen that only reheats or bakes.",
+        "Hood cleaning and fire suppression are part of that review. Insurers ask whether the hood has a suppression system and how often the hood and ducts are professionally cleaned.",
+        "Owning the building adds coverage for the building itself. If you rent, you insure your equipment, contents and the improvements you paid for, plus damage you cause to the space.",
+        "Contents value sets the property price: kitchen equipment, furniture, stock and refrigeration, valued at what they would cost to replace.",
+        "Claims in the past few years can raise the price or limit which insurers will quote.",
+      ], checklist: [
+        "Yearly sales.",
+        "Alcohol share of sales.",
+        "Fryers, grills, woks or open flame.",
+        "Hood cleaning and fire suppression.",
+        "Building owned or rented.",
+        "Value of equipment, furniture and stock.",
+        "Claims in the past few years.",
+      ] },
+      { id: "what-to-have-ready", title: "What to have ready for a quote", paragraphs: [
+        "Have these ready and your quote goes faster. Estimates are fine if you tell us they are estimates.",
+        "The form below asks only for your contact details, type of restaurant, ZIP code and renewal month. A licensed agent follows up for the rest.",
+      ], checklist: [
+        "Yearly sales.",
+        "Alcohol share of sales.",
+        "Type of restaurant.",
+        "Address.",
+        "Your current policy or declarations page.",
+        "Your renewal date.",
+      ], links: [{ label: "What your landlord's lease will require", href: "/guides/restaurant-lease-insurance-requirements" }] },
     ],
   },
 ];

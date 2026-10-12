@@ -4,7 +4,7 @@ import { metroLinksFor, poolLeadGuidePath } from "@/lib/seo/metro-pages";
 import { relatedServiceLinks } from "@/lib/seo/service-industries";
 import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
 import Link from "next/link";
-import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
+import RestaurantQuickQuote, { type RestaurantPageType } from "@/components/RestaurantQuickQuote";
 import ContractorQuoteForm from "@/components/ContractorQuoteForm";
 import CommercialPropertyForm from "@/components/CommercialPropertyForm";
 import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
@@ -37,6 +37,7 @@ export default function SeoPage({
   relatedLinks,
   relatedLinksHeading,
   quoteHref,
+  restaurantPageType,
 }: {
   content: PageContent;
   eyebrow: string;
@@ -60,6 +61,8 @@ export default function SeoPage({
   relatedLinks?: { label: string; href: string }[];
   relatedLinksHeading?: string;
   quoteHref?: string;
+  // Restaurant/bar pages: the page's own type, which pre-fills (editable) the short form's type select.
+  restaurantPageType?: RestaurantPageType;
 }) {
   const stateLicense = licenseLineForArea(areaServed);
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
@@ -297,7 +300,7 @@ export default function SeoPage({
         </div>
       </section>
 
-      {/* Quote form — the same deep intake as /restaurant */}
+      {/* Quote form. Restaurant/bar pages use the short form (2026-10-12); /restaurant keeps the deep intake. */}
       <section
         id="quote"
         className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14 scroll-mt-6"
@@ -328,7 +331,7 @@ export default function SeoPage({
         ) : formMode === "property" ? (
           <CommercialPropertyForm embedded source={source} />
         ) : (
-          <RestaurantIntakeForm embedded source={source} mode={formMode} />
+          <RestaurantQuickQuote source={source} mode={formMode} pageType={restaurantPageType} />
         )}
       </section>
 
@@ -344,6 +347,7 @@ export default function SeoPage({
             <p className="mt-2 text-sm text-[#6B6D71]">Plan the steps before your first service, from the opening budget to approvals and lease requirements.</p>
             <Link href="/guides/how-to-open-a-restaurant" className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Read the restaurant opening guide →</Link>
             <Link href="/guides/restaurant-lease-insurance-requirements" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What your landlord&apos;s lease will ask for, with real examples →</Link>
+            {formMode === "restaurant" && <Link href="/guides/restaurant-insurance-cost" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What restaurant insurance costs: real policies we placed →</Link>}
           </div>
         </section>
       )}
