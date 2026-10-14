@@ -29,7 +29,8 @@ const WC_QUESTION = "Do you also need workers' comp?";
 const WC_ROW = "Workers' comp requested";
 // Today's completed paid-form body, key for key and in order. Without wc=1 it must stay exactly this.
 const FINAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source', 'details', 'eventId', 'website'];
-const PARTIAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source', 'partial', 'final', 'details', 'website'];
+// A contact-screen-only partial: no business name yet, so `company` is undefined and JSON drops it.
+const PARTIAL_KEYS = ['name', 'email', 'phone', 'businessType', 'source', 'partial', 'final', 'details', 'website'];
 const longLayout = key => () => localStorage.setItem(key, 'long');
 
 // Fill every required answer on the long layout (all questions on one screen).
