@@ -31,7 +31,6 @@ const WC_ROW = "Workers' comp requested";
 const FINAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source', 'details', 'eventId', 'website'];
 // A contact-screen-only partial: no business name yet, so `company` is undefined and JSON drops it.
 const PARTIAL_KEYS = ['name', 'email', 'phone', 'businessType', 'source', 'partial', 'final', 'details', 'website'];
-const longLayout = key => () => localStorage.setItem(key, 'long');
 
 // Fill every required answer on the long layout (all questions on one screen).
 async function fillRequired(page) {
@@ -164,7 +163,7 @@ function details(payload) {
     // --- Staged WC question -------------------------------------------------------------------
     // No wc=1 (all current paid traffic): no question rendered and today's exact payload, on both layouts.
     {
-      const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix', longLayout('cohesive_experiment_remodel_trade_mix_v1'));
+      const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix', () => localStorage.setItem('cohesive_experiment_remodel_trade_mix_v1', 'long'));
       assert.equal(await page.getByText(WC_QUESTION).count(), 0, 'no wc=1 -> no WC question');
       assert.equal(await page.locator('[data-funnel-field="wcRequested"], input[name="wcRequested"]').count(), 0);
       await fillRequired(page);
@@ -190,7 +189,7 @@ function details(payload) {
     }
     // wc=1: the question shows (optional, accessible, 16px on phones) and each answer maps to the contract.
     for (const [answer, coverage] of [['Yes', ['General Liability', 'Workers Comp']], ['Not sure', undefined], ['No', undefined], [null, undefined]]) {
-      const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix&wc=1', longLayout('cohesive_experiment_remodel_trade_mix_v1'));
+      const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix&wc=1', () => localStorage.setItem('cohesive_experiment_remodel_trade_mix_v1', 'long'));
       await page.setViewportSize({ width: 390, height: 844 });
       const group = page.getByRole('group', { name: WC_QUESTION });
       assert.equal(await group.count(), 1, 'wc=1 -> WC question shown');
