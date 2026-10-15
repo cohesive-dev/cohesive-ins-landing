@@ -102,6 +102,17 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   assert.equal(WC.wcTeaserAllowed(undefined,'United States'),true);assert.equal(WC.wcTeaserAllowed('georgia','Georgia'),true);
   assert.equal(WC.wcTeaserAllowed(undefined,'Washington, District of Columbia'),true);
   for(const t of ['remodeler','general-contractor','electrician','hvac','concrete','masonry','restaurant'])assert.ok(WC.WC_TRADE_TEASERS[t],t);
+  // Rendered SeoPage: the teaser shows on an eligible trade/state page and on a restaurant page, never in TX or a
+  // state-fund state, and never on catering / food-truck pages.
+  {const geo=require('../app/insurance/[vertical]/[geo]/page.tsx'),nat=require('../app/insurance/[vertical]/page.tsx');
+   const shown=async(route,params)=>{const el=await route.default({params:Promise.resolve(params)});return text(el.type(el.props));};
+   assert.match(await shown(geo,{vertical:'electrician',geo:'georgia'}),/Workers' comp for electricians.*\$3,774 a year/s);
+   assert.match(await shown(nat,{vertical:'hvac'}),/\$1,182 a year for workers' comp/);
+   assert.match(await shown(geo,{vertical:'restaurant',geo:'new-york'}),/\$509 a year for workers' comp/);
+   for(const st of ['texas','ohio'])assert.doesNotMatch(await shown(geo,{vertical:'electrician',geo:st}),/\$3,774/,`no WC teaser on electrician/${st}`);
+   assert.doesNotMatch(await shown(geo,{vertical:'restaurant',geo:'ohio'}),/\$509 a year for workers' comp/);
+   for(const v of ['catering','food-truck'])assert.doesNotMatch(await shown(nat,{vertical:v}),/Workers' comp for restaurants/,v);
+   assert.doesNotMatch(await shown(geo,{vertical:'painter',geo:'georgia'}),/for workers' comp, written with/,'no teaser on a trade without a WC policy');}
   // A trade WC page pre-lists its trade but selects nothing; the submit records WC.
   formProps={source:'seo-wc-workers-comp-insurance-for-electricians',tradeLabel:'Electrician',coverageRequested:['Workers Comp']};mode='success';reset();
   assert.equal(nodes(nodes(render()).find(n=>n.type==='select')).filter(n=>n.type==='option').map(o=>o.props.value)[1],'Electrician');

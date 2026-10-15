@@ -66,9 +66,12 @@ export default function SeoPage({
   restaurantPageType?: RestaurantPageType;
 }) {
   const stateLicense = licenseLineForArea(areaServed);
-  // Workers' comp teaser (2026-10-15): the trade's real WC policy + a link to its WC guide. Restaurant pages
-  // (not bar) use the restaurant teaser. Never in the state-fund states or Texas.
-  const wcTeaser = (formMode === "contractor" && tradeSlug ? WC_TRADE_TEASERS[tradeSlug] : formMode === "restaurant" ? WC_TRADE_TEASERS.restaurant : undefined);
+  // Workers' comp teaser (2026-10-15): the trade's real WC policy + a link to its WC guide. Restaurant-type pages
+  // (not bar, catering or food truck: those are not restaurants) use the restaurant teaser. Never in the
+  // state-fund states or Texas.
+  const wcTeaser = formMode === "contractor" && tradeSlug ? WC_TRADE_TEASERS[tradeSlug]
+    : formMode === "restaurant" && !["catering", "food-truck"].includes(restaurantPageType?.slug ?? "") ? WC_TRADE_TEASERS.restaurant
+      : undefined;
   const showWcTeaser = Boolean(wcTeaser) && wcTeaserAllowed(stateSlug, areaServed);
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
   const growthLink = tradeSlug === "pool" && stateSlug && metroSlug

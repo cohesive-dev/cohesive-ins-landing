@@ -100,7 +100,7 @@ export const WC_TRADE_TEASERS: Record<string, { heading: string; sentences: stri
   hvac: { heading: "Workers' comp for HVAC contractors", sentences: [wcPolicySentence(WC_POLICIES.hvac)], href: g(WC_GUIDE.hvac), label: "What sets an HVAC contractor's workers' comp price" },
   concrete: { heading: "Workers' comp for concrete contractors", sentences: [wcPolicySentence(WC_POLICIES.masonry)], href: g(WC_GUIDE.concreteMasonry), label: "Workers' comp for concrete and masonry contractors" },
   masonry: { heading: "Workers' comp for masonry contractors", sentences: [wcPolicySentence(WC_POLICIES.masonry)], href: g(WC_GUIDE.concreteMasonry), label: "Workers' comp for concrete and masonry contractors" },
-  restaurant: { heading: "Workers' comp for your restaurant", sentences: [wcPolicySentence(WC_POLICIES.sandwichShop), wcPolicySentence(WC_POLICIES.buffet)], href: g(WC_GUIDE.restaurants), label: "Restaurant workers' comp: what sets the price" },
+  restaurant: { heading: "Workers' comp for restaurants and food shops", sentences: [wcPolicySentence(WC_POLICIES.sandwichShop), wcPolicySentence(WC_POLICIES.buffet)], href: g(WC_GUIDE.restaurants), label: "Restaurant workers' comp: what sets the price" },
 };
 
 const tradeCommon = { nationalSlug: "contractor-workers-comp", updatedAt: "2026-10-15" };
