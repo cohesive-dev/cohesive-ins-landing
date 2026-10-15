@@ -1201,6 +1201,7 @@ function Footer() {
               {/* Instant-quote splash pages (Next appetite verticals) */}
               {[
                 { label: "Restaurants & Food Service", href: "/insurance/restaurant" },
+                { label: "Restaurant Insurance in New York", href: "/insurance/restaurant/new-york" },
                 { label: "Cleaning & Janitorial", href: "/cleaning" },
                 { label: "Salons & Beauty", href: "/beauty" },
                 { label: "Fitness & Studios", href: "/fitness" },

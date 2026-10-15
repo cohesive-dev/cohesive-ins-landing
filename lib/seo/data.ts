@@ -1,4 +1,4 @@
-import { withBoundPrices } from "./restaurant-prices";
+import { withBoundPrices, RESTAURANT_FLOOR, conceptBind, usd } from "./restaurant-prices";
 
 // Programmatic SEO data layer for /insurance pages.
 //
@@ -1258,13 +1258,66 @@ export function getState(slug: string) {
   return STATES.find((s) => s.slug === slug);
 }
 
+// ---- New York restaurant hub (Kevin 2026-10-15) ---------------------------------------------------------------
+// /insurance/restaurant/new-york had 0 Search Console impressions in 60 days on a generic state template. It now
+// leads with the New York policies we placed (the July binds Kevin confirmed 2026-09-26, plus the AmTrust workers'
+// comp bind) and New York's own employer, liquor and permit rules, each linked to the official source.
+// The template's monthly ranges are dropped here: they were not New York prices.
+const NY_SOURCES = {
+  wc: { label: "NY Workers' Compensation Board: is coverage required?", href: "https://www.wcb.ny.gov/content/main/coverage-requirements-wc/wc-coverage-required.jsp" },
+  dbpfl: { label: "NY Workers' Compensation Board: disability and Paid Family Leave coverage", href: "https://www.wcb.ny.gov/content/main/coverage-requirements-db/db-coverage-required.jsp" },
+  dramShop: { label: "NY General Obligations Law 11-101", href: "https://www.nysenate.gov/legislation/laws/GOB/11-101" },
+  nycPermit: { label: "NYC Business: food service establishment permit", href: "https://nyc-business.nyc.gov/nycbusiness/description/food-service-establishment-permit" },
+  statePermit: { label: "NYS Department of Health: food service permits (10 NYCRR 14-1.190)", href: "https://regs.health.ny.gov/content/section-14-1190-permits-application-fees-issuance-inspection" },
+};
+
+function newYorkRestaurant(base: PageContent): PageContent {
+  const bop = RESTAURANT_FLOOR.pkg, gl = RESTAURANT_FLOOR.gl, wc = RESTAURANT_FLOOR.wc, bakery = conceptBind("bakery")!;
+  const real = `Three New York food businesses we insure: a full-service restaurant pays ${usd(bop.usd)} a year for liability and property together, a catering business pays ${usd(gl.usd)} a year for general liability, and a bakery pays ${usd(bakery.usd)} a year for general liability. For workers' comp, a New York sandwich shop pays ${usd(wc.usd)} a year.`;
+  const notAverage = "Each is one real policy we placed, not an average. Your price depends on your sales, cooking, alcohol, payroll, building and claims.";
+  return {
+    ...base,
+    heroH1: "Restaurant insurance in New York",
+    heroSub: "Real New York prices from policies we placed, what New York requires of employers and liquor sellers, and what a New York restaurant quote needs.",
+    costNarrative: [real, notAverage, "Fryers and open flame, a high share of alcohol sales, or insuring the building you own push a quote up. A counter with limited cooking that rents its space comes in lower."],
+    costDisclaimer: "These are real New York policies we placed, labelled by line of business. They are not an offer of insurance, and your price depends on your own business.",
+    costRows: [
+      { coverage: "Liability + property BOP, full-service restaurant (bound)", range: `${usd(bop.usd)}/yr`, note: "A businessowners policy: general liability plus equipment, contents and improvements." },
+      { coverage: "General liability, catering business (bound)", range: `${usd(gl.usd)}/yr`, note: "Liability only, no property." },
+      { coverage: "General liability, bakery (bound)", range: `${usd(bakery.usd)}/yr`, note: "Liability only, no property." },
+      { coverage: "Workers' compensation, sandwich shop (bound)", range: `${usd(wc.usd)}/yr`, note: "Priced on payroll. Required for virtually every New York employer." },
+      { coverage: "Disability and Paid Family Leave", range: "Priced on payroll", note: "A separate New York requirement once you have employees." },
+      { coverage: "Liquor liability", range: "Priced on alcohol sales", note: "Needed if you serve alcohol. See the dram shop note below." },
+    ],
+    stateFacts: [
+      { title: "Workers' comp: virtually every employer", body: "New York requires virtually every employer to carry workers' comp, and part-time, temporary and seasonal workers count. Family members working in a for-profit business count as employees, paid or not.", source: NY_SOURCES.wc },
+      { title: "Disability and Paid Family Leave: also required", body: "Once you have one or more employees on each of at least 30 days in a calendar year, New York also requires disability benefits and Paid Family Leave coverage. It is a separate policy from workers' comp.", source: NY_SOURCES.dbpfl },
+      { title: "Dram shop law: liquor liability if you serve", body: "Under General Obligations Law 11-101, a person injured by an intoxicated person can sue a business that unlawfully sold that person alcohol. General liability policies usually exclude this, so a restaurant that serves alcohol needs liquor liability. It is priced on your share of alcohol sales, so give an accurate figure.", source: NY_SOURCES.dramShop },
+      { title: "In the five boroughs: permit and food protection certificate", body: "New York City's Health Department issues the food service establishment permit, and a supervisor who has passed the Food Protection Course must be on site whenever you are open. Have the permit and certificate details ready for the application.", source: NY_SOURCES.nycPermit },
+      { title: "Outside New York City: your local health department", body: "Outside the city, the permit to operate a food service establishment comes from the local health department for your county or city, under the state's food service rules. Apply before you open.", source: NY_SOURCES.statePermit },
+      { title: "Coastal locations", body: "Restaurants near the coast, including much of New York City and Long Island, can carry separate wind or named-storm deductibles. Give us the exact address so the quote shows them." },
+      { title: "Your lease drives your limits", body: "Most commercial leases require $1M/$2M general liability, the landlord as additional insured and a certificate before you get the keys. Check the lease before you buy the cheapest quote." },
+    ],
+    faqs: [
+      { q: "How much does restaurant insurance cost in New York?", a: `${real} ${notAverage}` },
+      { q: "What insurance does New York require of a restaurant?", a: "With employees, New York requires workers' comp, plus disability and Paid Family Leave coverage once you have one or more employees on each of at least 30 days in a calendar year. Commercial auto is required if the business owns vehicles. Your lease usually sets the liability and property requirements." },
+      { q: "Do I need liquor liability in New York?", a: "If you serve alcohol, yes in practice. New York's dram shop law (General Obligations Law 11-101) lets a person injured by an intoxicated person sue the business that unlawfully sold them alcohol, and general liability usually excludes it. Liquor liability is priced on your share of alcohol sales." },
+      { q: "Who issues a restaurant permit in New York?", a: "In the five boroughs, the NYC Health Department, which also requires a supervisor with a Food Protection Certificate on site whenever you are open. Elsewhere in the state, your local health department." },
+      ...base.faqs.filter((f) => /landlord|COI|covered/i.test(f.q)),
+    ],
+  };
+}
+
 export function getStateContent(
   vertical: string,
   stateSlug: string,
 ): PageContent | undefined {
   const s = getState(stateSlug);
   if (!s) return undefined;
-  if (vertical === "restaurant") return withBoundPrices(buildRestaurantContent(s), "restaurant", "Restaurant", "restaurant", s.name);
+  if (vertical === "restaurant") {
+    const content = withBoundPrices(buildRestaurantContent(s), "restaurant", "Restaurant", "restaurant", s.name);
+    return s.slug === "new-york" ? newYorkRestaurant(content) : content;
+  }
   if (vertical === "bar") return buildBarContent(s);
   return undefined;
 }

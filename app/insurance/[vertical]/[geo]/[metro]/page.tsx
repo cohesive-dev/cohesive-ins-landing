@@ -43,6 +43,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
       coverageHeading={`The coverage ${withArticle(rCity.name)} ${rType.noun} needs`}
       stateFactsHeading={`What to check in ${rCity.name}`}
       breadcrumbs={[{ label: "Insurance guides", href: "/insurance" },
+        // Every restaurant type in a city also links up to the state's restaurant hub (Kevin 2026-10-15).
+        ...(rType.slug === "restaurant" ? [] : [{ label: `${rCity.stateName} restaurant insurance`, href: `/insurance/restaurant/${rCity.stateSlug}` }]),
         { label: `${rType.name} insurance in ${rCity.stateName}`, href: `/insurance/${rType.slug}/${rCity.stateSlug}` }]}
       stateLinksHeading={`${rType.name} insurance nearby`}
       stateLinks={[
