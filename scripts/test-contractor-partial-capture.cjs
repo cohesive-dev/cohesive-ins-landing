@@ -255,7 +255,7 @@ function details(payload) {
       await context.close();
     }
 
-    console.log('PASS: contractor-test, contractors, contractor alias, and contractor SEO pages capture one latest exit snapshot with downstream answers; staged WC question (wc=1 only) maps Yes/No/Not sure to the coverage contract; no real intake sent.');
+    console.log('PASS: contractor-test, contractors, contractor alias, and contractor SEO pages capture one latest exit snapshot with downstream answers; staged WC question (wc=1 only) maps WC + GL / WC only / GL only to the coverage contract; no real intake sent.');
   } finally {
     await browser.close();
   }
