@@ -3,11 +3,26 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactCompiler: true,
   async redirects() {
-    return [{
-      source: "/insurance/indiana/pressure-washing-insurance",
-      destination: "/insurance/pressure-washing/indiana",
-      statusCode: 301,
-    }];
+    return [
+      {
+        source: "/insurance/indiana/pressure-washing-insurance",
+        destination: "/insurance/pressure-washing/indiana",
+        statusCode: 301,
+      },
+      // URLs that 404 but still get Search Console impressions (Kevin 2026-10-15): send each to
+      // the closest live page with a permanent redirect.
+      { source: "/insurance/cost/snow-removal-insurance", destination: "/insurance/snow-removal", statusCode: 301 },
+      {
+        source: "/guides/how-to-start-a-tree-service-business-connecticut",
+        destination: "/guides/how-to-start-a-tree-service-business-in-connecticut",
+        statusCode: 301,
+      },
+      {
+        source: "/guides/how-to-get-hvac-contractor-leads-in-oklahoma-city-ok-klahoma",
+        destination: "/guides/how-to-get-hvac-contractor-leads-in-oklahoma-city-oklahoma",
+        statusCode: 301,
+      },
+    ];
   },
   // /sitemap.xml (the URL already submitted to Search Console and Bing) serves the sitemap index.
   // A route at app/sitemap.xml would collide with app/sitemap.ts (generateSitemaps), so the index
