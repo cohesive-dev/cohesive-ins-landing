@@ -89,6 +89,50 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
    fwd=await send(paid({row:'WC + GL',coverage:junk}));assert.equal(fwd.coverage,undefined,`allowlist drops ${JSON.stringify(junk)}`);
   }
  }
+ // Workers' comp trade/state/restaurant pages (Kevin 2026-10-15): real bound policies only, every page records WC.
+ {const WC=require('../lib/guides/workers-comp-resources.ts'),{getStartupGuide}=require('../lib/guides/catalog.ts');
+  const slugs=['workers-comp-insurance-for-remodelers','workers-comp-insurance-for-general-contractors','workers-comp-insurance-for-electricians','workers-comp-insurance-for-hvac-contractors','workers-comp-insurance-for-concrete-and-masonry-contractors','restaurant-workers-comp-insurance','workers-comp-cost-for-contractors-in-florida','workers-comp-cost-for-contractors-in-new-york','workers-comp-cost-for-contractors-in-georgia','workers-comp-cost-for-contractors-in-north-carolina'];
+  const real=new Set(Object.values(WC.WC_POLICIES).map(p=>`$${p.usd.toLocaleString('en-US')}`));
+  assert.deepEqual([...real].sort(),['$1,182','$1,237','$1,575','$2,565','$3,562','$3,774','$509','$572'].sort(),'the approved bound WC policies');
+  const sitemap=require('../lib/seo/sitemap-sections.ts').sitemapSection('guides').map(e=>e.url);
+  const hub=JSON.stringify(getStartupGuide('contractor-workers-comp-insurance'));
+  for(const slug of slugs){const guide=getStartupGuide(slug);assert.ok(guide,slug);
+   assert.deepEqual(guide.coverageRequested,['Workers Comp'],`${slug} records WC`);
+   assert.ok(`${guide.title} | Cohesive`.length<=65,`${slug} final title length`);assert.ok(guide.description.length<=155,`${slug} description length`);
+   const body=JSON.stringify(guide);
+   for(const amount of body.match(/\$[\d,]+(?= a year|\/yr)/g)||[])assert.ok(real.has(amount),`${slug}: ${amount} is not a real WC policy`);
+   assert.doesNotMatch(body,/average (?:is|of|cost)|\branges? from\b|save \d|savings|guarantee/i,`${slug}: no averages, savings or guarantees`);
+   assert.ok(sitemap.includes(`https://www.cohesiveinsure.com/guides/${slug}`),`${slug} in the guides sitemap`);
+   assert.ok(hub.includes(`/guides/${slug}`),`${slug} linked from the WC hub guide`);}
+  assert.equal(getStartupGuide('restaurant-workers-comp-insurance').quoteForm,'restaurant-short','restaurant WC uses the restaurant short form');
+  // No WC page for Texas or the state-fund states, and no teaser on their trade pages.
+  for(const st of ['texas','ohio','washington','north-dakota','wyoming']){
+   assert.ok(!sitemap.some(u=>u.includes('workers-comp')&&u.includes(st)),`no WC page for ${st}`);
+   assert.equal(WC.wcTeaserAllowed(st,'Anywhere'),false,st);}
+  assert.equal(WC.wcTeaserAllowed(undefined,'Columbus, Ohio'),false);assert.equal(WC.wcTeaserAllowed(undefined,'Texas'),false);
+  assert.equal(WC.wcTeaserAllowed(undefined,'United States'),true);assert.equal(WC.wcTeaserAllowed('georgia','Georgia'),true);
+  assert.equal(WC.wcTeaserAllowed(undefined,'Washington, District of Columbia'),true);
+  for(const t of ['remodeler','general-contractor','electrician','hvac','concrete','masonry','restaurant'])assert.ok(WC.WC_TRADE_TEASERS[t],t);
+  // Rendered SeoPage: the teaser shows on an eligible trade/state page and on a restaurant page, never in TX or a
+  // state-fund state, and never on catering / food-truck pages.
+  {const geo=require('../app/insurance/[vertical]/[geo]/page.tsx'),nat=require('../app/insurance/[vertical]/page.tsx');
+   const shown=async(route,params)=>{const el=await route.default({params:Promise.resolve(params)});return text(el.type(el.props));};
+   assert.match(await shown(geo,{vertical:'electrician',geo:'georgia'}),/Workers' comp for electricians.*\$3,774 a year/s);
+   assert.match(await shown(nat,{vertical:'hvac'}),/\$1,182 a year for workers' comp/);
+   assert.match(await shown(geo,{vertical:'restaurant',geo:'new-york'}),/\$509 a year for workers' comp/);
+   for(const st of ['texas','ohio'])assert.doesNotMatch(await shown(geo,{vertical:'electrician',geo:st}),/\$3,774/,`no WC teaser on electrician/${st}`);
+   assert.doesNotMatch(await shown(geo,{vertical:'restaurant',geo:'ohio'}),/\$509 a year for workers' comp/);
+   for(const v of ['catering','food-truck','bakery'])assert.doesNotMatch(await shown(nat,{vertical:v}),/\$509 a year for workers' comp/,v);
+   assert.doesNotMatch(await shown(geo,{vertical:'bakery',geo:'georgia'}),/\$509 a year for workers' comp/,'bakery/georgia');
+   assert.match(await shown(geo,{vertical:'coffee-shop',geo:'georgia'}),/\$509 a year for workers' comp/,'restaurant-type page keeps it');
+   assert.doesNotMatch(await shown(geo,{vertical:'painter',geo:'georgia'}),/for workers' comp, written with/,'no teaser on a trade without a WC policy');}
+  // A trade WC page pre-lists its trade but selects nothing; the submit records WC.
+  formProps={source:'seo-wc-workers-comp-insurance-for-electricians',tradeLabel:'Electrician',coverageRequested:['Workers Comp']};mode='success';reset();
+  assert.equal(nodes(nodes(render()).find(n=>n.type==='select')).filter(n=>n.type==='option').map(o=>o.props.value)[1],'Electrician');
+  fill('Electrician');await render().props.onSubmit({preventDefault(){}});
+  assert.deepEqual(payload.coverage,['Workers Comp']);assert.deepEqual(crmCalls[0].coverage,['Workers Comp']);
+  formProps={source:'seo-painter-new-york',tradeLabel:'Painter'};reset();
+ }
  for(const service of require('../lib/seo/service-industries.ts').INSURANCE_SERVICES){
   formProps={source:`seo-${service.slug}-texas`,tradeLabel:service.intakeLabel,operationsPrompt:service.operationsPrompt};
   window.location.pathname=`/insurance/${service.slug}/texas`;mode='success';reset();fill();
