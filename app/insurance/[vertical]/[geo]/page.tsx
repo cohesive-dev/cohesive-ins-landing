@@ -158,9 +158,11 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         relatedLinks={[restaurantStateHubLink(state.slug, state.name), ...restaurantGuideLinks(state.slug, state.name)]}
         stateLinksHeading={`${restaurantType.name} insurance in other states`}
         stateLinks={[...restaurantTypeCityLinks(restaurantType, state.slug), ...restaurantTypeStateLinks(restaurantType, state.slug)]}
+        // The state's restaurant page is the hub for every restaurant type in that state (Kevin 2026-10-15).
         breadcrumbs={[
           { label: "Insurance guides", href: "/insurance" },
           { label: `${restaurantType.name} insurance`, href: `/insurance/${restaurantType.slug}` },
+          restaurantStateHubLink(state.slug, state.name),
         ]}
       />
     );

@@ -108,6 +108,9 @@ export default function Page() {
         <p className="mb-5 max-w-3xl text-sm leading-6 text-[#6B6D71]">
           Match the guide to the actual menu, cooking equipment, service model, delivery, and alcohol exposure.
         </p>
+        <Link href="/insurance/restaurant/new-york" className="mb-5 inline-block text-sm font-semibold text-[#2040E7] hover:underline">
+          New York restaurant insurance: real New York prices and state rules →
+        </Link>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-12">
           {RESTAURANT_TYPES.map((type) => (
             <Link

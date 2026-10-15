@@ -267,6 +267,8 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
         { label: "Coffee shop insurance", href: "/insurance/coffee-shop" },
         { label: "Catering insurance", href: "/insurance/catering" },
         { label: "Fast food restaurant insurance", href: "/insurance/fast-food-restaurant" },
+        { label: "What coffee shop insurance costs", href: "/guides/coffee-shop-insurance-cost" },
+        { label: "What bakery insurance costs", href: "/guides/bakery-insurance-cost" },
       ] },
       { id: "price-drivers", title: "What moves the price", paragraphs: [
         "Sales come first. Restaurant liability is usually rated on yearly sales, so a busier restaurant pays more.",
@@ -296,6 +298,74 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
         "Your current policy or declarations page.",
         "Your renewal date.",
       ], links: [{ label: "What your landlord's lease will require", href: "/guides/restaurant-lease-insurance-requirements" }] },
+    ],
+  },
+  {
+    // Kevin 2026-10-15. Real prices only, the same figures as lib/seo/restaurant-prices.ts (CONCEPT_QUOTES coffee-shop,
+    // CONCEPT_BINDABLE coffee-shop); scripts/test-seo-restaurant-snippets.cjs keeps them identical. Business type only.
+    slug: "coffee-shop-insurance-cost",
+    updatedAt: "2026-10-15",
+    title: "What coffee shop insurance costs: real quotes from $686/yr",
+    description: "A coffee shop was quoted $686 a year for general liability and a café-bakery $1,485 for liability and property. What moves the price and what to send.",
+    intro: "Coffee shop insurance is priced on your sales, what you cook, your equipment and whether you rent. Below are two real quotes, what moves the price and what to have ready for your own quote.",
+    category: "Coffee shop insurance cost",
+    insurancePath: "/insurance/coffee-shop",
+    quoteForm: "restaurant-short",
+    sections: [
+      { id: "real-prices", title: "Two real coffee shop quotes", paragraphs: [
+        "A coffee shop was quoted $686 a year for general liability. That was a quote, not a policy the owner bought.",
+        "A café-bakery open less than a year was quoted $1,485 a year for liability and property together, a businessowners policy. The insurer issued it ready to bind, with no underwriter referral, but it is still a quote.",
+        "Each line is one real business, not an average. Your price depends on your own shop, and we can't promise a price until we see your details.",
+      ], links: [
+        { label: "Coffee shop insurance", href: "/insurance/coffee-shop" },
+        { label: "What bakery insurance costs", href: "/guides/bakery-insurance-cost" },
+        { label: "What restaurant insurance costs: real policies and quotes", href: "/guides/restaurant-insurance-cost" },
+      ] },
+      { id: "liability-or-package", title: "Liability alone or liability and property", paragraphs: [
+        "General liability covers claims that you hurt someone or damaged their property, such as a customer who slips on a wet floor. Many leases require it.",
+        "A businessowners policy adds property: espresso machines, grinders, refrigeration, furniture, stock and the improvements you paid for. The two quotes above are for different businesses, so they are not a like-for-like comparison.",
+      ] },
+      { id: "price-drivers", title: "What moves the price", paragraphs: [
+        "Sales come first. Liability is usually rated on yearly sales, so a busier shop pays more.",
+        "Cooking matters. A shop that brews, reheats and bakes costs less to insure than one with fryers, grills or open flame.",
+        "Equipment value sets the property price. Value machines and furniture at what they would cost to replace.",
+        "Catering, events away from the shop, delivery by your own staff, alcohol and claims in the past few years can all move the price.",
+      ], checklist: ["Yearly sales.", "Cooking beyond brewing, reheating and baking.", "Value of machines, furniture and stock.", "Building owned or rented.", "Catering, events or delivery.", "Claims in the past few years."] },
+      { id: "what-to-have-ready", title: "What to have ready for a quote", paragraphs: [
+        "The form below asks only for your contact details, type of business, ZIP code and renewal month. A licensed agent follows up for the rest.",
+      ], checklist: ["Yearly sales.", "Address.", "Value of equipment and furniture.", "Your current policy or declarations page.", "Your renewal date."], links: [{ label: "What your landlord's lease will require", href: "/guides/restaurant-lease-insurance-requirements" }] },
+    ],
+  },
+  {
+    // Kevin 2026-10-15. Same figures as lib/seo/restaurant-prices.ts (CONCEPT_BINDS bakery, CONCEPT_BINDABLE bakery).
+    slug: "bakery-insurance-cost",
+    updatedAt: "2026-10-15",
+    title: "What bakery insurance costs: a real $849/yr policy",
+    description: "A bakery we insure pays $849 a year for general liability; a café-bakery was quoted $1,485 for liability and property. What moves the price.",
+    intro: "Bakery insurance is priced on your sales, your ovens and fryers, who you sell to and your equipment. Below is a real bakery policy we placed, a real café-bakery quote, what moves the price and what to have ready.",
+    category: "Bakery insurance cost",
+    insurancePath: "/insurance/bakery",
+    quoteForm: "restaurant-short",
+    sections: [
+      { id: "real-prices", title: "A real bakery policy and a real quote", paragraphs: [
+        "A bakery we insure pays $849 a year for general liability.",
+        "A café-bakery open less than a year was quoted $1,485 a year for liability and property together, a businessowners policy. The insurer issued it ready to bind, with no underwriter referral, but it is a quote, not a policy the owner bought.",
+        "Each line is one real business, not an average. Your price depends on your own bakery, and we can't promise a price until we see your details.",
+      ], links: [
+        { label: "Bakery insurance", href: "/insurance/bakery" },
+        { label: "What coffee shop insurance costs", href: "/guides/coffee-shop-insurance-cost" },
+        { label: "What restaurant insurance costs: real policies and quotes", href: "/guides/restaurant-insurance-cost" },
+      ] },
+      { id: "price-drivers", title: "What moves the price", paragraphs: [
+        "Sales come first. Liability is usually rated on yearly sales.",
+        "Ovens are expected. Fryers, for donuts or anything else, add fire risk, and insurers ask about hood suppression and cleaning.",
+        "Who you sell to matters. Selling wholesale to stores, cafés or restaurants means your products reach more people you never meet, so tell us about wholesale accounts and their insurance requirements.",
+        "Property is priced on what your ovens, mixers, refrigeration and stock would cost to replace. Owning the building adds the building itself.",
+        "Delivery by your own staff, catering and claims in the past few years can also move the price.",
+      ], checklist: ["Yearly sales, split retail and wholesale.", "Fryers, and hood suppression and cleaning.", "Value of ovens, mixers, refrigeration and stock.", "Building owned or rented.", "Delivery or catering.", "Claims in the past few years."] },
+      { id: "what-to-have-ready", title: "What to have ready for a quote", paragraphs: [
+        "The form below asks only for your contact details, type of business, ZIP code and renewal month. A licensed agent follows up for the rest.",
+      ], checklist: ["Yearly sales.", "Address.", "Wholesale accounts and what insurance they ask for.", "Your current policy or declarations page.", "Your renewal date."], links: [{ label: "What your landlord's lease will require", href: "/guides/restaurant-lease-insurance-requirements" }] },
     ],
   },
 ];

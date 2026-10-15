@@ -86,5 +86,45 @@ assert.equal(prices.headlinePrice('donut-shop'),H.quickService,'a donut shop fri
 assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
  // Linked from the restaurant SEO pages' existing guide links.
  assert.match(fs.readFileSync(path.join(root,'components/SeoPage.tsx'),'utf8'),/href="\/guides\/restaurant-insurance-cost"/);
+ // ---- Kevin 2026-10-15: coffee shop + bakery cost guides, state hubs, sitemap pruning, New York rebuild ----
+ const cat=R('lib/guides/catalog.ts');
+ for(const [slug,figures] of [['coffee-shop-insurance-cost',[prices.conceptQuote('coffee-shop').usd,prices.conceptBindable('coffee-shop').usd]],['bakery-insurance-cost',[prices.conceptBind('bakery').usd,prices.conceptBindable('bakery').usd]]]){
+  const g=cat.getStartupGuide(slug);assert.ok(g,slug);assert.equal(g.quoteForm,'restaurant-short');
+  assert.ok(g.title.length<=60&&g.description.length<=155,`${slug} title/description length`);
+  const real=g.sections.find(x=>x.id==='real-prices').paragraphs.join(' ');
+  for(const f of figures)assert.ok(real.includes(`$${f.toLocaleString('en-US')} a year`),`${slug}: $${f}`);
+  assert.deepEqual([...new Set(JSON.stringify(g).match(/\$[\d,]+/g))].sort(),figures.map(f=>`$${f.toLocaleString('en-US')}`).sort(),`${slug}: only its approved figures`);
+  assert.match(real,/quote/);assert.doesNotMatch(JSON.stringify(g),/average (?:is|of|cost)|\branges? from\b|save \d|savings|New York|North Carolina|Chicago/i);
+  assert.ok(sitemap.some(e=>e.url===`https://www.cohesiveinsure.com/guides/${slug}`),`${slug} in the guides sitemap`);
+ }
+ // Sitemap: type x state URLs with 0 impressions in 60 days leave the sitemap; the pages stay generated and indexable.
+ const SM=R('lib/seo/sitemap-sections.ts'),RT=R('lib/seo/restaurant-types.ts');
+ const typeState=RT.RESTAURANT_TYPES.flatMap(t=>RT.RESTAURANT_TYPE_STATES.map(st=>[t.slug,st.slug]));
+ const restSm=new Set(SM.sitemapSection('restaurant').map(e=>e.url));
+ const out=typeState.filter(([t,st])=>!restSm.has(`https://www.cohesiveinsure.com/insurance/${t}/${st}`));
+ assert.equal(typeState.length,1900);assert.equal(out.length,1122,'1,122 zero-impression type x state URLs leave the sitemap');
+ // Independent fixture from the same Search Console pull: pages WITH impressions stay, sampled zero-impression pages go.
+ for(const u of ['fast-food-restaurant/new-york','deli/new-york','bakery/new-york','coffee-shop/north-carolina'])assert.ok(restSm.has(`https://www.cohesiveinsure.com/insurance/${u}`),`${u} had impressions and stays`);
+ for(const u of ['soul-food-restaurant/alabama','korean-restaurant/wyoming','halal-restaurant/vermont'])assert.ok(!restSm.has(`https://www.cohesiveinsure.com/insurance/${u}`),`${u} had 0 impressions and leaves`);
+ for(const [t,st] of out)assert.equal(SM.restaurantTypeStateInSitemap(t,st),false);
+ for(const st of RT.RESTAURANT_TYPE_STATES)assert.ok(restSm.has(`https://www.cohesiveinsure.com/insurance/restaurant/${st.slug}`),`state hub ${st.slug} stays in the sitemap`);
+ const staticParams=new Set(gRoute.generateStaticParams().map(p=>`${p.vertical}/${p.geo}`));
+ for(const [t,st] of out.slice(0,1122))assert.ok(staticParams.has(`${t}/${st}`),`${t}/${st} still generated`);
+ for(const [t,st] of [out[0],out[out.length-1]]){const md=await gRoute.generateMetadata({params:Promise.resolve({vertical:t,geo:st})});assert.equal(md.robots,undefined,`${t}/${st} stays indexable`);assert.equal(md.alternates.canonical,`/insurance/${t}/${st}`);}
+ // Hub and spoke: each type x state page links up to its state hub (breadcrumb + related link); the hub links down.
+ {const page=await gRoute.default({params:Promise.resolve({vertical:'coffee-shop',geo:'ohio'})});
+  assert.deepEqual(page.props.breadcrumbs.at(-1),{label:'Ohio restaurant insurance',href:'/insurance/restaurant/ohio'});
+  assert.ok(page.props.relatedLinks.some(l=>l.href==='/insurance/restaurant/ohio'));
+  for(const st of ['new-york','idaho']){const hub=await gRoute.default({params:Promise.resolve({vertical:'restaurant',geo:st})});
+   for(const t of RT.RESTAURANT_TYPES)assert.ok(hub.props.relatedLinks.some(l=>l.href===`/insurance/${t.slug}/${st}`),`${st} hub links ${t.slug}`);}}
+ // New York hub: the New York policies we placed and New York's own rules, each with an official source.
+ {const ny=(await gRoute.default({params:Promise.resolve({vertical:'restaurant',geo:'new-york'})})).props.content;const body=JSON.stringify(ny);
+  for(const want of ['$1,153 a year for liability and property','$597 a year for general liability','$849 a year for general liability','$509 a year'])assert.ok(body.includes(want),want);
+  assert.doesNotMatch(body,/most expensive state|pricing credit|\$\d+-\$?\d+\/mo/,'no unsupported claims or template ranges');
+  const official=/^https:\/\/(www\.wcb\.ny\.gov|www\.nysenate\.gov|nyc-business\.nyc\.gov|regs\.health\.ny\.gov)\//;
+  for(const want of [/Workers' comp/,/Disability and Paid Family Leave/,/Dram shop/,/five boroughs/,/Outside New York City/]){
+   const f=ny.stateFacts.find(x=>want.test(x.title));assert.ok(f,`NY fact ${want}`);assert.match(f.source?.href??'',official,f.title);}
+  assert.match(fs.readFileSync(path.join(root,'app/page.tsx'),'utf8'),/href: "\/insurance\/restaurant\/new-york"/,'homepage links the NY hub');
+  assert.match(fs.readFileSync(path.join(root,'app/insurance/page.tsx'),'utf8'),/href="\/insurance\/restaurant\/new-york"/,'/insurance links the NY hub');}
  console.log(`PASS: ${seen.size} restaurant-family pages (${priced} titles priced): titles <=60 and descriptions <=155, each with its own type's approved price (bar: none), no "from $X", no New York caterer, no NY on non-NY pages; cost guide carries the four approved lines and is in the sitemap.`);
 })().catch(e=>{console.error(e);process.exitCode=1;});
