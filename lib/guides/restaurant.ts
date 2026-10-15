@@ -322,7 +322,7 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
       ] },
       { id: "liability-or-package", title: "Liability alone or liability and property", paragraphs: [
         "General liability covers claims that you hurt someone or damaged their property, such as a customer who slips on a wet floor. Many leases require it.",
-        "A businessowners policy adds property: espresso machines, grinders, refrigeration, furniture, stock and the improvements you paid for. That is why the package quote above is higher than the liability quote.",
+        "A businessowners policy adds property: espresso machines, grinders, refrigeration, furniture, stock and the improvements you paid for. The two quotes above are for different businesses, so they are not a like-for-like comparison.",
       ] },
       { id: "price-drivers", title: "What moves the price", paragraphs: [
         "Sales come first. Liability is usually rated on yearly sales, so a busier shop pays more.",

@@ -103,6 +103,9 @@ assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
  const restSm=new Set(SM.sitemapSection('restaurant').map(e=>e.url));
  const out=typeState.filter(([t,st])=>!restSm.has(`https://www.cohesiveinsure.com/insurance/${t}/${st}`));
  assert.equal(typeState.length,1900);assert.equal(out.length,1122,'1,122 zero-impression type x state URLs leave the sitemap');
+ // Independent fixture from the same Search Console pull: pages WITH impressions stay, sampled zero-impression pages go.
+ for(const u of ['fast-food-restaurant/new-york','deli/new-york','bakery/new-york','coffee-shop/north-carolina'])assert.ok(restSm.has(`https://www.cohesiveinsure.com/insurance/${u}`),`${u} had impressions and stays`);
+ for(const u of ['soul-food-restaurant/alabama','korean-restaurant/wyoming','halal-restaurant/vermont'])assert.ok(!restSm.has(`https://www.cohesiveinsure.com/insurance/${u}`),`${u} had 0 impressions and leaves`);
  for(const [t,st] of out)assert.equal(SM.restaurantTypeStateInSitemap(t,st),false);
  for(const st of RT.RESTAURANT_TYPE_STATES)assert.ok(restSm.has(`https://www.cohesiveinsure.com/insurance/restaurant/${st.slug}`),`state hub ${st.slug} stays in the sitemap`);
  const staticParams=new Set(gRoute.generateStaticParams().map(p=>`${p.vertical}/${p.geo}`));
@@ -118,7 +121,9 @@ assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
  {const ny=(await gRoute.default({params:Promise.resolve({vertical:'restaurant',geo:'new-york'})})).props.content;const body=JSON.stringify(ny);
   for(const want of ['$1,153 a year for liability and property','$597 a year for general liability','$849 a year for general liability','$509 a year'])assert.ok(body.includes(want),want);
   assert.doesNotMatch(body,/most expensive state|pricing credit|\$\d+-\$?\d+\/mo/,'no unsupported claims or template ranges');
-  for(const f of ny.stateFacts.slice(0,5))assert.match(f.source.href,/^https:\/\/(www\.wcb\.ny\.gov|www\.nysenate\.gov|nyc-business\.nyc\.gov|regs\.health\.ny\.gov)\//,f.title);
+  const official=/^https:\/\/(www\.wcb\.ny\.gov|www\.nysenate\.gov|nyc-business\.nyc\.gov|regs\.health\.ny\.gov)\//;
+  for(const want of [/Workers' comp/,/Disability and Paid Family Leave/,/Dram shop/,/five boroughs/,/Outside New York City/]){
+   const f=ny.stateFacts.find(x=>want.test(x.title));assert.ok(f,`NY fact ${want}`);assert.match(f.source?.href??'',official,f.title);}
   assert.match(fs.readFileSync(path.join(root,'app/page.tsx'),'utf8'),/href: "\/insurance\/restaurant\/new-york"/,'homepage links the NY hub');
   assert.match(fs.readFileSync(path.join(root,'app/insurance/page.tsx'),'utf8'),/href="\/insurance\/restaurant\/new-york"/,'/insurance links the NY hub');}
  console.log(`PASS: ${seen.size} restaurant-family pages (${priced} titles priced): titles <=60 and descriptions <=155, each with its own type's approved price (bar: none), no "from $X", no New York caterer, no NY on non-NY pages; cost guide carries the four approved lines and is in the sitemap.`);

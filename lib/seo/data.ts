@@ -1273,7 +1273,7 @@ const NY_SOURCES = {
 
 function newYorkRestaurant(base: PageContent): PageContent {
   const bop = RESTAURANT_FLOOR.pkg, gl = RESTAURANT_FLOOR.gl, wc = RESTAURANT_FLOOR.wc, bakery = conceptBind("bakery")!;
-  const real = `Three New York food businesses we insure: a full-service restaurant pays ${usd(bop.usd)} a year for liability and property together, a catering business pays ${usd(gl.usd)} a year for general liability, and a bakery pays ${usd(bakery.usd)} a year for general liability. For workers' comp, a New York sandwich shop pays ${usd(wc.usd)} a year.`;
+  const real = `New York food businesses we insure: a full-service restaurant pays ${usd(bop.usd)} a year for liability and property together, a catering business pays ${usd(gl.usd)} a year for general liability, and a bakery pays ${usd(bakery.usd)} a year for general liability. For workers' comp, a New York sandwich shop pays ${usd(wc.usd)} a year.`;
   const notAverage = "Each is one real policy we placed, not an average. Your price depends on your sales, cooking, alcohol, payroll, building and claims.";
   return {
     ...base,
@@ -1286,7 +1286,7 @@ function newYorkRestaurant(base: PageContent): PageContent {
       { coverage: "General liability, catering business (bound)", range: `${usd(gl.usd)}/yr`, note: "Liability only, no property." },
       { coverage: "General liability, bakery (bound)", range: `${usd(bakery.usd)}/yr`, note: "Liability only, no property." },
       { coverage: "Workers' compensation, sandwich shop (bound)", range: `${usd(wc.usd)}/yr`, note: "Priced on payroll. Required for virtually every New York employer." },
-      { coverage: "Disability and Paid Family Leave", range: "Priced on payroll", note: "A separate New York requirement once you have employees." },
+      { coverage: "Disability and Paid Family Leave", range: "Priced on payroll", note: "A separate New York requirement once you have one or more employees on each of at least 30 days in a calendar year." },
       { coverage: "Liquor liability", range: "Priced on alcohol sales", note: "Needed if you serve alcohol. See the dram shop note below." },
     ],
     stateFacts: [
