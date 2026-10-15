@@ -25,7 +25,7 @@ async function open(browser, path, init) {
 }
 
 // Staged workers' comp question (Kevin 2026-10-14): /contractor-test asks it ONLY with ?wc=1.
-const WC_QUESTION = "Do you also need workers' comp?";
+const WC_QUESTION = "Do you need workers' comp?";
 const WC_ROW = "Workers' comp requested";
 // Today's completed paid-form body, key for key and in order. Without wc=1 it must stay exactly this.
 const FINAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source', 'details', 'eventId', 'website'];
@@ -206,15 +206,20 @@ function details(payload) {
       assert.equal(details(body)[WC_ROW], answer ?? undefined, `wc=1 + ${answer} -> details row`);
       await context.close();
     }
-    // wc=1 on the step layout: no extra step; the question sits on the last (coverage) screen; a
-    // partial carries the answer only once the visitor gave one.
+    // wc=1 on the step layout: no extra step; the question LEADS the first screen (above Email, so a WC-ad
+    // visitor sees it first; Kevin 2026-10-15) and is gone from the coverage screen; a partial carries the
+    // answer only once the visitor gave one.
     for (const answer of [null, 'Yes']) {
       const { context, page, payloads } = await open(browser, '/contractor-test?industry=tree&angle=coi&wc=1', () => localStorage.setItem('cohesive_experiment_tree_coi_v1', 'step'));
       assert.equal(await page.getByText('Step 1 of 7').count(), 1, 'wc=1 adds no step');
+      const group = page.getByRole('group', { name: WC_QUESTION });
+      assert.equal(await group.count(), 1, 'WC question on the first screen');
+      const wcY = (await group.boundingBox()).y, emailY = (await page.getByLabel('Email', { exact: true }).boundingBox()).y;
+      assert.ok(wcY < emailY, 'WC question sits above the contact fields');
+      if (answer) await group.getByRole('button', { name: answer, exact: true }).click();
       await page.getByLabel('Email', { exact: true }).fill('wc-step@example.invalid');
       await page.getByLabel('Phone', { exact: true }).fill('2025550123');
       await page.getByLabel('Full name', { exact: true }).fill('QA WC Step');
-      assert.equal(await page.getByText(WC_QUESTION).count(), 0, 'not on the contact screen');
       if (answer) {
         await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByLabel('Legal business name', { exact: true }).fill('QA WC Tree LLC');
@@ -234,9 +239,7 @@ function details(payload) {
         await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByText('Step 7 of 7').waitFor();
-        const group = page.getByRole('group', { name: WC_QUESTION });
-        assert.equal(await group.count(), 1, 'WC question on the coverage screen');
-        await group.getByRole('button', { name: answer, exact: true }).click();
+        assert.equal(await page.getByText(WC_QUESTION).count(), 0, 'not repeated on the coverage screen');
       }
       await leave(page);
       await page.waitForTimeout(300);
