@@ -25,7 +25,7 @@ async function open(browser, path, init) {
 }
 
 // Staged workers' comp question (Kevin 2026-10-14): /contractor-test asks it ONLY with ?wc=1.
-const WC_QUESTION = "Do you need workers' comp?";
+const WC_QUESTION = "What coverage do you need?";
 const WC_ROW = "Workers' comp requested";
 // Today's completed paid-form body, key for key and in order. Without wc=1 it must stay exactly this.
 const FINAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source', 'details', 'eventId', 'website'];
@@ -188,13 +188,13 @@ function details(payload) {
       await context.close();
     }
     // wc=1: the question shows (optional, accessible, 16px on phones) and each answer maps to the contract.
-    for (const [answer, coverage] of [['Yes', ['General Liability', 'Workers Comp']], ['Not sure', undefined], ['No', undefined], [null, undefined]]) {
+    for (const [answer, row, coverage] of [["Workers' comp + general liability", 'WC + GL', ['General Liability', 'Workers Comp']], ["Workers' comp only", 'WC only', ['Workers Comp']], ['Not sure', 'Not sure', undefined], ['General liability only', 'GL only', undefined], [null, undefined, undefined]]) {
       const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix&wc=1', () => localStorage.setItem('cohesive_experiment_remodel_trade_mix_v1', 'long'));
       await page.setViewportSize({ width: 390, height: 844 });
       const group = page.getByRole('group', { name: WC_QUESTION });
       assert.equal(await group.count(), 1, 'wc=1 -> WC question shown');
-      assert.deepEqual(await group.getByRole('button').allTextContents(), ['Yes', 'No', 'Not sure']);
-      assert.equal(await group.getByRole('button', { name: 'Yes' }).evaluate(el => getComputedStyle(el).fontSize), '16px', '16px on phones (no iOS zoom)');
+      assert.deepEqual(await group.getByRole('button').allTextContents(), ["Workers' comp + general liability", "Workers' comp only", 'General liability only', 'Not sure']);
+      assert.equal(await group.getByRole('button', { name: "Workers' comp only", exact: true }).evaluate(el => getComputedStyle(el).fontSize), '16px', '16px on phones (no iOS zoom)');
       await fillRequired(page);
       if (answer) {
         await group.getByRole('button', { name: answer, exact: true }).click();
@@ -203,13 +203,13 @@ function details(payload) {
       const body = await submitLong(page, finals);
       assert.deepEqual(body.coverage, coverage, `wc=1 + ${answer} -> coverage`);
       assert.deepEqual(Object.keys(body), coverage ? [...FINAL_KEYS, 'coverage'] : FINAL_KEYS);
-      assert.equal(details(body)[WC_ROW], answer ?? undefined, `wc=1 + ${answer} -> details row`);
+      assert.equal(details(body)[WC_ROW], row, `wc=1 + ${answer} -> details row`);
       await context.close();
     }
     // wc=1 on the step layout: no extra step; the question LEADS the first screen (above Email, so a WC-ad
     // visitor sees it first; Kevin 2026-10-15) and is gone from the coverage screen; a partial carries the
     // answer only once the visitor gave one.
-    for (const answer of [null, 'Yes']) {
+    for (const answer of [null, "Workers' comp + general liability"]) {
       const { context, page, payloads } = await open(browser, '/contractor-test?industry=tree&angle=coi&wc=1', () => localStorage.setItem('cohesive_experiment_tree_coi_v1', 'step'));
       assert.equal(await page.getByText('Step 1 of 7').count(), 1, 'wc=1 adds no step');
       const group = page.getByRole('group', { name: WC_QUESTION });
@@ -246,7 +246,7 @@ function details(payload) {
       assert.equal(payloads.length, 1);
       const captured = details(payloads[0]);
       if (answer) {
-        assert.equal(captured[WC_ROW], 'Yes');
+        assert.equal(captured[WC_ROW], 'WC + GL');
         assert.deepEqual(payloads[0].coverage, ['General Liability', 'Workers Comp']);
       } else {
         assert.equal(captured[WC_ROW], undefined, 'unanswered -> no WC row');

@@ -11,4 +11,4 @@ export function validFullField(k:string,v:string|undefined){if(['structure','yea
 export function normalizeFull(a:Answers,k:string,v:string){const next={...a,[k]:v};if(k==='trade'&&next.otherTrades&&next.otherTrades!=='None'){next.otherTrades=next.otherTrades.split(', ').filter(t=>t!==v).join(', ');}if(k==='employees'&&v.startsWith('0'))delete next.payroll;if(k==='usesSubcontractors'&&v==='No')delete next.subcontractorCosts;if(next.trade!=='Other trade'&&!next.otherTrades?.split(', ').includes('Other trade'))delete next.otherTradeDescription;return next;}
 // Only an explicit "Yes" requests coverage; "No", "Not sure" and unanswered send no `coverage` key.
 // Both values are in REQUESTED_COVERAGE_ALLOWLIST, so /api/intake forwards them to the CRM.
-export function wcCoverage(answer:string|undefined):RequestedCoverage[]|undefined{return answer==='Yes'?['General Liability','Workers Comp']:undefined;}
+export function wcCoverage(answer:string|undefined):RequestedCoverage[]|undefined{return answer==='WC + GL'?['General Liability','Workers Comp']:answer==='WC only'?['Workers Comp']:undefined;}

@@ -74,11 +74,13 @@ export const SUBCONTRACTOR_COSTS: Option[] = [
   { label: "$1M+", value: "$1M+" },
 ];
 
-// Staged WC question (Kevin 2026-10-14): asked on /contractor-test ONLY when the URL carries wc=1.
-// Optional. "Yes" requests General Liability + Workers Comp on the lead; "Not sure" and "No" do not.
+// Staged WC question (Kevin 2026-10-14): asked on /contractor-test ONLY when the URL carries wc=1 (WC ads).
+// Optional. Kevin 2026-10-15: a WC-ad visitor may need WC alone, so "WC only" requests Workers Comp by itself;
+// "WC + GL" requests both; "GL only" and "Not sure" send no coverage (today's body).
 export const WC_REQUESTED: Option[] = [
-  { label: "Yes", value: "Yes" },
-  { label: "No", value: "No" },
+  { label: "Workers' comp + general liability", value: "WC + GL" },
+  { label: "Workers' comp only", value: "WC only" },
+  { label: "General liability only", value: "GL only" },
   { label: "Not sure", value: "Not sure" },
 ];
 
