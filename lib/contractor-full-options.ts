@@ -76,12 +76,11 @@ export const SUBCONTRACTOR_COSTS: Option[] = [
 
 // Staged WC question (Kevin 2026-10-14): asked on /contractor-test ONLY when the URL carries wc=1 (WC ads).
 // Optional. Kevin 2026-10-15: a WC-ad visitor may need WC alone, so "WC only" requests Workers Comp by itself;
-// "WC + GL" requests both; "GL only" and "Not sure" send no coverage (today's body).
+// "WC + GL" requests both; "GL only" sends no coverage (today's body). No "Not sure" (Kevin 2026-10-15).
 export const WC_REQUESTED: Option[] = [
   { label: "Workers' comp + general liability", value: "WC + GL" },
   { label: "Workers' comp only", value: "WC only" },
   { label: "General liability only", value: "GL only" },
-  { label: "Not sure", value: "Not sure" },
 ];
 
 export const STRUCTURE: Option[] = [

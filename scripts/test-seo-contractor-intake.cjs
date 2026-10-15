@@ -84,7 +84,6 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   assert.deepEqual(fwd.coverage,['General Liability','Workers Comp'],'WC + GL -> CRM gets GL + WC');assert.ok(JSON.stringify(fwd).includes("Workers' comp requested"));
   fwd=await send(paid({row:'WC only',coverage:['Workers Comp']}));assert.deepEqual(fwd.coverage,['Workers Comp'],'WC only -> CRM gets WC alone');
   fwd=await send(paid({row:'GL only'}));assert.equal(fwd.coverage,undefined,'GL only -> no coverage (today)');
-  fwd=await send(paid({row:'Not sure'}));assert.equal(fwd.coverage,undefined,'WC Not sure -> no coverage');assert.ok(JSON.stringify(fwd).includes('Not sure'));
   fwd=await send(paid({}));assert.equal(fwd.coverage,undefined,'no wc=1 -> no coverage (today)');assert.ok(!JSON.stringify(fwd).includes("Workers' comp"));
   for(const junk of [['General Liability','Workers Comp','Commercial Auto'],['Property'],['workers comp'],'Workers Comp',[],['Workers Comp','Workers Comp','General Liability']]){
    fwd=await send(paid({row:'WC + GL',coverage:junk}));assert.equal(fwd.coverage,undefined,`allowlist drops ${JSON.stringify(junk)}`);

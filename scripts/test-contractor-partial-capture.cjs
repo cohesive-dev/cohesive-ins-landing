@@ -188,12 +188,12 @@ function details(payload) {
       await context.close();
     }
     // wc=1: the question shows (optional, accessible, 16px on phones) and each answer maps to the contract.
-    for (const [answer, row, coverage] of [["Workers' comp + general liability", 'WC + GL', ['General Liability', 'Workers Comp']], ["Workers' comp only", 'WC only', ['Workers Comp']], ['Not sure', 'Not sure', undefined], ['General liability only', 'GL only', undefined], [null, undefined, undefined]]) {
+    for (const [answer, row, coverage] of [["Workers' comp + general liability", 'WC + GL', ['General Liability', 'Workers Comp']], ["Workers' comp only", 'WC only', ['Workers Comp']], ['General liability only', 'GL only', undefined], [null, undefined, undefined]]) {
       const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix&wc=1', () => localStorage.setItem('cohesive_experiment_remodel_trade_mix_v1', 'long'));
       await page.setViewportSize({ width: 390, height: 844 });
       const group = page.getByRole('group', { name: WC_QUESTION });
       assert.equal(await group.count(), 1, 'wc=1 -> WC question shown');
-      assert.deepEqual(await group.getByRole('button').allTextContents(), ["Workers' comp + general liability", "Workers' comp only", 'General liability only', 'Not sure']);
+      assert.deepEqual(await group.getByRole('button').allTextContents(), ["Workers' comp + general liability", "Workers' comp only", 'General liability only']);
       assert.equal(await group.getByRole('button', { name: "Workers' comp only", exact: true }).evaluate(el => getComputedStyle(el).fontSize), '16px', '16px on phones (no iOS zoom)');
       await fillRequired(page);
       if (answer) {
