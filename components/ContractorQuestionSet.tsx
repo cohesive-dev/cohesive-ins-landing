@@ -5,12 +5,14 @@ import TradeSearch from '@/components/TradeSearch';
 import {filterTrades} from '@/lib/trade-search';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import {TRADES} from '@/lib/contractor-trades';
+import {wantsWc} from '@/lib/contractor-full-form';
 import {OTHER_TRADES,PRIMARY_PCT,REVENUE,EMPLOYEES,PAYROLL,USES_SUBCONTRACTORS,SUBCONTRACTOR_COSTS,STRUCTURE,CURRENT_GL,CURRENT_PREMIUM,WC_REQUESTED,type Option} from '@/lib/contractor-full-options';
-const FIELD_KEYS:Record<string,string>={'Full name':'fullName','Email':'email','Phone':'phone','Legal business name':'legalName','Business address':'address',"What's your primary trade?":'trade','Any other trades?':'otherTrades','How much of your work is your primary trade?':'primaryPct','Describe your other trade or services':'otherTradeDescription','Annual revenue (roughly)':'revenue','W2 employees':'employees','Annual W2 payroll (roughly)':'payroll','Do you hire subcontractors?':'usesSubcontractors','Annual subcontractor costs (roughly)':'subcontractorCosts','Business structure':'structure','What year did you start the business?':'yearStarted','Do you have general liability coverage today?':'currentGl','What are you paying now for GL, per year?':'currentPremium','What coverage do you need?':'wcRequested'};
+const FIELD_KEYS:Record<string,string>={'Full name':'fullName','Email':'email','Phone':'phone','Legal business name':'legalName','Business address':'address',"What's your primary trade?":'trade','Any other trades?':'otherTrades','How much of your work is your primary trade?':'primaryPct','Describe your other trade or services':'otherTradeDescription','Annual revenue (roughly)':'revenue','W2 employees':'employees','Annual W2 payroll (roughly)':'payroll','Do you hire subcontractors?':'usesSubcontractors','Annual subcontractor costs (roughly)':'subcontractorCosts','Business structure':'structure','What year did you start the business?':'yearStarted','Do you have general liability coverage today?':'currentGl','What are you paying now for GL, per year?':'currentPremium','What coverage do you need?':'wcRequested','Full-time W2 employees':'wcFullTime','Part-time W2 employees':'wcPartTime','Annual W2 payroll':'wcPayroll'};
 const VisibleFields=createContext<{keys:string[];sections:string[]}|null>(null);
 // askWorkersComp: the staged WC question (/contractor-test?wc=1, i.e. WC ads), rendered first. Off (every other caller) renders nothing new.
 export default function ContractorQuestionSet({f,set,visible,contactFirst=false,askWorkersComp=false}:{f:Record<string,string>;set:(k:string,v:string)=>void;visible?:string[];contactFirst?:boolean;askWorkersComp?:boolean}){
  const qualified=true,hasW2Employees=!!f.employees&&!f.employees.startsWith('0'),usesSubcontractors=f.usesSubcontractors==='Yes';
+ const exactWc=askWorkersComp&&wantsWc(f),wcHasEmployees=(Number(f.wcFullTime)||0)+(Number(f.wcPartTime)||0)>0;
  const emailValid=/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(f.email||''),phoneValid=acceptedPhoneShape(f.phone);
  const selectedOtherTrades=f.otherTrades&&f.otherTrades!=='None'?f.otherTrades.split(', ').filter(Boolean):f.otherTrades==='None'?['None']:[];
  const otherTradeOptions=OTHER_TRADES.filter(o=>o.value==='None'||o.value!==f.trade);
@@ -94,12 +96,29 @@ export default function ContractorQuestionSet({f,set,visible,contactFirst=false,
               <Field label="Annual revenue (roughly)" required alignOnDesktop>
                 <Select value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} placeholder="Select one" />
               </Field>
+              {!exactWc && (
               <Field label="W2 employees" required hint="Do not include owners or subcontractors." alignOnDesktop>
                 <Select value={f.employees} onChange={(v) => set("employees", v)} options={EMPLOYEES} placeholder="Select one" />
               </Field>
+              )}
             </div>
+            {exactWc && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Full-time W2 employees" required hint="Exact number. Not owners or subcontractors. 0 if none." alignOnDesktop>
+                  <Input value={f.wcFullTime} onChange={(v) => set("wcFullTime", v)} placeholder="0" inputMode="numeric" />
+                </Field>
+                <Field label="Part-time W2 employees" required hint="Exact number. 0 if none." alignOnDesktop>
+                  <Input value={f.wcPartTime} onChange={(v) => set("wcPartTime", v)} placeholder="0" inputMode="numeric" />
+                </Field>
+                {wcHasEmployees && (
+                  <Field label="Annual W2 payroll" required hint="Total yearly wages to employees, in dollars. Not subcontractor payments." alignOnDesktop>
+                    <Input value={f.wcPayroll} onChange={(v) => set("wcPayroll", v)} placeholder="$185,000" inputMode="numeric" />
+                  </Field>
+                )}
+              </div>
+            )}
             <div className="grid gap-4 sm:grid-cols-2">
-              {hasW2Employees && (
+              {hasW2Employees && !exactWc && (
                 <Field label="Annual W2 payroll (roughly)" required hint="Wages to employees, not subcontractor payments." alignOnDesktop>
                   <Select value={f.payroll} onChange={(v) => set("payroll", v)} options={PAYROLL} placeholder="Select one" />
                 </Field>
