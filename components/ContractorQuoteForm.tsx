@@ -5,7 +5,7 @@ import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 import { TRADES } from "@/lib/contractor-trades";
 import { filterTrades } from "@/lib/trade-search";
-import type { RequestedCoverage } from "@/lib/requested-coverage";
+import { REQUESTED_COVERAGE_LABELS, type RequestedCoverage } from "@/lib/requested-coverage";
 
 // Minimal contractor intake for the /insurance/<trade> SEO pages. Posts to the
 // same /api/intake webhook under the contractor lane, with automated first touch
@@ -39,12 +39,11 @@ export function statedTrade(choice: string, other: string): string {
 // Coverage a page asks the CRM to record (the workers' comp guides send ["Workers Comp"]). The
 // top-level `coverage` values are CRM line names and must be in /api/intake's allowlist; the
 // detail row is the human-readable version for quotes@ and the Slack card.
-const COVERAGE_LABELS: Record<RequestedCoverage, string> = { "Workers Comp": "Workers' comp", "General Liability": "General liability" };
 function coverageFields(coverageRequested?: RequestedCoverage[]) {
   if (!coverageRequested?.length) return { payload: {}, detail: undefined };
   return {
     payload: { coverage: coverageRequested },
-    detail: { label: "Coverage requested", value: coverageRequested.map((c) => COVERAGE_LABELS[c]).join(", ") },
+    detail: { label: "Coverage requested", value: coverageRequested.map((c) => REQUESTED_COVERAGE_LABELS[c]).join(", ") },
   };
 }
 

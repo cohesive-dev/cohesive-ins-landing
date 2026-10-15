@@ -3,6 +3,7 @@ import { GROWTH_BUNDLE } from "@/lib/guides/lead-bundle";
 import { metroLinksFor, poolLeadGuidePath } from "@/lib/seo/metro-pages";
 import { relatedServiceLinks } from "@/lib/seo/service-industries";
 import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
+import { WC_TRADE_TEASERS, wcTeaserAllowed } from "@/lib/guides/workers-comp-resources";
 import Link from "next/link";
 import RestaurantQuickQuote, { type RestaurantPageType } from "@/components/RestaurantQuickQuote";
 import ContractorQuoteForm from "@/components/ContractorQuoteForm";
@@ -65,6 +66,10 @@ export default function SeoPage({
   restaurantPageType?: RestaurantPageType;
 }) {
   const stateLicense = licenseLineForArea(areaServed);
+  // Workers' comp teaser (2026-10-15): the trade's real WC policy + a link to its WC guide. Restaurant pages
+  // (not bar) use the restaurant teaser. Never in the state-fund states or Texas.
+  const wcTeaser = (formMode === "contractor" && tradeSlug ? WC_TRADE_TEASERS[tradeSlug] : formMode === "restaurant" ? WC_TRADE_TEASERS.restaurant : undefined);
+  const showWcTeaser = Boolean(wcTeaser) && wcTeaserAllowed(stateSlug, areaServed);
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
   const growthLink = tradeSlug === "pool" && stateSlug && metroSlug
     ? { href: poolLeadGuidePath({ state: stateSlug, city: metroSlug }), label: `How to find pool construction leads in ${areaServed}` }
@@ -335,6 +340,15 @@ export default function SeoPage({
         )}
       </section>
 
+      {showWcTeaser && wcTeaser && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="font-bold text-[#131517]">{wcTeaser.heading}</h2>
+            {wcTeaser.sentences.map((sentence) => <p key={sentence} className="mt-2 text-sm text-[#6B6D71]">{sentence}</p>)}
+            <Link href={wcTeaser.href} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">{wcTeaser.label} →</Link>
+          </div>
+        </section>
+      )}
       {/* Cross-links use route identity, never acquisition labels. */}
       {relatedServiceLinks(tradeSlug, stateSlug).length > 0 && <section className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Match your insurance to the work you do</h2>{relatedServiceLinks(tradeSlug, stateSlug).map(link => <Link key={link.href} href={link.href} className="mt-3 block text-sm font-semibold text-[#2040E7] underline">{link.label} →</Link>)}</div></section>}
       {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => tradeSlug === industry.insuranceSlug).map((industry) => (

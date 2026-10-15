@@ -3,3 +3,6 @@
 // arbitrary line onto a lead; the type keeps a guide from setting a value the route would drop.
 export const REQUESTED_COVERAGE_ALLOWLIST = ["Workers Comp", "General Liability"] as const;
 export type RequestedCoverage = (typeof REQUESTED_COVERAGE_ALLOWLIST)[number];
+
+// Human-readable names for the "Coverage requested" detail row (quotes@ and the Slack card).
+export const REQUESTED_COVERAGE_LABELS: Record<RequestedCoverage, string> = { "Workers Comp": "Workers' comp", "General Liability": "General liability" };

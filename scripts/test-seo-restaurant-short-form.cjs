@@ -145,6 +145,16 @@ const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Al
  selects()[0].props.onChange({target:{value:'Full-service / sit-down restaurant'}});await submit();assert.match(text(render()),/Got it/);
  assert.equal(payload.source,'seo-guide-restaurant-insurance-cost');assert.equal(details(payload)['Page type'],undefined);assert.equal(crmCalls.length,1);
 
+ assert.equal(payload.coverage,undefined);assert.equal(crmCalls[0].coverage,undefined,'the cost guide requests no coverage');
+ // Restaurant workers' comp guide (2026-10-15): the same short form records coverage ["Workers Comp"] in the CRM.
+ reset({source:'seo-wc-restaurant-workers-comp-insurance',coverageRequested:['Workers Comp']});
+ fillContact();selects()[0].props.onChange({target:{value:'Fast food / counter service (grill or fryer)'}});await submit();assert.match(text(render()),/Got it/);
+ assert.deepEqual(payload.coverage,['Workers Comp']);d=details(payload);assert.equal(d['Coverage requested'],"Workers' comp");assert.match(d['Not asked on this form'],/Payroll/);
+ assert.deepEqual(crmCalls[0].coverage,['Workers Comp'],'CRM forward carries the WC request');
+ // An abandoned WC partial carries the coverage too.
+ reset({source:'seo-wc-restaurant-workers-comp-insurance',coverageRequested:['Workers Comp']});type('Email','seo-rest-wc@example.invalid');render();listeners.pagehide();
+ assert.deepEqual(JSON.parse(await beacons[0].text()).coverage,['Workers Comp']);
+
  // Required answers are enforced before anything is sent.
  for(const [missing,msg] of [['Business name',/business name/],['Your name',/your name/],['Email',/valid email/],['Phone',/valid phone/]]){
   reset(coffeeProps);fillContact();type(missing,missing==='Phone'?'555':'');await submit();

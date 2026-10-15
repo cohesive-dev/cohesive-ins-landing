@@ -6,6 +6,7 @@ import isEmail from "validator/lib/isEmail";
 import { track as vaTrack } from "@vercel/analytics";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+import { REQUESTED_COVERAGE_LABELS, type RequestedCoverage } from "@/lib/requested-coverage";
 
 // Short quote form for the restaurant SEO pages (/insurance/<restaurant type>[/<state>[/<city>]]) and
 // the restaurant cost guide (Kevin 2026-10-12). Restaurant SEO pages had 10,777 impressions and 25 clicks
@@ -75,13 +76,15 @@ export function capiEventFor(type: string, mode: "restaurant" | "bar"): "Lead" |
 
 export const RENEWAL_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const NOT_ASKED = "Revenue, alcohol share of sales, exact address, business structure, own or rent, opening date and claims. Collect these from the client before quoting.";
+// Workers' comp pages (restaurant workers' comp guide, 2026-10-15) also leave payroll and headcount for later.
+const NOT_ASKED_WC = "Payroll, number of full-time and part-time employees, delivery or catering staff and claims. Collect these from the client before quoting workers' comp.";
 
 const emailOk = (v: string) => isEmail(v.trim());
 const phoneOk = (v: string) => isValidPhoneNumber(v.trim(), "US");
 
 type Answers = { company: string; renewal: string };
 // Detail rows for quotes@ and the CRM note. Only what the visitor gave, plus page context and attribution.
-function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | undefined) {
+function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | undefined, coverage?: RequestedCoverage[]) {
   const captured = captureAttribution();
   // Referrer = the external referrer captureAttribution stored (own-site referrers are unknown, not a source).
   const a = { ...captured, landing_page: captured.landing_page || window.location.pathname };
@@ -93,7 +96,8 @@ function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | 
     pageLabel && { label: "Page type", value: pageLabel },
     f.renewal && { label: "Current policy renews", value: f.renewal },
     { label: "Form layout", value: "seo-short" },
-    { label: "Not asked on this form", value: NOT_ASKED },
+    coverage?.length && { label: "Coverage requested", value: coverage.map((c) => REQUESTED_COVERAGE_LABELS[c]).join(", ") },
+    { label: "Not asked on this form", value: coverage?.includes("Workers Comp") ? NOT_ASKED_WC : NOT_ASKED },
     ...attributionDetails(a),
     a.referrer && { label: "Referrer", value: a.referrer },
   ].filter(Boolean);
@@ -108,11 +112,15 @@ export default function RestaurantQuickQuote({
   source,
   mode = "restaurant",
   pageType,
+  coverageRequested,
 }: {
   // The page's own CRM attribution label (e.g. "seo-coffee-shop-north-carolina"), as before.
   source: string;
   mode?: "restaurant" | "bar";
   pageType?: RestaurantPageType;
+  // Coverage the page asks the CRM to record (restaurant workers' comp guide: ["Workers Comp"]). Sent as the
+  // top-level `coverage` key, which /api/intake forwards only when every value is allowlisted.
+  coverageRequested?: RequestedCoverage[];
 }) {
   const [f, setF] = useState({
     company: "",
@@ -158,9 +166,10 @@ export default function RestaurantQuickQuote({
       company: f.company.trim() || undefined,
       ...(stated ? { businessType: stated } : {}),
       source,
+      ...(coverageRequested?.length ? { coverage: coverageRequested } : {}),
       partial: true,
       final: true,
-      details: detailsFor(f, stated || undefined, pageLabel),
+      details: detailsFor(f, stated || undefined, pageLabel, coverageRequested),
     });
     try {
       const accepted = navigator.sendBeacon("/api/intake", new Blob([body], { type: "application/json" }));
@@ -173,7 +182,7 @@ export default function RestaurantQuickQuote({
         .catch(() => {})
         .finally(() => { partialInFlight.current = false; });
     }
-  }, [f, pageLabel, source, status, typeTouched]);
+  }, [coverageRequested, f, pageLabel, source, status, typeTouched]);
 
   const abandon = useCallback(() => {
     if (status !== "idle" || !fired.current.has("FormStart") || fired.current.has("RestFormAbandon")) return;
@@ -240,7 +249,8 @@ export default function RestaurantQuickQuote({
           company: f.company.trim(),
           businessType: stated,
           source,
-          details: detailsFor(f, stated, pageLabel),
+          ...(coverageRequested?.length ? { coverage: coverageRequested } : {}),
+          details: detailsFor(f, stated, pageLabel, coverageRequested),
           eventId,
           capiEventName,
         }),
