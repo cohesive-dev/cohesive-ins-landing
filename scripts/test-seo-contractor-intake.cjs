@@ -77,6 +77,17 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   const bad={name:'QA TEST ONLY',email:'seo-test@example.invalid',phone:'2025550184',company:'QA TEST ONLY Co',businessType:'Painter',source:'contractors-landing',coverage:['Workers Comp','Cyber'],details:[{label:'Page source',value:'seo-painter-new-york'}]};
   await POST(new NR('http://localhost/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(bad)}));
   assert.equal(crmCalls[0].coverage,undefined,'a non-allowlisted value drops the whole coverage key');
+  // Staged /contractor-test?wc=1 question (Kevin 2026-10-14): the paid form's exact bodies through the real route.
+  const paid=(extra)=>({name:'QA TEST ONLY',email:'seo-test@example.invalid',phone:'2025550184',company:'QA TEST ONLY Remodel',businessType:'Contractor enquiry - advertised Remodeling; actual work unconfirmed',source:'contractors-landing',details:[{label:'Form version',value:'2026-09-18-trade-v5'},...(extra.row?[{label:"Workers' comp requested",value:extra.row}]:[])],eventId:'qa-wc-'+(extra.row||'none'),website:'',...(extra.coverage?{coverage:extra.coverage}:{})});
+  const send=async b=>{crmCalls=[];await POST(new NR('http://localhost/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)}));assert.equal(crmCalls.length,1);return crmCalls[0];};
+  let fwd=await send(paid({row:'WC + GL',coverage:['General Liability','Workers Comp']}));
+  assert.deepEqual(fwd.coverage,['General Liability','Workers Comp'],'WC + GL -> CRM gets GL + WC');assert.ok(JSON.stringify(fwd).includes("Workers' comp requested"));
+  fwd=await send(paid({row:'WC only',coverage:['Workers Comp']}));assert.deepEqual(fwd.coverage,['Workers Comp'],'WC only -> CRM gets WC alone');
+  fwd=await send(paid({row:'GL only'}));assert.equal(fwd.coverage,undefined,'GL only -> no coverage (today)');
+  fwd=await send(paid({}));assert.equal(fwd.coverage,undefined,'no wc=1 -> no coverage (today)');assert.ok(!JSON.stringify(fwd).includes("Workers' comp"));
+  for(const junk of [['General Liability','Workers Comp','Commercial Auto'],['Property'],['workers comp'],'Workers Comp',[],['Workers Comp','Workers Comp','General Liability']]){
+   fwd=await send(paid({row:'WC + GL',coverage:junk}));assert.equal(fwd.coverage,undefined,`allowlist drops ${JSON.stringify(junk)}`);
+  }
  }
  for(const service of require('../lib/seo/service-industries.ts').INSURANCE_SERVICES){
   formProps={source:`seo-${service.slug}-texas`,tradeLabel:service.intakeLabel,operationsPrompt:service.operationsPrompt};

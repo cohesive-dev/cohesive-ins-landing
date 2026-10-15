@@ -5,18 +5,28 @@ import TradeSearch from '@/components/TradeSearch';
 import {filterTrades} from '@/lib/trade-search';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import {TRADES} from '@/lib/contractor-trades';
-import {OTHER_TRADES,PRIMARY_PCT,REVENUE,EMPLOYEES,PAYROLL,USES_SUBCONTRACTORS,SUBCONTRACTOR_COSTS,STRUCTURE,CURRENT_GL,CURRENT_PREMIUM,type Option} from '@/lib/contractor-full-options';
-const FIELD_KEYS:Record<string,string>={'Full name':'fullName','Email':'email','Phone':'phone','Legal business name':'legalName','Business address':'address',"What's your primary trade?":'trade','Any other trades?':'otherTrades','How much of your work is your primary trade?':'primaryPct','Describe your other trade or services':'otherTradeDescription','Annual revenue (roughly)':'revenue','W2 employees':'employees','Annual W2 payroll (roughly)':'payroll','Do you hire subcontractors?':'usesSubcontractors','Annual subcontractor costs (roughly)':'subcontractorCosts','Business structure':'structure','What year did you start the business?':'yearStarted','Do you have general liability coverage today?':'currentGl','What are you paying now for GL, per year?':'currentPremium'};
+import {OTHER_TRADES,PRIMARY_PCT,REVENUE,EMPLOYEES,PAYROLL,USES_SUBCONTRACTORS,SUBCONTRACTOR_COSTS,STRUCTURE,CURRENT_GL,CURRENT_PREMIUM,WC_REQUESTED,type Option} from '@/lib/contractor-full-options';
+const FIELD_KEYS:Record<string,string>={'Full name':'fullName','Email':'email','Phone':'phone','Legal business name':'legalName','Business address':'address',"What's your primary trade?":'trade','Any other trades?':'otherTrades','How much of your work is your primary trade?':'primaryPct','Describe your other trade or services':'otherTradeDescription','Annual revenue (roughly)':'revenue','W2 employees':'employees','Annual W2 payroll (roughly)':'payroll','Do you hire subcontractors?':'usesSubcontractors','Annual subcontractor costs (roughly)':'subcontractorCosts','Business structure':'structure','What year did you start the business?':'yearStarted','Do you have general liability coverage today?':'currentGl','What are you paying now for GL, per year?':'currentPremium','What coverage do you need?':'wcRequested'};
 const VisibleFields=createContext<{keys:string[];sections:string[]}|null>(null);
-export default function ContractorQuestionSet({f,set,visible,contactFirst=false}:{f:Record<string,string>;set:(k:string,v:string)=>void;visible?:string[];contactFirst?:boolean}){
+// askWorkersComp: the staged WC question (/contractor-test?wc=1, i.e. WC ads), rendered first. Off (every other caller) renders nothing new.
+export default function ContractorQuestionSet({f,set,visible,contactFirst=false,askWorkersComp=false}:{f:Record<string,string>;set:(k:string,v:string)=>void;visible?:string[];contactFirst?:boolean;askWorkersComp?:boolean}){
  const qualified=true,hasW2Employees=!!f.employees&&!f.employees.startsWith('0'),usesSubcontractors=f.usesSubcontractors==='Yes';
  const emailValid=/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(f.email||''),phoneValid=acceptedPhoneShape(f.phone);
  const selectedOtherTrades=f.otherTrades&&f.otherTrades!=='None'?f.otherTrades.split(', ').filter(Boolean):f.otherTrades==='None'?['None']:[];
  const otherTradeOptions=OTHER_TRADES.filter(o=>o.value==='None'||o.value!==f.trade);
  const needsOtherTradeDescription=f.trade==='Other trade'||selectedOtherTrades.includes('Other trade');
  function toggleOtherTrade(value:string){if(value==='None'){set('otherTrades','None');return;}const cur=selectedOtherTrades.filter(t=>t!=='None');set('otherTrades',(cur.includes(value)?cur.filter(t=>t!==value):[...cur,value]).join(', '));}
- const sections=visible?[...(visible.some(k=>['fullName','email','phone'].includes(k))?['Your contact info']:[]),...(visible.some(k=>!['fullName','email','phone','currentGl','currentPremium','mailingAddress'].includes(k))?['About your business']:[]),...(visible.some(k=>['currentGl','currentPremium'].includes(k))?['Your current coverage']:[])]:[];
+ const sections=visible?[...(visible.includes('wcRequested')?['Coverage you need']:[]),...(visible.some(k=>['fullName','email','phone'].includes(k))?['Your contact info']:[]),...(visible.some(k=>!['fullName','email','phone','currentGl','currentPremium','wcRequested','mailingAddress'].includes(k))?['About your business']:[]),...(visible.some(k=>['currentGl','currentPremium'].includes(k))?['Your current coverage']:[])]:[];
  return <VisibleFields.Provider value={visible?{keys:visible,sections}:null}><div className="space-y-8">
+        {/* Workers' comp: first thing a WC-ad visitor sees (wc=1 only) */}
+        {askWorkersComp && (
+          <Section title="Coverage you need">
+            <Field label="What coverage do you need?">
+              <Radio name="wcRequested" value={f.wcRequested} onChange={(v) => set("wcRequested", v)} options={WC_REQUESTED} />
+            </Field>
+          </Section>
+        )}
+
         {/* Contact */}
         <Section title="Your contact info">
 {!contactFirst && (          <Field label="Full name" required>
@@ -364,7 +374,7 @@ function Radio({
             onClick={() => onChange(o.value)}
             aria-pressed={active}
             className={
-              "min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition " +
+              "min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-base font-medium transition lg:text-[15px] " +
               (active
                 ? "border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]"
                 : "border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]")

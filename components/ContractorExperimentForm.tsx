@@ -8,7 +8,7 @@ import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-
 import {ContractorFormActions,ContractorFormSuccess} from '@/components/ContractorFormPresentation';
 import ContractorQuestionSet from '@/components/ContractorQuestionSet';
 import ContractorPageHero,{contractorMainClass,contractorFormClass,contractorButtonClass} from '@/components/ContractorPageTheme';
-import {FULL_LABELS,fullScreens,validFullField,normalizeFull} from '@/lib/contractor-full-form';
+import {FULL_LABELS,fullScreens,validFullField,normalizeFull,wcCoverage} from '@/lib/contractor-full-form';
 import {TRADES} from '@/lib/contractor-trades';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import PartialCaptureDisclosure from '@/components/PartialCaptureDisclosure';
@@ -19,6 +19,9 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const cold=useMemo(()=>coldLayout?coldEmailContext(query,coldLayout):null,[query,coldLayout]);
  const needsTrade=!coldLayout&&!isColdIndustry(query.get('industry')||'');
  const fallbackReason=coldLayout?null:contractorFallbackReason(query);
+ // Staged (Kevin 2026-10-14): the workers' comp question exists only on the paid form with ?wc=1.
+ // Without it nothing below changes: no question, no answer, no `coverage` key.
+ const askWc=!coldLayout&&query.get('wc')==='1';
  const industry=cold?.industry||(fallbackReason?'contractor':query.get('industry')||'');
  const angle=coldLayout?'coi':fallbackReason?(fallbackReason.startsWith('missing_')?'missing_params':'invalid_params'):query.get('angle')||'';
  const valid=!!fallbackReason||(isColdIndustry(industry)&&validExperiment(industry,angle));
@@ -50,11 +53,12 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     const details=[{label:'Experiment cell',value:cellId},{label:'Form version',value:formVersion},
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
       {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
-      ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,value])=>({label:labels[k],value})),
+      ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,value])=>({label:labels[k],value})),
       ...attributionDetails(captureAttribution()),
       ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
       ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!}))];
-    const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||''});
+    const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
+    const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||'',...(coverage?{coverage}:{})});
     if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return;}
     partialInFlight.current=true;
     try{const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});
@@ -69,7 +73,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
- },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout,labels]);
+ },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout,labels,askWc]);
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
@@ -91,7 +95,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  },[layout,query,cellId,coldLayout,valid,formVersion]);
  if(!valid&&coldLayout)return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">Get a contractor insurance quote</h1><p className="my-4">What type of work do you do?</p><ul className="space-y-3">{Object.entries(INDUSTRIES).map(([id,name])=><li key={id}><a className="underline" href={`?${new URLSearchParams({...Object.fromEntries(query),industry:id})}`}>{name}</a></li>)}</ul><a className="mt-6 inline-block underline" href="/contractors">Another trade</a></main>;
  if(!layout)return <main className="p-8">Loading your quote request…</main>;
- const screens=coldLayout?fieldsFor(answers,layout).map(k=>[k]):fullScreens(answers),lastStep=screens.length-1;
+ const screens=coldLayout?fieldsFor(answers,layout).map(k=>[k]):fullScreens(answers,askWc),lastStep=screens.length-1;
  const fields=screens.flat(),shown=layout==='step'?screens[Math.min(step,lastStep)]:fields;
  const fieldValid=coldLayout?validField:validFullField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
@@ -120,13 +124,14 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,
     {label:'Marketing offer',value:offer?'free lead gen - outreach after insurance bind':'insurance quote'},
     {label:'Actual work and business state',value:'Confirm during follow-up before quoting'},
-    ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)).map(([k,v])=>({label:labels[k],value:v})),
+    ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,v])=>({label:labels[k],value:v})),
     ...attributionDetails(captureAttribution()),
     ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
     ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!})),
    ];
+   const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
    try{
-    const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||''})});
+    const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||'',...(coverage?{coverage}:{})})});
     const result=await res.json();
     if(!res.ok||result.ok!==true)throw new Error(typeof result.error==='string' ? result.error : 'We could not save your request. Please try again.');
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
@@ -146,7 +151,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===lastStep?'true':'false'} className={coldLayout?"space-y-6":contractorFormClass}>
  <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
  {layout==='step'&&<div><p>Step {step+1} of {screens.length}</p><div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}><div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/></div></div>}
- {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst visible={layout==='step'?shown:undefined}/></>:<>
+ {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst askWorkersComp={askWc} visible={layout==='step'?shown:undefined}/></>:<>
  {shown.map(k=><div key={k} data-funnel-field={k}><label htmlFor={k} className="block font-semibold mb-2">{LABELS[k]}{k==='mailingAddress'?' (optional)':' *'}</label>
  {k==='payroll'&&<p>Select $0 if you have no W2 payroll. Do not include subcontractor payments.</p>}
  {k==='trade'?<select id={k} name={k} required value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"><option value="" disabled>Select your primary trade</option>{TRADES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select>:k==='mailingAddress'?<AddressAutocomplete id={k} value={answers[k]} onChange={v=>update(k,v)} ariaLabel={LABELS[k]} placeholder="Street, city, state, ZIP"/>:k in QUESTION_OPTIONS?<div id={k} role="group" aria-label={LABELS[k]} className="flex flex-wrap gap-2">{QUESTION_OPTIONS[k as keyof typeof QUESTION_OPTIONS].map(v=><button type="button" key={v} aria-pressed={answers[k]===v} onClick={()=>update(k,v)} className={'min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition '+(answers[k]===v?'border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]':'border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]')}>{v}</button>)}</div>:
