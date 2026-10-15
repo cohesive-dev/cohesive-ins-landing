@@ -3,7 +3,7 @@ import { GROWTH_BUNDLE } from "@/lib/guides/lead-bundle";
 import { metroLinksFor, poolLeadGuidePath } from "@/lib/seo/metro-pages";
 import { relatedServiceLinks } from "@/lib/seo/service-industries";
 import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
-import { WC_TRADE_TEASERS, wcTeaserAllowed } from "@/lib/guides/workers-comp-resources";
+import { WC_NO_RESTAURANT_TEASER, WC_TRADE_TEASERS, wcTeaserAllowed } from "@/lib/guides/workers-comp-resources";
 import Link from "next/link";
 import RestaurantQuickQuote, { type RestaurantPageType } from "@/components/RestaurantQuickQuote";
 import ContractorQuoteForm from "@/components/ContractorQuoteForm";
@@ -66,11 +66,11 @@ export default function SeoPage({
   restaurantPageType?: RestaurantPageType;
 }) {
   const stateLicense = licenseLineForArea(areaServed);
-  // Workers' comp teaser (2026-10-15): the trade's real WC policy + a link to its WC guide. Restaurant-type pages
-  // (not bar, catering or food truck: those are not restaurants) use the restaurant teaser. Never in the
-  // state-fund states or Texas.
+  // Workers' comp teaser (2026-10-15): the trade's real WC policy + a link to its WC guide. Restaurant pages use the
+  // restaurant teaser (a sandwich shop and a buffet); catering, food-truck and bakery pages share the restaurant
+  // form but are not restaurants, so they get none. Never in the state-fund states or Texas.
   const wcTeaser = formMode === "contractor" && tradeSlug ? WC_TRADE_TEASERS[tradeSlug]
-    : formMode === "restaurant" && !["catering", "food-truck"].includes(restaurantPageType?.slug ?? "") ? WC_TRADE_TEASERS.restaurant
+    : formMode === "restaurant" && !WC_NO_RESTAURANT_TEASER.includes(restaurantPageType?.slug ?? "") ? WC_TRADE_TEASERS.restaurant
       : undefined;
   const showWcTeaser = Boolean(wcTeaser) && wcTeaserAllowed(stateSlug, areaServed);
   const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);

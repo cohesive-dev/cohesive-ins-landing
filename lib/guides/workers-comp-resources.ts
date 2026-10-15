@@ -43,6 +43,8 @@ const notAverage = "Each line is one real policy we placed, not an average or a 
 
 // States where private carriers can't sell the required coverage (state fund only), plus Texas, where we
 // don't publish workers' comp pages. Trade pages in these states show no workers' comp teaser.
+// Food pages that use the restaurant form but are not restaurants: no restaurant workers' comp teaser.
+export const WC_NO_RESTAURANT_TEASER = ["catering", "food-truck", "bakery"];
 export const WC_NO_TEASER_STATES = ["ohio", "washington", "north-dakota", "wyoming", "texas"];
 const WC_NO_TEASER_NAMES = ["Ohio", "Washington", "North Dakota", "Wyoming", "Texas"];
 export function wcTeaserAllowed(stateSlug: string | undefined, areaServed: string): boolean {
@@ -100,7 +102,7 @@ export const WC_TRADE_TEASERS: Record<string, { heading: string; sentences: stri
   hvac: { heading: "Workers' comp for HVAC contractors", sentences: [wcPolicySentence(WC_POLICIES.hvac)], href: g(WC_GUIDE.hvac), label: "What sets an HVAC contractor's workers' comp price" },
   concrete: { heading: "Workers' comp for concrete contractors", sentences: [wcPolicySentence(WC_POLICIES.masonry)], href: g(WC_GUIDE.concreteMasonry), label: "Workers' comp for concrete and masonry contractors" },
   masonry: { heading: "Workers' comp for masonry contractors", sentences: [wcPolicySentence(WC_POLICIES.masonry)], href: g(WC_GUIDE.concreteMasonry), label: "Workers' comp for concrete and masonry contractors" },
-  restaurant: { heading: "Workers' comp for restaurants and food shops", sentences: [wcPolicySentence(WC_POLICIES.sandwichShop), wcPolicySentence(WC_POLICIES.buffet)], href: g(WC_GUIDE.restaurants), label: "Restaurant workers' comp: what sets the price" },
+  restaurant: { heading: "Workers' comp for restaurants", sentences: [wcPolicySentence(WC_POLICIES.sandwichShop), wcPolicySentence(WC_POLICIES.buffet)], href: g(WC_GUIDE.restaurants), label: "Restaurant workers' comp: what sets the price" },
 };
 
 const tradeCommon = { nationalSlug: "contractor-workers-comp", updatedAt: "2026-10-15" };
@@ -114,7 +116,7 @@ function stateGuide(o: {
   const others = contractorPolicies.filter((p) => p !== o.inState);
   return {
     ...common, ...tradeCommon, slug: o.slug,
-    title: `How much is workers' comp for a contractor in ${o.state}?`,
+    title: `${o.state} contractor workers' comp: what it costs`,
     description: o.description,
     intro: `There is no single ${o.state} price. Workers' comp is priced on your payroll, the class code for each kind of work, ${o.state}'s rates and your claims. Below are real contractor policies we placed, then ${o.state}'s rules on who must carry it.`,
     sections: [
@@ -240,7 +242,7 @@ export const WORKERS_COMP_RESOURCES: RestaurantGuide[] = [
   {
     ...common, ...tradeCommon, slug: WC_GUIDE.remodelers,
     tradeLabel: "Remodeling", insurancePath: "/insurance/remodeler", relatedInsurancePaths: ["/insurance/general-contractor"],
-    title: "Workers' comp for remodelers: real policies from $1,237/yr",
+    title: "Remodeler workers' comp: real policies from $1,237/yr",
     description: "Two real remodeler workers' comp policies we placed: $1,237 and $2,565 a year. What sets a remodeler's price, how subs count and what to send for a quote.",
     intro: "A remodeling crew may frame, demolish, hang drywall and set tile on the same job. Workers' comp is priced on the payroll for each kind of work, so how you describe the work matters. Here are two real remodeler policies we placed and what moves the price.",
     sections: [
@@ -266,7 +268,7 @@ export const WORKERS_COMP_RESOURCES: RestaurantGuide[] = [
   {
     ...common, ...tradeCommon, slug: WC_GUIDE.generalContractors,
     tradeLabel: "General contractor", insurancePath: "/insurance/general-contractor",
-    title: "GC and home builder workers' comp: a real $3,562/yr policy",
+    title: "GC workers' comp: a real $3,562/yr home builder policy",
     description: "A home builder we insure pays $3,562 a year for workers' comp. How a GC's crew and subs are counted, what an uninsured sub costs you and what to send.",
     intro: "A general contractor's workers' comp covers its own employees. The harder question is the subs: who covers their workers, and what happens to you when a sub has no policy. Here is a real home builder policy we placed and how subs change a GC's price and risk.",
     sections: [
@@ -292,7 +294,7 @@ export const WORKERS_COMP_RESOURCES: RestaurantGuide[] = [
   {
     ...common, ...tradeCommon, slug: WC_GUIDE.electricians,
     tradeLabel: "Electrician", insurancePath: "/insurance/electrician",
-    title: "Workers' comp for electricians: a real $3,774/yr policy",
+    title: "Electrician workers' comp: a real $3,774/yr policy",
     description: "A general electrical contractor we insure pays $3,774 a year for workers' comp. What sets an electrician's price and what to send for a quote.",
     intro: "Workers' comp for an electrical contractor is priced on the payroll of the people doing the electrical work. Here is a real policy we placed for an electrical contractor, what moves the price and what we need to quote yours.",
     sections: [
@@ -316,7 +318,7 @@ export const WORKERS_COMP_RESOURCES: RestaurantGuide[] = [
   {
     ...common, ...tradeCommon, slug: WC_GUIDE.hvac,
     tradeLabel: "HVAC contractor", insurancePath: "/insurance/hvac",
-    title: "Workers' comp for HVAC contractors: a real $1,182/yr policy",
+    title: "HVAC workers' comp: a real $1,182/yr policy",
     description: "An HVAC contractor in Florida we insure pays $1,182 a year for workers' comp. What sets an HVAC contractor's price and what to send for a quote.",
     intro: "Workers' comp for an HVAC business is priced on the payroll of your installers and service techs, the class of work and your claims. Here is a real policy we placed for a heating and air conditioning contractor and what moves the price.",
     sections: [
@@ -340,7 +342,7 @@ export const WORKERS_COMP_RESOURCES: RestaurantGuide[] = [
   {
     ...common, ...tradeCommon, slug: WC_GUIDE.concreteMasonry,
     tradeLabel: "Concrete", insurancePath: "/insurance/concrete", relatedInsurancePaths: ["/insurance/masonry"],
-    title: "Concrete and masonry workers' comp: a real $1,575/yr policy",
+    title: "Concrete and masonry workers' comp: a real $1,575/yr",
     description: "A concrete block masonry contractor we insure pays $1,575 a year for workers' comp. What sets a concrete or masonry price and what to send for a quote.",
     intro: "Concrete and masonry work means heavy lifting, scaffolds and power tools, and workers' comp is priced on the payroll doing that work. Here is a real policy we placed for a masonry contractor and what moves the price.",
     sections: [

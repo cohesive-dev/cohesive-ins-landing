@@ -87,7 +87,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   const hub=JSON.stringify(getStartupGuide('contractor-workers-comp-insurance'));
   for(const slug of slugs){const guide=getStartupGuide(slug);assert.ok(guide,slug);
    assert.deepEqual(guide.coverageRequested,['Workers Comp'],`${slug} records WC`);
-   assert.ok(guide.title.length<=62,`${slug} title length`);assert.ok(guide.description.length<=155,`${slug} description length`);
+   assert.ok(`${guide.title} | Cohesive`.length<=65,`${slug} final title length`);assert.ok(guide.description.length<=155,`${slug} description length`);
    const body=JSON.stringify(guide);
    for(const amount of body.match(/\$[\d,]+(?= a year|\/yr)/g)||[])assert.ok(real.has(amount),`${slug}: ${amount} is not a real WC policy`);
    assert.doesNotMatch(body,/average (?:is|of|cost)|\branges? from\b|save \d|savings|guarantee/i,`${slug}: no averages, savings or guarantees`);
@@ -111,7 +111,9 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
    assert.match(await shown(geo,{vertical:'restaurant',geo:'new-york'}),/\$509 a year for workers' comp/);
    for(const st of ['texas','ohio'])assert.doesNotMatch(await shown(geo,{vertical:'electrician',geo:st}),/\$3,774/,`no WC teaser on electrician/${st}`);
    assert.doesNotMatch(await shown(geo,{vertical:'restaurant',geo:'ohio'}),/\$509 a year for workers' comp/);
-   for(const v of ['catering','food-truck'])assert.doesNotMatch(await shown(nat,{vertical:v}),/Workers' comp for restaurants/,v);
+   for(const v of ['catering','food-truck','bakery'])assert.doesNotMatch(await shown(nat,{vertical:v}),/\$509 a year for workers' comp/,v);
+   assert.doesNotMatch(await shown(geo,{vertical:'bakery',geo:'georgia'}),/\$509 a year for workers' comp/,'bakery/georgia');
+   assert.match(await shown(geo,{vertical:'coffee-shop',geo:'georgia'}),/\$509 a year for workers' comp/,'restaurant-type page keeps it');
    assert.doesNotMatch(await shown(geo,{vertical:'painter',geo:'georgia'}),/for workers' comp, written with/,'no teaser on a trade without a WC policy');}
   // A trade WC page pre-lists its trade but selects nothing; the submit records WC.
   formProps={source:'seo-wc-workers-comp-insurance-for-electricians',tradeLabel:'Electrician',coverageRequested:['Workers Comp']};mode='success';reset();
