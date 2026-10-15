@@ -32,8 +32,9 @@ const FINAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source
 // A contact-screen-only partial: no business name yet, so `company` is undefined and JSON drops it.
 const PARTIAL_KEYS = ['name', 'email', 'phone', 'businessType', 'source', 'partial', 'final', 'details', 'website'];
 
-// Fill every required answer on the long layout (all questions on one screen).
-async function fillRequired(page) {
+// Fill every required answer on the long layout (all questions on one screen). exactWc: a visitor who asked for WC
+// (wc=1 + WC answer) gives exact full-time / part-time / payroll numbers instead of the W2 bands (Kevin 2026-10-15).
+async function fillRequired(page, exactWc = false) {
   await page.getByLabel('Email', { exact: true }).fill('wc-test@example.invalid');
   await page.getByLabel('Phone', { exact: true }).fill('2025550123');
   await page.getByLabel('Full name', { exact: true }).fill('QA WC Test');
@@ -46,7 +47,14 @@ async function fillRequired(page) {
   await page.getByLabel('Any other trades?', { exact: true }).click();
   await page.getByLabel('How much of your work is your primary trade?', { exact: true }).selectOption('All of it (100%)');
   await page.getByLabel('Annual revenue (roughly)', { exact: true }).selectOption('Under $250k');
-  await page.getByLabel('W2 employees', { exact: true }).selectOption('0 - no W2 employees');
+  if (exactWc) {
+    assert.equal(await page.getByLabel('W2 employees', { exact: true }).count(), 0, 'WC visitor: no W2 band');
+    await page.getByLabel('Full-time W2 employees', { exact: true }).fill('4');
+    await page.getByLabel('Part-time W2 employees', { exact: true }).fill('2');
+    await page.getByLabel('Annual W2 payroll', { exact: true }).fill('$185,000');
+  } else {
+    await page.getByLabel('W2 employees', { exact: true }).selectOption('0 - no W2 employees');
+  }
   await page.getByLabel('Do you hire subcontractors?', { exact: true }).selectOption('No');
 }
 
@@ -165,6 +173,7 @@ function details(payload) {
     {
       const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix', () => localStorage.setItem('cohesive_experiment_remodel_trade_mix_v1', 'long'));
       assert.equal(await page.getByText(WC_QUESTION).count(), 0, 'no wc=1 -> no WC question');
+      assert.equal(await page.getByRole('heading', { level: 1 }).textContent(), 'General liability built for contractors', 'no wc=1 -> hero unchanged');
       assert.equal(await page.locator('[data-funnel-field="wcRequested"], input[name="wcRequested"]').count(), 0);
       await fillRequired(page);
       const body = await submitLong(page, finals);
@@ -195,12 +204,25 @@ function details(payload) {
       assert.equal(await group.count(), 1, 'wc=1 -> WC question shown');
       assert.deepEqual(await group.getByRole('button').allTextContents(), ["Workers' comp + general liability", "Workers' comp only", 'General liability only']);
       assert.equal(await group.getByRole('button', { name: "Workers' comp only", exact: true }).evaluate(el => getComputedStyle(el).fontSize), '16px', '16px on phones (no iOS zoom)');
-      await fillRequired(page);
+      assert.equal(await page.getByRole('heading', { level: 1 }).textContent(), 'Insurance built for contractors', 'wc=1 hero says insurance, not GL');
       if (answer) {
         await group.getByRole('button', { name: answer, exact: true }).click();
         assert.equal(await group.getByRole('button', { name: answer, exact: true }).getAttribute('aria-pressed'), 'true');
       }
+      const exactWc = !!coverage;
+      await fillRequired(page, exactWc);
       const body = await submitLong(page, finals);
+      const d = details(body);
+      if (exactWc) {
+        assert.equal(d['Full-time W2 employees (exact)'], '4');
+        assert.equal(d['Part-time W2 employees (exact)'], '2');
+        assert.equal(d['Annual W2 payroll (exact)'], '$185,000');
+        assert.equal(d['W2 employees'], '6 - 10', 'band derived from exact headcount');
+        assert.equal(d['Annual W2 payroll'], '$100k - $250k', 'band derived from exact payroll');
+      } else {
+        assert.equal(d['W2 employees'], '0 - no W2 employees');
+        assert.equal(d['Full-time W2 employees (exact)'], undefined, 'no exact rows without a WC answer');
+      }
       assert.deepEqual(body.coverage, coverage, `wc=1 + ${answer} -> coverage`);
       assert.deepEqual(Object.keys(body), coverage ? [...FINAL_KEYS, 'coverage'] : FINAL_KEYS);
       assert.equal(details(body)[WC_ROW], row, `wc=1 + ${answer} -> details row`);
@@ -233,7 +255,9 @@ function details(payload) {
         await page.getByLabel('How much of your work is your primary trade?', { exact: true }).selectOption('All of it (100%)');
         await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByLabel('Annual revenue (roughly)', { exact: true }).selectOption('Under $250k');
-        await page.getByLabel('W2 employees', { exact: true }).selectOption('0 - no W2 employees');
+        await page.getByLabel('Full-time W2 employees', { exact: true }).fill('0');
+        await page.getByLabel('Part-time W2 employees', { exact: true }).fill('0');
+        assert.equal(await page.getByLabel('Annual W2 payroll', { exact: true }).count(), 0, 'no payroll with 0 employees');
         await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByLabel('Do you hire subcontractors?', { exact: true }).selectOption('No');
         await page.getByRole('button', { name: 'Next', exact: true }).click();
@@ -247,6 +271,7 @@ function details(payload) {
       const captured = details(payloads[0]);
       if (answer) {
         assert.equal(captured[WC_ROW], 'WC + GL');
+        assert.equal(captured['W2 employees'], '0 - no W2 employees', 'band derived from exact 0 + 0');
         assert.deepEqual(payloads[0].coverage, ['General Liability', 'Workers Comp']);
       } else {
         assert.equal(captured[WC_ROW], undefined, 'unanswered -> no WC row');
