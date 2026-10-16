@@ -26,7 +26,7 @@ const fitChurch = (candidates: string[], max: number) => candidates.find((c) => 
 // Answer-first cost reply: the number leads, because "how much is church insurance" is the question.
 function churchCostAnswer(): string {
   const { gl, pkg } = CHURCH_PRICES;
-  return `The lowest church general liability premium we have bound is ${churchUsd(gl.usd)} a year, for ${gl.business}. ` +
+  return `The lowest church general liability premium we have bound, across the states where we place churches, is ${churchUsd(gl.usd)} a year, for ${gl.business}. ` +
     `Our lowest bound liability and building package is ${churchUsd(pkg.usd)} a year, for ${pkg.business}. ` +
     `A church that insures its building usually pays more than the liability-only price: building value, construction, roof age, location and any school, daycare or parsonage move it. Taxes and fees are extra.`;
 }
@@ -342,8 +342,8 @@ export function buildChurchStateContent(state: ChurchStateProfile): PageContent 
       `${state.name} Church Insurance: from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr`,
     ], 60),
     metaDescription: fitChurch([
-      `${state.name} church and house of worship insurance: liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr, liability + building from ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr. Policies we wrote.`,
-      `${state.name} church insurance: liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr, a liability + building package from ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr. Policies we wrote.`,
+      `${state.name} church and house of worship insurance. Our lowest bound church policies: liability ${churchUsd(CHURCH_PRICES.gl.usd)}/yr, liability + building ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr.`,
+      `${state.name} church insurance. Our lowest bound church policies: liability ${churchUsd(CHURCH_PRICES.gl.usd)}/yr, liability + building ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr.`,
     ], 155),
     heroH1: `Church insurance in ${state.name}`,
     heroSub: `Build a ${state.name} house-of-worship insurance comparison around the congregation, ministries, property, people, and vehicles you actually have.`,

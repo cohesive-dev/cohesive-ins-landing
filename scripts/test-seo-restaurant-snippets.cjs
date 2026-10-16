@@ -139,8 +139,8 @@ assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
   for(const st of church.CHURCH_STATES){const md=await chR.generateMetadata({params:Promise.resolve({geo:st.slug})});
    assert.ok(md.title.startsWith(st.name)&&md.title.includes('$445/yr')&&md.title.length<=60,md.title);assert.ok(md.description.length<=155,md.description);
    const c=church.buildChurchStateContent(st);assert.match(c.faqs[0].q,/How much does church insurance cost/);assert.match(c.faqs[0].a,/\$445 a year/);assert.equal(c.costRows[0].coverage,'General liability (bound)');}
-  for(const [v,g] of [['excavation','new-hampshire'],['snow-removal','new-york'],['snow-removal','pennsylvania']]){const md=await gRoute.generateMetadata({params:Promise.resolve({vertical:v,geo:g})});
-   assert.match(md.title,/New Hampshire|New York|Pennsylvania/,md.title);assert.ok(md.title.length<=60,md.title);}
+  for(const [v,g,name] of [['excavation','new-hampshire','New Hampshire'],['snow-removal','new-york','New York'],['snow-removal','pennsylvania','Pennsylvania']]){const md=await gRoute.generateMetadata({params:Promise.resolve({vertical:v,geo:g})});
+   assert.ok(md.title.includes(name),`${v}/${g}: ${md.title}`);assert.doesNotMatch(md.title,/\$/,`${v}/${g} is price-free: ${md.title}`);assert.ok(md.title.length<=60,md.title);}
   const mR=mRoute;const hou=await mR.generateMetadata({params:Promise.resolve({vertical:'electrician',geo:'texas',metro:'houston'})});assert.match(hou.title,/^Electrician Insurance in Houston/,hou.title);}
  console.log(`PASS: ${seen.size} restaurant-family pages (${priced} titles priced): titles <=60 and descriptions <=155, each with its own type's approved price (bar: none), no "from $X", no New York caterer, no NY on non-NY pages; cost guide carries the four approved lines and is in the sitemap.`);
 })().catch(e=>{console.error(e);process.exitCode=1;});
