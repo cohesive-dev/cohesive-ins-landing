@@ -5,7 +5,39 @@ import {
   getContractorState,
 } from "./contractor-states";
 
-export const CHURCH_UPDATED = "2026-09-20";
+// Sitemap lastmod: the 2026-10-16 price release. The state facts were last reviewed on CHURCH_REVIEWED.
+export const CHURCH_UPDATED = "2026-10-16";
+const CHURCH_REVIEWED = "2026-09-20";
+
+// Real church premiums from our own book, read from the CRM policies table on 2026-10-16 (Kevin 2026-09-22:
+// "SEO should use the lowest possible real ones"; church is our deepest bound vertical). Both are BOUND.
+// Premium only: taxes, fees and any inspection charge are extra. Business descriptions, never a church's name.
+// Excluded on purpose: a $420 policy on a vacant parsonage house (not a church's own operations).
+export const CHURCH_PRICES_AS_OF = "2026-10-16";
+export const CHURCH_PRICES = {
+  // Three churches bound at $445 (the carrier's minimum premium for the class), Jul-Aug 2026.
+  gl: { usd: 445, line: "General liability", business: "three churches (the carrier's minimum premium)" },
+  // A church package: $550 liability + $735 building and contents, bound Aug 2026.
+  pkg: { usd: 1285, line: "Liability + building package", business: "a church ($550 liability plus $735 building and contents)" },
+};
+const churchUsd = (n: number) => `$${n.toLocaleString("en-US")}`;
+const fitChurch = (candidates: string[], max: number) => candidates.find((c) => c.length <= max) ?? candidates[candidates.length - 1];
+
+// Answer-first cost reply: the number leads, because "how much is church insurance" is the question.
+function churchCostAnswer(): string {
+  const { gl, pkg } = CHURCH_PRICES;
+  return `The lowest church general liability premium we have bound is ${churchUsd(gl.usd)} a year, for ${gl.business}. ` +
+    `Our lowest bound liability and building package is ${churchUsd(pkg.usd)} a year, for ${pkg.business}. ` +
+    `A church that insures its building usually pays more than the liability-only price: building value, construction, roof age, location and any school, daycare or parsonage move it. Taxes and fees are extra.`;
+}
+
+function churchCostRows() {
+  const { gl, pkg } = CHURCH_PRICES;
+  return [
+    { coverage: "General liability (bound)", range: `from ${churchUsd(gl.usd)}/yr`, note: `Our lowest bound church liability policy: ${gl.business}. Premium only; taxes and fees are extra.` },
+    { coverage: "Liability + building package (bound)", range: `from ${churchUsd(pkg.usd)}/yr`, note: `Our lowest bound church package: ${pkg.business}. Building value and construction drive this one.` },
+  ];
+}
 
 type ChurchStateProfile = {
   slug: string;
@@ -196,16 +228,18 @@ const NATIONAL_FACTS: Fact[] = [
 
 function baseContent(place: string): Omit<PageContent, "title" | "metaDescription" | "heroH1" | "heroSub" | "stateFacts"> {
   return {
-    reviewedOn: CHURCH_UPDATED,
+    reviewedOn: CHURCH_REVIEWED,
     alsoCovers: "For churches, synagogues, mosques, temples, ministries, and other houses of worship.",
     costNarrative: [
+      churchCostAnswer(),
       `A useful ${place} house-of-worship quote starts with the real operations: attendance, employees and volunteers, outreach, counseling, childcare or school programs, events, food service, vehicles, and every building or location. Two policies with the same headline limit can treat those activities very differently.`,
       "For property coverage, compare the building limit and valuation, roof and system details, deductibles, coinsurance, ordinance or law, water and wind terms, and business-income or extra-expense coverage. For liability, check abuse or molestation, counseling, special events, hired and non-owned auto, and umbrella terms rather than assuming a general-liability form covers each exposure.",
     ],
-    costDisclaimer: "Church insurance pricing is individual to the organization, property, activities, people, claims, and requested coverage. These are quote components, not premium estimates or an offer of insurance.",
+    costDisclaimer: `The two bound prices are the lowest church premiums in our own book as of ${CHURCH_PRICES_AS_OF}, before taxes and fees. Your price is individual to the organization, property, activities, people, claims, and requested coverage. The other rows are quote components, not premium estimates or an offer of insurance.`,
     costRows: [
+      ...churchCostRows(),
       {
-        coverage: "General liability",
+        coverage: "Your general liability quote",
         range: "Individual quote",
         note: "Attendance, activities, events, premises, and requested limits shape eligibility and price.",
       },
@@ -260,6 +294,7 @@ function baseContent(place: string): Omit<PageContent, "title" | "metaDescriptio
       },
     ],
     faqs: [
+      { q: "How much does church insurance cost?", a: churchCostAnswer() },
       {
         q: "What information should a church gather before requesting a quote?",
         a: "Gather the current policy if handy, loss runs, requested effective date, attendance, receipts and payroll, employee and volunteer counts, activities, protection policies, vehicles and drivers, plus a schedule of buildings with values, construction, square footage, roof and system updates, and safeguards. You can start without every document, but label estimates and unknowns honestly.",
@@ -285,8 +320,10 @@ function baseContent(place: string): Omit<PageContent, "title" | "metaDescriptio
 }
 
 export const CHURCH_CONTENT: PageContent = {
-  title: "Church & House of Worship Insurance | Coverage Guide",
-  metaDescription: "Compare church and house-of-worship insurance for property, liability, abuse or molestation, counseling, vehicles, employees, and ministry activities.",
+  // 2026-10-16: the national page ranks ~3-5 for "church insurance in <state>" queries with 0 clicks; the title
+  // and description now lead with real bound prices.
+  title: `Church Insurance: Liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr | Cohesive`,
+  metaDescription: `Church insurance: liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr and a liability + building package from ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr, policies we wrote for churches. Compare quotes.`,
   heroH1: "Church and house-of-worship insurance",
   heroSub: "Compare the coverage around your people, ministries, buildings, events, and vehicles, then start a quote with the facts an underwriter needs.",
   ...baseContent("church or"),
@@ -299,18 +336,26 @@ export function getChurchState(slug: string) {
 
 export function buildChurchStateContent(state: ChurchStateProfile): PageContent {
   return {
-    title: `Church Insurance in ${state.name} | House of Worship Coverage`,
-    metaDescription: `Compare ${state.name} church insurance for buildings, liability, abuse or molestation, counseling, employees, vehicles, and ministry activities.`,
+    // State first, matching "<state> church insurance" (154 impressions at ~15 in the 28 days to 2026-10-14).
+    title: fitChurch([
+      `${state.name} Church Insurance: Liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr`,
+      `${state.name} Church Insurance: from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr`,
+    ], 60),
+    metaDescription: fitChurch([
+      `${state.name} church and house of worship insurance: liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr, liability + building from ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr. Policies we wrote.`,
+      `${state.name} church insurance: liability from ${churchUsd(CHURCH_PRICES.gl.usd)}/yr, a liability + building package from ${churchUsd(CHURCH_PRICES.pkg.usd)}/yr. Policies we wrote.`,
+    ], 155),
     heroH1: `Church insurance in ${state.name}`,
     heroSub: `Build a ${state.name} house-of-worship insurance comparison around the congregation, ministries, property, people, and vehicles you actually have.`,
     ...baseContent(`${state.name}`),
     stateFacts: [state.workersComp, state.propertyNote, ...NATIONAL_FACTS],
     faqs: [
+      { q: `How much does church insurance cost in ${state.name}?`, a: churchCostAnswer() },
       {
         q: `What information is needed for a church insurance quote in ${state.name}?`,
         a: `Start with the current policy if handy, loss runs, attendance, receipts and payroll, employees and volunteers, activities, protection policies, vehicles, and a building schedule. For each ${state.abbr} location, include value, construction, square footage, year built, roof and system updates, fire protection, occupancy, and requested deductibles.`,
       },
-      ...baseContent(state.name).faqs.slice(1),
+      ...baseContent(state.name).faqs.slice(2),
     ],
   };
 }

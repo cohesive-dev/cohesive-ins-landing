@@ -571,12 +571,16 @@ const ORIGINAL_METRO_PAGES: MetroPage[] = [
   },
   ...POOL_METRO_EXPANSION
 ];
+const METRO_TITLE_USES_TRADE_NAME = new Set(["electrician", "plumber"]);
 // Real-price layer (Kevin 2026-10-02): a city page for a trade with a verified price carries the
 // same labelled national floor; the city facts stay as researched.
 function withMetroPrice(p: MetroPage): MetroPage {
   const trade = getTrade(p.trade);
   if (!trade) return p;
-  const name = p.label.replace(/ insurance$/i, "");
+  // Searchers type "electrician insurance" and "plumber(s) insurance" for these city pages (GSC 28 days to
+  // 2026-10-16: 537 electrician-city impressions, none containing "electrical contractor" in the top queries),
+  // so the title uses the trade's own name; the H1 and body keep the city label.
+  const name = METRO_TITLE_USES_TRADE_NAME.has(p.trade) ? trade.name : p.label.replace(/ insurance$/i, "");
   const priced = finalizeTradePricing(p.content, { ...trade, name }, { name: p.stateName, abbr: STATE_CODES[p.stateName] ?? "", city: p.cityName });
   return priced === p.content ? p : { ...p, content: priced };
 }
