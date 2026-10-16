@@ -14,6 +14,9 @@ export type RestaurantGuide = {
   cityName?: string;
   slug: string;
   title: string;
+  // The <title> tag when it should differ from the H1: the searcher's wording, short enough that
+  // "<metaTitle> | Cohesive" fits in ~60 characters (2026-10-16 CTR pass). Falls back to `title`.
+  metaTitle?: string;
   description: string;
   intro: string;
   category: string;
@@ -114,7 +117,9 @@ export const RESTAURANT_GUIDES: RestaurantGuide[] = [
     slug: "restaurant-lease-insurance-requirements",
     updatedAt: "2026-09-26",
     title: "Restaurant lease insurance requirements: what landlords ask for, with real examples",
-    description: "What restaurant landlords actually require: $1M/$2M liability, additional insured, damage to rented premises, umbrellas up to $5M. Real 2026 examples and how each was handled.",
+    // Ranks ~4 for "certificate of insurance ... add landlord" questions; the 94-character title was cut off.
+    metaTitle: "Restaurant Lease Insurance: What Landlords Need",
+    description: "What restaurant landlords require: $1M/$2M liability, the landlord as additional insured on the certificate, damage to rented premises. Real 2026 examples.",
     intro: "Restaurant owners often ask us one thing before they buy: will this policy satisfy my landlord? Below is what landlords have actually asked our restaurant clients for in 2026, what each request means, and how we handled the ones that didn't fit a standard policy. Send the full insurance section of your lease with any quote request so it can be checked line by line.",
     category: "Before signing a lease",
     insurancePath: insurance,

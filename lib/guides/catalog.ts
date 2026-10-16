@@ -20,11 +20,27 @@ function businessSection(state: StartupState): GuideSection {
   ], checklist: ["Choose the entity and name-registration route with your adviser.", "Record federal and state tax setup and employer accounts.", "Confirm city or county business and premises requirements."], links: [office, { label: "SBA directory: state registration offices", href: registration.source }] };
 }
 
+// State restaurant opening guides (47 with impressions, 1,471 impressions and 18 clicks in the 28 days to
+// 2026-10-14, average position 13): the 74-82 character titles were cut off before "permits". The <title>
+// now fits ~60 characters with " | Cohesive"; the H1 is unchanged.
+export function restaurantStateMetaTitle(stateName: string): string {
+  const candidates = [`How to Open a Restaurant in ${stateName}: Permits`, `Open a Restaurant in ${stateName}: Permits`];
+  return candidates.find((c) => c.length <= 49) ?? candidates[candidates.length - 1];
+}
+function restaurantStateDescription(stateName: string): string {
+  const candidates = [
+    `Opening a restaurant in ${stateName}? The food permit and plan-review contact, business registration, building and alcohol approvals, and an opening checklist.`,
+    `Opening a restaurant in ${stateName}? The food permit contact, business registration, building and alcohol approvals, and an opening checklist.`,
+  ];
+  return candidates.find((c) => c.length <= 155) ?? candidates[candidates.length - 1];
+}
+
 function restaurantStateGuide(state: StartupState): RestaurantGuide {
   return {
     slug: `how-to-open-a-restaurant-in-${state.slug}`,
     title: `How to open a restaurant in ${state.name}: permits and launch checklist`,
-    description: `Find ${state.name} restaurant approval resources, the food-licensing contact, business setup steps, and a checklist for the premises, budget, and opening.`,
+    metaTitle: restaurantStateMetaTitle(state.name),
+    description: restaurantStateDescription(state.name),
     intro: `Plan your ${state.name} restaurant around the premises and menu before committing to construction or an opening date. Start with the food-review route below, then track the business, building, and alcohol approvals separately.`,
     category: `${state.name} restaurant startup`, industry: "Restaurants", stateSlug: state.slug,
     nationalSlug: "how-to-open-a-restaurant", quoteKind: "restaurant", tradeLabel: "Restaurant",
@@ -94,7 +110,7 @@ function serviceStateGuide(industry: ServiceIndustry, state: StartupState): Rest
 
 const authoredRestaurants = RESTAURANT_GUIDES.map((guide): RestaurantGuide => {
   const state = STARTUP_STATES.find((s) => guide.slug === `how-to-open-a-restaurant-in-${s.slug}`);
-  return { ...guide, sections: guide.slug === "how-to-open-a-restaurant" || state ? [...guide.sections, ...restaurantLeadSections()] : guide.sections, industry: "Restaurants", quoteKind: "restaurant", tradeLabel: "Restaurant", nationalSlug: "how-to-open-a-restaurant", ...(state ? { stateSlug: state.slug } : {}) };
+  return { ...guide, sections: guide.slug === "how-to-open-a-restaurant" || state ? [...guide.sections, ...restaurantLeadSections()] : guide.sections, industry: "Restaurants", quoteKind: "restaurant", tradeLabel: "Restaurant", nationalSlug: "how-to-open-a-restaurant", ...(state ? { stateSlug: state.slug, metaTitle: guide.metaTitle ?? restaurantStateMetaTitle(state.name) } : {}) };
 });
 const authoredSlugs = new Set(authoredRestaurants.map((guide) => guide.slug));
 

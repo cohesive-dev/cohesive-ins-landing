@@ -91,12 +91,16 @@ export function pricedTitle(name: string, p: TradePrice, place?: { name: string;
   return fit([`${name} Insurance from ${price} | Cohesive Insurance`, `${name} Insurance from ${price}`], 60);
 }
 
+// The full state name comes first (2026-10-16): searchers type "excavation insurance new hampshire", not "NH",
+// and the old fallback "Excavation Insurance in NH: ..." matched none of those words. The abbreviation is last.
 export function priceFreeTitle(name: string, place?: { name: string; abbr: string }): string {
-  if (!place) return `${name} Insurance: Quotes from Several Carriers`;
+  if (!place) return fit([`${name} Insurance: Quotes from Several Carriers`, `${name} Insurance: Compare Carrier Quotes`], 60);
   return fit([
     `${place.name} ${name} Insurance: Quotes from Several Carriers`,
-    `${name} Insurance in ${place.abbr}: Quotes from Several Carriers`,
     `${place.name} ${name} Insurance: Compare Carrier Quotes`,
+    `${place.name} ${name} Insurance: Compare Quotes`,
+    `${name} Insurance in ${place.name}`,
+    `${name} Insurance in ${place.abbr}: Compare Quotes`,
   ], 60);
 }
 
