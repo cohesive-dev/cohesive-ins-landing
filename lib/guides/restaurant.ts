@@ -14,6 +14,9 @@ export type RestaurantGuide = {
   cityName?: string;
   slug: string;
   title: string;
+  // The <title> tag when it should differ from the H1: the searcher's wording, short enough that
+  // "<metaTitle> | Cohesive" fits in ~60 characters (2026-10-16 CTR pass). Falls back to `title`.
+  metaTitle?: string;
   description: string;
   intro: string;
   category: string;

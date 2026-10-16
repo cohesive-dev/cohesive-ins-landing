@@ -55,6 +55,9 @@ export type Trade = {
   alsoCovers?: string;
   // Extra, trade-specific price drivers appended to the shared spine.
   driversExtra?: string[];
+  // Trade-specific questions searchers ask, shown in the visible FAQ (and its FAQPage markup) after the
+  // shared ones. Plain facts about coverage structure only; no prices unless they come from trade-prices.ts.
+  faqExtra?: { q: string; a: string }[];
   // The class-of-business chip(s) for the embedded QuoteSplash handoff. Foxquilt
   // provider uses the profession label AS the id. Numeric ids are Next COB
   // codes. Left as the label where the exact code still needs confirmation
@@ -347,6 +350,17 @@ export const TRADES: Trade[] = [
     bopFrom: 79,
     alsoCovers: "Also for plowing, salting/de-icing, and ice management.",
     driversExtra: ["Slip-and-fall / ice-management exposure and hold-harmless terms", "Commercial lots vs. residential driveways"],
+    // 2026-10-16: "snow plowing insurance <state>" is the top snow query (82 impressions, average position 27).
+    faqExtra: [
+      {
+        q: "Does snow plowing insurance cover the plow truck?",
+        a: "No. General liability covers injuries and damage your work causes, such as a slip on a lot you cleared. The truck, the plow on it and any crash on the way to a job need commercial auto. Many personal auto policies exclude plowing for pay, so tell the auto insurer the truck plows before the season starts.",
+      },
+      {
+        q: "What makes snow plowing insurance cost more?",
+        a: "Commercial parking lots and retail sites cost more than residential driveways, because slip-and-fall claims there are larger and more frequent. Contracts that make you responsible for ice all day (not just when you plow), hold-harmless clauses in the property's favor, salting and de-icing, and prior slip-and-fall claims all move the price. Keep a log of every visit, with time, weather and what you applied: it is your main evidence when a claim comes in.",
+      },
+    ],
     cobs: [{ label: "Snow removal", id: "111739" }],
   },
   {
@@ -924,7 +938,7 @@ export function buildContractorNationalBase(t: Trade): PageContent {
     priceDrivers: priceDrivers(t),
     coverages: coverageSpine(t),
     stateFacts: [],
-    faqs: sharedFaqs(t),
+    faqs: [...sharedFaqs(t), ...(t.faqExtra ?? [])],
     ...(t.slug === "pool" ? swimmingPoolContent() : {}),
   }, t.slug);
 }
