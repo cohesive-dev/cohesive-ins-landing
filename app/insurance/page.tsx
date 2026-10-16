@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
 import { TRADES } from "@/lib/seo/contractors";
-import { OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
+import { COST_GUIDE_LINKS, OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
 import { churchStateLinks } from "@/lib/seo/church-content";
 import { RESTAURANT_TYPES } from "@/lib/seo/restaurant-types";
 
@@ -56,6 +56,20 @@ export default function Page() {
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-12">
           {OUTCOME_PRIORITY_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="rounded-xl border border-slate-200 p-4 text-sm font-semibold text-[#2040E7] hover:border-[#2040E7] hover:underline transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">
+          What it costs: real prices and workers&apos; comp
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-12">
+          {COST_GUIDE_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}

@@ -1195,7 +1195,7 @@ function Footer() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
           {/* Industries */}
-          <div className="md:col-start-4">
+          <div className="md:col-start-3">
             <h4 className="text-white font-semibold text-sm mb-4">Industries</h4>
             <ul className="space-y-2 text-sm">
               {/* Instant-quote splash pages (Next appetite verticals) */}
@@ -1209,6 +1209,23 @@ function Footer() {
                 { label: "Landscaping & Lawn Care", href: "/landscaping" },
                 { label: "Painting", href: "/painting" },
                 { label: "Churches & Houses of Worship", href: "/religious" },
+              ].map((l) => (
+                <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Cost guides (2026-10-16): the homepage is the most-crawled page, so these new guides are one hop away. */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Cost guides</h4>
+            <ul className="space-y-2 text-sm">
+              {[
+                { label: "Restaurant insurance cost", href: "/guides/restaurant-insurance-cost" },
+                { label: "Restaurant workers' comp", href: "/guides/restaurant-workers-comp-insurance" },
+                { label: "Bakery insurance cost", href: "/guides/bakery-insurance-cost" },
+                { label: "Workers' comp cost for contractors", href: "/guides/workers-comp-cost-for-contractors" },
+                { label: "Workers' comp for remodelers", href: "/guides/workers-comp-insurance-for-remodelers" },
+                { label: "Church insurance", href: "/insurance/church" },
               ].map((l) => (
                 <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
               ))}
