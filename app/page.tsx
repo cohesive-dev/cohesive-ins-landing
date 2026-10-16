@@ -6,6 +6,7 @@ import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
+import { COST_GUIDE_LINKS } from "@/lib/seo/outcome-priority-links";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
@@ -1220,11 +1221,7 @@ function Footer() {
             <h4 className="text-white font-semibold text-sm mb-4">Cost guides</h4>
             <ul className="space-y-2 text-sm">
               {[
-                { label: "Restaurant insurance cost", href: "/guides/restaurant-insurance-cost" },
-                { label: "Restaurant workers' comp", href: "/guides/restaurant-workers-comp-insurance" },
-                { label: "Bakery insurance cost", href: "/guides/bakery-insurance-cost" },
-                { label: "Workers' comp cost for contractors", href: "/guides/workers-comp-cost-for-contractors" },
-                { label: "Workers' comp for remodelers", href: "/guides/workers-comp-insurance-for-remodelers" },
+                ...COST_GUIDE_LINKS.map((l) => ({ label: l.short, href: l.href })),
                 { label: "Church insurance", href: "/insurance/church" },
               ].map((l) => (
                 <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>

@@ -24,13 +24,14 @@ export const OUTCOME_PRIORITY_LINKS = [
 // /guides/workers-comp-insurance-for-remodelers, /guides/restaurant-workers-comp-insurance and
 // /guides/bakery-insurance-cost as "URL is unknown to Google", and /guides/restaurant-insurance-cost and
 // /guides/workers-comp-cost-for-contractors as "Discovered - currently not indexed". The homepage (crawled
-// most often), /insurance and /guides link them directly so Googlebot reaches them in one hop.
+// most often), /insurance and /guides link them directly so Googlebot reaches them in one hop. The homepage
+// footer renders this same list (`short` labels), so the surfaces cannot drift.
 export const COST_GUIDE_LINKS = [
-  { href: "/guides/restaurant-insurance-cost", label: "What restaurant insurance costs: real policies and quotes" },
-  { href: "/guides/restaurant-workers-comp-insurance", label: "Restaurant workers' comp: what sets the price" },
-  { href: "/guides/bakery-insurance-cost", label: "What bakery insurance costs" },
-  { href: "/guides/coffee-shop-insurance-cost", label: "What coffee shop insurance costs" },
-  { href: "/guides/workers-comp-cost-for-contractors", label: "What workers' comp costs contractors: real policies" },
-  { href: "/guides/contractor-workers-comp-insurance", label: "Workers' comp for contractors: what it covers" },
-  { href: "/guides/workers-comp-insurance-for-remodelers", label: "Workers' comp for remodelers" },
+  { href: "/guides/restaurant-insurance-cost", label: "What restaurant insurance costs: real policies and quotes", short: "Restaurant insurance cost" },
+  { href: "/guides/restaurant-workers-comp-insurance", label: "Restaurant workers' comp: what sets the price", short: "Restaurant workers' comp" },
+  { href: "/guides/bakery-insurance-cost", label: "What bakery insurance costs", short: "Bakery insurance cost" },
+  { href: "/guides/coffee-shop-insurance-cost", label: "What coffee shop insurance costs", short: "Coffee shop insurance cost" },
+  { href: "/guides/workers-comp-cost-for-contractors", label: "What workers' comp costs contractors: real policies", short: "Workers' comp cost for contractors" },
+  { href: "/guides/contractor-workers-comp-insurance", label: "Workers' comp for contractors: what it covers", short: "Contractor workers' comp" },
+  { href: "/guides/workers-comp-insurance-for-remodelers", label: "Workers' comp for remodelers", short: "Workers' comp for remodelers" },
 ] as const;
