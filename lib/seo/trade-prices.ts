@@ -17,7 +17,7 @@ import type { PageContent } from "./data";
 
 export const TRADE_PRICES_AS_OF = "2026-10-02";
 
-export type TradePrice = { usd: number; kind: "bound" | "quote"; line: string; business: string };
+export type TradePrice = { usd: number; kind: "bound" | "quote"; line: string; business: string; asOf?: string };
 
 const GL = "General liability";
 
@@ -130,7 +130,7 @@ export function tradePriceRow(p: TradePrice): { coverage: string; range: string;
 }
 
 export function tradePriceDisclaimer(p: TradePrice): string {
-  return `The price shown is the lowest ${p.line.toLowerCase()} premium in our own book for this trade as of ${TRADE_PRICES_AS_OF}, ` +
+  return `The price shown is the lowest ${p.line.toLowerCase()} premium in our own book for this trade as of ${p.asOf ?? TRADE_PRICES_AS_OF}, ` +
     `labelled ${p.kind === "bound" ? "bound (a policy we wrote)" : "quote (a real quote, not a bound policy)"}. ` +
     "Your premium depends on your work, sales, payroll, location, limits and claims. It is not a quote or an offer of insurance.";
 }
