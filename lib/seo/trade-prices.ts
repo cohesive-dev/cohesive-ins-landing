@@ -44,11 +44,6 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   tile: { usd: 1011, kind: "quote", line: GL, business: "a tile installer in New York" },
   siding: { usd: 1301, kind: "quote", line: GL, business: "a residential siding contractor" },
   welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
-  // 2026-10-16 (CRM policies, read-only): the lowest bound handyman GL. The business name names the trade and
-  // nothing broader. "cost of handyman insurance", "cheap handyman insurance" and "cheapest general liability
-  // insurance for handyman" sat at positions 10-75 with no price on the page. Two remodelers bound in a handyman
-  // class ($630, $797) are excluded: their own work is remodeling.
-  handyman: { usd: 500, kind: "bound", line: GL, business: "a handyman business", asOf: "2026-10-16" },
 };
 
 export function tradePrice(slug: string): TradePrice | undefined {
