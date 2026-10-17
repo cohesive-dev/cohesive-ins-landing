@@ -23,7 +23,7 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const guide = getStartupGuide((await params).slug);
   if (!guide) return {};
-  const title = `${guide.title} | Cohesive`;
+  const title = `${guide.metaTitle ?? guide.title} | Cohesive`;
   return { title, description: guide.description, alternates: { canonical: `/guides/${guide.slug}` }, openGraph: { title, description: guide.description, type: "article", url: `/guides/${guide.slug}`, modifiedTime: guide.updatedAt ?? GUIDE_UPDATED }, twitter: { card: "summary_large_image", title, description: guide.description } };
 }
 

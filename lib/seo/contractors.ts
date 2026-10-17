@@ -28,6 +28,9 @@ import { tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
 export type Trade = {
   slug: string;
   name: string; // Title Case display name
+  // The name used in <title> when searchers use different words than the display name
+  // (2026-10-16: "snow plowing insurance <state>" was the top snow query, 82 impressions at ~27).
+  titleName?: string;
   intakeLabel?: string; // Preserve an established intake value when display wording changes.
   noun: string; // lowercase noun for sentences ("an electrician's business")
   // New or narrow demand can prove itself on a national page before the site
@@ -342,6 +345,7 @@ export const TRADES: Trade[] = [
   {
     slug: "snow-removal",
     name: "Snow Removal",
+    titleName: "Snow Removal & Plowing",
     noun: "snow-removal business",
     glFrom: 59,
     bopFrom: 79,
@@ -818,8 +822,9 @@ export function finalizeTradePricing(
   place?: { name: string; abbr: string; city?: string },
   metaTails?: string[],
 ): PageContent {
-  if (tradePrice(t.slug)) return withTradePrice(c, t.slug, { name: t.name, noun: t.noun, place, metaTails });
-  return withoutPrice(c, { name: t.name, noun: t.noun, plural: plural(t.noun), place });
+  const name = t.titleName ?? t.name;
+  if (tradePrice(t.slug)) return withTradePrice(c, t.slug, { name, noun: t.noun, place, metaTails });
+  return withoutPrice(c, { name, noun: t.noun, plural: plural(t.noun), place });
 }
 
 export function buildContractorNational(t: Trade): PageContent {
