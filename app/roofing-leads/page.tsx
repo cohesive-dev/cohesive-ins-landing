@@ -11,12 +11,11 @@ export const metadata: Metadata = {
 
 // Two ad arms, one product (Kevin 2026-10-20): a monthly outreach campaign, not billed per lead.
 // ?offer=per-lead -> "works out to about $30 a lead"; ?offer=monthly -> "3 leads a month for $100".
-// Kevin 2026-10-20: $300/mo; up to $200/mo is credited when the roofer's business insurance is with us, so the net is
-// at most $100/mo for 3-5+ leads a month. The $100 / ~$30 figures always ride with that condition.
-const CREDIT = "It's $300 a month, and $200 a month is credited when your business insurance is with us, so you pay $100 a month.";
+// Kevin 2026-10-20: the catering logic - the discounted price is ALWAYS offered, whether or not the roofer buys
+// insurance from us (fine print below the form, same wording as the /catering-leads offer terms).
 const OFFERS = {
-  "per-lead": { price: "About $30 a lead", line: `It's a monthly campaign, not billed per lead: usually 3-5 leads a month. ${CREDIT}` },
-  monthly: { price: "3-5 leads a month for $100", line: CREDIT },
+  "per-lead": { price: "About $30 a lead", line: "It's a monthly campaign, not billed per lead: $100 a month for usually 3-5 leads a month." },
+  monthly: { price: "3-5 leads a month for $100", line: "A monthly campaign at $100 a month, usually 3-5 leads a month." },
 } as const;
 type OfferKey = keyof typeof OFFERS;
 
@@ -50,12 +49,16 @@ export default async function RoofingLeadsPage({ searchParams }: { searchParams:
     </section>
     <section className={styles.section}><p className={styles.eyebrow}>A FEW QUICK ANSWERS</p><div className={styles.faq}>
       <details open><summary>What counts as a lead?</summary><p>A property manager, HOA or building owner near you who replied that they want a roof inspection, repair estimate or quote. You handle the conversation and quote the job.</p></details>
-      <details><summary>How is it priced?</summary><p>It&apos;s a monthly outreach campaign, not billed per lead. It&apos;s $300 a month. When your business insurance is with us, $200 a month is credited, so you pay $100 a month for usually 3-5 leads a month (about $30 a lead).</p></details>
-      <details><summary>Do I need my insurance with you?</summary><p>No, but the $200 monthly credit applies only when your business insurance is placed with us. Without it, the campaign is $300 a month. We can shop your insurance and show you what you&apos;d pay.</p></details>
+      <details><summary>How is it priced?</summary><p>It&apos;s a monthly outreach campaign, not billed per lead. It&apos;s a monthly outreach campaign, not billed per lead: $100 a month for usually 3-5 leads a month (about $30 a lead).</p></details>
       <details><summary>Are these booked or guaranteed jobs?</summary><p>No. They are interested replies, not signed roofing contracts.</p></details>
       <details><summary>Who will you contact?</summary><p>Property managers, HOAs and building owners in your service area. We confirm your area and the roofing work you want before outreach begins.</p></details>
     </div></section>
-    <section id="signup" className={styles.quote}><RoofingLeadsSignup offer={key} /></section>
+    <section id="signup" className={styles.quote}><RoofingLeadsSignup offer={key} />
+      {/* Kevin 2026-10-20: the catering offer terms - very small gray text. */}
+      <p style={{ maxWidth: 520, margin: "16px auto 0", fontSize: "0.68rem", lineHeight: 1.35, color: "#5B6473" }}>
+        Offer Terms: This software discount is available regardless of whether you purchase insurance through us. No insurance
+        purchase or quote is required. Offer is subject to our standard customer qualification and eligibility criteria.
+      </p></section>
     <footer className={styles.footer}>Cohesive Insurance Services · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></footer>
   </div>;
 }

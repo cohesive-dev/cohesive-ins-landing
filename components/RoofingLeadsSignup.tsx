@@ -22,7 +22,7 @@ export default function RoofingLeadsSignup({ offer }: { offer: Offer }) {
           source: "roofing-leads", name: f.name, company: f.company, email: f.email, phone: f.phone, businessType: "Roofing",
           details: [
             { label: "Marketing offer", value: "roofing-leads" },
-            { label: "Offer arm", value: offer === "monthly" ? "3-5 leads a month for $100 net ($300/mo, $200/mo insurance credit)" : "About $30 a lead ($300/mo, $200/mo insurance credit)" },
+            { label: "Offer arm", value: offer === "monthly" ? "3-5 leads a month for $100" : "About $30 a lead ($100/mo campaign)" },
             { label: "Service area", value: f.area },
             { label: "Roofing work", value: f.work },
           ],
