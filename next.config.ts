@@ -4,6 +4,8 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   async redirects() {
     return [
+      // Kevin 2026-10-21: the roofing-leads offer moved to the Cohesive AI site (a copy of /catering-leads there).
+      { source: "/roofing-leads", destination: "https://getcohesiveai.com/roofing-leads", permanent: false },
       {
         source: "/insurance/indiana/pressure-washing-insurance",
         destination: "/insurance/pressure-washing/indiana",
