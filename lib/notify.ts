@@ -246,3 +246,9 @@ export async function sendNetworkSignupNotification(
     "network signup",
   );
 }
+
+/** Internal alert for a /roofing-leads signup, sent FROM quotes@ to the team inboxes (never to quotes@: the fleet ingests quotes@
+ *  inbound as insurance leads). Used only when the Slack group DM / webhook env is not configured. */
+export async function sendRoofingLeadAlert(to: string[], subject: string, text: string): Promise<boolean> {
+  return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: to.join(", "), subject, text }, "roofing-leads alert");
+}

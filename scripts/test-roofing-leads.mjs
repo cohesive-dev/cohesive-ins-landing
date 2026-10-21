@@ -39,6 +39,25 @@ assert.match(JSON.parse(calls.at(-1).init.body).text, /Partial roofing-leads sig
 r = await handleRoofingLeadSubmission(good, {}, okFetch);
 assert.equal(r.status, 503); assert.match(r.body.message, /quotes@cohesiveinsure\.com/);
 
+// Email alert (Kevin 2026-10-21 launch): no Slack / webhook env -> the team inboxes get it from quotes@; never quotes@ itself.
+const mails = [];
+const okMail = async (to, subject, text) => { mails.push({ to, subject, text }); return true; };
+r = await handleRoofingLeadSubmission(good, {}, okFetch, okMail);
+assert.equal(r.status, 200); assert.equal(r.body.status, "ok"); assert.equal(mails.length, 1);
+assert.deepEqual(mails[0].to, ["kevin@cohesiveapp.com", "mario@cohesiveapp.com", "christopher@cohesiveapp.com"]);
+assert.match(mails[0].subject, /^\[roofing-leads\] New roofing-leads signup .*: Pat Roofing LLC$/);
+assert.match(mails[0].text, /Service area: Tampa, FL/);
+r = await handleRoofingLeadSubmission(good, { ROOFING_LEADS_EMAIL_TO: "en@example.com, quotes@cohesiveinsure.com" }, okFetch, okMail);
+assert.deepEqual(mails.at(-1).to, ["en@example.com"]);
+// Slack configured -> Slack only, no email.
+mails.length = 0; r = await handleRoofingLeadSubmission(good, slackEnv, okFetch, okMail); assert.equal(mails.length, 0);
+// Email failure -> 502 with the contact fallback, nothing silently dropped.
+r = await handleRoofingLeadSubmission(good, {}, okFetch, async () => false);
+assert.equal(r.status, 502); assert.match(r.body.message, /quotes@cohesiveinsure\.com/);
+// Non-roofer never emails.
+mails.length = 0; r = await handleRoofingLeadSubmission({ ...good, roofingWork: "I'm not a roofer" }, {}, okFetch, okMail);
+assert.equal(r.body.status, "disqualified"); assert.equal(mails.length, 0);
+
 // Slack failure: 502 with the email fallback.
 r = await handleRoofingLeadSubmission(good, slackEnv, async () => ({ ok: true, status: 200, json: async () => ({ ok: false }) }));
 assert.equal(r.status, 502);

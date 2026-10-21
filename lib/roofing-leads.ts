@@ -68,7 +68,20 @@ type FetchLike = (url: string, init: { method: string; headers: Record<string, s
 
 /** Order (as /catering-leads): honeypot -> non-roofer stop (never forwarded) -> validation -> Slack group DM, else webhook,
  *  else 503 with the email fallback. A failed upstream is a 502 with the email fallback - nothing dropped silently. */
-export async function handleRoofingLeadSubmission(raw: unknown, env: Record<string, string | undefined>, fetchImpl: FetchLike): Promise<SubmitResult> {
+/** Team inboxes for the email alert when neither Slack nor the webhook is configured (Kevin 2026-10-21: launch with automations;
+ *  the landing has GMAIL_SA_KEY_JSON but no Slack env yet). Never quotes@ itself: the fleet ingests quotes@ inbound as insurance
+ *  leads, and a roofing-leads signup must never trigger the insurance intake / ack. Override with ROOFING_LEADS_EMAIL_TO. */
+export const EMAIL_TO_ENV_VAR = "ROOFING_LEADS_EMAIL_TO";
+export const DEFAULT_ALERT_TO = ["kevin@cohesiveapp.com", "mario@cohesiveapp.com", "christopher@cohesiveapp.com"];
+export type EmailAlert = (to: string[], subject: string, text: string) => Promise<boolean>;
+
+export function alertRecipients(env: Record<string, string | undefined>): string[] {
+  const raw = env[EMAIL_TO_ENV_VAR]?.trim();
+  const list = raw ? raw.split(",").map((x) => x.trim()).filter((x) => okEmail(x)) : DEFAULT_ALERT_TO;
+  return list.filter((x) => x.toLowerCase() !== "quotes@cohesiveinsure.com");
+}
+
+export async function handleRoofingLeadSubmission(raw: unknown, env: Record<string, string | undefined>, fetchImpl: FetchLike, emailAlert?: EmailAlert): Promise<SubmitResult> {
   const input = (raw && typeof raw === "object" ? raw : {}) as RoofingLeadInput;
   if (clean(input.website)) return { status: 200, body: { status: "ok" } };
   if (clean(input.roofingWork) === NOT_A_ROOFER) return { status: 200, body: { status: "disqualified", message: DISQUALIFIED_MESSAGE } };
@@ -93,7 +106,18 @@ export async function handleRoofingLeadSubmission(raw: unknown, env: Record<stri
     return { status: 200, body: { status: "ok" } };
   }
   const webhook = env[WEBHOOK_ENV_VAR]?.trim();
-  if (!webhook) return { status: 503, body: { status: "not_configured", message: `Please email us at ${CONTACT_EMAIL} and we'll get you set up.` } };
+  if (!webhook) {
+    const to = alertRecipients(env);
+    if (emailAlert && to.length) {
+      const text = slackLeadText(input);
+      const subject = `[roofing-leads] ${text.split("\n")[0]}${clean(input.businessName) ? `: ${clean(input.businessName)}` : ""}`;
+      let sent = false;
+      try { sent = await emailAlert(to, subject.slice(0, 180), text); } catch { sent = false; }
+      if (sent) return { status: 200, body: { status: "ok" } };
+      return fail(`Something went wrong sending your details. Please email us at ${CONTACT_EMAIL}.`);
+    }
+    return { status: 503, body: { status: "not_configured", message: `Please email us at ${CONTACT_EMAIL} and we'll get you set up.` } };
+  }
   try {
     const res = await fetchImpl(webhook, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ source: `roofing-leads-${resolveOffer(input.offer)}`, ...input, text: slackLeadText(input) }), signal: AbortSignal.timeout(10_000) });
