@@ -357,6 +357,8 @@ export default function CommercialPropertyForm({
   // block always carries a claims answer even if untouched.
   const [f, setF] = useState<FormState>({ claims: "None" });
   const [fireSec, setFireSec] = useState<string[]>([]);
+  // Kevin 2026-10-21: churches often need GL too - one checkbox so we quote the GL + property bundle (more options).
+  const [alsoGl, setAlsoGl] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "error">(
     "idle",
   );
@@ -416,6 +418,8 @@ export default function CommercialPropertyForm({
   const askOccupancy = !NO_OCCUPANCY_TYPES.has(ptype);
   const askTenantMix = !NO_TENANT_MIX_TYPES.has(ptype);
   const askRentalIncome = !NO_RENTAL_INCOME_TYPES.has(ptype);
+  const askAlsoGl = ptype === "Religious institution";
+  const wantsGl = askAlsoGl && alsoGl.length > 0;
   useEffect(() => {
     if (qualified) track("PropertyQualified");
   }, [qualified, track]);
@@ -544,6 +548,7 @@ export default function CommercialPropertyForm({
     push("Wind / hail coverage wanted", f.wind);
     push("Sprinklered", f.sprinklered);
     if (fireSec.length) push("Fire & security", fireSec.join(", "));
+    if (askAlsoGl) push("Also needs general liability", wantsGl ? "Yes" : "No");
     push("Building value / coverage limit", f.value);
     if (askRentalIncome) push("Annual rental income", f.rentalIncome);
     push("Claims (last 5 yrs)", f.claims);
@@ -551,7 +556,7 @@ export default function CommercialPropertyForm({
     return d;
     // visibleSteps.length, not the array: STEPS is rebuilt every render (fresh
     // ok() closures), so depending on the reference recomputed this on each one.
-  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr, askOccupancy, askTenantMix, askRentalIncome]);
+  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr, askOccupancy, askTenantMix, askRentalIncome, askAlsoGl, wantsGl]);
 
   // Funnel milestone driven by state.
   useEffect(() => {
@@ -664,6 +669,7 @@ export default function CommercialPropertyForm({
           zip: extractZip(f.address),
           source: sourceLabel,
           details,
+          ...(wantsGl ? { coverage: ["General Liability"] } : {}),
           eventId,
           ...(qualifiedEventId ? { qualifiedEventId } : {}),
           ...(urgentEventId ? { urgentEventId } : {}),
@@ -947,6 +953,11 @@ export default function CommercialPropertyForm({
               <Field k="protection" label="Fire & security on site" hint="Select all that apply.">
                 <CheckGroup options={FIRE_SECURITY} selected={fireSec} onToggle={toggle(setFireSec)} />
               </Field>
+              {askAlsoGl && (
+                <Field k="protection" label="Do you also need general liability?" hint="We'll quote it as a bundle with the building.">
+                  <CheckGroup options={["Yes, also quote general liability"]} selected={alsoGl} onToggle={toggle(setAlsoGl)} />
+                </Field>
+              )}
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field k="value" label="Building value / coverage limit" hint="Roughly rebuild cost or current value.">
                   <Input value={f.value} onChange={(v) => set("value", v)} placeholder="$1,500,000" />
