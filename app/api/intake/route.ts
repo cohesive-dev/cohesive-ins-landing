@@ -453,7 +453,11 @@ export async function POST(request: NextRequest) {
     // most a secondary line on a building owner, never the requested one.
     // Any other lane may name its requested coverage (workers' comp guides: ["Workers Comp"]); only
     // allowlisted values pass, and the commercial-property line above always wins.
-    ...(isCommercialPropertyLane ? { coverage: ["Property"] } : askedCoverage ? { coverage: askedCoverage } : {}),
+    // Kevin 2026-10-21: a church that ticks "Do you also need general liability?" requests GL too, so the CP lane may add
+    // General Liability (and only that) beside Property; Property stays first and always present.
+    ...(isCommercialPropertyLane
+      ? { coverage: askedCoverage?.includes("General Liability") ? ["Property", "General Liability"] : ["Property"] }
+      : askedCoverage ? { coverage: askedCoverage } : {}),
     // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
     // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
     // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
