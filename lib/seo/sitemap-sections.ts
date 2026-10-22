@@ -15,7 +15,9 @@ import { STARTUP_GUIDES } from "@/lib/guides/catalog";
 import {
   CONTRACTOR_STATE_SLUGS,
   contractorStateBuildable,
+  getContractorState,
 } from "@/lib/seo/contractor-states";
+import { tradePriceUpdated } from "@/lib/seo/trade-prices";
 import { COMMERCIAL_PROPERTY_UPDATED } from "@/lib/seo/commercial-property-content";
 import { CHURCH_STATES, CHURCH_UPDATED } from "@/lib/seo/church-content";
 import {
@@ -120,6 +122,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     (slug) => ({
       url: `${BASE}/insurance/${slug}`,
       ...(["pool", "remodeler"].includes(slug) ? { lastModified: "2026-09-15" } : {}),
+      ...(tradePriceUpdated(slug) ? { lastModified: tradePriceUpdated(slug) } : {}),
       changeFrequency: "monthly" as const,
     }),
   );
@@ -164,6 +167,8 @@ function buildSections(): Record<SitemapSection, Entry[]> {
       (s) => ({
         url: `${BASE}/insurance/${t.slug}/${s}`,
         ...((["pool", "remodeler"].includes(t.slug) || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? { lastModified: ["pool", "remodeler"].includes(t.slug) ? "2026-09-15" : priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
+        // A dated price release (roofer 2026-10-22) is the page's latest change, only where the price applies.
+        ...(tradePriceUpdated(t.slug, getContractorState(s)?.abbr) ? { lastModified: tradePriceUpdated(t.slug, getContractorState(s)?.abbr) } : {}),
         changeFrequency: "monthly" as const,
       }),
     ),
