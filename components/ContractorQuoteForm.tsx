@@ -37,8 +37,9 @@ export function statedTrade(choice: string, other: string): string {
 }
 
 // Optional revenue band on the roofer pages (2026-10-22): roofing price moves mostly with revenue, and AUTO otherwise
-// files on assumed revenue. Sent only when chosen, as the detail "Annual revenue" (the CRM stores details as
-// formAnswers, so the key is exactly "Annual revenue"); no answer means no key, never a default.
+// files on assumed revenue. Sent only when chosen, as the detail "Annual revenue" (the CRM stores a completed lead's
+// details as formAnswers, so the key is exactly "Annual revenue"; a partial capture is notification-only, as before);
+// no answer means no key, never a default.
 export const REVENUE_BANDS = ["Under $250K", "$250K-$500K", "$500K-$1M", "$1M-$2.5M", "$2.5M-$5M", "Over $5M"] as const;
 export function revenueDetail(band: string) {
   return (REVENUE_BANDS as readonly string[]).includes(band) ? { label: "Annual revenue", value: band } : undefined;

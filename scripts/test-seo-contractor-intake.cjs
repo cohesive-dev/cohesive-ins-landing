@@ -165,8 +165,8 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   }
  }
  // 2026-10-22: optional "Annual revenue" band on roofer pages only. Unanswered = no key (no default, no block);
- // answered = the exact formAnswers key "Annual revenue" on the CRM payload, in the partial capture too.
- {const FormMod=require('../components/ContractorQuoteForm.tsx'),SeoPage=require('../components/SeoPage.tsx').default,stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
+ // answered = the exact formAnswers key "Annual revenue" on the CRM payload of a completed submit.
+ {const savedProps=formProps,savedPath=window.location.pathname,FormMod=require('../components/ContractorQuoteForm.tsx'),SeoPage=require('../components/SeoPage.tsx').default,stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
   const roofPage=await stateRoute.default({params:Promise.resolve({vertical:'roofer',geo:'texas'})});
   const roofForm=nodes(SeoPage(roofPage.props)).find(n=>n.type===FormMod.default);assert.equal(roofForm.props.askRevenue,true);
   const paintPage=await stateRoute.default({params:Promise.resolve({vertical:'painter',geo:'texas'})});
@@ -184,6 +184,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   assert.deepEqual(payload.details.find(d=>d.label==='Annual revenue'),{label:'Annual revenue',value:'$1M-$2.5M'});
   assert.deepEqual(crmCalls[0].details.find(d=>d.label==='Annual revenue'),{label:'Annual revenue',value:'$1M-$2.5M'});
   assert.equal(FormMod.revenueDetail('$9 trillion'),undefined);
+  formProps=savedProps;window.location.pathname=savedPath;
  }
  for(const failure of ['network','http','false-ok','skipped','non-json']){
   mode=failure;reset();fill();await render().props.onSubmit({preventDefault(){}});assert.doesNotMatch(text(render()),/Got it/);assert.match(text(render()),/couldn't save/);assert.equal(nodes(render()).find(n=>n.type==='button').props.disabled,false);
