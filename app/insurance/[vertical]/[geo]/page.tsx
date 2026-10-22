@@ -51,7 +51,7 @@ function hubBreadcrumbs(label: string, href: string) {
 }
 
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
-// /insurance/{trade}/{state} (trades x 50 jurisdictions, minus roofing NY/FL).
+// /insurance/{trade}/{state} (trades x 50 jurisdictions; roofing NY/FL restored 2026-10-22).
 // Content is composed per-combo; unknown combos 404.
 
 export const dynamicParams = false;

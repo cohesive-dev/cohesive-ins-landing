@@ -6,7 +6,9 @@
 //
 // Business descriptions only, never a client's name. Trades not listed here have no verified price
 // and publish no number at all (contractors.ts finalizeTradePricing removes the legacy $/mo floors).
-// Roofing is excluded on purpose (Kevin 2026-09-22: "depends on subs").
+// Roofing was excluded on 2026-09-22 (Kevin: "depends on subs"). Kevin lifted that on 2026-10-22 ("Yeah why not?") for
+// the states our roofing market writes: the roofer entry below carries the revenue beside every number
+// (TRADE_PRICE_EXTRAS) and is withheld on the closed states (TRADE_PRICE_CLOSED_STATES), which stay price-free.
 //
 // Second release (Kevin 2026-10-02 "OK"): the other trade families. Each figure was read from the CRM
 // on 2026-10-02 and matched to the business's own work and the class the carrier rated, not a name
@@ -44,11 +46,81 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   tile: { usd: 1011, kind: "quote", line: GL, business: "a tile installer in New York" },
   siding: { usd: 1301, kind: "quote", line: GL, business: "a residential siding contractor" },
   welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
+  // Third release, 2026-10-22 (Kevin "Yeah why not?"). Occurrence form: our claims-made quotes are lower, and the
+  // occurrence figure is the one that leads (Kevin). Every roofer number is shown with the revenue behind it.
+  roofer: { usd: 1795, kind: "quote", line: "Occurrence general liability", business: "a roofer at about $475K revenue with $150K subcontracted", asOf: "2026-10-22" },
 };
 
-export function tradePrice(slug: string): TradePrice | undefined {
+// States where a trade's price does not apply because the market behind it does not write there (state abbreviations).
+// Those pages keep the price-free title, cost block and FAQ.
+export const TRADE_PRICE_CLOSED_STATES: Record<string, ReadonlySet<string>> = {
+  roofer: new Set(["AK", "DC", "IA", "LA", "ME", "ND", "NH", "OK", "RI", "SD", "VT", "WA", "WV", "WY"]),
+};
+
+export function tradePrice(slug: string, stateAbbr?: string): TradePrice | undefined {
+  if (stateAbbr && TRADE_PRICE_CLOSED_STATES[slug]?.has(stateAbbr)) return undefined;
   return TRADE_PRICES[slug];
 }
+
+// The sitemap date for a page whose price came from a dated release (asOf); undefined where no price applies.
+export function tradePriceUpdated(slug: string, stateAbbr?: string): string | undefined {
+  return tradePrice(slug, stateAbbr)?.asOf;
+}
+
+// Real prices by business size, for a trade where one starting price would mislead (roofing moves with revenue and
+// subcontracted work). `revenue` is shown beside the price; an example without one is listed under the table.
+export type PriceExample = { business: string; revenue?: string; price: string; sentence: string };
+export type TradePriceExtras = {
+  answer: string;
+  heroSub: string;
+  disclaimer: string;
+  examples: { heading: string; items: PriceExample[]; note: string };
+  nationalH1: string;
+  nationalFaqs: { q: string; a: string }[];
+};
+
+// Roofer figures approved 2026-10-22. Quotes say "came in at"; only the bound policy says "bound". No carrier names,
+// no client names, and no state attached to a quote.
+export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
+  roofer: {
+    answer: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr with us for occurrence general liability. " +
+      "Bigger roofers pay more: a roofing company at about $1.3M revenue came in at $7,497/yr, and one at about $4.5M revenue came in at $20,830/yr. " +
+      "These are real prices, not averages or state-specific rates. Your price moves mostly with revenue and how much of the work you subcontract.",
+    heroSub: "A roofer at about $475K revenue came in at $1,795/yr with us. See what roofers paid at each size, then tell us about your work for your own quote.",
+    disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book as of 2026-10-22, each labelled. " +
+      "They are not averages. Your premium depends on your work, revenue, subcontracting, payroll, location, limits and claims. It is not a quote or an offer of insurance.",
+    examples: {
+      heading: "What roofers actually paid with us",
+      items: [
+        { business: "A Colorado residential contractor whose work includes roofing", price: "$1,795/yr, bound", sentence: "A Colorado residential contractor whose work includes roofing bound general liability with us at $1,795/yr, $1M/$2M occurrence." },
+        { business: "A roofer, $150K subcontracted, one W-2 employee", revenue: "About $475K", price: "$1,795/yr, quoted", sentence: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr." },
+        { business: "A roofing company, $800K subcontracted", revenue: "About $1.3M", price: "$7,497/yr, quoted", sentence: "A roofing company at about $1.3M revenue, $800K subcontracted, came in at $7,497/yr." },
+        { business: "A roofing and remodeling company", revenue: "About $2.5M", price: "$14,904/yr, quoted", sentence: "A roofing and remodeling company at about $2.5M revenue came in at $14,904/yr." },
+        { business: "A roofing company", revenue: "About $4.5M", price: "$20,830/yr, quoted", sentence: "A roofing company at about $4.5M revenue came in at $20,830/yr." },
+      ],
+      note: "Real prices from our own book, not averages, each labelled bound or quoted. Your price moves with revenue, subcontracted work, payroll and the share of commercial work.",
+    },
+    nationalH1: "Roofer Insurance: What Roofers Actually Pay",
+    nationalFaqs: [
+      {
+        q: "What drives the price of roofing insurance?",
+        a: "Mostly your annual revenue and how much of the work you subcontract. Payroll, residential versus commercial work, roof heights, torch or hot work and your claims history move it too. " +
+          "Give us what you pay subcontractors as its own figure and keep their certificates on file, because carriers price subcontracted work differently from your own crew's.",
+      },
+      {
+        q: "Occurrence or claims-made: what is the difference?",
+        a: "An occurrence policy covers injury or damage that happens while the policy is active, even if the claim arrives years later. " +
+          "A claims-made policy covers claims made while it is active, so you have to keep it renewed, or buy extra reporting time when it ends, to stay covered for past jobs. " +
+          "Roof leaks can show up long after the job, so occurrence is the safer fit for roofing. Check your contracts too: some GCs ask for it.",
+      },
+      {
+        q: "What do you need from me to quote roofing insurance?",
+        a: "Your business name and address, annual revenue, what you pay subcontractors, payroll and number of employees, your split of residential and commercial work, " +
+          "the roof types and heights you work on, whether you do torch or hot work, and any claims in the last few years. Your current declarations page helps if you have one.",
+      },
+    ],
+  },
+};
 
 const usd = (n: number) => `$${n.toLocaleString("en-US")}`;
 // Same rule as contractors.ts plural(), kept local to avoid an import cycle.
@@ -149,16 +221,19 @@ export function withTradePrice(
   slug: string,
   opts: { name: string; noun: string; place?: { name: string; abbr: string; city?: string }; metaTails?: string[] },
 ): PageContent {
-  const p = tradePrice(slug);
+  const p = tradePrice(slug, opts.place?.abbr);
   if (!p) return c;
+  const x = TRADE_PRICE_EXTRAS[slug];
   const where = placeLabel(opts.place);
   const lead = where ? `${where} ${opts.noun} insurance` : `${opts.noun[0].toUpperCase()}${opts.noun.slice(1)} insurance`;
-  const answer = tradeCostAnswer(opts.noun, p, where);
+  const answer = x?.answer ?? tradeCostAnswer(opts.noun, p, where);
+  const disclaimer = x?.disclaimer ?? tradePriceDisclaimer(p);
   return {
     ...c,
     title: pricedTitle(opts.name, p, opts.place),
+    heroH1: x && !opts.place ? x.nationalH1 : c.heroH1,
     heroSub: hasLegacyFloor(c.heroSub)
-      ? `Our lowest real ${p.line.toLowerCase()} price for this trade is ${priceText(p)}, ${kindPhrase(p)}. Tell us about your work and get your own quote in a few minutes.`
+      ? x?.heroSub ?? `Our lowest real ${p.line.toLowerCase()} price for this trade is ${priceText(p)}, ${kindPhrase(p)}. Tell us about your work and get your own quote in a few minutes.`
       : c.heroSub,
     metaDescription: pricedMeta(lead, p, [
       ...(opts.metaTails ?? []),
@@ -169,9 +244,11 @@ export function withTradePrice(
     // A profile's own "General liability: Individual quote" row stays, renamed so it reads as the reader's quote.
     costRows: [tradePriceRow(p), ...c.costRows.filter((row) => !legacyFloorRow(row))
       .map((row) => (row.coverage === "General liability" ? { ...row, coverage: "Your general liability quote" } : row))],
-    costDisclaimer: c.costDisclaimer ? `${tradePriceDisclaimer(p)} ${c.costDisclaimer}` : tradePriceDisclaimer(p),
+    costDisclaimer: c.costDisclaimer ? `${disclaimer} ${c.costDisclaimer}` : disclaimer,
+    ...(x ? { priceExamples: { ...x.examples, table: !opts.place } } : {}),
     faqs: [
       { q: `How much does ${opts.noun} insurance cost${where ? ` in ${where}` : ""}?`, a: answer },
+      ...(x && !opts.place ? x.nationalFaqs : []),
       ...c.faqs.filter((f) => !isCostQ(f.q)),
     ],
   };

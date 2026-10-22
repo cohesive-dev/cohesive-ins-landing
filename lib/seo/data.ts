@@ -533,6 +533,13 @@ export type PageContent = {
   faqs: { q: string; a: string }[];
   // One-line "also covered" note rendered under the hero (consolidated classes).
   alsoCovers?: string;
+  // Real prices by business size (trade-prices.ts TRADE_PRICE_EXTRAS): a table on the national page, a list on state pages.
+  priceExamples?: {
+    heading: string;
+    items: { business: string; revenue?: string; price: string; sentence: string }[];
+    note: string;
+    table: boolean;
+  };
 };
 
 // ---- restaurant builder ----------------------------------------------------

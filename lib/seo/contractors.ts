@@ -837,7 +837,7 @@ export function finalizeTradePricing(
   metaTails?: string[],
 ): PageContent {
   const name = t.titleName ?? t.name;
-  if (tradePrice(t.slug)) return withTradePrice(c, t.slug, { name, noun: t.noun, place, metaTails });
+  if (tradePrice(t.slug, place?.abbr)) return withTradePrice(c, t.slug, { name, noun: t.noun, place, metaTails });
   return withoutPrice(c, { name, noun: t.noun, plural: plural(t.noun), place });
 }
 
