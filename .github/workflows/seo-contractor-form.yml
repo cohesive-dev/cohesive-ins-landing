@@ -24,6 +24,10 @@ jobs:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
       - name: Unit - SEO contractor intake (form handlers + /api/intake, all external services stubbed)
         run: node scripts/test-seo-contractor-intake.cjs
+      - name: Unit - Spanish contractor form (/es/seguro/techadores + /api/intake, all external services stubbed)
+        run: node scripts/test-es-contractor-form.cjs
+      - name: Unit - Spanish SEO pages (copy rules, hreflang/sitemap, Spanish restaurant form + /api/intake, externals stubbed)
+        run: node scripts/test-es-seo-pages.cjs
       - name: Unit - SEO restaurant short form (RestaurantQuickQuote + /api/intake, all external services stubbed)
         run: node scripts/test-seo-restaurant-short-form.cjs
       - name: Unit - restaurant titles and meta descriptions carry each type's own approved price

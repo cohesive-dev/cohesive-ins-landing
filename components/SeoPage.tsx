@@ -94,8 +94,9 @@ export default function SeoPage({
   // "prices as of" only where this page actually carries a dated trade price row (trade-prices.ts).
   const pagePrice = formMode === "contractor" && tradeSlug ? tradePrice(tradeSlug) : undefined;
   const pricesAsOf = pagePrice && content.costRows.some((row) => row.coverage === tradePriceRow(pagePrice).coverage)
-    ? TRADE_PRICES_AS_OF
+    ? pagePrice.asOf ?? TRADE_PRICES_AS_OF
     : undefined;
+  const examples = content.priceExamples;
 
   const quoteCta = (
     <div className="flex flex-col sm:flex-row sm:items-center gap-3">
@@ -197,6 +198,50 @@ export default function SeoPage({
             </p>
           ))}
         </div>
+        {/* Real prices by size (roofer, 2026-10-22): revenue sits beside every price. */}
+        {examples && (
+          <div className="max-w-3xl mb-10 rounded-xl border border-blue-200 bg-[#F7F9FF] p-5">
+            <h3 className="text-lg font-extrabold text-[#131517] mb-3">{examples.heading}</h3>
+            {examples.table ? (
+              <>
+                <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white mb-3">
+                  <table className="w-full text-left text-sm min-w-[480px]">
+                    <thead>
+                      <tr className="bg-slate-50 text-[#27455C]">
+                        <th className="px-4 py-3 font-bold">Annual revenue</th>
+                        <th className="px-4 py-3 font-bold">Business</th>
+                        <th className="px-4 py-3 font-bold whitespace-nowrap">General liability</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {examples.items.filter((e) => e.revenue).map((e) => (
+                        <tr key={e.sentence} className="border-t border-slate-200">
+                          <td className="px-4 py-3 font-semibold text-[#131517] whitespace-nowrap">{e.revenue}</td>
+                          <td className="px-4 py-3 text-[#6B6D71]">{e.business}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-[#2040E7] font-bold">{e.price}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {examples.items.filter((e) => !e.revenue).map((e) => (
+                  <p key={e.sentence} className="text-[15px] text-[#27455C] mb-3">{e.sentence}</p>
+                ))}
+              </>
+            ) : (
+              <ul className="space-y-2 mb-3">
+                {examples.items.map((e) => (
+                  <li key={e.sentence} className="flex gap-2.5 text-[15px] text-[#27455C]">
+                    <span className="text-[#2040E7] font-bold shrink-0">✓</span>
+                    {e.sentence}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="text-sm text-[#6B6D71] mb-4">{examples.note}</p>
+            <a href="#quote" className="inline-block font-bold text-[#2040E7] hover:underline">See what yours comes in at →</a>
+          </div>
+        )}
 
         <div className="overflow-x-auto rounded-xl border border-slate-200 mb-3">
           <table className="w-full text-left text-sm min-w-[560px]">

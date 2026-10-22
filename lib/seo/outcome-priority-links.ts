@@ -10,7 +10,9 @@ export const OUTCOME_PRIORITY_LINKS = [
   { href: "/insurance/cleaning/new-jersey", label: "Cleaning insurance in New Jersey" },
   { href: "/insurance/snow-removal/virginia", label: "Snow-removal insurance in Virginia" },
   { href: "/insurance/snow-removal/wisconsin", label: "Snow-removal insurance in Wisconsin" },
-  { href: "/insurance/roofer/oklahoma", label: "Roofing insurance in Oklahoma" },
+  // Oklahoma swapped for Texas and Colorado (2026-10-22): our roofing market does not write Oklahoma, so its page has no price.
+  { href: "/insurance/roofer/texas", label: "Roofing insurance in Texas" },
+  { href: "/insurance/roofer/colorado", label: "Roofing insurance in Colorado" },
   { href: "/insurance/roofer/georgia", label: "Roofing insurance in Georgia" },
   { href: "/insurance/hvac/texas", label: "HVAC insurance in Texas" },
   { href: "/insurance/handyman/new-hampshire", label: "Handyman insurance in New Hampshire" },
@@ -26,7 +28,10 @@ export const OUTCOME_PRIORITY_LINKS = [
 // /guides/workers-comp-cost-for-contractors as "Discovered - currently not indexed". The homepage (crawled
 // most often), /insurance and /guides link them directly so Googlebot reaches them in one hop. The homepage
 // footer renders this same list (`short` labels), so the surfaces cannot drift.
+// /insurance/roofer joined on 2026-10-22: the already-indexed roofer hub now answers "roofing insurance cost" with real
+// prices by revenue, so it is linked one hop from the homepage like the cost guides.
 export const COST_GUIDE_LINKS = [
+  { href: "/insurance/roofer", label: "What roofing insurance costs: real prices by revenue", short: "Roofing insurance cost" },
   { href: "/guides/restaurant-insurance-cost", label: "What restaurant insurance costs: real policies and quotes", short: "Restaurant insurance cost" },
   { href: "/guides/restaurant-workers-comp-insurance", label: "Restaurant workers' comp: what sets the price", short: "Restaurant workers' comp" },
   { href: "/guides/bakery-insurance-cost", label: "What bakery insurance costs", short: "Bakery insurance cost" },
