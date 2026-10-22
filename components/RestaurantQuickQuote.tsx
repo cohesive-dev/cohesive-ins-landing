@@ -84,7 +84,7 @@ const phoneOk = (v: string) => isValidPhoneNumber(v.trim(), "US");
 
 type Answers = { company: string; renewal: string };
 // Detail rows for quotes@ and the CRM note. Only what the visitor gave, plus page context and attribution.
-function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | undefined, coverage?: RequestedCoverage[]) {
+export function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | undefined, coverage?: RequestedCoverage[]) {
   const captured = captureAttribution();
   // Referrer = the external referrer captureAttribution stored (own-site referrers are unknown, not a source).
   const a = { ...captured, landing_page: captured.landing_page || window.location.pathname };

@@ -13,7 +13,7 @@ export default function SpanishShell({ englishHref, children }: { englishHref?: 
       <SpanishDocumentLang />
       <header className="border-b border-slate-200">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Link href="/">
+          <Link href="/es/seguro/contratistas" aria-label="Cohesive Insurance en español">
             <img src="/logo-long.png" alt="Cohesive" className="h-7 w-auto object-contain sm:h-8" />
           </Link>
           <nav aria-label="Idioma" className="flex items-center gap-2 text-sm">
