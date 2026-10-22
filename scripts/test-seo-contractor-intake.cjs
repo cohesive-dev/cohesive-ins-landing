@@ -164,6 +164,27 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
    assert.ok(JSON.stringify(crmCalls[0]).includes('Client-described operations; no inferred hazard answers.'));
   }
  }
+ // 2026-10-22: optional "Annual revenue" band on roofer pages only. Unanswered = no key (no default, no block);
+ // answered = the exact formAnswers key "Annual revenue" on the CRM payload, in the partial capture too.
+ {const FormMod=require('../components/ContractorQuoteForm.tsx'),SeoPage=require('../components/SeoPage.tsx').default,stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
+  const roofPage=await stateRoute.default({params:Promise.resolve({vertical:'roofer',geo:'texas'})});
+  const roofForm=nodes(SeoPage(roofPage.props)).find(n=>n.type===FormMod.default);assert.equal(roofForm.props.askRevenue,true);
+  const paintPage=await stateRoute.default({params:Promise.resolve({vertical:'painter',geo:'texas'})});
+  assert.equal(nodes(SeoPage(paintPage.props)).find(n=>n.type===FormMod.default).props.askRevenue,false);
+  formProps={source:'seo-roofer-texas',tradeLabel:'Roofer'};window.location.pathname='/insurance/roofer/texas';mode='success';reset();
+  assert.equal(nodes(render()).filter(n=>n.type==='select').length,1,'no revenue select unless asked');
+  formProps={source:'seo-roofer-texas',tradeLabel:'Roofer',askRevenue:true};reset();
+  const revenueSelect=()=>nodes(render()).filter(n=>n.type==='select')[1];
+  assert.ok(revenueSelect());assert.notEqual(revenueSelect().props.required,true);
+  assert.deepEqual(nodes(revenueSelect()).filter(n=>n.type==='option').map(o=>o.props.value),['','Under $250K','$250K-$500K','$500K-$1M','$1M-$2.5M','$2.5M-$5M','Over $5M']);
+  fill('Roofer');await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  assert.ok(!payload.details.some(d=>d.label==='Annual revenue'));assert.ok(!JSON.stringify(crmCalls[0]).includes('Annual revenue'));
+  reset();fill('Roofer');revenueSelect().props.onChange({target:{value:'$1M-$2.5M'}});
+  await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
+  assert.deepEqual(payload.details.find(d=>d.label==='Annual revenue'),{label:'Annual revenue',value:'$1M-$2.5M'});
+  assert.deepEqual(crmCalls[0].details.find(d=>d.label==='Annual revenue'),{label:'Annual revenue',value:'$1M-$2.5M'});
+  assert.equal(FormMod.revenueDetail('$9 trillion'),undefined);
+ }
  for(const failure of ['network','http','false-ok','skipped','non-json']){
   mode=failure;reset();fill();await render().props.onSubmit({preventDefault(){}});assert.doesNotMatch(text(render()),/Got it/);assert.match(text(render()),/couldn't save/);assert.equal(nodes(render()).find(n=>n.type==='button').props.disabled,false);
  }

@@ -36,6 +36,14 @@ export function statedTrade(choice: string, other: string): string {
   return choice === SOMETHING_ELSE ? other.trim() : choice.trim();
 }
 
+// Optional revenue band on the roofer pages (2026-10-22): roofing price moves mostly with revenue, and AUTO otherwise
+// files on assumed revenue. Sent only when chosen, as the detail "Annual revenue" (the CRM stores details as
+// formAnswers, so the key is exactly "Annual revenue"); no answer means no key, never a default.
+export const REVENUE_BANDS = ["Under $250K", "$250K-$500K", "$500K-$1M", "$1M-$2.5M", "$2.5M-$5M", "Over $5M"] as const;
+export function revenueDetail(band: string) {
+  return (REVENUE_BANDS as readonly string[]).includes(band) ? { label: "Annual revenue", value: band } : undefined;
+}
+
 // Coverage a page asks the CRM to record (the workers' comp guides send ["Workers Comp"]). The
 // top-level `coverage` values are CRM line names and must be in /api/intake's allowlist; the
 // detail row is the human-readable version for quotes@ and the Slack card.
@@ -52,11 +60,13 @@ export default function ContractorQuoteForm({
   tradeLabel,
   operationsPrompt,
   coverageRequested,
+  askRevenue,
 }: {
   source: string;
   tradeLabel: string;
   operationsPrompt?: string;
   coverageRequested?: RequestedCoverage[];
+  askRevenue?: boolean;
 }) {
   const [f, setF] = useState({
     company: "",
@@ -67,6 +77,7 @@ export default function ContractorQuoteForm({
     operations: "",
     trade: "",
     otherTrade: "",
+    revenue: "",
   });
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -103,6 +114,7 @@ export default function ContractorQuoteForm({
       details: [
         f.company.trim() && { label: "Business", value: f.company.trim() },
         statedTrade(f.trade, f.otherTrade) && { label: "Trade", value: statedTrade(f.trade, f.otherTrade) },
+        askRevenue && revenueDetail(f.revenue),
         { label: "Page trade", value: tradeLabel },
         coverage.detail,
         operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
@@ -131,7 +143,7 @@ export default function ContractorQuoteForm({
         partialInFlight.current = false;
       });
     }
-  }, [coverageRequested, done, f, operationsPrompt, sending, source, tradeLabel]);
+  }, [askRevenue, coverageRequested, done, f, operationsPrompt, sending, source, tradeLabel]);
 
   useEffect(() => {
     const onHide = () => capturePartial();
@@ -194,6 +206,7 @@ export default function ContractorQuoteForm({
           details: [
             f.company.trim() && { label: "Business", value: f.company.trim() },
             { label: "Trade", value: stated },
+            askRevenue && revenueDetail(f.revenue),
             { label: "Page trade", value: tradeLabel },
             coverage.detail,
             operationsPrompt && f.operations.trim() && { label: "Services described", value: f.operations.trim() },
@@ -277,6 +290,19 @@ export default function ContractorQuoteForm({
           maxLength={200}
           required
         />
+      )}
+      {askRevenue && (
+        <label className="block text-sm text-[#27455C]">
+          Annual revenue (optional)
+          <select className={`${field} mt-1`} value={f.revenue} onChange={set("revenue")}>
+            <option value="">Choose a range</option>
+            {REVENUE_BANDS.map((band) => (
+              <option key={band} value={band}>
+                {band}
+              </option>
+            ))}
+          </select>
+        </label>
       )}
       <div className="grid sm:grid-cols-2 gap-3">
         <input

@@ -335,7 +335,7 @@ export default function SeoPage({
             </a>
           </div>
         ) : formMode === "contractor" ? (
-          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} />
+          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} askRevenue={tradeSlug === "roofer"} />
         ) : formMode === "property" ? (
           <CommercialPropertyForm embedded source={source} />
         ) : (
