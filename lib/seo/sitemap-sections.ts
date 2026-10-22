@@ -26,6 +26,7 @@ import {
   RESTAURANT_CITY_TYPES,
   RESTAURANT_CITIES,
 } from "@/lib/seo/restaurant-types";
+import { ES_PAGES, spanishFor } from "@/lib/es/pages";
 
 // Restaurant type x state pages left OUT of the sitemap (Kevin 2026-10-15): every /insurance/<type>/<state> URL with
 // 0 Search Console impressions in the 60 days 2026-08-16..2026-10-14 (1,122 of 1,900). The pages stay live,
@@ -178,9 +179,11 @@ function buildSections(): Record<SitemapSection, Entry[]> {
   const servicePages = SERVICE_PATHS.map(path => ({ url: `${BASE}${path}`, lastModified: SERVICE_UPDATED, changeFrequency: "monthly" as const }));
   const metroPages = METRO_PAGES.map(p => ({ url: `${BASE}${p.path}`, lastModified: METRO_UPDATED, changeFrequency: "monthly" as const }));
   const about = [{ url: `${BASE}${PRODUCER_PATH}`, lastModified: "2026-10-03", changeFrequency: "yearly" as const }];
+  // Spanish pages (Kevin 2026-10-22). Their hreflang pairs are added below by withLanguages.
+  const spanish = ES_PAGES.map((p) => ({ url: `${BASE}${p.path}`, lastModified: p.updated, changeFrequency: "monthly" as const }));
 
   const sections: Record<SitemapSection, Entry[]> = {
-    core: [...core, ...hub, ...about, ...verticals, ...servicePages.filter((e) => depth(e.url) <= 2)],
+    core: [...core, ...hub, ...about, ...verticals, ...servicePages.filter((e) => depth(e.url) <= 2), ...spanish],
     "contractor-state": [...tradeStates, ...servicePages.filter((e) => depth(e.url) === 3)],
     city: [...metroPages, ...restaurantCities, ...servicePages.filter((e) => depth(e.url) >= 4)],
     restaurant: [...foodStates, ...extraRestaurantStates, ...restaurantTypes],
@@ -191,8 +194,17 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     const updated = entry.url === `${BASE}/insurance/cleaning/new-york` ? "2026-09-16" : metroUpdatedForPath(entry.url.slice(BASE.length));
     return updated ? { ...entry, lastModified: updated } : entry;
   };
+  // hreflang es-US <-> en-US on BOTH URLs of every Spanish page that has an English equivalent (lib/es/pages.ts),
+  // so the English page carries the reciprocal alternate without touching its route.
+  const withLanguages = (entry: Entry): Entry => {
+    const path = entry.url.slice(BASE.length);
+    const es = ES_PAGES.find((p) => p.path === path && p.english);
+    const en = es?.english ?? (spanishFor(path) ? path : undefined);
+    const esPath = es?.path ?? spanishFor(path);
+    return en && esPath ? { ...entry, alternates: { languages: { "en-US": `${BASE}${en}`, "es-US": `${BASE}${esPath}` } } } : entry;
+  };
   return Object.fromEntries(
-    SITEMAP_SECTIONS.map((id) => [id, sections[id].map(withUpdated)]),
+    SITEMAP_SECTIONS.map((id) => [id, sections[id].map(withUpdated).map(withLanguages)]),
   ) as Record<SitemapSection, Entry[]>;
 }
 
