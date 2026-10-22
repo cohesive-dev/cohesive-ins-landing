@@ -85,7 +85,7 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
   roofer: {
     answer: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr with us for occurrence general liability. " +
       "Bigger roofers pay more: a roofing company at about $1.3M revenue came in at $7,497/yr, and one at about $4.5M revenue came in at $20,830/yr. " +
-      "These are real prices, not averages. Your price moves mostly with revenue and how much of the work you subcontract.",
+      "These are real prices, not averages or state-specific rates. Your price moves mostly with revenue and how much of the work you subcontract.",
     heroSub: "A roofer at about $475K revenue came in at $1,795/yr with us. See what roofers paid at each size, then tell us about your work for your own quote.",
     disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book as of 2026-10-22, each labelled. " +
       "They are not averages. Your premium depends on your work, revenue, subcontracting, payroll, location, limits and claims. It is not a quote or an offer of insurance.",
@@ -111,7 +111,7 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
         q: "Occurrence or claims-made: what is the difference?",
         a: "An occurrence policy covers injury or damage that happens while the policy is active, even if the claim arrives years later. " +
           "A claims-made policy covers claims made while it is active, so you have to keep it renewed, or buy extra reporting time when it ends, to stay covered for past jobs. " +
-          "Roof leaks can show up long after the job, so most roofers, and the GCs they work for, prefer occurrence.",
+          "Roof leaks can show up long after the job, so occurrence is the safer fit for roofing. Check your contracts too: some GCs ask for it.",
       },
       {
         q: "What do you need from me to quote roofing insurance?",
