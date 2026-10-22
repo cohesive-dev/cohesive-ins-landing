@@ -18,8 +18,9 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 // falls back to a TRUE generic template (no fabricated statute). The full 50-
 // jurisdiction licensing/bond/WC table should be researched + verified before
 // the state pages go fully live — see the note in the build report. Placement
-// footprint = 49 states + DC (everything except CA). Roofing drops NY
-// (Scaffold Law) + FL (wind/AOB) on top.
+// footprint = 49 states + DC (everything except CA). Roofing dropped NY
+// (Scaffold Law) + FL (wind/AOB) on top until 2026-10-22, when a roofing market that writes both
+// states was appointed; the NY Scaffold Law note and the FL facts below now sit on those pages.
 
 import type { Fact, PageContent } from "./data";
 import { priorityStateContent } from "./priority-state-content";
@@ -28,8 +29,9 @@ import { buildContractorNationalBase, finalizeTradePricing, plural } from "./con
 
 // Not placeable — no license, so no page.
 export const EXCLUDED_STATES = new Set(["california"]);
-// Roofing-specific knockouts on top of the general footprint.
-export const ROOFING_EXCLUDED_STATES = new Set(["new-york", "florida"]);
+// Roofing-specific knockouts on top of the general footprint. Empty since 2026-10-22: NY and FL were excluded on
+// 2026-08-14 (NY Scaffold Law, FL wind/assignment-of-benefits) because no market we had wrote roofing there.
+export const ROOFING_EXCLUDED_STATES = new Set<string>([]);
 
 export type ContractorState = {
   slug: string;
@@ -390,6 +392,15 @@ export function getContractorState(slug: string): ContractorState | undefined {
 
 // --- state page builder ------------------------------------------------------
 
+// Sourced trade-specific facts for one state (official statute text checked 2026-10-22).
+const TRADE_STATE_FACTS: Record<string, Fact> = {
+  "roofer/florida": {
+    title: "Certified or registered: Florida roofing licenses",
+    body: "Florida licenses roofing contractors through the DBPR. A certified roofing contractor can work anywhere in the state; a registered contractor can work only in the local areas where they qualified. Check which one you hold before you bid outside your area.",
+    source: { label: "Florida Statutes 489.105 (roofing contractor, certified and registered)", href: "https://www.flsenate.gov/Laws/Statutes/2025/489.105" },
+  },
+};
+
 function stateFacts(cs: ContractorState, t: Trade): Fact[] {
   const facts: Fact[] = [
     { title: `Workers' comp in ${cs.name}`, body: cs.wc },
@@ -406,6 +417,8 @@ function stateFacts(cs: ContractorState, t: Trade): Fact[] {
     facts.push({ title: `Elevated-work liability`, body: cs.scaffold });
   }
   if (cs.market) facts.push({ title: `What's different about ${cs.name}`, body: cs.market });
+  const tradeFact = TRADE_STATE_FACTS[`${t.slug}/${cs.slug}`];
+  if (tradeFact) facts.push(tradeFact);
   return facts;
 }
 

@@ -77,7 +77,7 @@ function priorityQuotePreparation(industry: ServiceIndustry, state: StartupState
 function serviceStateGuide(industry: ServiceIndustry, state: StartupState): RestaurantGuide {
   const specific = SPECIAL_TRADE_RESOURCES[`${industry.id}:${state.slug}`];
   const construction = ["pool-construction", "roofing", "remodeling"].includes(industry.id);
-  const noQuote = state.slug === "california" || (industry.id === "roofing" && ["new-york", "florida"].includes(state.slug));
+  const noQuote = state.slug === "california";
   const insurancePath = !noQuote && getContractorState(state.slug) && contractorStateBuildable(industry.insuranceSlug, state.slug)
     ? `/insurance/${industry.insuranceSlug}/${state.slug}`
     : `/insurance/${industry.insuranceSlug}`;
