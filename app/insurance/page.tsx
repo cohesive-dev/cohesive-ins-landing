@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data";
 import { TRADES } from "@/lib/seo/contractors";
+import { CONTRACTOR_STATE_SLUGS, contractorStateBuildable, getContractorState } from "@/lib/seo/contractor-states";
 import { COST_GUIDE_LINKS, OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
 import { churchStateLinks } from "@/lib/seo/church-content";
 import { RESTAURANT_TYPES } from "@/lib/seo/restaurant-types";
@@ -160,6 +161,18 @@ export default function Page() {
             >
               {t.name}
             </a>
+          ))}
+        </div>
+
+        {/* Every roofer state page one hop from this hub (2026-10-22): seven of them were not yet indexed. */}
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4">
+          Roofer insurance by state
+        </h2>
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm mb-12">
+          {CONTRACTOR_STATE_SLUGS.filter((s) => contractorStateBuildable("roofer", s)).map((s) => (
+            <Link key={s} href={`/insurance/roofer/${s}`} className="text-[#2040E7] hover:underline">
+              {getContractorState(s)?.name}
+            </Link>
           ))}
         </div>
 
