@@ -62,7 +62,7 @@ for (const trade of ['pool', 'tree-service', 'remodeler', 'painter', 'handyman',
     assert.ok(!sitemap.some(s => s.url.endsWith(`/insurance/${trade}/${state}`)));
   }
 }
-for (const state of ['new-york', 'florida']) assert.equal(contractorStateBuildable('roofer', state), false);
+for (const state of ['new-york', 'florida']) assert.equal(contractorStateBuildable('roofer', state), true);
 const ny = buildContractorState(getContractorState('new-york'), getTrade('painter'));
 assert.match(JSON.stringify(ny.stateFacts), /New York City|NYC/);
 assert.match(JSON.stringify(ny.stateFacts), /not acceptable proof/);

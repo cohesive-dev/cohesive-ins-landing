@@ -45,8 +45,8 @@ for (const state of STARTUP_STATES) {
 assert.ok(SPECIAL_TRADE_RESOURCES["janitorial:oregon"]);
 assert.ok(SPECIAL_TRADE_RESOURCES["tree-service:new-jersey"]);
 assert.ok(startupPlacementRestriction("california", "Janitorial"));
-assert.ok(startupPlacementRestriction("new-york", "Roofing"));
-assert.ok(startupPlacementRestriction("florida", "Roofing"));
+assert.equal(startupPlacementRestriction("new-york", "Roofing"), null);
+assert.equal(startupPlacementRestriction("florida", "Roofing"), null);
 assert.equal(startupPlacementRestriction("washington", "Roofing"), null);
 assert.equal(startupPlacementRestriction("michigan", "Restaurants"), null);
 assert.equal(startupPlacementRestriction("new-york", "Remodeling"), null);
