@@ -4,7 +4,7 @@ import SpanishContractorForm from "@/components/es/SpanishContractorForm";
 import type { EsTradeContent } from "@/lib/es/contractor-content";
 import { ES_CONTRACTOR_HUB, ES_CONTRACTOR_PAGES, ES_RESTAURANT_PAGES, ES_PAGES, esAlternates } from "@/lib/es/pages";
 
-export function esMetadata(path: string, title: string, description: string, ogTitle: string): Metadata {
+export function esMetadata(path: string, title: string, description: string, ogTitle: string, ogDescription = description): Metadata {
   return {
     title: { absolute: title },
     description,
@@ -15,14 +15,14 @@ export function esMetadata(path: string, title: string, description: string, ogT
       siteName: "Cohesive Insurance",
       url: path,
       title: ogTitle,
-      description,
+      description: ogDescription,
       images: [{ url: "/og/default.png", width: 1200, height: 630, alt: "Cohesive Insurance" }],
     },
   };
 }
 
 export function esTradeMetadata(c: EsTradeContent): Metadata {
-  return esMetadata(c.path, c.metaTitle, c.metaDescription, c.ogTitle);
+  return esMetadata(c.path, c.metaTitle, c.metaDescription, c.ogTitle, c.ogDescription);
 }
 
 /** The other Spanish pages, hub first, for the "Más páginas en español" links. */

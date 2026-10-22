@@ -56,9 +56,26 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
     [f, pageLabel],
   );
 
+  // Same funnel events as the English short form (Meta custom events + Vercel analytics), once each.
+  const fired = useRef<Set<string>>(new Set());
+  const track = useCallback(
+    (name: string, props?: Record<string, string>) => {
+      if (fired.current.has(name)) return;
+      fired.current.add(name);
+      fbq("trackCustom", name);
+      try {
+        vaTrack(name, { layout: "seo-short", source, ...(props ?? {}) });
+      } catch {
+        /* analytics never blocks */
+      }
+    },
+    [source],
+  );
+
   const sentPartial = useRef(false);
+  const partialInFlight = useRef(false);
   const capturePartial = useCallback(() => {
-    if (sentPartial.current || status !== "idle") return;
+    if (sentPartial.current || partialInFlight.current || status !== "idle") return;
     const email = f.email.trim().toLowerCase();
     const phone = f.phone.trim();
     const validEmail = emailOk(email) ? email : undefined;
@@ -77,16 +94,44 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
       details: details(stated || undefined),
     });
     try {
-      sentPartial.current = navigator.sendBeacon("/api/intake", new Blob([body], { type: "application/json" }));
+      const accepted = navigator.sendBeacon("/api/intake", new Blob([body], { type: "application/json" }));
+      if (!accepted) throw new Error("beacon refused");
+      sentPartial.current = true;
     } catch {
-      /* the 120 s retry stays armed */
+      partialInFlight.current = true;
+      fetch("/api/intake", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true })
+        .then((response) => {
+          if (response.ok) sentPartial.current = true;
+        })
+        .catch(() => {})
+        .finally(() => {
+          partialInFlight.current = false;
+        });
     }
   }, [details, f, source, status, typeTouched]);
 
+  const abandon = useCallback(() => {
+    if (status !== "idle" || !fired.current.has("FormStart") || fired.current.has("RestFormAbandon")) return;
+    track("RestFormAbandon", { milestone: fired.current.has("ContactDone") ? "contact" : "start" });
+  }, [status, track]);
+
+  // Client-side navigation (a Next <Link>) unmounts the form without pagehide: capture then too.
+  const onLeave = useRef(() => {});
   useEffect(() => {
-    const onHide = () => capturePartial();
+    onLeave.current = () => {
+      capturePartial();
+      abandon();
+    };
+  }, [capturePartial, abandon]);
+  useEffect(() => () => onLeave.current(), []);
+
+  useEffect(() => {
+    const onHide = () => {
+      capturePartial();
+      abandon();
+    };
     const onVisibility = () => {
-      if (document.visibilityState === "hidden") capturePartial();
+      if (document.visibilityState === "hidden") onHide();
     };
     window.addEventListener("pagehide", onHide);
     document.addEventListener("visibilitychange", onVisibility);
@@ -96,11 +141,14 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
       window.removeEventListener("pagehide", onHide);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [capturePartial]);
+  }, [capturePartial, abandon]);
 
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    track("FormStart");
     if (k === "type") setTypeTouched(true);
-    setF({ ...f, [k]: e.target.value });
+    const next = { ...f, [k]: e.target.value };
+    if (next.name.trim() && emailOk(next.email) && phoneOk(next.phone)) track("ContactDone");
+    setF(next);
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -150,6 +198,7 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
       }
       setStatus(capiEventName === "RestaurantDisqualified" ? "referred" : "done");
     } catch {
+      fbq("trackCustom", "SubmitError");
       setStatus("idle");
       setErr(`No pudimos guardar su solicitud. Intente de nuevo o llámenos al ${PHONE_DISPLAY}.`);
     }

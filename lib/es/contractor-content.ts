@@ -72,6 +72,7 @@ export type EsTradeContent = {
   metaTitle: string;
   metaDescription: string;
   ogTitle: string;
+  ogDescription?: string;
   h1: string;
   intro: string;
   alsoFor?: string;
@@ -93,6 +94,7 @@ export const ES_ROOFER: EsTradeContent = {
   metaDescription:
     "Techador con unos $475,000 de ingresos al año: su cotización de responsabilidad general le salió en $1,795 al año. Hablamos español. Pida su cotización.",
   ogTitle: "Seguro para techadores: cotizaciones reales, en español",
+  ogDescription: "Responsabilidad general para techadores. Cotizamos con varias aseguradoras y le contestamos en español.",
   h1: "Seguro para techadores: cotizaciones reales, en español",
   intro:
     "Cotizamos su seguro de responsabilidad general con varias aseguradoras y le explicamos todo en español. Llene el formulario en unos minutos y le mandamos su cotización.",

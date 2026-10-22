@@ -85,7 +85,7 @@ export default function SpanishTradePage({
         <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-12">
           <h2 className={h2}>{priceHeading}</h2>
           {prices?.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={`grid gap-4 sm:grid-cols-2${prices.length >= 3 ? " lg:grid-cols-3" : ""}`}>
               {prices.map((p) => (
                 <div key={p.price + p.who} className="rounded-xl border border-slate-200 p-5">
                   <p className="text-3xl font-extrabold text-[#131517]">{p.price}</p>

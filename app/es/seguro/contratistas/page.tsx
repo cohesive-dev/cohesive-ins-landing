@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import SpanishShell from "@/components/es/SpanishShell";
 import SpanishContractorForm from "@/components/es/SpanishContractorForm";
 import { esMetadata } from "@/components/es/EsTradeRoute";
-import { ES_CONTRACTOR_HUB, ES_RESTAURANT_PAGES } from "@/lib/es/pages";
+import { ES_CONTRACTOR_HUB, ES_CONTRACTOR_PAGES, ES_RESTAURANT_PAGES } from "@/lib/es/pages";
 import { ES_COVERAGES, ES_SPANISH_SECTION, ES_SUBS_SECTION } from "@/lib/es/contractor-content";
 import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164 } from "@/lib/entity";
 
@@ -16,23 +16,13 @@ export const metadata = esMetadata(
   "Seguro para contratistas, en español",
 );
 
-const TRADES = [
-  {
-    href: "/es/seguro/techadores",
-    name: "Seguro para techadores",
-    text: "A un techador con unos $475,000 de ingresos al año, la cotización de responsabilidad general le salió en $1,795 al año.",
-  },
-  {
-    href: "/es/seguro/contratistas-generales",
-    name: "Seguro para contratistas generales (GC)",
-    text: "Subcontratistas, certificados de seguro y asegurado adicional: lo que cuenta en su póliza.",
-  },
-  {
-    href: "/es/seguro/remodelacion",
-    name: "Seguro para remodelación",
-    text: "Cocinas, baños y renovaciones, también en casas habitadas.",
-  },
-];
+// Card copy per registry page; href and name come from ES_CONTRACTOR_PAGES (lib/es/pages.ts).
+const CARD_TEXT: Record<string, string> = {
+  "/es/seguro/techadores": "A un techador con unos $475,000 de ingresos al año, la cotización de responsabilidad general le salió en $1,795 al año.",
+  "/es/seguro/contratistas-generales": "Subcontratistas, certificados de seguro y asegurado adicional: lo que cuenta en su póliza.",
+  "/es/seguro/remodelacion": "Cocinas, baños y renovaciones, también en casas habitadas.",
+};
+const TRADES = ES_CONTRACTOR_PAGES.map((p) => ({ href: p.path, name: p.name, text: CARD_TEXT[p.path] ?? "" }));
 
 const h2 = "mb-4 text-2xl font-extrabold text-[#131517] lg:text-3xl";
 const body = "text-[15px] leading-relaxed text-[#27455C]";

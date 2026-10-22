@@ -38,6 +38,9 @@ const BASE='https://www.cohesiveinsure.com';
  assert.doesNotMatch(contractorCopy,/aseguramos/i,'contractor prices are quotes, never "aseguramos"');
  const contractorPrices=new Set(contractorCopy.match(/\$[\d,]+(?= al año)/g));
  assert.deepEqual([...contractorPrices].sort(),['$1,795','$7,497'],'only the two verified roofer quotes');
+ // Every dollar figure in contractor copy, in any format, is one of the approved facts (2 premiums, their revenue/subs, $1M/$2M limits).
+ const APPROVED=new Set(['$1,795','$7,497','$475,000','$150,000','$1.3','$800,000','$1M','$2M']);
+ for(const amt of contractorCopy.match(/\$\s?\d[\d,.]*[MKk]?/g)||[])assert.ok(APPROVED.has(amt.replace(/\s/g,'').replace(/[.,]$/,'')),`unapproved contractor amount ${amt}`);
  for(const p of C.ES_ROOFER.prices)assert.match(p.who,/ingresos/,'revenue beside every roofer price');
  for(const m of contractorCopy.matchAll(/[^.;:]*\$(?:1,795|7,497)[^.;]*/g))assert.match(m[0]+contractorCopy.slice(Math.max(0,m.index-160),m.index),/ingresos/,`revenue near "${m[0].trim()}"`);
  assert.equal(C.ES_GENERAL_CONTRACTOR.prices,undefined);assert.equal(C.ES_REMODELER.prices,undefined);
@@ -46,8 +49,10 @@ const BASE='https://www.cohesiveinsure.com';
  const rest=visible('app/es/seguro/restaurantes-mexicanos/page.tsx');
  assert.deepEqual([...new Set(rest.match(/\$[\d,]+(?= al año)/g))].sort(),['$2,932','$3,320','$5,052']);
  for(const amt of ['$2,932','$3,320','$5,052'])assert.match(rest,new RegExp(`que aseguramos paga \\${amt} al año`),amt);
- const STATES=['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','Nueva York','North Carolina','Carolina del Norte','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Pensilvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming'];
- for(const st of STATES)assert.ok(!new RegExp(`\\b${st}\\b`).test(rest),`no state name on the restaurant page: ${st}`);
+ const RAPPROVED=new Set(['$2,932','$3,320','$5,052','$1,000,000','$2,000,000']);
+ for(const amt of rest.match(/\$\s?\d[\d,.]*[MKk]?/g)||[])assert.ok(RAPPROVED.has(amt.replace(/\s/g,'').replace(/[.,]$/,'')),`unapproved restaurant amount ${amt}`);
+ const STATES=['Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','Nueva York','North Carolina','Carolina del Norte','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Pensilvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming','Tejas','Nuevo México','Nuevo Mexico','Nueva Jersey','Nuevo Hampshire','Carolina del Sur','Dakota del Norte','Dakota del Sur','Virginia Occidental','Luisiana','Misuri','Misisipi','Oregón','Míchigan','Michigán','Hawái','Kansas','Pensilvania','Florída','Arizona'];
+ for(const st of STATES)assert.ok(!new RegExp(`(^|[^\\p{L}])${st}($|[^\\p{L}])`,'iu').test(rest),`no state name on the restaurant page: ${st}`);
  // 2. Metadata: canonical self + hreflang pairs only where an English page exists.
  for(const p of P.ES_PAGES){
   const a=P.esAlternates(p.path);assert.equal(a.canonical,p.path);
