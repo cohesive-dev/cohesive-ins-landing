@@ -20,7 +20,7 @@ global.window={location:{pathname:'/es/seguro/techadores',search:''},addEventLis
 global.document={referrer:'',getElementById:()=>null,visibilityState:'visible',addEventListener:on,removeEventListener:off};
 const realSetTimeout=global.setTimeout,realClearTimeout=global.clearTimeout;
 global.setTimeout=(fn,ms,...a)=>ms>=100000?{held:fn}:realSetTimeout(fn,ms,...a);global.clearTimeout=h=>h&&h.held?undefined:realClearTimeout(h);
-const leave=async()=>{for(const f of [...(listeners.get('pagehide')||[])])await f();};
+const leave=async(type='pagehide')=>{render();if(type==='visibilitychange')document.visibilityState='hidden';try{for(const f of [...(listeners.get(type)||[])])await f();}finally{document.visibilityState='visible';}await new Promise(r=>setImmediate(r));};
 const {NextRequest}=require('next/server'),{POST}=require('../app/api/intake/route.ts');
 const Form=require('../components/es/SpanishContractorForm.tsx').default;
 const ES=require('../lib/es/contractor-form-es.ts');
@@ -96,8 +96,12 @@ async function fillAll(){
  notifyOk=false;await leave();
  assert.equal(intakeBodies.length,1);assert.equal(payload.partial,true);assert.equal(payload.final,true);assert.equal(crmCalls.length,0);
  let pd=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));assert.equal(pd['Preferred language'],'Spanish');assert.equal(pd['Form version'],'2026-10-22-es-v1');assert.equal(pd['Ad id (Meta)'],'120251012015050660');
+ assert.equal(payload.email,'es-test@example.invalid');assert.equal(payload.phone,'2025550184','the partial carries the latest contact snapshot');
  notifyOk=true;await leave();assert.equal(intakeBodies.length,2,'failed quotes@ save is retried on the next leave');assert.equal(emails.at(-1).partial,true);
  await leave();assert.equal(intakeBodies.length,2,'a saved partial is not sent twice');assert.equal(crmCalls.length,0,'partials never reach the CRM');
+ // Tab hidden (visibilitychange) is a leave signal too.
+ reset();set('email','es-test@example.invalid');set('phone','2025550184');await leave('visibilitychange');
+ assert.equal(intakeBodies.length,1);assert.equal(payload.partial,true);assert.equal(payload.phone,'2025550184');assert.equal(crmCalls.length,0);
  // Failures never show success.
  for(const failure of ['network','http']){mode=failure;reset();await fillAll();const out=text(render());assert.doesNotMatch(out,/Gracias/);assert.match(out,/No pudimos guardar su solicitud/);}
  // Preview mode sends nothing.
