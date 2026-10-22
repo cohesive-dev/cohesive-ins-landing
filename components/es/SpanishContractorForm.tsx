@@ -122,7 +122,9 @@ export default function SpanishContractorForm({
       try {
         const res = await fetch("/api/intake", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true });
         const result = await res.json();
-        if (res.ok && result.ok === true) sentPartial.current = true;
+        // Same success test as /contractor-test: this form version is in /api/intake's contact-first list, so a
+        // failed quotes@ save answers 503 / notification "failed" and the leave / idle retry stays armed.
+        if (res.ok && result.ok === true && result.notification === "sent") sentPartial.current = true;
       } catch {
         /* keep the leave/idle retry; never block completion */
       } finally {
@@ -153,7 +155,9 @@ export default function SpanishContractorForm({
     setError(fieldError(k));
     const control = document.getElementById(`es-${k}`) || form.current?.querySelector<HTMLElement>(`[data-es-field="${k}"] input, [data-es-field="${k}"] select`);
     control?.scrollIntoView({ block: "center", behavior: "smooth" });
-    control?.focus();
+    // A checkbox group (other trades) is a div: focus its first checkbox instead.
+    if (control?.getAttribute("role") === "group") control.querySelector("input")?.focus();
+    else control?.focus();
   }
 
   async function submit(e: React.FormEvent) {

@@ -40,7 +40,7 @@ const COVERAGE_AUTO: EsCard = {
 };
 const COVERAGE_AI: EsCard = {
   name: "Asegurado adicional y renuncia de subrogación",
-  text: "Son los endosos que piden los GC y los administradores de propiedades antes de que empiece a trabajar. Los ponemos en su certificado de seguro (COI) el mismo día que contrata la póliza.",
+  text: "Son los endosos que piden los GC y los administradores de propiedades antes de que empiece a trabajar. Los ponemos en su certificado de seguro (COI) cuando contrata la póliza.",
 };
 export const ES_COVERAGES: EsCard[] = [COVERAGE_GL, COVERAGE_TOOLS, COVERAGE_WC, COVERAGE_AUTO, COVERAGE_AI];
 
