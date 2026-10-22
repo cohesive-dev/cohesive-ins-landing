@@ -158,12 +158,14 @@ function details(payload) {
       const { context, page, payloads } = await open(browser, '/insurance/roofer/pennsylvania');
       await page.getByPlaceholder('Email').fill('partial-test@example.invalid');
       await page.getByPlaceholder('Phone').fill('2025550123');
-      await page.locator('select').selectOption('General contractor');
+      // Roofer pages also carry the optional "Annual revenue" select (2026-10-22); the trade select is the first one.
+      await page.locator('select').first().selectOption('General contractor');
       await leave(page);
       await page.waitForTimeout(300);
       assert.equal(payloads.length, 1);
       const captured = details(payloads[0]);
       assert.equal(captured.Trade, 'General contractor');
+      assert.equal(captured['Annual revenue'], undefined);
       assert.equal(captured['Page trade'], 'Roofer');
       await context.close();
     }
