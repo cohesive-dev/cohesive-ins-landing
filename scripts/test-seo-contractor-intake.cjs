@@ -165,7 +165,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   }
  }
  // 2026-10-22: optional "Annual revenue" band on roofer pages only. Unanswered = no key (no default, no block);
- // answered = the exact formAnswers key "Annual revenue" on the CRM payload of a completed submit.
+ // answered = the exact formAnswers key "Annual revenue (client stated)" on the CRM payload of a completed submit.
  {const savedProps=formProps,savedPath=window.location.pathname,FormMod=require('../components/ContractorQuoteForm.tsx'),SeoPage=require('../components/SeoPage.tsx').default,stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
   const roofPage=await stateRoute.default({params:Promise.resolve({vertical:'roofer',geo:'texas'})});
   const roofForm=nodes(SeoPage(roofPage.props)).find(n=>n.type===FormMod.default);assert.equal(roofForm.props.askRevenue,true);
@@ -178,11 +178,11 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   assert.ok(revenueSelect());assert.notEqual(revenueSelect().props.required,true);
   assert.deepEqual(nodes(revenueSelect()).filter(n=>n.type==='option').map(o=>o.props.value),['','Under $250K','$250K-$500K','$500K-$1M','$1M-$2.5M','$2.5M-$5M','Over $5M']);
   fill('Roofer');await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
-  assert.ok(!payload.details.some(d=>d.label==='Annual revenue'));assert.ok(!JSON.stringify(crmCalls[0]).includes('Annual revenue'));
+  assert.ok(!payload.details.some(d=>d.label==='Annual revenue (client stated)'));assert.ok(!JSON.stringify(crmCalls[0]).includes('Annual revenue (client stated)'));
   reset();fill('Roofer');revenueSelect().props.onChange({target:{value:'$1M-$2.5M'}});
   await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
-  assert.deepEqual(payload.details.find(d=>d.label==='Annual revenue'),{label:'Annual revenue',value:'$1M-$2.5M'});
-  assert.deepEqual(crmCalls[0].details.find(d=>d.label==='Annual revenue'),{label:'Annual revenue',value:'$1M-$2.5M'});
+  assert.deepEqual(payload.details.find(d=>d.label==='Annual revenue (client stated)'),{label:'Annual revenue (client stated)',value:'$1M-$2.5M'});
+  assert.deepEqual(crmCalls[0].details.find(d=>d.label==='Annual revenue (client stated)'),{label:'Annual revenue (client stated)',value:'$1M-$2.5M'});
   assert.equal(FormMod.revenueDetail('$9 trillion'),undefined);
   formProps=savedProps;window.location.pathname=savedPath;
  }

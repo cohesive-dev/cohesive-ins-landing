@@ -165,7 +165,7 @@ function details(payload) {
       assert.equal(payloads.length, 1);
       const captured = details(payloads[0]);
       assert.equal(captured.Trade, 'General contractor');
-      assert.equal(captured['Annual revenue'], undefined);
+      assert.equal(captured['Annual revenue (client stated)'], undefined);
       assert.equal(captured['Page trade'], 'Roofer');
       await context.close();
     }
