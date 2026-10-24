@@ -6,7 +6,7 @@ import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
-import { COST_GUIDE_LINKS } from "@/lib/seo/outcome-priority-links";
+import { COST_GUIDE_LINKS, ROOFER_DISCOVERY_LINKS } from "@/lib/seo/outcome-priority-links";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
@@ -1255,6 +1255,19 @@ function Footer() {
             </ul>
           </div>
         </div>
+
+        {/* Roofer state pages Google has not indexed yet (2026-10-24), one hop from the homepage. */}
+        <nav aria-label="Roofer insurance by state" className="md:ml-[33.333%] mb-10 text-sm">
+          <h4 className="text-white font-semibold text-sm mb-3">
+            <a href="/insurance/roofer" className="hover:text-white transition-colors">Roofer insurance</a> by state
+          </h4>
+          <ul className="flex flex-wrap gap-x-4 gap-y-2">
+            {ROOFER_DISCOVERY_LINKS.map((l) => (
+              <li key={l.href}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
+            ))}
+            <li><a href="/es/seguro/techadores" hrefLang="es-US" lang="es" className="hover:text-white transition-colors">Techadores (en español)</a></li>
+          </ul>
+        </nav>
 
         <div className="pt-8 md:w-1/2 md:ml-auto">
           <div className="h-px w-full bg-white/20 mb-6" />
