@@ -13,6 +13,7 @@ import type { PageContent } from "@/lib/seo/data";
 import { licenseLineForArea, PRIMARY_NPN } from "@/lib/licenses";
 import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164, PRODUCER_PATH, ORG_NAME, PRODUCER_NAME } from "@/lib/entity";
 import { TRADE_PRICES_AS_OF, tradePrice, tradePriceRow } from "@/lib/seo/trade-prices";
+import { spanishLinkFor } from "@/lib/es/pages";
 
 // Shared layout for the /insurance SEO pages (state pages + national vertical
 // pages). Server component; the only client island is the intake form.
@@ -90,6 +91,12 @@ export default function SeoPage({
   };
 
   const agencyJsonLd = organizationJsonLd(areaServed);
+  // "En español" link to the matching Spanish page (lib/es/pages.ts), server-rendered in the header.
+  const spanish = spanishLinkFor({
+    tradeSlug: formMode === "contractor" ? tradeSlug : undefined,
+    restaurantSlug: formMode === "restaurant" ? restaurantPageType?.slug : undefined,
+    national: areaServed === "United States",
+  });
 
   // "prices as of" only where this page actually carries a dated trade price row (trade-prices.ts).
   const pagePrice = formMode === "contractor" && tradeSlug ? tradePrice(tradeSlug) : undefined;
@@ -127,7 +134,7 @@ export default function SeoPage({
       />
 
       <header className="border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <Link href="/">
             <img
               src="/logo-long.png"
@@ -135,6 +142,11 @@ export default function SeoPage({
               className="h-7 sm:h-8 w-auto object-contain"
             />
           </Link>
+          {spanish && (
+            <Link href={spanish.href} hrefLang="es-US" lang="es" data-es-link="" className="rounded-full px-3 py-1 text-sm font-semibold text-[#2040E7] underline">
+              {spanish.label}
+            </Link>
+          )}
         </div>
       </header>
 

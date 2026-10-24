@@ -1247,6 +1247,8 @@ function Footer() {
                 { label: "How It Works", href: "#how-it-works" },
                 { label: "Business Startup Guides", href: "/guides" },
                 { label: "Insurance Guides", href: "/insurance" },
+                { label: "En español: contratistas", href: "/es/seguro/contratistas" },
+                { label: "En español: restaurantes mexicanos", href: "/es/seguro/restaurantes-mexicanos" },
                 { label: "Carriers", href: "#carriers" },
                 { label: "Contact", href: "tel:+19295945450" },
               ].map((l) => (

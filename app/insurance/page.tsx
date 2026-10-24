@@ -6,6 +6,7 @@ import { STATES, STATE_VERTICALS, VERTICALS, getVertical } from "@/lib/seo/data"
 import { TRADES } from "@/lib/seo/contractors";
 import { CONTRACTOR_STATE_SLUGS, contractorStateBuildable, getContractorState } from "@/lib/seo/contractor-states";
 import { COST_GUIDE_LINKS, OUTCOME_PRIORITY_LINKS } from "@/lib/seo/outcome-priority-links";
+import { ES_PAGES } from "@/lib/es/pages";
 import { churchStateLinks } from "@/lib/seo/church-content";
 import { RESTAURANT_TYPES } from "@/lib/seo/restaurant-types";
 
@@ -77,6 +78,15 @@ export default function Page() {
               className="rounded-xl border border-slate-200 p-4 text-sm font-semibold text-[#2040E7] hover:border-[#2040E7] hover:underline transition-colors"
             >
               {link.label}
+            </Link>
+          ))}
+        </div>
+        {/* Spanish pages (2026-10-24): one hop from the insurance hub so Googlebot can discover them. */}
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-4" lang="es">En español</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mb-12" lang="es">
+          {ES_PAGES.map((p) => (
+            <Link key={p.path} href={p.path} hrefLang="es-US" className="rounded-xl border border-slate-200 p-4 text-sm font-semibold text-[#2040E7] hover:border-[#2040E7] hover:underline transition-colors">
+              {p.name}
             </Link>
           ))}
         </div>

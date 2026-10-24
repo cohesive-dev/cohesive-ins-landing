@@ -199,14 +199,14 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     const updated = entry.url === `${BASE}/insurance/cleaning/new-york` ? "2026-09-16" : metroUpdatedForPath(entry.url.slice(BASE.length));
     return updated ? { ...entry, lastModified: updated } : entry;
   };
-  // hreflang es-US <-> en-US on BOTH URLs of every Spanish page that has an English equivalent (lib/es/pages.ts),
+  // hreflang es-US <-> en-US (+ x-default English, matching the page <head>) on BOTH URLs of every Spanish page that has an English equivalent (lib/es/pages.ts),
   // so the English page carries the reciprocal alternate without touching its route.
   const withLanguages = (entry: Entry): Entry => {
     const path = entry.url.slice(BASE.length);
     const es = ES_PAGES.find((p) => p.path === path && p.english);
     const en = es?.english ?? (spanishFor(path) ? path : undefined);
     const esPath = es?.path ?? spanishFor(path);
-    return en && esPath ? { ...entry, alternates: { languages: { "en-US": `${BASE}${en}`, "es-US": `${BASE}${esPath}` } } } : entry;
+    return en && esPath ? { ...entry, alternates: { languages: { "en-US": `${BASE}${en}`, "es-US": `${BASE}${esPath}`, "x-default": `${BASE}${en}` } } } : entry;
   };
   return Object.fromEntries(
     SITEMAP_SECTIONS.map((id) => [id, sections[id].map(withUpdated).map(withLanguages)]),
