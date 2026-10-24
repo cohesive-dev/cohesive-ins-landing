@@ -40,7 +40,7 @@ Many trade pages show real prices from our own book, each labelled as a policy w
 - [Pool contractor insurance](https://www.cohesiveinsure.com/insurance/pool)
 - [Cleaning insurance](https://www.cohesiveinsure.com/insurance/cleaning)
 - [Restaurant insurance](https://www.cohesiveinsure.com/insurance/restaurant)
-- [Mexican restaurant insurance](https://www.cohesiveinsure.com/insurance/mexican-restaurant)
+- [Mexican restaurant insurance](https://www.cohesiveinsure.com/insurance/mexican-restaurant): a full-service Mexican restaurant we insure pays $1,027/yr for general liability.
 - [Church insurance](https://www.cohesiveinsure.com/insurance/church)
 - [Commercial property insurance](https://www.cohesiveinsure.com/insurance/commercial-property)
 - [Business startup guides](https://www.cohesiveinsure.com/guides)
@@ -54,7 +54,7 @@ We answer in Spanish by phone, text and email, from the quote to the certificate
 - [Seguro para techadores (roofer insurance, in Spanish)](https://www.cohesiveinsure.com/es/seguro/techadores): a roofer at about $475K revenue came in at $1,795/yr with us, and a roofing company at about $1.3M revenue with $800K subcontracted came in at $7,497/yr (general liability quotes, not bound policies).
 - [Seguro para contratistas generales (general contractor insurance, in Spanish)](https://www.cohesiveinsure.com/es/seguro/contratistas-generales)
 - [Seguro para contratistas de remodelación (remodeler insurance, in Spanish)](https://www.cohesiveinsure.com/es/seguro/remodelacion)
-- [Seguro para restaurantes mexicanos (Mexican restaurant insurance, in Spanish)](https://www.cohesiveinsure.com/es/seguro/restaurantes-mexicanos): restaurants we insure pay $2,932/yr (general liability), $3,320/yr and $5,052/yr (general liability and property).
+- [Seguro para restaurantes mexicanos (Mexican restaurant insurance, in Spanish)](https://www.cohesiveinsure.com/es/seguro/restaurantes-mexicanos)
 
 ## Getting a quote
 
