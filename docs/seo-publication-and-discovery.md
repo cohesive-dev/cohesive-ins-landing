@@ -8,7 +8,7 @@ file, and no automatic scheduler or GitHub workflow is installed.
 
 For each approved content release:
 1. Update public/.well-known/cohesive-content-release.json with a unique release identifier,
-   editorial date and the exact added/materially changed guide or insurance paths. No query
+   editorial date and the exact added/materially changed guide, insurance or Spanish (/es) paths. No query
    strings, lead records, tracking links or whole historical sitemap dumps. Maximum 100 paths.
 2. Build, test, review the diff and publish through GitHub/Vercel. Confirm the exact commit
    deployed and verify the actual public content before notification.
