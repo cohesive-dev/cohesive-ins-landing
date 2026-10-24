@@ -71,13 +71,42 @@ const BASE='https://www.cohesiveinsure.com';
  for(const p of P.ES_PAGES){
   const hits=all.filter(e=>e.url===BASE+p.path);assert.equal(hits.length,1,`${p.path} in the sitemap once`);
   if(p.english){
-   const want={'en-US':BASE+p.english,'es-US':BASE+p.path};
+   const want={'en-US':BASE+p.english,'es-US':BASE+p.path,'x-default':BASE+p.english};
    assert.deepEqual(hits[0].alternates?.languages,want,`${p.path} alternates`);
    const en=all.filter(e=>e.url===BASE+p.english);assert.equal(en.length,1,`${p.english} in the sitemap once`);
    assert.deepEqual(en[0].alternates?.languages,want,`${p.english} carries the reciprocal alternate`);
   }else assert.equal(hits[0].alternates,undefined);
  }
  assert.equal(all.filter(e=>e.alternates).length,P.ES_PAGES.filter(p=>p.english).length*2,'no other URL gains alternates');
+ // 3b. (2026-10-24) The English pairs carry the reciprocal hreflang in their own <head>, and English pages link the
+ // Spanish page visibly ("En español"), server-rendered, so Googlebot can discover the /es pages from the English site.
+ for(const p of P.ES_PAGES.filter(p=>p.english)){
+  const m=await nat.generateMetadata({params:Promise.resolve({vertical:p.english.replace('/insurance/','')})});
+  assert.equal(m.alternates.canonical,p.english);
+  assert.deepEqual(m.alternates.languages,{'en-US':p.english,'es-US':p.path,'x-default':p.english},`${p.english} <head> hreflang`);
+ }
+ for(const v of ['electrician','restaurant','plumber']){const m=await nat.generateMetadata({params:Promise.resolve({vertical:v})});assert.equal(m.alternates.languages,undefined,`${v}: no hreflang without a Spanish pair`);}
+ const geoPage=require('../app/insurance/[vertical]/[geo]/page.tsx');
+ const gm=await geoPage.generateMetadata({params:Promise.resolve({vertical:'roofer',geo:'texas'})});assert.equal(gm.alternates.languages,undefined,'state pages: link only, no hreflang (not equivalent pages)');
+ const esLink=async(mod,params)=>{const el=await mod.default({params:Promise.resolve(params)});const tree=el.type(el.props);const a=nodes(tree).find(n=>n.props&&'data-es-link' in n.props);return a&&{href:a.props.href,hrefLang:a.props.hrefLang,label:text(a)};};
+ const ES_LINKS=[
+  [nat,{vertical:'roofer'},'/es/seguro/techadores'],
+  [geoPage,{vertical:'roofer',geo:'texas'},'/es/seguro/techadores'],
+  [geoPage,{vertical:'roofer',geo:'new-york'},'/es/seguro/techadores'],
+  [geoPage,{vertical:'roofer',geo:'florida'},'/es/seguro/techadores'],
+  [geoPage,{vertical:'roofer',geo:'illinois'},'/es/seguro/techadores'],
+  [nat,{vertical:'general-contractor'},'/es/seguro/contratistas-generales'],
+  [geoPage,{vertical:'general-contractor',geo:'texas'},'/es/seguro/contratistas-generales'],
+  [nat,{vertical:'remodeler'},'/es/seguro/remodelacion'],
+  [geoPage,{vertical:'remodeler',geo:'texas'},'/es/seguro/remodelacion'],
+  [nat,{vertical:'mexican-restaurant'},'/es/seguro/restaurantes-mexicanos'],
+  [nat,{vertical:'restaurant'},'/es/seguro/restaurantes-mexicanos'],
+ ];
+ for(const [mod,params,href] of ES_LINKS){const a=await esLink(mod,params);assert.ok(a,`${JSON.stringify(params)} links its Spanish page`);assert.equal(a.href,href);assert.equal(a.hrefLang,'es-US');}
+ for(const params of [{vertical:'electrician'},{vertical:'plumber'}])assert.equal(await esLink(nat,params),undefined,`${params.vertical}: no Spanish link`);
+ assert.equal(await esLink(geoPage,{vertical:'restaurant',geo:'texas'}),undefined,'restaurant state pages: no Spanish link (hub only)');
+ assert.match(fs.readFileSync(path.join(root,'app/insurance/page.tsx'),'utf8'),/ES_PAGES\.map\(/,'insurance hub lists every Spanish page');
+ const home=fs.readFileSync(path.join(root,'app/page.tsx'),'utf8');for(const h of ['/es/seguro/contratistas"','/es/seguro/restaurantes-mexicanos"'])assert.ok(home.includes(h),`homepage footer links ${h}`);
  // 4. Spanish restaurant form through the real route.
  const Form=require('../components/es/SpanishRestaurantForm.tsx').default;
  const props={source:'seo-es-mexican-restaurant',pageType:{slug:'mexican-restaurant',noun:'Mexican restaurant'}};
@@ -103,5 +132,5 @@ const BASE='https://www.cohesiveinsure.com';
  nodes(render()).find(n=>n.type==='select').props.onChange({target:{value:'Bar / tavern / brewery'}});
  await render().props.onSubmit({preventDefault(){}});assert.equal(payload.capiEventName,'RestaurantDisqualified');assert.equal(crmCalls.length,0);assert.equal(emails.length,1);
  assert.ok(emails[0].details.some(x=>x.label==='Preferred language'&&x.value==='Spanish'));assert.match(text(render()),/Gracias por escribirnos/);
- console.log('PASS: Spanish pages keep the copy rules (quotes vs binds, revenue beside roofer prices, no carriers/NPN/em dashes/state names), canonical + reciprocal es-US/en-US hreflang in metadata and sitemap, and the Spanish restaurant form reaches the real route with "Preferred language: Spanish". No external requests.');
+ console.log('PASS: Spanish pages keep the copy rules (quotes vs binds, revenue beside roofer prices, no carriers/NPN/em dashes/state names), canonical + reciprocal es-US/en-US/x-default hreflang in BOTH pages <head> and the sitemap, server-rendered "En español" links from the English pairs (hub, state pages, /insurance, homepage footer), and the Spanish restaurant form reaches the real route with "Preferred language: Spanish". No external requests.');
 })().catch(e=>{console.error(e);process.exitCode=1;});

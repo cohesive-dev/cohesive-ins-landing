@@ -28,6 +28,7 @@ import {
   allRestaurantStateLinks,
 } from "@/lib/seo/restaurant-types";
 import { withArticle } from "@/lib/seo/restaurant-cities";
+import { englishLanguages } from "@/lib/es/pages";
 
 // Hub-and-spoke (2026-10-02): concept pages link up to the restaurant hub, and the hub links down to
 // every concept. Neither link existed before.
@@ -73,7 +74,8 @@ export async function generateMetadata({
   return {
     title: content.title,
     description: content.metaDescription,
-    alternates: { canonical: `/insurance/${vertical}` },
+    // English pages paired with a Spanish page carry the reciprocal hreflang in their own <head> (2026-10-24).
+    alternates: { canonical: `/insurance/${vertical}`, ...(englishLanguages(`/insurance/${vertical}`) ? { languages: englishLanguages(`/insurance/${vertical}`) } : {}) },
     ...(vertical === "bar" ? { robots: { index: false, follow: true } } : {}),
   };
 }

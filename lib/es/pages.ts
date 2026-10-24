@@ -32,3 +32,34 @@ export function esAlternates(path: string) {
 export function spanishFor(englishPath: string): string | undefined {
   return ES_PAGES.find((p) => p.english === englishPath)?.path;
 }
+
+/** English page -> Next metadata `languages` for its reciprocal hreflang (en-US self, es-US pair, x-default English). */
+export function englishLanguages(englishPath: string): Record<string, string> | undefined {
+  const es = spanishFor(englishPath);
+  return es ? { "en-US": englishPath, "es-US": es, "x-default": englishPath } : undefined;
+}
+
+// The visible "En español" link on English pages (2026-10-24: the Spanish pages had no internal links from the
+// English site, and Google reported all five as "URL is unknown"). Keyed by the SeoPage trade / restaurant type, so
+// a trade's hub, state and city pages all link the matching Spanish page. Only the English pairs above carry
+// hreflang; the state and city pages get the link alone (hreflang must point at an equivalent page).
+const SPANISH_FOR_TRADE: Record<string, string> = {
+  roofer: "/es/seguro/techadores",
+  "general-contractor": "/es/seguro/contratistas-generales",
+  remodeler: "/es/seguro/remodelacion",
+};
+const SPANISH_FOR_RESTAURANT_TYPE: Record<string, string> = {
+  "mexican-restaurant": "/es/seguro/restaurantes-mexicanos",
+};
+
+export type SpanishLink = { href: string; label: string };
+
+export function spanishLinkFor({ tradeSlug, restaurantSlug, national }: { tradeSlug?: string; restaurantSlug?: string; national?: boolean }): SpanishLink | undefined {
+  const tradeEs = tradeSlug ? SPANISH_FOR_TRADE[tradeSlug] : undefined;
+  if (tradeEs) return { href: tradeEs, label: "En español" };
+  const restEs = restaurantSlug ? SPANISH_FOR_RESTAURANT_TYPE[restaurantSlug] : undefined;
+  if (restEs) return { href: restEs, label: "En español" };
+  // The restaurant hub is the only general restaurant page that links the Mexican-restaurant page in Spanish.
+  if (restaurantSlug === "restaurant" && national) return { href: "/es/seguro/restaurantes-mexicanos", label: "Restaurantes mexicanos: en español" };
+  return undefined;
+}
