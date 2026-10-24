@@ -32,6 +32,11 @@ const BASE='https://www.cohesiveinsure.com';
   assert.doesNotMatch(src,/encore|pcic|hartford|amtrust|great american|rainbow|pathpoint|foxquilt|next insurance|coterie/i,`${f}: no carrier names`);
   assert.doesNotMatch(src,/NPN|PRIMARY_NPN|license number|licencia n[uú]mero/i,`${f}: no license numbers`);
   assert.doesNotMatch(src,/testimonio|testimonial|“[^”]*”\s*-\s*[A-Z]/i,`${f}: no testimonials`);}
+ // /llms.txt (2026-10-24) lists every Spanish page, keeps the carrier/em-dash rules, and labels the roofer figures as quotes.
+ {const llms=fs.readFileSync(path.join(root,'public/llms.txt'),'utf8');
+  for(const p of P.ES_PAGES)assert.ok(llms.includes(`https://www.cohesiveinsure.com${p.path})`),`llms.txt lists ${p.path}`);
+  assert.doesNotMatch(llms,/—/);assert.doesNotMatch(llms,/encore|pcic|hartford|amtrust|great american|rainbow|pathpoint|foxquilt|next insurance|coterie|simply business|blitz|thimble/i,'llms.txt: no carrier names');
+  for(const m of llms.matchAll(/\$(1,795|7,497)\/yr/g))assert.match(llms.slice(Math.max(0,m.index-60),m.index),/came in at/,'roofer figures say "came in at"');}
  // Roofer (and other contractor) prices are QUOTES with revenue beside them; never "aseguramos".
  const C=require('../lib/es/contractor-content.ts');
  const contractorCopy=JSON.stringify(C.ES_TRADE_CONTENT)+visible('app/es/seguro/contratistas/page.tsx');
