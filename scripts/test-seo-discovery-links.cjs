@@ -21,6 +21,9 @@ for(const l of ROOFER_DISCOVERY_LINKS){
 for(const h of ['/insurance/roofer/new-york','/insurance/roofer/florida'])assert.ok(ROOFER_DISCOVERY_LINKS.some(l=>l.href===h),h);
 assert.ok(!ROOFER_DISCOVERY_LINKS.some(l=>/oklahoma|louisiana|washington/.test(l.href)),'no closed-state roofer page');
 const home=fs.readFileSync(appFile('page.tsx'),'utf8');
-assert.match(home,/ROOFER_DISCOVERY_LINKS\.map\(/,'homepage footer renders the list');
-assert.match(home,/href="\/es\/seguro\/techadores"/,'homepage footer links the Spanish roofer page');
+const footer=home.slice(home.indexOf('function Footer('));assert.ok(home.includes('function Footer('),'homepage has a Footer');
+const live=footer.split('\n').filter(l=>!/^\s*(\/\/|\{\/\*)/.test(l)).join('\n');
+assert.match(live,/ROOFER_DISCOVERY_LINKS\.map\(/,'the Footer renders the list');
+assert.match(live,/href="\/es\/seguro\/techadores"/,'the Footer links the Spanish roofer page');
+assert.ok(fs.existsSync(path.join(root,'app/es/seguro/techadores/page.tsx')),'the Spanish roofer route exists');
 console.log(`PASS: ${ROOFER_DISCOVERY_LINKS.length} homepage roofer discovery links are built, priced (open) state pages incl. NY/FL, plus the Spanish roofer page.`);
