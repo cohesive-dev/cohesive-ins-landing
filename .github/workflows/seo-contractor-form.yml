@@ -32,6 +32,8 @@ jobs:
         run: node scripts/test-seo-restaurant-short-form.cjs
       - name: Unit - restaurant titles and meta descriptions carry each type's own approved price
         run: node scripts/test-seo-restaurant-snippets.cjs
+      - name: Unit - homepage roofer discovery links are built, priced (open-state) pages
+        run: node scripts/test-seo-discovery-links.cjs
       - run: npm run build
       - name: Start the built site on :3021
         run: |

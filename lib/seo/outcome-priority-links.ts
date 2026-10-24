@@ -40,3 +40,23 @@ export const COST_GUIDE_LINKS = [
   { href: "/guides/contractor-workers-comp-insurance", label: "Workers' comp for contractors: what it covers", short: "Contractor workers' comp" },
   { href: "/guides/workers-comp-insurance-for-remodelers", label: "Workers' comp for remodelers", short: "Workers' comp for remodelers" },
 ] as const;
+
+// Roofer state pages Google has not indexed (2026-10-24, URL Inspection): New York, Florida and Oklahoma "URL is
+// unknown to Google"; Illinois, Kentucky, Massachusetts, Utah, Wisconsin "Discovered - currently not indexed"; Hawaii,
+// Montana "URL is unknown". The pages linking them (the roofer hub, TX, CO) were last crawled 09-10..09-22, while the
+// homepage was crawled 10-23, so the homepage footer links them directly (one hop from the most-crawled page), plus
+// the Spanish roofer page. Oklahoma is left out: our roofing market does not write there, so its page has no price.
+// Texas and Colorado lead: indexed, priced, and the source of our two most recent ChatGPT roofer leads.
+export const ROOFER_DISCOVERY_LINKS = [
+  { href: "/insurance/roofer/texas", label: "Texas" },
+  { href: "/insurance/roofer/colorado", label: "Colorado" },
+  { href: "/insurance/roofer/new-york", label: "New York" },
+  { href: "/insurance/roofer/florida", label: "Florida" },
+  { href: "/insurance/roofer/illinois", label: "Illinois" },
+  { href: "/insurance/roofer/kentucky", label: "Kentucky" },
+  { href: "/insurance/roofer/massachusetts", label: "Massachusetts" },
+  { href: "/insurance/roofer/utah", label: "Utah" },
+  { href: "/insurance/roofer/wisconsin", label: "Wisconsin" },
+  { href: "/insurance/roofer/hawaii", label: "Hawaii" },
+  { href: "/insurance/roofer/montana", label: "Montana" },
+] as const;
