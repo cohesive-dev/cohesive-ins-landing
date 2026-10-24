@@ -8,7 +8,7 @@ Module._load=function(req,parent,isMain){if(req.startsWith('@/'))req=path.join(r
 const R=p=>require(path.join(root,p));
 const prices=R('lib/seo/restaurant-prices.ts'),{HEADLINE_PRICES:H}=prices;
 const {RESTAURANT_CITY_TYPES}=R('lib/seo/restaurant-types.ts'),{VERTICALS}=R('lib/seo/data.ts');
-const vRoute=R('app/insurance/[vertical]/page.tsx'),gRoute=R('app/insurance/[vertical]/[geo]/page.tsx'),mRoute=R('app/insurance/[vertical]/[geo]/[metro]/page.tsx');
+const vRoute=R('app/(site)/insurance/[vertical]/page.tsx'),gRoute=R('app/(site)/insurance/[vertical]/[geo]/page.tsx'),mRoute=R('app/(site)/insurance/[vertical]/[geo]/[metro]/page.tsx');
 
 // Approved sentences, verbatim (wording is the approval).
 assert.equal(H.coffeeShop.sentence,'a coffee shop was quoted $686 a year for general liability');
@@ -81,7 +81,7 @@ assert.equal(prices.headlinePrice('donut-shop'),H.quickService,'a donut shop fri
  const sitemap=R('lib/seo/sitemap-sections.ts').sitemapSection('guides');
  assert.ok(sitemap.some(e=>e.url==='https://www.cohesiveinsure.com/guides/restaurant-insurance-cost'),'guide in the guides sitemap');
  // The guide renders the short restaurant form, not the startup form (which demands a state).
- const pageSrc=fs.readFileSync(path.join(root,'app/guides/[slug]/page.tsx'),'utf8');
+ const pageSrc=fs.readFileSync(path.join(root,'app/(site)/guides/[slug]/page.tsx'),'utf8');
  assert.match(pageSrc,/guide\.quoteForm === "restaurant-short" \? <RestaurantQuickQuote source=\{`seo-guide-\$\{guide\.slug\}`\} \/> : <StartupQuoteForm bundleOffer=\{bundle\} slug=\{guide\.slug\}/,'both arms: short form for the cost guide, startup form for every other guide');
 assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
  // Linked from the restaurant SEO pages' existing guide links.
@@ -124,17 +124,17 @@ assert.equal((pageSrc.match(/<StartupQuoteForm /g)||[]).length,1);
   const official=/^https:\/\/(www\.wcb\.ny\.gov|www\.nysenate\.gov|nyc-business\.nyc\.gov|regs\.health\.ny\.gov)\//;
   for(const want of [/Workers' comp/,/Disability and Paid Family Leave/,/Dram shop/,/five boroughs/,/Outside New York City/]){
    const f=ny.stateFacts.find(x=>want.test(x.title));assert.ok(f,`NY fact ${want}`);assert.match(f.source?.href??'',official,f.title);}
-  assert.match(fs.readFileSync(path.join(root,'app/page.tsx'),'utf8'),/href: "\/insurance\/restaurant\/new-york"/,'homepage links the NY hub');
-  assert.match(fs.readFileSync(path.join(root,'app/insurance/page.tsx'),'utf8'),/href="\/insurance\/restaurant\/new-york"/,'/insurance links the NY hub');}
+  assert.match(fs.readFileSync(path.join(root,'app/(site)/page.tsx'),'utf8'),/href: "\/insurance\/restaurant\/new-york"/,'homepage links the NY hub');
+  assert.match(fs.readFileSync(path.join(root,'app/(site)/insurance/page.tsx'),'utf8'),/href="\/insurance\/restaurant\/new-york"/,'/insurance links the NY hub');}
  // CTR pass 2026-10-16: restaurant opening guides and the lease guide fit ~60 characters with " | Cohesive" (H1 unchanged);
  // church titles lead with the bound $445 liability price; price-free trade titles name the full state.
- {const gR=R('app/guides/[slug]/page.tsx'),{STARTUP_GUIDES}=R('lib/guides/catalog.ts');
+ {const gR=R('app/(site)/guides/[slug]/page.tsx'),{STARTUP_GUIDES}=R('lib/guides/catalog.ts');
   const open=STARTUP_GUIDES.filter(g=>/^how-to-open-a-restaurant-in-/.test(g.slug));assert.ok(open.length>=50,`${open.length} state opening guides`);
   for(const g of [...open,STARTUP_GUIDES.find(x=>x.slug==='restaurant-lease-insurance-requirements')]){
    const md=await gR.generateMetadata({params:Promise.resolve({slug:g.slug})});
    assert.ok(md.title.length<=60,`${g.slug} title ${md.title.length}: ${md.title}`);assert.ok(md.description.length<=155,`${g.slug} description ${md.description.length}`);
    assert.equal(md.alternates.canonical,`/guides/${g.slug}`);assert.ok(g.title.length>0&&g.title!==md.title,'H1 keeps the long title');}
-  const church=R('lib/seo/church-content.ts'),chR=R('app/insurance/church/[geo]/page.tsx');
+  const church=R('lib/seo/church-content.ts'),chR=R('app/(site)/insurance/church/[geo]/page.tsx');
   assert.match(church.CHURCH_CONTENT.title,/\$445\/yr/);
   for(const st of church.CHURCH_STATES){const md=await chR.generateMetadata({params:Promise.resolve({geo:st.slug})});
    assert.ok(md.title.startsWith(st.name)&&md.title.includes('$445/yr')&&md.title.length<=60,md.title);assert.ok(md.description.length<=155,md.description);

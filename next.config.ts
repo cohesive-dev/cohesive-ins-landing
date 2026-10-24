@@ -26,6 +26,10 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Spanish pages (2026-10-24): Content-Language beside the server-rendered <html lang="es"> (Bing reads both).
+  async headers() {
+    return [{ source: "/es/:path*", headers: [{ key: "Content-Language", value: "es-US" }] }];
+  },
   // /sitemap.xml (the URL already submitted to Search Console and Bing) serves the sitemap index.
   // A route at app/sitemap.xml would collide with app/sitemap.ts (generateSitemaps), so the index
   // lives at /sitemap-index.xml and this rewrite keeps the old URL answering with it.

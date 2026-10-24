@@ -3,9 +3,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
-import { Suspense } from 'react';
-import { WebsiteTraffic } from '@/components/WebsiteTraffic';
-import "./globals.css";
+import { Suspense, type ReactNode } from "react";
+import { WebsiteTraffic } from "@/components/WebsiteTraffic";
+
+// The one <html> document for both root layouts (2026-10-24): app/(site)/layout.tsx renders it with lang="en" and
+// app/es/layout.tsx with lang="es", so the Spanish pages get <html lang="es"> in the server HTML instead of a
+// client-side switch. Everything else (pixel, attribution, analytics, font) is identical on both.
 
 const META_PIXEL_ID = "831179966599677";
 
@@ -15,7 +18,7 @@ const inter = Inter({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
+export const ROOT_METADATA: Metadata = {
   // Required so relative Open Graph image URLs (e.g. the church /religious card)
   // resolve to the live domain in the rendered <meta> tags instead of localhost.
   metadataBase: new URL("https://www.cohesiveinsure.com"),
@@ -38,13 +41,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootDocument({ lang, children }: { lang: "en" | "es"; children: ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang={lang} className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col font-[var(--font-sans)]">
         {/* Meta Pixel Code */}
         {/* Pixel is PRODUCTION-ONLY: localhost / preview runs must never write to the real

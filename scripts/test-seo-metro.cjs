@@ -3,8 +3,8 @@ const root=path.resolve(__dirname,'..'),load=Module._load;
 for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true},fileName:f}).outputText,f);
 Module._load=function(req,parent,main){return load.call(this,req.startsWith('@/')?path.join(root,req.slice(2)):req,parent,main)};
 const {METRO_PAGES,metroLinksFor,METRO_RELEASE_PATHS}=require('../lib/seo/metro-pages.ts');
-const route=require('../app/insurance/[vertical]/[geo]/[metro]/page.tsx');
-const {getTrade}=require('../lib/seo/contractors.ts');const stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
+const route=require('../app/(site)/insurance/[vertical]/[geo]/[metro]/page.tsx');
+const {getTrade}=require('../lib/seo/contractors.ts');const stateRoute=require('../app/(site)/insurance/[vertical]/[geo]/page.tsx');
 const sitemap=require('../lib/seo/sitemap-sections.ts').allSitemapEntries();const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/.well-known/cohesive-content-release.json')));
 (async()=>{
  assert.equal(METRO_PAGES.length,183);assert.equal(new Set(METRO_PAGES.map(p=>p.path)).size,183);assert.equal(route.dynamicParams,false);

@@ -29,7 +29,7 @@ global.fetch=async(url,opt)=>{
  const plans=STARTUP_GUIDES.filter(g=>g.sections.some(s=>s.id==='first-customer-plan'));
  assert.equal(plans.length,102);assert.equal(plans.filter(g=>g.noQuote).length,2);
  for(const g of plans){assert.equal(g.updatedAt,'2026-09-14');assert.equal(new Set(g.sections.map(s=>s.id)).size,g.sections.length);assert.ok(g.sections.find(s=>s.id==='first-customer-plan').links.every(l=>fs.existsSync(path.join(root,'public',l.href))));}
- const growthRoute=require('../app/guides/[slug]/page.tsx');
+ const growthRoute=require('../app/(site)/guides/[slug]/page.tsx');
  const {METRO_PAGES}=require('../lib/seo/metro-pages.ts');
  const growth=STARTUP_GUIDES.filter(g=>g.kind==='growth');assert.equal(growth.length,181);
  assert.equal(growth.filter(g=>g.industry==='Pool construction').length,20);

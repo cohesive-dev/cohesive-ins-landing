@@ -6,7 +6,7 @@
 // visible text is Spanish, plus one formAnswers row: "Preferred language": "Spanish".
 // Its own experiment cell (<industry>__es__step__v1) and form version keep it out of the English A/B cells.
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useLocationSearch } from "@/lib/use-location-search";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import { trafficSession } from "@/lib/traffic-session";
 import { FULL_LABELS, fullScreens, normalizeFull, validFullField } from "@/lib/contractor-full-form";
@@ -50,7 +50,10 @@ export default function SpanishContractorForm({
   /** Trade value listed first in the trade select (not pre-selected). */
   tradeFirst?: string;
 }) {
-  const query = useSearchParams();
+  // Query string read without useSearchParams (2026-10-24): useSearchParams made the static page bail out to client
+  // rendering, so the server HTML carried only "Cargando el formulario…". This renders the form on the server (empty
+  // query there) and reads ?preview=1 / ad ids on the client.
+  const query = useLocationSearch();
   const preview = query.get("preview") === "1";
   const cellId = `${cellIndustry}__es__step__v1`;
   const [answers, setAnswers] = useState<Answers>({});

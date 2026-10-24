@@ -115,7 +115,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   for(const t of ['remodeler','general-contractor','electrician','hvac','concrete','masonry','restaurant'])assert.ok(WC.WC_TRADE_TEASERS[t],t);
   // Rendered SeoPage: the teaser shows on an eligible trade/state page and on a restaurant page, never in TX or a
   // state-fund state, and never on catering / food-truck pages.
-  {const geo=require('../app/insurance/[vertical]/[geo]/page.tsx'),nat=require('../app/insurance/[vertical]/page.tsx');
+  {const geo=require('../app/(site)/insurance/[vertical]/[geo]/page.tsx'),nat=require('../app/(site)/insurance/[vertical]/page.tsx');
    const shown=async(route,params)=>{const el=await route.default({params:Promise.resolve(params)});return text(el.type(el.props));};
    assert.match(await shown(geo,{vertical:'electrician',geo:'georgia'}),/Workers' comp for electricians.*\$3,774 a year/s);
    assert.match(await shown(nat,{vertical:'hvac'}),/\$1,182 a year for workers' comp/);
@@ -146,7 +146,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   reset();fill();await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/Got it/);
   assert.ok(!payload.details.some(d=>d.label==='Services described'));
  }
- const metroRoute=require('../app/insurance/[vertical]/[geo]/[metro]/page.tsx');
+ const metroRoute=require('../app/(site)/insurance/[vertical]/[geo]/[metro]/page.tsx');
  for(const p of require('../lib/seo/metro-pages.ts').METRO_PAGES){
   const page=await metroRoute.default({params:Promise.resolve({vertical:p.trade,geo:p.state,metro:p.city})});
   formProps=page.props;window.location.pathname=p.path;
@@ -166,7 +166,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
  }
  // 2026-10-22: optional "Annual revenue" band on roofer pages only. Unanswered = no key (no default, no block);
  // answered = the exact formAnswers key "Annual revenue (client stated)" on the CRM payload of a completed submit.
- {const savedProps=formProps,savedPath=window.location.pathname,FormMod=require('../components/ContractorQuoteForm.tsx'),SeoPage=require('../components/SeoPage.tsx').default,stateRoute=require('../app/insurance/[vertical]/[geo]/page.tsx');
+ {const savedProps=formProps,savedPath=window.location.pathname,FormMod=require('../components/ContractorQuoteForm.tsx'),SeoPage=require('../components/SeoPage.tsx').default,stateRoute=require('../app/(site)/insurance/[vertical]/[geo]/page.tsx');
   const roofPage=await stateRoute.default({params:Promise.resolve({vertical:'roofer',geo:'texas'})});
   const roofForm=nodes(SeoPage(roofPage.props)).find(n=>n.type===FormMod.default);assert.equal(roofForm.props.askRevenue,true);
   const paintPage=await stateRoute.default({params:Promise.resolve({vertical:'painter',geo:'texas'})});
