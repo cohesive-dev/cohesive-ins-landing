@@ -86,7 +86,9 @@ const BASE='https://www.cohesiveinsure.com';
   assert.deepEqual(m.alternates.languages,{'en-US':p.english,'es-US':p.path,'x-default':p.english},`${p.english} <head> hreflang`);
  }
  for(const v of ['electrician','restaurant','plumber']){const m=await nat.generateMetadata({params:Promise.resolve({vertical:v})});assert.equal(m.alternates.languages,undefined,`${v}: no hreflang without a Spanish pair`);}
- const geoPage=require('../app/insurance/[vertical]/[geo]/page.tsx');
+ // Route files resolve under app/(site)/ or app/ so this block passes on either side of the root-layout split.
+ const appFile=rel=>fs.existsSync(path.join(root,'app/(site)',rel))?path.join(root,'app/(site)',rel):path.join(root,'app',rel);
+ const geoPage=require(appFile('insurance/[vertical]/[geo]/page.tsx'));
  const gm=await geoPage.generateMetadata({params:Promise.resolve({vertical:'roofer',geo:'texas'})});assert.equal(gm.alternates.languages,undefined,'state pages: link only, no hreflang (not equivalent pages)');
  const esLink=async(mod,params)=>{const el=await mod.default({params:Promise.resolve(params)});const tree=el.type(el.props);const a=nodes(tree).find(n=>n.props&&'data-es-link' in n.props);return a&&{href:a.props.href,hrefLang:a.props.hrefLang,label:text(a)};};
  const ES_LINKS=[
@@ -105,8 +107,8 @@ const BASE='https://www.cohesiveinsure.com';
  for(const [mod,params,href] of ES_LINKS){const a=await esLink(mod,params);assert.ok(a,`${JSON.stringify(params)} links its Spanish page`);assert.equal(a.href,href);assert.equal(a.hrefLang,'es-US');}
  for(const params of [{vertical:'electrician'},{vertical:'plumber'}])assert.equal(await esLink(nat,params),undefined,`${params.vertical}: no Spanish link`);
  assert.equal(await esLink(geoPage,{vertical:'restaurant',geo:'texas'}),undefined,'restaurant state pages: no Spanish link (hub only)');
- assert.match(fs.readFileSync(path.join(root,'app/insurance/page.tsx'),'utf8'),/ES_PAGES\.map\(/,'insurance hub lists every Spanish page');
- const home=fs.readFileSync(path.join(root,'app/page.tsx'),'utf8');for(const h of ['/es/seguro/contratistas"','/es/seguro/restaurantes-mexicanos"'])assert.ok(home.includes(h),`homepage footer links ${h}`);
+ assert.match(fs.readFileSync(appFile('insurance/page.tsx'),'utf8'),/ES_PAGES\.map\(/,'insurance hub lists every Spanish page');
+ const home=fs.readFileSync(appFile('page.tsx'),'utf8');for(const h of ['/es/seguro/contratistas"','/es/seguro/restaurantes-mexicanos"'])assert.ok(home.includes(h),`homepage footer links ${h}`);
  // 4. Spanish restaurant form through the real route.
  const Form=require('../components/es/SpanishRestaurantForm.tsx').default;
  const props={source:'seo-es-mexican-restaurant',pageType:{slug:'mexican-restaurant',noun:'Mexican restaurant'}};
