@@ -54,7 +54,7 @@ const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Al
 (async()=>{
  // ---- SeoPage: restaurant + bar pages render the short form, with the page's type and source -------------
  const SeoPage=require('../components/SeoPage.tsx').default;
- const verticalRoute=require('../app/insurance/[vertical]/page.tsx'),geoRoute=require('../app/insurance/[vertical]/[geo]/page.tsx'),metroRoute=require('../app/insurance/[vertical]/[geo]/[metro]/page.tsx');
+ const verticalRoute=require('../app/(site)/insurance/[vertical]/page.tsx'),geoRoute=require('../app/(site)/insurance/[vertical]/[geo]/page.tsx'),metroRoute=require('../app/(site)/insurance/[vertical]/[geo]/[metro]/page.tsx');
  const pages=[
   [verticalRoute,{vertical:'restaurant'},'restaurant','seo-restaurant-national','Full-service / sit-down restaurant'],
   [verticalRoute,{vertical:'coffee-shop'},'restaurant','seo-coffee-shop-national','Coffee / café / bakery (little or no cooking)'],
@@ -83,7 +83,7 @@ const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Al
   assert.equal(new Set(opts).size,opts.length,'no duplicate options');
  }
  // Only the SEO branch moved: paid /restaurant and /bar keep the long intake form.
- for(const f of ['app/restaurant/page.tsx','app/bar/page.tsx'])assert.match(fs.readFileSync(path.join(root,f),'utf8'),/import RestaurantIntakeForm from "@\/components\/RestaurantIntakeForm"/);
+ for(const f of ['app/(site)/restaurant/page.tsx','app/(site)/bar/page.tsx'])assert.match(fs.readFileSync(path.join(root,f),'utf8'),/import RestaurantIntakeForm from "@\/components\/RestaurantIntakeForm"/);
  assert.doesNotMatch(fs.readFileSync(path.join(root,'components/SeoPage.tsx'),'utf8'),/RestaurantIntakeForm/);
  // Choice values mirror the long form's BUSINESS_TYPES (same strings + Rainbow class for the quoter).
  const longForm=fs.readFileSync(path.join(root,'components/RestaurantIntakeForm.tsx'),'utf8');

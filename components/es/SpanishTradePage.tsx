@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Suspense, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import SpanishShell from "@/components/es/SpanishShell";
 import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164 } from "@/lib/entity";
 
@@ -102,7 +102,8 @@ export default function SpanishTradePage({
           <div className="mx-auto max-w-2xl px-4 sm:px-6">
             <h2 className="mb-2 text-2xl font-extrabold text-[#131517] lg:text-3xl">{formHeading}</h2>
             <p className="mb-5 text-[#27455C]">{formIntro}</p>
-            <Suspense fallback={<p>Cargando el formulario…</p>}>{form}</Suspense>
+            {/* No Suspense: the forms read no request data during render, so they render in place in the server HTML. */}
+            {form}
           </div>
         </section>
 

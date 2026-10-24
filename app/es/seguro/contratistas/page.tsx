@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Suspense } from "react";
 import SpanishShell from "@/components/es/SpanishShell";
 import SpanishContractorForm from "@/components/es/SpanishContractorForm";
 import { esMetadata } from "@/components/es/EsTradeRoute";
@@ -78,9 +77,7 @@ export default function Page() {
           <div className="mx-auto max-w-2xl px-4 sm:px-6">
             <h2 className="mb-2 text-2xl font-extrabold text-[#131517] lg:text-3xl">Pida su cotización</h2>
             <p className="mb-5 text-[#27455C]">Son unas cuantas preguntas sobre su negocio. Con eso cotizamos con varias aseguradoras y le contestamos en español.</p>
-            <Suspense fallback={<p>Cargando el formulario…</p>}>
-              <SpanishContractorForm advertisedIndustry="Contractor" cellIndustry="contractor" />
-            </Suspense>
+            <SpanishContractorForm advertisedIndustry="Contractor" cellIndustry="contractor" />
           </div>
         </section>
 

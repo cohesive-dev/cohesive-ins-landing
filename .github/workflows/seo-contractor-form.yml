@@ -40,3 +40,5 @@ jobs:
           cat /tmp/next.log; exit 1
       - name: Browser - contractor partial capture (intake requests are intercepted; nothing real is sent)
         run: node scripts/test-contractor-partial-capture.cjs http://localhost:3021
+      - name: Server HTML - Spanish pages serve <html lang="es"> and a server-rendered form
+        run: node scripts/test-es-server-html.mjs http://localhost:3021

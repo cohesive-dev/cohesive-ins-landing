@@ -64,7 +64,7 @@ const BASE='https://www.cohesiveinsure.com';
   const title=typeof m.title==='string'?m.title:m.title.absolute;assert.ok(title.length<=66,`${route} title length ${title.length}`);assert.ok(m.description.length<=160,`${route} description length ${m.description.length}`);
  }
  // English pages that the hreflang points at must exist as routes (generateStaticParams).
- const nat=require('../app/insurance/[vertical]/page.tsx');const slugs=new Set(nat.generateStaticParams().map(p=>p.vertical));
+ const nat=require('../app/(site)/insurance/[vertical]/page.tsx');const slugs=new Set(nat.generateStaticParams().map(p=>p.vertical));
  for(const p of P.ES_PAGES.filter(p=>p.english))assert.ok(slugs.has(p.english.replace('/insurance/','')),`${p.english} is a real English page`);
  // 3. Sitemap: every Spanish page listed once; reciprocal alternates on the Spanish AND the English URL.
  const S=require('../lib/seo/sitemap-sections.ts');const all=S.allSitemapEntries();
