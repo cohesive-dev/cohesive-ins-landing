@@ -104,7 +104,10 @@ const BASE='https://www.cohesiveinsure.com';
   [nat,{vertical:'mexican-restaurant'},'/es/seguro/restaurantes-mexicanos'],
   [nat,{vertical:'restaurant'},'/es/seguro/restaurantes-mexicanos'],
  ];
- for(const [mod,params,href] of ES_LINKS){const a=await esLink(mod,params);assert.ok(a,`${JSON.stringify(params)} links its Spanish page`);assert.equal(a.href,href);assert.equal(a.hrefLang,'es-US');}
+ for(const [mod,params,href] of ES_LINKS){const a=await esLink(mod,params);assert.ok(a,`${JSON.stringify(params)} links its Spanish page`);assert.equal(a.href,href);assert.equal(a.hrefLang,'es-US');
+  assert.equal(a.label,params.vertical==='restaurant'?'Restaurantes mexicanos: en español':'En español',`${JSON.stringify(params)} link text`);}
+ // The visible link and the hreflang registry cannot drift: each paired English hub links exactly its registered pair.
+ for(const p of P.ES_PAGES.filter(p=>p.english))assert.equal((await esLink(nat,{vertical:p.english.replace('/insurance/','')}))?.href,p.path,`${p.english} link matches the hreflang pair`);
  for(const params of [{vertical:'electrician'},{vertical:'plumber'}])assert.equal(await esLink(nat,params),undefined,`${params.vertical}: no Spanish link`);
  assert.equal(await esLink(geoPage,{vertical:'restaurant',geo:'texas'}),undefined,'restaurant state pages: no Spanish link (hub only)');
  assert.match(fs.readFileSync(appFile('insurance/page.tsx'),'utf8'),/ES_PAGES\.map\(/,'insurance hub lists every Spanish page');
