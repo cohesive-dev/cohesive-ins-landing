@@ -15,6 +15,12 @@ const aliases:[RegExp,string[]][]=[
  [/general contract/,['gc','builder','construction']],
  [/pool construction/,['gunite','shotcrete','pool builder','pool installation']],
  [/pool.*service|pool.*cleaning/,['pool cleaning','pool maintenance','pool service']],
+ [/pressure washing/,['power washing','power wash','powerwash','soft wash','softwash']],
+ [/debris removal/,['junk','junk removal','hauling','dumpster']],
+ [/snow/,['plow','plowing','snowplow']],
+ [/low voltage/,['alarm','cctv','cameras','cabling']],
+ [/paving/,['blacktop','sealcoating','driveway']],
+ [/new home construction/,['home builder','homebuilder','custom homes']],
 ];
 export function filterTrades<T extends TradeOption>(options:T[],query:string):T[]{
  const q=normalize(query);if(!q)return options;
