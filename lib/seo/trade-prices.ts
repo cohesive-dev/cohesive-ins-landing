@@ -110,8 +110,8 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
       {
         q: "Occurrence or claims-made: what is the difference?",
         a: "An occurrence policy covers injury or damage that happens while the policy is active, even if the claim arrives years later. " +
-          "A claims-made policy covers claims made while it is active, so you have to keep it renewed, or buy extra reporting time when it ends, to stay covered for past jobs. " +
-          "Roof leaks can show up long after the job, so occurrence is the safer fit for roofing. Check your contracts too: some GCs ask for it.",
+          "A claims-made policy generally requires a claim to be made and reported under its timing terms, so continuity and any extended reporting period matter. " +
+          "Roof leaks can show up long after the job. Compare the full terms and check your contracts: some GCs require occurrence coverage.",
       },
       {
         q: "What do you need from me to quote roofing insurance?",

@@ -842,7 +842,58 @@ export function finalizeTradePricing(
 }
 
 export function buildContractorNational(t: Trade): PageContent {
-  return finalizeTradePricing(buildContractorNationalBase(t), t);
+  const content = finalizeTradePricing(buildContractorNationalBase(t), t);
+  if (t.slug === "roofer") {
+    return {
+      ...content,
+      stateFacts: [
+        {
+          title: "Describe the roof work before comparing prices",
+          body: "Separate repairs, replacements and new construction; residential and commercial work; and flat, steep and low-slope roofs. Include your maximum working height, tear-off work, and any torch, hot asphalt or other heat application. Ask us to check the proposed policy for restrictions on the work you actually accept.",
+        },
+        {
+          title: "Show subcontracted work apart from payroll",
+          body: "The $1,795 general liability quote shown here was for a roofer with about $475K in revenue, $150K subcontracted and one W-2 employee. Send those figures separately, plus the work your subcontractors perform and any insurance requirements in their agreements. The quote is one real case, not a rate for every business at that revenue.",
+        },
+        {
+          title: "Check the roof-leak and contract terms",
+          body: "Ask how the proposal treats open-roof water damage, completed work, height limits, subcontractor conditions and any roof-system restrictions. If a general contractor requires occurrence coverage, additional insured status or a waiver, send the contract before choosing a policy. A certificate alone cannot remove an exclusion.",
+        },
+      ],
+    };
+  }
+  if (t.slug === "tree-service") {
+    return {
+      ...content,
+      title: "Tree Service Insurance Cost: $1,500 Bound GL Policy",
+      stateFacts: [
+        {
+          title: "Split trimming, removal and stump work",
+          body: "Give the share of receipts from pruning, removals, stump grinding and other services. Describe climbing, bucket lifts, rigging and crane-assisted jobs separately. A policy priced for routine trimming should not be assumed to accept hazardous removals or storm work.",
+        },
+        {
+          title: "Check height and utility restrictions in the proposal",
+          body: "Share the highest trees and working heights you accept, including occasional jobs. Tell us about work near power lines and whether a separate utility crew is involved. Ask how each proposed policy defines a height restriction and which operations it excludes; the business label alone does not answer those questions.",
+        },
+        {
+          title: "Prepare the crew and equipment details",
+          body: "Send annual receipts, payroll, employee roles, subcontractor costs, claims history and a list of owned or rented equipment. Identify any crane rented with an operator and provide the customer insurance requirements. We can compare the accepted work and policy terms alongside the premium.",
+        },
+      ],
+      faqs: [
+        ...content.faqs,
+        {
+          q: "How much does tree trimming insurance cost?",
+          a: "A Colorado tree-service general liability policy we bound was $1,500 per year. That is one real bound policy, not an average or a trimming-only rate. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.",
+        },
+        {
+          q: "Does tree-service insurance cover tree removal?",
+          a: "Do not assume every tree-service policy accepts every removal. Describe climbing, rigging, crane use, storm-damaged trees and work near utilities. Compare the accepted operations, height terms and exclusions in the proposed policy before taking a job.",
+        },
+      ],
+    };
+  }
+  return content;
 }
 
 // The page before the real-price layer; state pages build on this so the price is applied once.
