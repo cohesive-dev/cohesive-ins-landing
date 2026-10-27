@@ -23,6 +23,11 @@ export type TradePrice = { usd: number; kind: "bound" | "quote"; line: string; b
 
 const GL = "General liability";
 
+// Two separate tree-service claims-made GL binds at this premium, recorded in CRM policies
+// cfb5d455c756249b8a07a1124 (2026-10-23) and cmvlesx6z00k30tnt3bm2fw6k (2026-10-25).
+// This is bound evidence for comparison, not the lower starting QUOTE in TRADE_PRICES.
+export const TREE_BOUND_GL_COMPARABLE = "$1,457.48";
+
 export const TRADE_PRICES: Record<string, TradePrice> = {
   "general-contractor": { usd: 1177, kind: "bound", line: GL, business: "a general contractor in New York" },
   remodeler: { usd: 630, kind: "bound", line: GL, business: "a small remodeling contractor in Pennsylvania" },
@@ -68,6 +73,8 @@ export function tradePrice(slug: string, stateAbbr?: string): TradePrice | undef
 
 // The sitemap date for a page whose price came from a dated release (asOf); undefined where no price applies.
 export function tradePriceUpdated(slug: string, stateAbbr?: string): string | undefined {
+  // The closed-state wording was corrected on this date even though no price is shown there.
+  if (stateAbbr && TRADE_PRICE_CLOSED_STATES[slug]?.has(stateAbbr)) return "2026-10-27";
   return tradePrice(slug, stateAbbr)?.asOf;
 }
 

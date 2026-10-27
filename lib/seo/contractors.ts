@@ -23,7 +23,7 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 // only the labelled real price in trade-prices.ts, or no number (finalizeTradePricing).
 
 import type { PageContent } from "./data";
-import { TRADE_PRICE_CLOSED_STATES, tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
+import { TRADE_PRICE_CLOSED_STATES, TREE_BOUND_GL_COMPARABLE, tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
 
 export type Trade = {
   slug: string;
@@ -890,7 +890,7 @@ export function buildContractorNational(t: Trade): PageContent {
         ...content.faqs,
         {
           q: "How much does tree trimming insurance cost?",
-          a: "A tree service at about $300K revenue with one W-2 employee received a $1,271.18 per year claims-made general liability quote. That is a verified quote, not a bound policy, an average or a trimming-only rate. Two other tree services bound claims-made general liability at $1,457.48 per year. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.",
+          a: `A tree service at about $300K revenue with one W-2 employee received a $1,271.18 per year claims-made general liability quote. That is a verified quote, not a bound policy, an average or a trimming-only rate. Two other tree services bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.`,
         },
         {
           q: "Does tree-service insurance cover tree removal?",
