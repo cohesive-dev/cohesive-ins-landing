@@ -68,6 +68,8 @@ export function tradePrice(slug: string, stateAbbr?: string): TradePrice | undef
 
 // The sitemap date for a page whose price came from a dated release (asOf); undefined where no price applies.
 export function tradePriceUpdated(slug: string, stateAbbr?: string): string | undefined {
+  // The closed-state wording was corrected on this date even though no price is shown there.
+  if (stateAbbr && TRADE_PRICE_CLOSED_STATES[slug]?.has(stateAbbr)) return "2026-10-27";
   return tradePrice(slug, stateAbbr)?.asOf;
 }
 

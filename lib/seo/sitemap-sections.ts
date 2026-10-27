@@ -84,6 +84,7 @@ const BASE = SITEMAP_BASE;
 
 export const SITEMAP_SECTIONS = ["core", "contractor-state", "city", "restaurant", "church-property", "guides"] as const;
 export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
+const CONTRACTOR_HUB_UPDATED: Record<string, string> = { roofer: "2026-10-27", "tree-service": "2026-10-27" };
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -124,6 +125,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
       url: `${BASE}/insurance/${slug}`,
       ...(["pool", "remodeler"].includes(slug) ? { lastModified: "2026-09-15" } : {}),
       ...(tradePriceUpdated(slug) ? { lastModified: tradePriceUpdated(slug) } : {}),
+      ...(CONTRACTOR_HUB_UPDATED[slug] ? { lastModified: CONTRACTOR_HUB_UPDATED[slug] } : {}),
       changeFrequency: "monthly" as const,
     }),
   );
@@ -197,7 +199,11 @@ function buildSections(): Record<SitemapSection, Entry[]> {
   };
   const withUpdated = (entry: Entry): Entry => {
     const updated = entry.url === `${BASE}/insurance/cleaning/new-york` ? "2026-09-16" : metroUpdatedForPath(entry.url.slice(BASE.length));
-    return updated ? { ...entry, lastModified: updated } : entry;
+    const existing = entry.lastModified instanceof Date
+      ? entry.lastModified.toISOString().slice(0, 10)
+      : String(entry.lastModified ?? "").slice(0, 10);
+    // The September metro release also names its parent hubs. It must not replace a later page edit.
+    return updated && updated > existing ? { ...entry, lastModified: updated } : entry;
   };
   // hreflang es-US <-> en-US (+ x-default English, matching the page <head>) on BOTH URLs of every Spanish page that has an English equivalent (lib/es/pages.ts),
   // so the English page carries the reciprocal alternate without touching its route.
