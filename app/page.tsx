@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import Cal, { getCalApi } from "@calcom/embed-react";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { COST_GUIDE_LINKS, ROOFER_DISCOVERY_LINKS } from "@/lib/seo/outcome-priority-links";
+import Link from "next/link";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
@@ -1278,6 +1279,11 @@ function Footer() {
             <li><a href="/es/seguro/techadores" hrefLang="es-US" lang="es" className="hover:text-white transition-colors">Techadores (en español)</a></li>
           </ul>
         </nav>
+
+        <p className="md:ml-[33.333%] mb-10 text-sm">
+          <Link href="/insurance/tree-service" className="font-semibold text-white hover:underline">Tree service insurance</Link>
+          {" "}has a real bound price, tree-removal questions, height restrictions and quote details.
+        </p>
 
         <div className="pt-8 md:w-1/2 md:ml-auto">
           <div className="h-px w-full bg-white/20 mb-6" />

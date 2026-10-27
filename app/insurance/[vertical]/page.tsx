@@ -137,6 +137,7 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         tradeSlug={trade.slug}
         costHeading={`What ${trade.noun} insurance costs`}
         coverageHeading={`The coverage ${withArticle(trade.noun)} needs`}
+        stateFactsHeading={trade.slug === "roofer" || trade.slug === "tree-service" ? `What to check before buying ${trade.name.toLowerCase()} insurance` : undefined}
         stateLinksHeading={`${trade.name} insurance by state`}
         stateLinks={states.map((s) => ({
           label: s.name,
