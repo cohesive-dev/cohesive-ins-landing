@@ -33,7 +33,9 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   electrician: { usd: 500, kind: "quote", line: GL, business: "an electrical contractor in New Jersey" },
   plumber: { usd: 1117, kind: "bound", line: GL, business: "a plumbing contractor in Colorado" },
   painter: { usd: 378, kind: "quote", line: GL, business: "a solo painting contractor in Maryland" },
-  "tree-service": { usd: 1500, kind: "bound", line: GL, business: "a tree service in Colorado" },
+  // QC-verified Encore quote, $1,271.18 exact, repeated across tree submissions on 2026-10-20..26.
+  // Claims-made is material: never describe this starting quote as a bound or occurrence policy.
+  "tree-service": { usd: 1271, kind: "quote", line: "Claims-made general liability", business: "a tree service at about $300K revenue with one W-2 employee", asOf: "2026-10-27" },
   pool: { usd: 916, kind: "bound", line: GL, business: "a pool contractor in Texas" },
   hvac: { usd: 885, kind: "bound", line: GL, business: "an HVAC contractor in Florida" },
   // Second release, 2026-10-02.
@@ -53,8 +55,10 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
 
 // States where a trade's price does not apply because the market behind it does not write there (state abbreviations).
 // Those pages keep the price-free title, cost block and FAQ.
+const ENCORE_CLOSED_STATES = new Set(["AK", "DC", "IA", "LA", "ME", "ND", "NH", "OK", "RI", "SD", "VT", "WA", "WV", "WY"]);
 export const TRADE_PRICE_CLOSED_STATES: Record<string, ReadonlySet<string>> = {
-  roofer: new Set(["AK", "DC", "IA", "LA", "ME", "ND", "NH", "OK", "RI", "SD", "VT", "WA", "WV", "WY"]),
+  roofer: ENCORE_CLOSED_STATES,
+  "tree-service": ENCORE_CLOSED_STATES,
 };
 
 export function tradePrice(slug: string, stateAbbr?: string): TradePrice | undefined {
@@ -258,10 +262,10 @@ export function withTradePrice(
 // the title, hero, cost block and FAQ instead of publishing a number we cannot stand behind.
 export function withoutPrice(
   c: PageContent,
-  opts: { name: string; noun: string; plural: string; place?: { name: string; abbr: string } },
+  opts: { name: string; noun: string; plural: string; place?: { name: string; abbr: string }; noPriceReason?: string },
 ): PageContent {
   const where = placeLabel(opts.place);
-  const answer = `We do not publish a starting price for ${opts.noun} insurance yet, because we have not bound enough of these policies in this class to give a real number. ` +
+  const answer = opts.noPriceReason ?? `We do not publish a starting price for ${opts.noun} insurance yet, because we have not bound enough of these policies in this class to give a real number. ` +
     `Your price depends on the work you actually do, sales, payroll, subcontractors and claims, so we quote it with several carriers and show you the real offers.`;
   const legacyTitle = /\$/.test(c.title);
   return {
