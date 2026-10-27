@@ -23,7 +23,7 @@ import { swimmingPoolContent } from "./swimming-pool-content";
 // only the labelled real price in trade-prices.ts, or no number (finalizeTradePricing).
 
 import type { PageContent } from "./data";
-import { tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
+import { TRADE_PRICE_CLOSED_STATES, tradePrice, withTradePrice, withoutPrice } from "./trade-prices";
 
 export type Trade = {
   slug: string;
@@ -838,7 +838,13 @@ export function finalizeTradePricing(
 ): PageContent {
   const name = t.titleName ?? t.name;
   if (tradePrice(t.slug, place?.abbr)) return withTradePrice(c, t.slug, { name, noun: t.noun, place, metaTails });
-  return withoutPrice(c, { name, noun: t.noun, plural: plural(t.noun), place });
+  const closedToLowestQuote = place && TRADE_PRICE_CLOSED_STATES[t.slug]?.has(place.abbr);
+  return withoutPrice(c, {
+    name, noun: t.noun, plural: plural(t.noun), place,
+    noPriceReason: closedToLowestQuote
+      ? `Our lowest published quote for ${t.noun} insurance comes from a product that is unavailable for new business in ${place.name}. We will compare other available options using your work, sales, payroll, subcontractors and claims.`
+      : undefined,
+  });
 }
 
 export function buildContractorNational(t: Trade): PageContent {
@@ -865,7 +871,7 @@ export function buildContractorNational(t: Trade): PageContent {
   if (t.slug === "tree-service") {
     return {
       ...content,
-      title: "Tree Service Insurance Cost: $1,500 Bound GL Policy",
+      title: "Tree Service Insurance Cost: $1,271 Claims-Made Quote",
       stateFacts: [
         {
           title: "Split trimming, removal and stump work",
@@ -884,7 +890,7 @@ export function buildContractorNational(t: Trade): PageContent {
         ...content.faqs,
         {
           q: "How much does tree trimming insurance cost?",
-          a: "A Colorado tree-service general liability policy we bound was $1,500 per year. That is one real bound policy, not an average or a trimming-only rate. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.",
+          a: "A tree service at about $300K revenue with one W-2 employee received a $1,271.18 per year claims-made general liability quote. That is a verified quote, not a bound policy, an average or a trimming-only rate. Two other tree services bound claims-made general liability at $1,457.48 per year. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.",
         },
         {
           q: "Does tree-service insurance cover tree removal?",
