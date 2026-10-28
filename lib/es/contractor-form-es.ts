@@ -25,10 +25,12 @@ export const PREFERRED_LANGUAGE = { label: "Preferred language", value: "Spanish
 const ES: Record<string, string> = {
   // Trades
   "General contractor": "Contratista general",
+  "New home construction / builder": "Construcción de casas nuevas / constructor",
   "Remodeling / renovations": "Remodelación / renovaciones",
   Roofing: "Techos (roofing)",
   "HVAC / heating and air conditioning": "HVAC / calefacción y aire acondicionado",
   Plumbing: "Plomería",
+  "Fire sprinkler installation": "Instalación de rociadores contra incendios",
   Electrical: "Electricidad",
   Painting: "Pintura",
   "Carpentry / framing": "Carpintería / framing",
