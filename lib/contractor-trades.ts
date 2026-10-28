@@ -1,9 +1,11 @@
 export const TRADES: {label:string;value:string}[] = [
   { label: "General contractor", value: "General contractor" },
+  { label: "New home construction / builder", value: "New home construction / builder" },
   { label: "Remodeling / renovations", value: "Remodeling / renovations" },
   { label: "Roofing", value: "Roofing" },
   { label: "HVAC / heating and air conditioning", value: "HVAC / heating and air conditioning" },
   { label: "Plumbing", value: "Plumbing" },
+  { label: "Fire sprinkler installation", value: "Fire sprinkler installation" },
   { label: "Electrical", value: "Electrical" },
   { label: "Painting", value: "Painting" },
   { label: "Carpentry / framing", value: "Carpentry / framing" },
