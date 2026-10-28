@@ -24,7 +24,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const askWc=!coldLayout&&query.get('wc')==='1';
  const industry=cold?.industry||(fallbackReason?'contractor':query.get('industry')||'');
  const angle=coldLayout?'coi':fallbackReason?(fallbackReason.startsWith('missing_')?'missing_params':'invalid_params'):query.get('angle')||'';
- const valid=!!fallbackReason||(isColdIndustry(industry)&&validExperiment(industry,angle));
+ const valid=!!fallbackReason||validExperiment(industry,angle)&&(!coldLayout||isColdIndustry(industry));
  const industryLabel=INDUSTRIES[industry as keyof typeof INDUSTRIES]||'Contractor';
  const [assignedLayout,setLayout]=useState<'step'|'long'|null>(null),[answers,setAnswers]=useState<Answers>({});
  const layout=coldLayout||assignedLayout;
