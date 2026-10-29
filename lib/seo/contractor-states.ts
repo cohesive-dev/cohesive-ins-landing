@@ -425,7 +425,7 @@ function stateFacts(cs: ContractorState, t: Trade): Fact[] {
 export function buildContractorState(cs: ContractorState, t: Trade): PageContent {
   const base = buildContractorNationalBase(t);
   const floor = `$${t.glFrom}`;
-  return finalizeTradePricing(withConstructionHazardReview({
+  const content = finalizeTradePricing(withConstructionHazardReview({
     ...base,
     title: `${t.name} Insurance in ${cs.name} - Costs from ${floor}/mo`,
     metaDescription: `What ${t.noun} insurance costs in ${cs.name} (from ${floor}/mo), plus ${cs.abbr} licensing, workers' comp, and bond rules. Licensed ${cs.abbr} contractor insurance agency.`,
@@ -437,6 +437,17 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
     ...(t.slug === "pool" ? swimmingPoolContent(cs.name) : {}),
     ...priorityStateContent(t.slug, cs.slug),
   }, t.slug), t, { name: cs.name, abbr: cs.abbr }, [`Plus ${cs.abbr} licensing, workers' comp and bond rules.`, "Get a quote."]);
+  if (t.slug !== "roofer" || cs.slug !== "texas") return content;
+  return {
+    ...content,
+    faqs: [
+      ...content.faqs,
+      {
+        q: "How do claims-made and occurrence roofing quotes compare when I subcontract work in Texas?",
+        a: "One Texas roofer reported about $377K in annual revenue, $133K paid to subcontractors and no W-2 employees. On the same application, that roofer received a $1,359/year claims-made general liability quote and a $1,795/year occurrence quote, each with $1M/$2M limits. These are quotes, not bound policies or rates for every Texas roofer. Claims-made reporting terms and coverage continuity matter when roof damage is discovered later; an occurrence policy uses when the damage happened, subject to its terms. Compare the full forms and any general contractor requirements before choosing. Tell us your sales, subcontractor costs, roof work and contract terms so we can quote your own business.",
+      },
+    ],
+  };
 }
 
 // Is this (trade, state) combo buildable?
