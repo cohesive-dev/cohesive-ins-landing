@@ -854,22 +854,22 @@ export function buildContractorNational(t: Trade): PageContent {
     return {
       ...content,
       heroH1: "Roofer Insurance: Real Quotes by Business Size",
-      heroSub: "A roofer at about $475K revenue came in at $1,795/yr with us. See real quotes at different business sizes, then tell us about your work for your own quote.",
+      heroSub: "A roofer at about $377K revenue received a $1,359/yr claims-made general liability quote. Compare its $1,795/yr occurrence option and other real quotes by business size.",
       costNarrative: [
-        "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee received a $1,795/yr occurrence general liability quote. A roofer at about $800K revenue received a $4,280/yr quote, and one at about $1.8M revenue received a $12,220/yr quote. These are real quotes, not averages or state-specific rates. Compare the work and policy terms as well as the price.",
+        "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359/yr claims-made general liability quote and a $1,795/yr occurrence quote on the same application. A roofer at about $800K revenue received a $4,280/yr occurrence quote, and one at about $1.8M revenue received a $12,220/yr occurrence quote. These are real quotes, not averages or state-specific rates. The policy forms have different terms, so compare the work and coverage as well as the price.",
         ...content.costNarrative.slice(1),
       ],
       priceExamples: examples ? {
         ...examples,
         heading: "Real roofing insurance quotes by business size",
         items: [
-          ...examples.items.slice(0, 2),
+          ...examples.items.slice(0, 4),
           { business: "A roofer, $200K subcontracted, $50K W-2 payroll", revenue: "About $800K", price: "$4,280/yr, quoted", sentence: "A roofer at about $800K revenue, $200K subcontracted and $50K W-2 payroll received a $4,280/yr occurrence general liability quote." },
-          ...examples.items.slice(2, 3),
+          ...examples.items.slice(4, 5),
           { business: "A roofer, $420K subcontracted, no W-2 employees", revenue: "About $1.8M", price: "$12,220/yr, quoted", sentence: "A roofer at about $1.8M revenue, $420K subcontracted and no W-2 employees received a $12,220/yr occurrence general liability quote." },
-          ...examples.items.slice(3),
+          ...examples.items.slice(5),
         ],
-        note: "Real prices from our own book, not averages, each labelled bound or quoted. The quoted policies have different terms and exclusions; a lower price alone does not mean suitable coverage. Revenue, subcontracted work, payroll and the share of commercial work can change the quote.",
+        note: "Real prices from our own book, not averages, each labelled bound or quoted. The $1,359 claims-made and $1,795 occurrence quotes for the $377K roofer came from the same application, but the forms differ. A lower price alone does not mean suitable coverage. Revenue, subcontracted work, payroll and the share of commercial work can change the quote.",
       } : undefined,
       stateFacts: [
         {
@@ -878,7 +878,7 @@ export function buildContractorNational(t: Trade): PageContent {
         },
         {
           title: "Show subcontracted work apart from payroll",
-          body: "The $1,795 general liability quote shown here was for a roofer with about $475K in revenue, $150K subcontracted and one W-2 employee. Send those figures separately, plus the work your subcontractors perform and any insurance requirements in their agreements. The quote is one real case, not a rate for every business at that revenue.",
+          body: "The $1,359 claims-made and $1,795 occurrence general liability quotes shown here were for the same roofer with about $377K in revenue, $133K subcontracted and no W-2 employees. Send those figures separately, plus the work your subcontractors perform and any insurance requirements in their agreements. These are one real case, not a rate for every business at that revenue.",
         },
         {
           title: "Check the roof-leak and contract terms",

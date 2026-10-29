@@ -53,9 +53,9 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   tile: { usd: 1011, kind: "quote", line: GL, business: "a tile installer in New York" },
   siding: { usd: 1301, kind: "quote", line: GL, business: "a residential siding contractor" },
   welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
-  // Third release, 2026-10-22 (Kevin "Yeah why not?"). Occurrence form: our claims-made quotes are lower, and the
-  // occurrence figure is the one that leads (Kevin). Every roofer number is shown with the revenue behind it.
-  roofer: { usd: 1795, kind: "quote", line: "Occurrence general liability", business: "a roofer at about $475K revenue with $150K subcontracted", asOf: "2026-10-22" },
+  // Kevin 2026-10-29 asked for the lowest roofing quote to lead. This claims-made indication
+  // has the same application and client-reported basis as the $1,795 occurrence option below.
+  roofer: { usd: 1359, kind: "quote", line: "Claims-made general liability", business: "a roofer at about $377K revenue with $133K subcontracted", asOf: "2026-10-29" },
 };
 
 // States where a trade's price does not apply because the market behind it does not write there (state abbreviations).
@@ -90,26 +90,27 @@ export type TradePriceExtras = {
   nationalFaqs: { q: string; a: string }[];
 };
 
-// Roofer figures approved 2026-10-22. Quotes say "came in at"; only the bound policy says "bound". No carrier names,
+// Roofer figures updated 2026-10-29. Quotes say "came in at"; only the bound policy says "bound". No carrier names,
 // no client names, and no state attached to a quote.
 export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
   roofer: {
-    answer: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr with us for occurrence general liability. " +
-      "Bigger roofers pay more: a roofing company at about $1.3M revenue came in at $7,497/yr, and one at about $4.5M revenue came in at $20,830/yr. " +
-      "These are real prices, not averages or state-specific rates. Your price moves mostly with revenue and how much of the work you subcontract.",
-    heroSub: "A roofer at about $475K revenue came in at $1,795/yr with us. See what roofers paid at each size, then tell us about your work for your own quote.",
-    disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book as of 2026-10-22, each labelled. " +
-      "They are not averages. Your premium depends on your work, revenue, subcontracting, payroll, location, limits and claims. It is not a quote or an offer of insurance.",
+    answer: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359/yr claims-made general liability quote. The same application also produced a $1,795/yr occurrence quote. " +
+      "These are real quotes, not bound policies, averages or state-specific rates. Claims-made and occurrence terms differ, so compare the policy forms and your contract requirements before choosing.",
+    heroSub: "A roofer at about $377K revenue received a $1,359/yr claims-made general liability quote. Compare the occurrence option and other real quotes, then tell us about your work.",
+    disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book, each labelled. The $1,359 quote is claims-made; the paired $1,795 quote is occurrence. " +
+      "They are not interchangeable or averages. Your premium depends on your work, revenue, subcontracting, payroll, location, limits and claims. These examples are not a quote or an offer of insurance.",
     examples: {
-      heading: "What roofers actually paid with us",
+      heading: "Real roofing insurance quotes by business size",
       items: [
+        { business: "A roofer, $133K subcontracted, no W-2 employees", revenue: "About $377K", price: "$1,359/yr, claims-made quote", sentence: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359/yr claims-made general liability quote." },
+        { business: "The same roofer and filed work", revenue: "About $377K", price: "$1,795/yr, occurrence quote", sentence: "The same roofer also received a $1,795/yr occurrence general liability quote on the same filed business figures." },
         { business: "A Colorado residential contractor whose work includes roofing", price: "$1,795/yr, bound", sentence: "A Colorado residential contractor whose work includes roofing bound general liability with us at $1,795/yr, $1M/$2M occurrence." },
-        { business: "A roofer, $150K subcontracted, one W-2 employee", revenue: "About $475K", price: "$1,795/yr, quoted", sentence: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr." },
+        { business: "A roofer, $150K subcontracted, one W-2 employee", revenue: "About $475K", price: "$1,795/yr, occurrence quote", sentence: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr for occurrence general liability." },
         { business: "A roofing company, $800K subcontracted", revenue: "About $1.3M", price: "$7,497/yr, quoted", sentence: "A roofing company at about $1.3M revenue, $800K subcontracted, came in at $7,497/yr." },
         { business: "A roofing and remodeling company", revenue: "About $2.5M", price: "$14,904/yr, quoted", sentence: "A roofing and remodeling company at about $2.5M revenue came in at $14,904/yr." },
         { business: "A roofing company", revenue: "About $4.5M", price: "$20,830/yr, quoted", sentence: "A roofing company at about $4.5M revenue came in at $20,830/yr." },
       ],
-      note: "Real prices from our own book, not averages, each labelled bound or quoted. Your price moves with revenue, subcontracted work, payroll and the share of commercial work.",
+      note: "Real prices from our own book, not averages. The $1,359 claims-made and $1,795 occurrence quotes for the $377K roofer came from the same application, but the policy forms differ. Your price moves with revenue, subcontracted work, payroll and the share of commercial work.",
     },
     nationalH1: "Roofer Insurance: What Roofers Actually Pay",
     nationalFaqs: [
@@ -246,11 +247,13 @@ export function withTradePrice(
     heroSub: hasLegacyFloor(c.heroSub)
       ? x?.heroSub ?? `Our lowest real ${p.line.toLowerCase()} price for this trade is ${priceText(p)}, ${kindPhrase(p)}. Tell us about your work and get your own quote in a few minutes.`
       : c.heroSub,
-    metaDescription: pricedMeta(lead, p, [
-      ...(opts.metaTails ?? []),
-      "Compare quotes from several carriers.",
-      "Get a quote.",
-    ]),
+    metaDescription: slug === "roofer"
+      ? `${lead} from ${priceText(p)} in a real claims-made GL quote for a $377K-revenue roofer. Compare its occurrence option.`
+      : pricedMeta(lead, p, [
+        ...(opts.metaTails ?? []),
+        "Compare quotes from several carriers.",
+        "Get a quote.",
+      ]),
     costNarrative: [answer, ...c.costNarrative.filter((para) => !hasLegacyFloor(para))],
     // A profile's own "General liability: Individual quote" row stays, renamed so it reads as the reader's quote.
     costRows: [tradePriceRow(p), ...c.costRows.filter((row) => !legacyFloorRow(row))
