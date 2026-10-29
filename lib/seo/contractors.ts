@@ -850,8 +850,27 @@ export function finalizeTradePricing(
 export function buildContractorNational(t: Trade): PageContent {
   const content = finalizeTradePricing(buildContractorNationalBase(t), t);
   if (t.slug === "roofer") {
+    const examples = content.priceExamples;
     return {
       ...content,
+      heroH1: "Roofer Insurance: Real Quotes by Business Size",
+      heroSub: "A roofer at about $475K revenue came in at $1,795/yr with us. See real quotes at different business sizes, then tell us about your work for your own quote.",
+      costNarrative: [
+        "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee received a $1,795/yr occurrence general liability quote. A roofer at about $800K revenue received a $4,280/yr quote, and one at about $1.8M revenue received a $12,220/yr quote. These are real quotes, not averages or state-specific rates. Compare the work and policy terms as well as the price.",
+        ...content.costNarrative.slice(1),
+      ],
+      priceExamples: examples ? {
+        ...examples,
+        heading: "Real roofing insurance quotes by business size",
+        items: [
+          ...examples.items.slice(0, 2),
+          { business: "A roofer, $200K subcontracted, $50K W-2 payroll", revenue: "About $800K", price: "$4,280/yr, quoted", sentence: "A roofer at about $800K revenue, $200K subcontracted and $50K W-2 payroll received a $4,280/yr occurrence general liability quote." },
+          ...examples.items.slice(2, 3),
+          { business: "A roofer, $420K subcontracted, no W-2 employees", revenue: "About $1.8M", price: "$12,220/yr, quoted", sentence: "A roofer at about $1.8M revenue, $420K subcontracted and no W-2 employees received a $12,220/yr occurrence general liability quote." },
+          ...examples.items.slice(3),
+        ],
+        note: "Real prices from our own book, not averages, each labelled bound or quoted. The quoted policies have different terms and exclusions; a lower price alone does not mean suitable coverage. Revenue, subcontracted work, payroll and the share of commercial work can change the quote.",
+      } : undefined,
       stateFacts: [
         {
           title: "Describe the roof work before comparing prices",
