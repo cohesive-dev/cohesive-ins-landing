@@ -868,6 +868,38 @@ export function buildContractorNational(t: Trade): PageContent {
       ],
     };
   }
+  if (t.slug === "fire-sprinkler") {
+    return {
+      ...content,
+      heroSub: "Install, inspect or service fire sprinkler systems? Tell us which work you perform, then compare coverage for the jobs you actually take.",
+      stateFacts: [
+        {
+          title: "Separate installation from inspection and service",
+          body: "Tell us the share of revenue from new installation, system alterations, inspections, testing and repairs. Identify who designs the system and who signs off on plans. NFPA 13 addresses design and installation; NFPA 25 addresses inspection, testing and maintenance. A policy for service work should not be assumed to accept installation or design.",
+          source: { label: "NFPA 13: sprinkler system design and installation", href: "https://www.nfpa.org/codes-and-standards/nfpa-standard-development-process/13" },
+        },
+        {
+          title: "Describe the buildings and systems you work on",
+          body: "List commercial, residential and industrial jobs separately. Include wet, dry and preaction systems where applicable, your maximum job size, work on occupied buildings, and any subcontracted work. Give the carrier the actual installation scope before comparing terms.",
+        },
+        {
+          title: "Review water-damage and completed-work terms",
+          body: "Ask how each proposed policy treats accidental discharge, leaks after installation, testing damage, professional design work and completed operations. Send the customer contract and requested limits or endorsements. A certificate does not expand coverage or remove an exclusion.",
+        },
+      ],
+      faqs: [
+        ...content.faqs,
+        {
+          q: "What do I need for a fire sprinkler installation insurance quote?",
+          a: "Send annual sales, payroll, employee roles, subcontractor costs, claims history and the split between installation, design, inspection, testing and repair. Describe the buildings and system types you work on, and share the customer contract and insurance requirements. We can then compare the operations each proposed policy actually accepts.",
+        },
+        {
+          q: "Does a fire sprinkler service policy cover new installations?",
+          a: "Do not assume it does. Installation, system design and inspection or service can be treated differently by a carrier. Tell us about every operation and ask for the proposed policy's accepted class, exclusions and completed-operations terms before taking installation work.",
+        },
+      ],
+    };
+  }
   if (t.slug === "tree-service") {
     return {
       ...content,
