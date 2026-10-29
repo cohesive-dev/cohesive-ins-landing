@@ -796,13 +796,45 @@ export function allRestaurantStateLinks(exclude?: string) {
 
 // City pages: /insurance/{type}/{state}/{city} (Kevin 2026-09-26). Built on the state page, with the
 // city's own permitting authority first - the one fact that genuinely differs city to city.
+function focusedCityConceptFacts(type: RestaurantType, city: RestaurantCity): Fact[] {
+  if (type.slug === "thai-restaurant" && city.stateSlug === "georgia" && city.slug === "atlanta") {
+    return [{
+      title: "Planning an Atlanta Thai kitchen with woks or fryers",
+      body: "For a location in Fulton County, the county health authority reviews a new food-service permit. Georgia's food-service rule calls for scaled plans before construction or extensive remodeling, showing the menu, equipment layout and mechanical systems. It also requires notice before a menu change that adds equipment or a new cooking process. If your Thai kitchen uses a wok line, fryers or a new hood, compare the approved kitchen plan with the equipment, fire-protection and delivery details you give an insurer; the permit does not establish what the policy covers.",
+      source: { label: "Georgia food-service rules: plans and menu changes", href: "https://rules.sos.ga.gov/GAC/511-6-1" },
+    }];
+  }
+  if (type.slug === "ghost-kitchen" && city.stateSlug === "minnesota" && city.slug === "minneapolis") {
+    return [
+      {
+        title: "A delivery-only Minneapolis kitchen still needs the right food license",
+        body: "Minneapolis licenses food prepared for delivery as well as dine-in or carryout. The City says restaurants with 12 or fewer seats receive a food-manufacturer license. Confirm the license category for your exact kitchen with City Business Licensing before opening; do not assume that having no dining room removes the food-business license.",
+        source: { label: "City of Minneapolis: restaurant license categories", href: "https://www.minneapolismn.gov/business-services/licenses-permits-inspections/business-licenses/food-restaurants/restaurant-coffee-cafe/restaurant/" },
+      },
+      {
+        title: "Delivery is different from event catering",
+        body: "Minneapolis says a catering license is not required merely to deliver food such as box lunches or pizza. If the kitchen also prepares or serves food at private events, describe that separate operation to both City Business Licensing and the insurer instead of treating every order as ordinary delivery.",
+        source: { label: "City of Minneapolis: caterer guidance", href: "https://www.minneapolismn.gov/business-services/business-assistance/business-guides/caterer/" },
+      },
+      {
+        title: "Shared kitchen and delivery details to put in the quote",
+        body: "The City says food must be prepared in a licensed Minneapolis kitchen and lists restaurant, institutional and shared commercial kitchens as options. Before asking for coverage, identify who operates the licensed space, who owns the ovens and refrigerated stock, which virtual brands sell the meals, and whether your staff or delivery apps transport orders. Send the kitchen agreement and any insurance requirements with the request; a facility's license does not describe your policy.",
+        source: { label: "City of Minneapolis: restaurant and kitchen guidance", href: "https://www.minneapolismn.gov/business-services/business-assistance/business-guides/restaurant-coffee/" },
+      },
+    ];
+  }
+  return [];
+}
+
 export function buildRestaurantTypeCity(type: RestaurantType, city: RestaurantCity): PageContent | undefined {
   const state = getRestaurantTypeState(city.stateSlug);
   if (!state) return undefined;
   const base = buildRestaurantTypeState(type, state);
   const abbr = STATE_CODES[state.name] ?? "";
+  const focusedFacts = focusedCityConceptFacts(type, city);
   return {
     ...base,
+    reviewedOn: focusedFacts.length ? "2026-10-29" : base.reviewedOn,
     title: restaurantTitle(type.slug, [
       `${type.name} Insurance in ${city.name}, ${abbr}`,
       `${titleName(type)} Insurance in ${city.name}, ${abbr}`,
@@ -821,6 +853,7 @@ export function buildRestaurantTypeCity(type: RestaurantType, city: RestaurantCi
         body: city.checklist.join(" "),
         source: city.local ?? city.authority,
       },
+      ...focusedFacts,
       ...questionsFact(type, city.name),
       {
         title: `${state.name} rules that also apply`,
