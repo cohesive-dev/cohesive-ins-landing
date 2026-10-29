@@ -1,6 +1,7 @@
 import { LOCAL_GROWTH_GUIDES } from "@/lib/guides/local-growth";
 import { CONTRACTOR_RESOURCES } from "@/lib/guides/contractor-resources";
 import { COST_GUIDE_LINKS } from "@/lib/seo/outcome-priority-links";
+import { ALTERNATIVES_GUIDES } from "@/lib/guides/alternatives";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { STARTUP_GUIDES, NATIONAL_STARTUP_GUIDES } from "@/lib/guides/catalog";
@@ -34,6 +35,17 @@ export default function GuidesIndex() {
     </section>
     <section aria-labelledby="restaurant-guides" className="mx-auto max-w-6xl px-5 py-12"><h2 id="restaurant-guides" className="text-2xl font-bold">Choose your business</h2><p className="mt-2 max-w-2xl leading-7 text-slate-600">Start with the launch sequence, then work through the decisions that apply to your space and operation.</p><div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{NATIONAL_STARTUP_GUIDES.map((guide) => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="group rounded-2xl border border-slate-200 p-6 transition-colors hover:border-blue-500"><p className="text-xs font-bold uppercase tracking-wide text-blue-700">{guide.category}</p><h3 className="mt-3 text-xl font-bold leading-7 group-hover:text-blue-700">{guide.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{guide.description}</p><span className="mt-5 block text-sm font-semibold text-blue-700">Read guide →</span></Link>)}</div></section>
     <section aria-labelledby="cost-guides" className="mx-auto max-w-6xl px-5 pb-12"><h2 id="cost-guides" className="text-2xl font-bold">What insurance costs: real prices</h2><p className="mt-3 max-w-3xl leading-7 text-slate-600">Prices from policies we placed and real carrier quotes, each labelled, plus what sets a workers&apos; comp price.</p><ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{COST_GUIDE_LINKS.map((link) => <li key={link.href}><Link href={link.href} className="block rounded-xl border border-slate-200 p-4 text-sm font-semibold text-blue-700 hover:border-blue-500">{link.label} →</Link></li>)}</ul></section>
+    <section aria-labelledby="compare-insurance" className="mx-auto max-w-6xl px-5 pb-12">
+      <h2 id="compare-insurance" className="text-2xl font-bold">Compare small business insurance options</h2>
+      <p className="mt-3 max-w-3xl leading-7 text-slate-600">Learn how direct insurers and marketplaces work, what to compare in a quote, and when an independent broker can help.</p>
+      <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {ALTERNATIVES_GUIDES.map((guide) => (
+          <li key={guide.slug}>
+            <Link href={`/guides/${guide.slug}`} className="block rounded-xl border border-slate-200 p-4 text-sm font-semibold text-blue-700 hover:border-blue-500">{guide.title} →</Link>
+          </li>
+        ))}
+      </ul>
+    </section>
     <section aria-labelledby="quote-resources" className="mx-auto max-w-6xl px-5 pb-12"><h2 id="quote-resources" className="text-2xl font-bold">Prepare a contractor insurance quote</h2><p className="mt-3 max-w-3xl leading-7 text-slate-600">Use these work-specific checklists to explain your operations and compare proposals. Download a checklist without entering your email.</p><div className="mt-5 grid gap-5 md:grid-cols-2">{CONTRACTOR_RESOURCES.map((guide) => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="rounded-2xl border border-slate-200 p-6 hover:border-blue-500"><h3 className="text-xl font-bold text-blue-700">{guide.title}</h3><p className="mt-3 text-sm leading-6 text-slate-600">{guide.description}</p></Link>)}</div></section>
     <section aria-labelledby="local-growth-guides" className="mx-auto max-w-6xl px-5 pb-12"><h2 id="local-growth-guides" className="text-2xl font-bold">Find customers in your local market</h2><p className="mt-3 max-w-3xl leading-7 text-slate-600">Practical introductions to GCs and property managers, project qualification and vendor preparation. Get a free local PM/GC list and lead-generation help with eligible insurance purchase; leads and jobs are not guaranteed.</p><div className="mt-5 space-y-3">{[...new Set(LOCAL_GROWTH_GUIDES.map(g => g.industry))].map(industry => <details key={industry} className="rounded-xl border border-slate-200 p-4"><summary className="cursor-pointer font-semibold text-blue-700">{industry}: local lead guides</summary><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{LOCAL_GROWTH_GUIDES.filter(g => g.industry === industry).map(guide => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="text-blue-700 underline">{guide.cityName}, {STARTUP_STATES.find(s => s.slug === guide.stateSlug)?.name}</Link>)}</div></details>)}</div></section>
     <GuideFinder industries={NATIONAL_STARTUP_GUIDES.map((g) => g.industry!)} states={STARTUP_STATES.map(({slug, name}) => ({slug, name}))} guides={STARTUP_GUIDES.filter((g) => g.stateSlug && g.kind !== "growth").map((g) => ({ slug: g.slug, title: g.title, industry: g.industry!, stateSlug: g.stateSlug! }))} />
