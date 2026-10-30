@@ -10,11 +10,11 @@ export type Industry = keyof typeof INDUSTRIES;
 export type Answers = Record<string,string>;
 export const ANGLES:Record<Industry,string[]> = {
   pool:['percent','dollars','installation','coi'],
-  remodel:['percent','dollars','trade_mix','coi'], roof:['percent','coi','free_gen'],
-  tree:['coverage','savings','coi'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen','dollars'],
+  remodel:['percent','dollars','trade_mix','coi'], roof:['percent','coi','free_gen','claims_occurrence'],
+  tree:['coverage','savings','coi','job_coi'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen','dollars'],
   electrical:['dollars','coi'],plumbing:['dollars','coi'],welding:['dollars','coi'],
-  fire_sprinkler:['quote','renewal','job','coi'],
-  home_builder:['quote','renewal','job','coi'],
+  fire_sprinkler:['quote','renewal','job','coi','project_coi'],
+  home_builder:['quote','renewal','job','coi','ground_up'],
 };
 export const QUESTION_OPTIONS = {
   revenue:['Under $250k','$250k-$500k','$500k-$1M','$1M-$2M','$2M-$4M','$4M-$8M','Over $8M'],
