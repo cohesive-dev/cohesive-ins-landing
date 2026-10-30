@@ -1,6 +1,6 @@
 {
-  "release": "seo-20261024-spanish-discovery-v1",
-  "updatedAt": "2026-10-24",
+  "release": "seo-20261030-coi-requirements-v1",
+  "updatedAt": "2026-10-30",
   "paths": [
     "/es/seguro/techadores",
     "/es/seguro/contratistas",
@@ -48,6 +48,11 @@
     "/insurance/roofer/texas",
     "/insurance/roofer/utah",
     "/insurance/roofer/virginia",
-    "/insurance/roofer/wisconsin"
+    "/insurance/roofer/wisconsin",
+    "/guides/city-of-fairfax-right-of-way-permit-insurance",
+    "/guides/city-of-alexandria-right-of-way-permit-insurance",
+    "/guides/greystar-supplier-insurance-coi-checklist",
+    "/guides/contractor-certificate-of-insurance-before-starting-work",
+    "/guides"
   ]
 }

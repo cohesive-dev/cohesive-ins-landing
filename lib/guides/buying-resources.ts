@@ -11,7 +11,7 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
     "tradeLabel": "General contractor",
     "insurancePath": "/insurance/general-contractor",
     "quoteKind": "service",
-    "updatedAt": "2026-09-14",
+    "updatedAt": "2026-10-30",
     "nationalSlug": "contractor-quote-checklists",
     "sections": [
       {
@@ -71,6 +71,11 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
           "Confirm the customer received the document and identify any remaining requirement.",
           "Retain the issued certificate and applicable endorsements.",
           "Do not promise coverage or alter the certificate yourself."
+        ],
+        "links": [
+          { "label": "City of Fairfax right-of-way permit COI checklist", "href": "/guides/city-of-fairfax-right-of-way-permit-insurance" },
+          { "label": "City of Alexandria right-of-way permit COI checklist", "href": "/guides/city-of-alexandria-right-of-way-permit-insurance" },
+          { "label": "Greystar supplier insurance and COI checklist", "href": "/guides/greystar-supplier-insurance-coi-checklist" }
         ]
       }
     ]

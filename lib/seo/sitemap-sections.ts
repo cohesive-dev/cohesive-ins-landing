@@ -177,7 +177,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     ),
   );
 
-  const guides = [{ slug: "", updatedAt: "2026-09-16" }, ...STARTUP_GUIDES].map((guide) => ({
+  const guides = [{ slug: "", updatedAt: "2026-10-30" }, ...STARTUP_GUIDES].map((guide) => ({
     url: `${BASE}/guides${guide.slug ? `/${guide.slug}` : ""}`,
     lastModified: guide.updatedAt ?? GUIDE_UPDATED,
     changeFrequency: "monthly" as const,

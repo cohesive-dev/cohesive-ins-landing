@@ -1,4 +1,5 @@
 import { BUYING_RESOURCES } from "./buying-resources";
+import { COI_REQUIREMENT_GUIDES } from "./coi-requirements";
 import { TRADE_COVERAGE_RESOURCES } from "./trade-coverage-resources";
 import { CLEANING_RESOURCE } from "./cleaning-resource";
 import { WORKERS_COMP_RESOURCES } from "./workers-comp-resources";
@@ -10,6 +11,7 @@ const common = { quoteKind: "service" as const, updatedAt: "2026-09-14", nationa
 
 export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
   ...BUYING_RESOURCES,
+  ...COI_REQUIREMENT_GUIDES,
   CLEANING_RESOURCE,
   ...TRADE_COVERAGE_RESOURCES,
   ...WORKERS_COMP_RESOURCES,
