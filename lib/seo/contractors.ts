@@ -891,6 +891,10 @@ export function buildContractorNational(t: Trade): PageContent {
     return {
       ...content,
       heroSub: "Install, inspect or service fire sprinkler systems? Tell us which work you perform, then compare coverage for the jobs you actually take.",
+      costNarrative: [
+        "A fire sprinkler installation contractor received two general liability quotes on the same application in October 2026: $5,695.36/yr claims-made and $8,880.48/yr occurrence. Both used $300K projected annual revenue, which we assumed; the contractor supplied $100K installer payroll and $10K subcontractor costs. The $1M/$2M quotes carried a $2,500 self-retention. These are sent quotes, not bound prices or a rate for every installer. The policy forms and terms differ.",
+        ...content.costNarrative,
+      ],
       stateFacts: [
         {
           title: "Separate installation from inspection and service",
@@ -908,6 +912,10 @@ export function buildContractorNational(t: Trade): PageContent {
       ],
       faqs: [
         ...content.faqs,
+        {
+          q: "What did a real fire sprinkler installation GL quote cost?",
+          a: "One contractor received $5,695.36/yr claims-made and $8,880.48/yr occurrence quotes on the same October 2026 application. The projected $300K revenue was our assumption; the contractor confirmed $100K installer payroll and $10K subcontractor costs. Both quotes had $1M/$2M limits and a $2,500 self-retention. They were sent quotes, not bound policies. Tell us your actual installation, inspection and service work, sales, crew and subcontractors so we can compare terms for your business.",
+        },
         {
           q: "What do I need for a fire sprinkler installation insurance quote?",
           a: "Send annual sales, payroll, employee roles, subcontractor costs, claims history and the split between installation, design, inspection, testing and repair. Describe the buildings and system types you work on, and share the customer contract and insurance requirements. We can then compare the operations each proposed policy actually accepts.",
