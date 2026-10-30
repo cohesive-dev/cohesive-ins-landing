@@ -4,6 +4,7 @@ const path = require('node:path');
 const Module = require('node:module');
 const ts = require('typescript');
 const root = path.resolve(__dirname, '..');
+process.env.META_CAPI_TOKEN = 'local-test-token';
 const load = Module._load;
 let forwarded, notified;
 require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), {

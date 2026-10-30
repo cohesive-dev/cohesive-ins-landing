@@ -346,7 +346,8 @@ export async function POST(request: NextRequest) {
   }
   if(quality.kind==='review')details=[...(details??[]),{label:'Submission review',value:'Hold for human verification - do not treat as qualified or send a conversion.'}];
   const conversionSecret=process.env.INTAKE_CONVERSION_SECRET||process.env.META_CAPI_TOKEN;
-  const acceptedEventId=guardedLane&&conversionSecret?acquisitionEventId({name,email,phone,company},conversionSecret):undefined;
+  // Customer referrals are a separate acquisition source, never an ad conversion.
+  const acceptedEventId=guardedLane&&source!=="customer-referral"&&conversionSecret?acquisitionEventId({name,email,phone,company},conversionSecret):undefined;
   if(guardedLane)details=[...(details??[]),{label:'Submission validation',value:quality.reason},...(acceptedEventId?[{label:'Acquisition event id',value:acceptedEventId}]:[])];
 
   // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
