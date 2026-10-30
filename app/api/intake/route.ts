@@ -6,6 +6,7 @@ import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
 import {assessSubmission,acquisitionEventId} from '@/lib/submission-quality';
 import { REQUESTED_COVERAGE_ALLOWLIST, type RequestedCoverage } from "@/lib/requested-coverage";
+import { referralCode } from "@/lib/referral-code";
 
 // This route no longer owns lead storage. A completed submission is forwarded to the CRM's
 // inbound-lead webhook, which is the single fan-out point for every lead source (FB Lead Ads,
@@ -293,6 +294,15 @@ export async function POST(request: NextRequest) {
   // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
   // Declared here rather than further down because the abandoned-fill branch below needs it too.
   let details = sanitizeDetails(body.details);
+  if (source === "customer-referral") {
+    const supplied = details?.find((item) => item.label === "Referral code")?.value;
+    if (supplied && !referralCode(supplied)) {
+      return NextResponse.json({ ok: false, error: "Invalid referral code" }, { status: 400 });
+    }
+    // One canonical code row, so a duplicate detail label cannot change the tracked value.
+    details = [...(supplied ? [{ label: "Referral code", value: referralCode(supplied) }] : []),
+      ...(details ?? []).filter((item) => item.label !== "Referral code")];
+  }
   if (isStartupGuideLane) {
     const state = STARTUP_STATES.find((item) => item.slug === asTrimmedString(body.startupState))!;
     details = [
@@ -327,7 +337,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
 
-  const guardedLane=source==='contractors-landing'||Boolean(source?.startsWith('commercial-property'));
+  const guardedLane=source==='contractors-landing'||source==='customer-referral'||Boolean(source?.startsWith('commercial-property'));
   const quality=guardedLane?assessSubmission({name,email,phone,company,honeypot:body.website},(process.env.INTAKE_BLOCKED_IDENTITY_HASHES||'').split(',').map(v=>v.trim()).filter(Boolean)):{kind:'accept',reason:'legacy'};
   if(quality.kind==='reject') {
     // No contact values in logs. Rejection does not fan out to CRM/mail/CAPI.
@@ -336,7 +346,8 @@ export async function POST(request: NextRequest) {
   }
   if(quality.kind==='review')details=[...(details??[]),{label:'Submission review',value:'Hold for human verification - do not treat as qualified or send a conversion.'}];
   const conversionSecret=process.env.INTAKE_CONVERSION_SECRET||process.env.META_CAPI_TOKEN;
-  const acceptedEventId=guardedLane&&conversionSecret?acquisitionEventId({name,email,phone,company},conversionSecret):undefined;
+  // Customer referrals are a separate acquisition source, never an ad conversion.
+  const acceptedEventId=guardedLane&&source!=="customer-referral"&&conversionSecret?acquisitionEventId({name,email,phone,company},conversionSecret):undefined;
   if(guardedLane)details=[...(details??[]),{label:'Submission validation',value:quality.reason},...(acceptedEventId?[{label:'Acquisition event id',value:acceptedEventId}]:[])];
 
   // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
@@ -441,7 +452,7 @@ export async function POST(request: NextRequest) {
     ...(description ? { business_type: description } : {}),
     ...(company ? { business_name: company } : {}),
     ...(zip ? { zip } : {}),
-    ...(isContractorLane || isRestaurantLane || isCommercialPropertyLane || isStartupGuideLane
+    ...(isContractorLane || source === "customer-referral" || isRestaurantLane || isCommercialPropertyLane || isStartupGuideLane
       ? { suppress_first_touch: "true" }
       : {}),
     // ★ Kevin 2026-08-19: the CP lane must record Property, not GL. The CRM webhook defaults
