@@ -7,6 +7,108 @@ const coiChecklist = {
 
 export const COI_REQUIREMENT_GUIDES: RestaurantGuide[] = [
   {
+    slug: "equity-residential-vendor-insurance-coi-checklist",
+    title: "Equity Residential vendor COI: class and certificate checklist",
+    metaTitle: "Equity Residential Vendor Insurance and COI Checklist",
+    description: "Ask for your assigned Equity Residential insurance class and check the COI wording, holder address and expiration before vendor work begins.",
+    intro: "Equity Residential publishes an insurance-class guide for suppliers. Its requirements depend on the class level assigned to the vendor, and it says individual circumstances may change them. Get the current class and property-specific instructions from your Equity representative before your agent issues a certificate.",
+    category: "Property manager vendor insurance",
+    industry: "Contractors",
+    tradeLabel: "General contractor",
+    insurancePath: "/insurance/general-contractor",
+    quoteKind: "service",
+    updatedAt: "2026-10-31",
+    nationalSlug: "contractor-quote-checklists",
+    sections: [
+      {
+        id: "assigned-class", title: "Find the assigned insurance class first",
+        paragraphs: [
+          "Equity Residential's published supplier guide says the vendor should be told which insurance class to carry and provides different coverage tables and sample certificates by class. It also says requirements may change for specific vendors. Do not choose a class or copy another contractor's limits; ask your Equity contact for the current assignment and any contract-specific insurance exhibit.",
+          "A vendor registration or COI submission is separate from being selected for a job. Describe your actual operations, subcontractors, vehicles and work location to your agent so the policy and documents match the intended work."
+        ],
+        checklist: ["Get your assigned class and current supplier requirements from the Equity contact.", "Send the complete insurance exhibit and job scope to your agent.", "Compare requested lines and limits with the actual policies before mobilization."],
+        links: [{ label: "Equity Residential: published supplier insurance-class guide (PDF)", href: "https://media.equityapartments.com/image/upload/v1733239825/Documents/Insurance-Requirements-6-1-23.pdf" }],
+      },
+      {
+        id: "certificate-review", title: "Check the certificate before submitting it",
+        paragraphs: [
+          "The published guide asks for Equity Residential and its affiliate companies in the certificate's Description of Operations, the certificate-holder address shown on its sample, and a certificate valid for a year; it says certificates expiring within 30 days will be rejected. Because the posted PDF is dated 2023, confirm the current wording and destination with your representative before issuance.",
+          "If the contract requests additional-insured status, have your agent confirm that the actual policy or endorsement provides it. Wording on the COI alone does not grant coverage. Retain the issued certificate and any applicable endorsements, then track renewal so a property-compliance rejection does not interrupt work."
+        ],
+        checklist: ["Use the current certificate-holder name and address supplied for your vendor file.", "Ask the agent to verify policy dates and any additional-insured endorsement.", "Resolve a rejected certificate with the property contact and insurer before starting work."],
+        links: [coiChecklist, { label: "Greystar supplier COI checklist", href: "/guides/greystar-supplier-insurance-coi-checklist" }],
+      },
+    ],
+  },
+  {
+    slug: "richmond-work-in-streets-permit-insurance",
+    title: "Richmond Work in Streets permit: insurance file for contractors",
+    metaTitle: "Richmond Work in Streets Permit COI for Contractors",
+    description: "Richmond contractors applying for a Work in Streets permit can prepare the certificate of insurance, license information and traffic plan the city requests.",
+    intro: "Richmond's Work in Streets permit applies to work in the public right of way, including excavation, construction staging, driveways and utility work. When a contractor applies, the city lists a certificate of insurance and contractor license information among the submission requirements. This checklist helps you assemble that file for your specific job.",
+    category: "City permit insurance",
+    industry: "Contractors",
+    tradeLabel: "General contractor",
+    insurancePath: "/insurance/general-contractor/virginia",
+    quoteKind: "service",
+    updatedAt: "2026-10-31",
+    nationalSlug: "contractor-quote-checklists",
+    sections: [
+      {
+        id: "permit-scope", title: "Which Richmond jobs need the permit file?",
+        paragraphs: [
+          "The city's Right-of-Way Management page says all work in the public right of way requires a Work in Streets permit. Its examples include excavation, cranes, subdivision construction, driveways, utility work and temporary structures. Confirm with the city whether your precise site and activity fall within that boundary before requesting insurance paperwork.",
+          "The posted submission list includes a completed application, site plan and traffic-control or maintenance-of-traffic plan. If a contractor makes the application, the list also calls for a certificate of insurance and contractor license information. A sidewalk or lane obstruction can require additional plans; the COI is only one part of the permit file."
+        ],
+        checklist: ["Identify the right-of-way location, exact work and any sidewalk or lane obstruction.", "Get the current Work in Streets application and project-specific conditions.", "Give your agent the certificate request and actual job description before the permit deadline."],
+        links: [{ label: "City of Richmond: Right-of-Way Management and Work in Streets requirements", href: "https://rva.gov/public-works/right-way-management" }],
+      },
+      {
+        id: "insurance-file", title: "What should your agent check?",
+        paragraphs: [
+          "Send the current city application and any insurance exhibit, rather than guessing a limit from another city's permit. Ask the agent to confirm the named insured, policy dates, operations and any required certificate holder or endorsement against the actual policy. A certificate by itself does not change coverage.",
+          "Richmond links an example certificate from its permit page, but your issued document must match your business and the current project terms. Keep the certificate, applicable endorsements, license details and permit approval together; revise the request if the work scope or dates change."
+        ],
+        checklist: ["Match the legal business name and dates to the permit application.", "Describe excavation, utilities, subcontractors and traffic-control work accurately.", "Confirm any insurance wording with the city and agent before mobilizing."],
+        links: [coiChecklist, { label: "City of Alexandria right-of-way COI checklist", href: "/guides/city-of-alexandria-right-of-way-permit-insurance" }],
+      },
+    ],
+  },
+  {
+    slug: "dc-contractor-license-certificate-of-insurance",
+    title: "D.C. contractor license: certificate of insurance checklist",
+    metaTitle: "D.C. Contractor License COI Requirements Checklist",
+    description: "Prepare the COI that D.C. requests for general contractor or home improvement contractor Basic Business License applications.",
+    intro: "A D.C. contractor license application has a different insurance checkpoint from a project permit or a customer's contract. The District's Department of Licensing and Consumer Protection lists a certificate of liability insurance for both general contractor/construction manager and home improvement contractor license applications. Use its current instructions for the license you are seeking.",
+    category: "Contractor licensing insurance",
+    industry: "Contractors",
+    tradeLabel: "General contractor",
+    insurancePath: "/insurance/general-contractor/district-of-columbia",
+    quoteKind: "service",
+    updatedAt: "2026-10-31",
+    nationalSlug: "contractor-quote-checklists",
+    sections: [
+      {
+        id: "license-type", title: "Which application needs a COI?",
+        paragraphs: [
+          "DLCP lists a certificate of liability insurance for both general contractor/construction manager and home improvement contractor Basic Business Licenses. The home improvement application separately lists a home improvement contract, criminal history report and surety bond; a COI does not replace those items.",
+          "DLCP says the COI must remain current for the license period. Project contracts can impose additional insurance terms, so keep the licensing COI request separate from a customer or permit certificate request."
+        ],
+        checklist: ["Confirm whether the application is for general contracting or home improvement.", "Download the current DLCP application checklist.", "Give the licensing and any separate project requirements to your agent."],
+        links: [{ label: "D.C. DLCP: Contractor and Construction Services", href: "https://dlcp.dc.gov/page/contractor-and-construction-services" }],
+      },
+      {
+        id: "certificate-details", title: "What belongs on the license COI?",
+        paragraphs: [
+          "DLCP says the certificate should use the registered organization name and licensed premises address, describe the service and location, and show DLCP at 1100 4th Street SW, Washington, DC 20024 as certificate holder. It says a post-office box is not an acceptable premises address and the insurer must be authorized in the District.",
+          "DLCP has an additional commercial general liability and insurer-rating statement for general contractor/construction manager applicants. Ask the agent to check that current rule and the actual policy before submitting. The certificate describes coverage; it does not grant a license or add an insured by itself."
+        ],
+        checklist: ["Match the COI name and premises address to the license application.", "Confirm the insurer and policy dates with the agent.", "Retain the issued COI and renew it before coverage or the license period expires."],
+        links: [{ label: "D.C. DLCP: license types requiring insurance and COI details", href: "https://dlcp.dc.gov/page/license-types-requiring-insurance-1" }, coiChecklist],
+      },
+    ],
+  },
+  {
     slug: "city-of-fairfax-right-of-way-permit-insurance",
     title: "City of Fairfax right-of-way permit: COI checklist for contractors",
     metaTitle: "City of Fairfax Right-of-Way Permit Insurance and COI",
