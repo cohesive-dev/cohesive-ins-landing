@@ -75,7 +75,10 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
         "links": [
           { "label": "City of Fairfax right-of-way permit COI checklist", "href": "/guides/city-of-fairfax-right-of-way-permit-insurance" },
           { "label": "City of Alexandria right-of-way permit COI checklist", "href": "/guides/city-of-alexandria-right-of-way-permit-insurance" },
-          { "label": "Greystar supplier insurance and COI checklist", "href": "/guides/greystar-supplier-insurance-coi-checklist" }
+          { "label": "Greystar supplier insurance and COI checklist", "href": "/guides/greystar-supplier-insurance-coi-checklist" },
+          { "label": "Richmond Work in Streets permit COI checklist", "href": "/guides/richmond-work-in-streets-permit-insurance" },
+          { "label": "D.C. contractor license COI checklist", "href": "/guides/dc-contractor-license-certificate-of-insurance" },
+          { "label": "Equity Residential vendor COI checklist", "href": "/guides/equity-residential-vendor-insurance-coi-checklist" }
         ]
       }
     ]

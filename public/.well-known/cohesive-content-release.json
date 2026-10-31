@@ -1,6 +1,6 @@
 {
-  "release": "seo-20261030-coi-requirements-v1",
-  "updatedAt": "2026-10-30",
+  "release": "seo-20261031-coi-requirements-v2",
+  "updatedAt": "2026-10-31",
   "paths": [
     "/es/seguro/techadores",
     "/es/seguro/contratistas",
@@ -52,6 +52,9 @@
     "/guides/city-of-fairfax-right-of-way-permit-insurance",
     "/guides/city-of-alexandria-right-of-way-permit-insurance",
     "/guides/greystar-supplier-insurance-coi-checklist",
+    "/guides/richmond-work-in-streets-permit-insurance",
+    "/guides/dc-contractor-license-certificate-of-insurance",
+    "/guides/equity-residential-vendor-insurance-coi-checklist",
     "/guides/contractor-certificate-of-insurance-before-starting-work",
     "/guides"
   ]
