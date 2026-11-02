@@ -84,7 +84,7 @@ const BASE = SITEMAP_BASE;
 
 export const SITEMAP_SECTIONS = ["core", "contractor-state", "city", "restaurant", "church-property", "guides"] as const;
 export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
-const CONTRACTOR_HUB_UPDATED: Record<string, string> = { roofer: "2026-10-29", "tree-service": "2026-10-27" };
+const CONTRACTOR_HUB_UPDATED: Record<string, string> = { roofer: "2026-10-29", "fire-sprinkler": "2026-10-30", "tree-service": "2026-10-27" };
 
 type Entry = MetadataRoute.Sitemap[number];
 
@@ -93,6 +93,7 @@ const depth = (url: string) => url.slice(BASE.length).split("/").filter(Boolean)
 function buildSections(): Record<SitemapSection, Entry[]> {
   const core = [""].map((p) => ({
     url: `${BASE}${p}`,
+    lastModified: "2026-11-02",
     changeFrequency: "monthly" as const,
   }));
 
@@ -115,7 +116,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     })),
   ];
 
-  const hub = [{ url: `${BASE}/insurance`, changeFrequency: "monthly" as const }];
+  const hub = [{ url: `${BASE}/insurance`, lastModified: "2026-11-02", changeFrequency: "monthly" as const }];
 
   const verticals = [
     ...VERTICALS.filter((v) => v.slug !== "bar").map((v) => v.slug),
@@ -177,7 +178,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     ),
   );
 
-  const guides = [{ slug: "", updatedAt: "2026-10-30" }, ...STARTUP_GUIDES].map((guide) => ({
+  const guides = [{ slug: "", updatedAt: "2026-11-02" }, ...STARTUP_GUIDES].map((guide) => ({
     url: `${BASE}/guides${guide.slug ? `/${guide.slug}` : ""}`,
     lastModified: guide.updatedAt ?? GUIDE_UPDATED,
     changeFrequency: "monthly" as const,
