@@ -128,11 +128,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
 
-  // `source` is a page label (e.g. "restaurants-splash-next-handoff"), not a per-lead id, so it
-  // must not go through as providerId — the CRM builds its Activity dedupe key from it, and a
-  // shared value would collapse every lead from that page into one Activity. Omitting it lets the
-  // CRM fall back to contact.id; the label rides along in the description instead, where it shows
-  // up in the Activity notes and the Slack lead card.
   const description = [businessType, source ? `via ${source}` : undefined]
     .filter(Boolean)
     .join(" — ");
@@ -145,11 +140,6 @@ export async function POST(request: NextRequest) {
     ...(zip ? { zip } : {}),
   });
 
-  // ZERO-MISS RULE: the CRM is now the system of record, but it's a network hop away and the
-  // client call is fire-and-forget — it will never retry. If the handoff fails for any reason,
-  // fall back to the quotes@ alert so a real lead still lands somewhere a human reads.
-  // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
-  // the pixel kept counting them.)
   if (!forwarded) {
     await sendIntakeNotification({
       name,

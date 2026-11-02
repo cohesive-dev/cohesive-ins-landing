@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import Cal, { getCalApi } from "@calcom/embed-react";
+import HeroParticles from "@/components/HeroParticles";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
@@ -503,17 +504,20 @@ function Hero() {
 
   if (showCal) {
     return (
-      <section className="pt-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-center">
-          <h1 className="text-[clamp(1rem,calc((100vw_-_2.5rem)/16.18),3rem)] font-bold text-[#2040E7] leading-tight tracking-tight mb-4 whitespace-nowrap">
+      <section className="relative overflow-hidden pt-20 bg-white">
+        <HeroParticles />
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 text-center">
+          {/* Soft white halo keeps the particle network clear of the headline */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-6 bottom-[-1.5rem] mx-auto max-w-4xl rounded-full bg-white/90 blur-2xl" />
+          <h1 className="text-[clamp(1rem,calc((100vw_-_2.5rem)/16.18),3rem)] font-bold text-[#2040E7] leading-tight tracking-tight mb-4 whitespace-nowrap relative">
             Better business insurance for less
           </h1>
-          <p className="hidden sm:block text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
+          <p className="relative hidden sm:block text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
             Get better pricing on insurance for your business, through our proprietary network and data. Fast quotes, comprehensive coverage.
           </p>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 md:mt-16">
           <CalEmbed prefill={prefill} onBack={() => setShowCal(false)} />
         </div>
 
@@ -523,18 +527,21 @@ function Hero() {
   }
 
   return (
-    <section className="pt-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 text-center">
-        <h1 className="text-[clamp(1rem,calc((100vw_-_2.5rem)/16.18),3rem)] font-bold text-[#2040E7] leading-tight tracking-tight mb-4 whitespace-nowrap">
+    <section className="relative overflow-hidden pt-20 bg-white">
+      <HeroParticles />
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 text-center">
+        {/* Soft white halo keeps the particle network clear of the headline */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-6 bottom-[-1.5rem] mx-auto max-w-4xl rounded-full bg-white/90 blur-2xl" />
+        <h1 className="text-[clamp(1rem,calc((100vw_-_2.5rem)/16.18),3rem)] font-bold text-[#2040E7] leading-tight tracking-tight mb-4 whitespace-nowrap relative">
           Better business insurance for less
         </h1>
-        <p className="hidden sm:block text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
+        <p className="relative hidden sm:block text-lg text-[#6B6D71] leading-relaxed max-w-2xl mx-auto">
           Get better pricing on insurance for your business, through our proprietary network and data. Fast quotes, comprehensive coverage.
         </p>
       </div>
 
       {/* Photo collage */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 md:mt-16">
         <div className="grid grid-cols-3 md:grid-cols-6 gap-0">
           {collage.map((c, i) => (
             <div key={c.title}
@@ -546,6 +553,8 @@ function Hero() {
 
         {/* Overlapping quote widget */}
         <div id="quote-form" className="relative z-10 -mt-10 md:-mt-16 flex flex-col md:flex-row gap-4 md:gap-0 px-2 md:px-0 scroll-mt-24">
+          {/* Soft white halo keeps the particle network clear of the form */}
+          <div aria-hidden="true" className="pointer-events-none absolute -inset-x-8 md:-inset-x-14 top-16 md:top-24 -bottom-10 md:-bottom-14 -z-10 bg-white/90 blur-2xl" />
           <div className="md:flex-5 bg-white shadow-xl p-6 sm:p-8">
             <QuoteForm onBookMeeting={(data) => { setPrefill(data ?? {}); setShowCal(true); }} />
           </div>
@@ -562,7 +571,7 @@ function Hero() {
         </div>
       </div>
 
-      <div className="h-6 md:h-10" />
+      <div className="h-12 md:h-20" />
     </section>
   );
 }
@@ -632,8 +641,9 @@ function Industries() {
   }, []);
 
   return (
-    <section id="industries" className="py-24 bg-white border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="industries" className="relative overflow-hidden py-24 bg-white border-t border-slate-200">
+      <HeroParticles />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <div className="text-xs font-bold text-[#2040E7] uppercase tracking-widest mb-3">Industry Programs</div>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#131517] mb-4 max-w-2xl">
@@ -691,6 +701,35 @@ function Industries() {
 
 // ─── Coverage Lines ───────────────────────────────────────────────────────────
 
+// Glowing edge for the highlighted coverage card: a bright blue arc of light
+// runs around the border, with a blurred copy behind it for the glow. The arc
+// is an oversized conic-gradient square spinning behind a mask that only lets
+// the 2px border ring show through (transform animation, so it stays smooth).
+const GLOW_RING_MASK = {
+  padding: 2,
+  mask: "linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0)",
+  WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
+  WebkitMaskComposite: "xor",
+} as const;
+
+function GlowRing({ entrySide }: { entrySide: "left" | "top" | "right" | "bottom" }) {
+  const startAngle = { left: "-47deg", top: "43deg", right: "133deg", bottom: "223deg" }[entrySide];
+  return (
+    <div className="absolute inset-0 overflow-hidden rounded-lg" style={GLOW_RING_MASK}>
+      <div style={{ "--glow-start-angle": startAngle } as React.CSSProperties} className="absolute left-1/2 top-1/2 aspect-square w-[250%] -translate-x-1/2 -translate-y-1/2 animate-[glow-spin_3s_linear_infinite] motion-reduce:animate-none bg-[conic-gradient(transparent_0deg,transparent_200deg,rgba(176,190,255,0.9)_300deg,rgba(119,151,255,1)_320deg,#AFC3FF_330deg,transparent_340deg,transparent_360deg)]" />
+    </div>
+  );
+}
+
+function GlowEdge({ className = "", entrySide = "left" }: { className?: string; entrySide?: "left" | "top" | "right" | "bottom" }) {
+  return (
+    <div aria-hidden="true" className={`pointer-events-none absolute -inset-px z-10 rounded-lg border border-[#2040E7]/25 ${className}`}>
+      <div className="absolute -inset-px opacity-60 blur-[6px]"><GlowRing entrySide={entrySide} /></div>
+      <div className="absolute -inset-px opacity-80"><GlowRing entrySide={entrySide} /></div>
+    </div>
+  );
+}
+
 function Coverage() {
   const lines = [
     {
@@ -747,9 +786,67 @@ function Coverage() {
     },
   ];
 
+  // A highlight (blue edge + blue text) fades out on one card and in on the
+  // next, in a snake path: left → right on the first row, right → left on the
+  // next, and so on (whatever the column count), then retraces its path back. It only runs
+  // while the grid is on screen and stays on the first card for reduced motion.
+  const [active, setActive] = useState(0);
+  const [entrySide, setEntrySide] = useState<"left" | "top" | "right" | "bottom">("left");
+  const [inView, setInView] = useState(false);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const stepRef = useRef(0);
+
+  // Build the highlight's route from the live layout: group cards into rows by
+  // their top offset, alternate each row's direction, then append the
+  // reversed route (minus its ends) so the loop bounces instead of jumping.
+  const highlightRoute = () => {
+    const rows = new Map<number, { i: number; left: number }[]>();
+    cardRefs.current.forEach((el, i) => {
+      if (!el) return;
+      const row = rows.get(el.offsetTop) ?? [];
+      row.push({ i, left: el.offsetLeft });
+      rows.set(el.offsetTop, row);
+    });
+    const path = [...rows.keys()]
+      .sort((a, b) => a - b)
+      .flatMap((top, r) => {
+        const row = rows.get(top)!.sort((a, b) => a.left - b.left).map((c) => c.i);
+        return r % 2 ? row.reverse() : row;
+      });
+    return path.length > 2 ? [...path, ...path.slice(1, -1).reverse()] : path;
+  };
+
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.2 });
+    io.observe(grid);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!inView || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => {
+      const route = highlightRoute();
+      const nextStep = (stepRef.current + 1) % route.length;
+      const from = cardRefs.current[route[stepRef.current]];
+      const to = cardRefs.current[route[nextStep]];
+      if (from && to) {
+        const dx = to.offsetLeft - from.offsetLeft;
+        const dy = to.offsetTop - from.offsetTop;
+        setEntrySide(Math.abs(dy) > Math.abs(dx) ? (dy > 0 ? "top" : "bottom") : dx > 0 ? "left" : "right");
+      }
+      stepRef.current = nextStep;
+      setActive(route[nextStep]);
+    }, 2500);
+    return () => clearInterval(id);
+  }, [inView]);
+
   return (
-    <section id="coverage" className="py-24 bg-white border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="coverage" className="relative overflow-hidden py-24 bg-white border-t border-slate-200">
+      <HeroParticles />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-24 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
             <div className="text-xs font-bold text-[#2040E7] uppercase tracking-widest mb-3">Coverage Lines</div>
@@ -762,8 +859,8 @@ function Coverage() {
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-24 sm:pl-10 lg:pl-8">
-          {lines.map((l) => {
+        <div ref={gridRef} className="relative grid sm:grid-cols-2 lg:grid-cols-3 gap-x-16 gap-y-24 sm:pl-10 lg:pl-8">
+          {lines.map((l, i) => {
             // On mobile the illustration is centered over its tile; from `sm` up
             // it returns to the off-corner placement, so the per-item nudges
             // (which are desktop-tuned) only apply there.
@@ -772,15 +869,23 @@ function Coverage() {
               .filter(Boolean)
               .map((c) => `sm:${c}`)
               .join(" ");
+            const isActive = inView && i === active;
             return (
               <div key={l.title}
-                className="relative bg-white border border-slate-200 rounded-lg p-6 pt-32 hover:shadow-md hover:border-[#2040E7] transition-all group">
+                ref={(el) => { cardRefs.current[i] = el; }}
+                className="relative bg-white border border-slate-200 rounded-lg p-6 pt-32">
                 <div className={`absolute -top-20 z-20 w-56 h-56 left-0 right-0 mx-auto sm:left-[-4rem] sm:right-auto sm:mx-0 ${smOffset}`}>
                   <img src={l.image} alt="" aria-hidden="true"
-                    className="w-full h-full object-contain object-top sm:object-left-top drop-shadow-lg pointer-events-none select-none group-hover:animate-wobble" />
+                    className="w-full h-full object-contain object-top sm:object-left-top drop-shadow-lg pointer-events-none select-none" />
                 </div>
-                <h3 className="font-semibold text-[#131517] mb-2 group-hover:text-[#2040E7] transition-colors">{l.title}</h3>
-                <p className="text-sm text-[#6B6D71] leading-relaxed">{l.desc}</p>
+                {/* Highlight edge: glowing light running around the border, laid
+                    over the card's own border, below the illustration */}
+                <GlowEdge
+                  key={isActive ? `${active}-${entrySide}` : l.title}
+                  entrySide={entrySide}
+                  className={`transition-opacity duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? "opacity-100" : "opacity-0"}`} />
+                <h3 className={`font-semibold mb-2 transition-colors duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? "text-[#2040E7]" : "text-[#131517]"}`}>{l.title}</h3>
+                <p className={`text-sm leading-relaxed transition-colors duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] ${isActive ? "text-[#2040E7]" : "text-[#6B6D71]"}`}>{l.desc}</p>
               </div>
             );
           })}
@@ -1077,8 +1182,9 @@ function CTA() {
   const [prefill, setPrefill] = useState<Prefill>({});
 
   return (
-    <section id="get-quote" className="py-24 bg-white border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="get-quote" className="relative overflow-hidden py-24 bg-white border-t border-slate-200">
+      <HeroParticles />
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-bold text-[#131517] mb-6">
             Ready to see what a competitive market looks like?
