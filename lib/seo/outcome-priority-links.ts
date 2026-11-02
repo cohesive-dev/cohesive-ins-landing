@@ -32,6 +32,8 @@ export const OUTCOME_PRIORITY_LINKS = [
 // prices by revenue, so it is linked one hop from the homepage like the cost guides.
 export const COST_GUIDE_LINKS = [
   { href: "/insurance/roofer", label: "What roofing insurance costs: real prices by revenue", short: "Roofing insurance cost" },
+  { href: "/insurance/fire-sprinkler", label: "Fire sprinkler installer insurance: a real installation quote", short: "Fire sprinkler insurance quote" },
+  { href: "/insurance/pool", label: "Pool contractor insurance: a real bound price", short: "Pool contractor insurance cost" },
   { href: "/guides/restaurant-insurance-cost", label: "What restaurant insurance costs: real policies and quotes", short: "Restaurant insurance cost" },
   { href: "/guides/restaurant-workers-comp-insurance", label: "Restaurant workers' comp: what sets the price", short: "Restaurant workers' comp" },
   { href: "/guides/bakery-insurance-cost", label: "What bakery insurance costs", short: "Bakery insurance cost" },
