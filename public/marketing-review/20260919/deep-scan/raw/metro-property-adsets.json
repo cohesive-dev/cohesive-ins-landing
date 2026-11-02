@@ -1,0 +1,1666 @@
+[
+  {
+    "id": "120251001156410660",
+    "name": "CP Metro - Milwaukee - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2547917",
+            "name": "Milwaukee",
+            "radius": 25,
+            "region": "Wisconsin",
+            "region_id": "3892"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895915
+    },
+    "created_time": "2026-09-08T15:25:55-0400",
+    "start_time": "2026-09-08T15:25:55-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 79.89,
+    "impressions": 2676,
+    "link_clicks": 20,
+    "CPM": 29.85,
+    "link_CTR_pct": 0.747,
+    "link_CPC": 3.99,
+    "completed_saved": 3,
+    "new_acquisitions": 3,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 26.63,
+    "CPL_new": 26.63,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001152940660",
+    "name": "CP Metro - Las Vegas - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2481714",
+            "name": "Las Vegas",
+            "radius": 25,
+            "region": "Nevada",
+            "region_id": "3871"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895915
+    },
+    "created_time": "2026-09-08T15:25:36-0400",
+    "start_time": "2026-09-08T15:25:37-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 79.39,
+    "impressions": 2112,
+    "link_clicks": 7,
+    "CPM": 37.59,
+    "link_CTR_pct": 0.331,
+    "link_CPC": 11.34,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 39.7,
+    "CPL_new": 39.7,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001148890660",
+    "name": "CP Metro - Richmond - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2538983",
+            "name": "Richmond",
+            "radius": 25,
+            "region": "Virginia",
+            "region_id": "3889"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895914
+    },
+    "created_time": "2026-09-08T15:25:13-0400",
+    "start_time": "2026-09-08T15:25:13-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 76.2,
+    "impressions": 2396,
+    "link_clicks": 11,
+    "CPM": 31.8,
+    "link_CTR_pct": 0.459,
+    "link_CPC": 6.93,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 38.1,
+    "CPL_new": 38.1,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001144860660",
+    "name": "CP Metro - Minneapolis - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2471428",
+            "name": "Minneapolis",
+            "radius": 25,
+            "region": "Minnesota",
+            "region_id": "3866"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895915
+    },
+    "created_time": "2026-09-08T15:24:48-0400",
+    "start_time": "2026-09-08T15:24:48-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 75.83,
+    "impressions": 2203,
+    "link_clicks": 12,
+    "CPM": 34.42,
+    "link_CTR_pct": 0.545,
+    "link_CPC": 6.32,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 75.83,
+    "CPL_new": 75.83,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001140100660",
+    "name": "CP Metro - Philadelphia - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2511940",
+            "name": "Philadelphia",
+            "radius": 25,
+            "region": "Pennsylvania",
+            "region_id": "3881"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895915
+    },
+    "created_time": "2026-09-08T15:24:17-0400",
+    "start_time": "2026-09-08T15:24:17-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 78.31,
+    "impressions": 2032,
+    "link_clicks": 18,
+    "CPM": 38.54,
+    "link_CTR_pct": 0.886,
+    "link_CPC": 4.35,
+    "completed_saved": 2,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 39.16,
+    "CPL_new": 78.31,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001129720660",
+    "name": "CP Metro - Pittsburgh - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2512017",
+            "name": "Pittsburgh",
+            "radius": 25,
+            "region": "Pennsylvania",
+            "region_id": "3881"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895913
+    },
+    "created_time": "2026-09-08T15:23:51-0400",
+    "start_time": "2026-09-08T15:23:51-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 79.1,
+    "impressions": 2124,
+    "link_clicks": 12,
+    "CPM": 37.24,
+    "link_CTR_pct": 0.565,
+    "link_CPC": 6.59,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 39.55,
+    "CPL_new": 39.55,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001126440660",
+    "name": "CP Metro - Cleveland - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2498857",
+            "name": "Cleveland",
+            "radius": 25,
+            "region": "Ohio",
+            "region_id": "3878"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895913
+    },
+    "created_time": "2026-09-08T15:23:26-0400",
+    "start_time": "2026-09-08T15:23:26-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 77.84,
+    "impressions": 1562,
+    "link_clicks": 13,
+    "CPM": 49.83,
+    "link_CTR_pct": 0.832,
+    "link_CPC": 5.99,
+    "completed_saved": 3,
+    "new_acquisitions": 3,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 25.95,
+    "CPL_new": 25.95,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001121210660",
+    "name": "CP Metro - Columbus - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2498913",
+            "name": "Columbus",
+            "radius": 25,
+            "region": "Ohio",
+            "region_id": "3878"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895913
+    },
+    "created_time": "2026-09-08T15:23:00-0400",
+    "start_time": "2026-09-08T15:23:00-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 77.36,
+    "impressions": 2505,
+    "link_clicks": 15,
+    "CPM": 30.88,
+    "link_CTR_pct": 0.599,
+    "link_CPC": 5.16,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 77.36,
+    "CPL_new": 77.36,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001117230660",
+    "name": "CP Metro - Indianapolis - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2442569",
+            "name": "Indianapolis",
+            "radius": 25,
+            "region": "Indiana",
+            "region_id": "3857"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895913
+    },
+    "created_time": "2026-09-08T15:22:37-0400",
+    "start_time": "2026-09-08T15:22:37-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 79.69,
+    "impressions": 2490,
+    "link_clicks": 15,
+    "CPM": 32.0,
+    "link_CTR_pct": 0.602,
+    "link_CPC": 5.31,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001112050660",
+    "name": "CP Metro - Chicago - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2438177",
+            "name": "Chicago",
+            "radius": 25,
+            "region": "Illinois",
+            "region_id": "3856"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "conversions": 7,
+      "last_sig_edit_ts": 1788895913,
+      "status": "FAIL"
+    },
+    "created_time": "2026-09-08T15:22:12-0400",
+    "start_time": "2026-09-08T15:22:12-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 214.29,
+    "impressions": 4185,
+    "link_clicks": 37,
+    "CPM": 51.2,
+    "link_CTR_pct": 0.884,
+    "link_CPC": 5.79,
+    "completed_saved": 9,
+    "new_acquisitions": 9,
+    "observed_starts": null,
+    "observed_sessions": 15,
+    "CPL_saved": 23.81,
+    "CPL_new": 23.81,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001109960660",
+    "name": "CP Metro - Denver - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2423371",
+            "name": "Denver",
+            "radius": 25,
+            "region": "Colorado",
+            "region_id": "3848"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895912
+    },
+    "created_time": "2026-09-08T15:21:50-0400",
+    "start_time": "2026-09-08T15:21:50-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 77.72,
+    "impressions": 1920,
+    "link_clicks": 11,
+    "CPM": 40.48,
+    "link_CTR_pct": 0.573,
+    "link_CPC": 7.07,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001107290660",
+    "name": "CP Metro - Phoenix - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2413713",
+            "name": "Phoenix",
+            "radius": 25,
+            "region": "Arizona",
+            "region_id": "3845"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895912
+    },
+    "created_time": "2026-09-08T15:21:27-0400",
+    "start_time": "2026-09-08T15:21:27-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 78.1,
+    "impressions": 2045,
+    "link_clicks": 12,
+    "CPM": 38.19,
+    "link_CTR_pct": 0.587,
+    "link_CPC": 6.51,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 78.1,
+    "CPL_new": 78.1,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001104000660",
+    "name": "CP Metro - Nashville - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2523484",
+            "name": "Nashville",
+            "radius": 25,
+            "region": "Tennessee",
+            "region_id": "3885"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "conversions": 2,
+      "last_sig_edit_ts": 1788895912,
+      "status": "FAIL"
+    },
+    "created_time": "2026-09-08T15:20:58-0400",
+    "start_time": "2026-09-08T15:20:58-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 209.47,
+    "impressions": 5982,
+    "link_clicks": 24,
+    "CPM": 35.02,
+    "link_CTR_pct": 0.401,
+    "link_CPC": 8.73,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 13,
+    "CPL_saved": 209.47,
+    "CPL_new": 209.47,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001101050660",
+    "name": "CP Metro - Raleigh - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2495894",
+            "name": "Raleigh",
+            "radius": 25,
+            "region": "North Carolina",
+            "region_id": "3876"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895912
+    },
+    "created_time": "2026-09-08T15:20:28-0400",
+    "start_time": "2026-09-08T15:20:28-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 75.96,
+    "impressions": 2152,
+    "link_clicks": 12,
+    "CPM": 35.3,
+    "link_CTR_pct": 0.558,
+    "link_CPC": 6.33,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001097460660",
+    "name": "CP Metro - Charlotte - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2493367",
+            "name": "Charlotte",
+            "radius": 25,
+            "region": "North Carolina",
+            "region_id": "3876"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895912
+    },
+    "created_time": "2026-09-08T15:20:01-0400",
+    "start_time": "2026-09-08T15:20:01-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 75.68,
+    "impressions": 2348,
+    "link_clicks": 19,
+    "CPM": 32.23,
+    "link_CTR_pct": 0.809,
+    "link_CPC": 3.98,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001093820660",
+    "name": "CP Metro - Atlanta - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2430536",
+            "name": "Atlanta",
+            "radius": 25,
+            "region": "Georgia",
+            "region_id": "3853"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895911
+    },
+    "created_time": "2026-09-08T15:19:38-0400",
+    "start_time": "2026-09-08T15:19:38-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 76.78,
+    "impressions": 1837,
+    "link_clicks": 9,
+    "CPM": 41.8,
+    "link_CTR_pct": 0.49,
+    "link_CPC": 8.53,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 76.78,
+    "CPL_new": 76.78,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001091900660",
+    "name": "CP Metro - San Antonio - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2529761",
+            "name": "San Antonio",
+            "radius": 25,
+            "region": "Texas",
+            "region_id": "3886"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895911
+    },
+    "created_time": "2026-09-08T15:19:18-0400",
+    "start_time": "2026-09-08T15:19:18-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 76.83,
+    "impressions": 2131,
+    "link_clicks": 17,
+    "CPM": 36.05,
+    "link_CTR_pct": 0.798,
+    "link_CPC": 4.52,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001089630660",
+    "name": "CP Metro - Austin - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2525495",
+            "name": "Austin",
+            "radius": 25,
+            "region": "Texas",
+            "region_id": "3886"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895911
+    },
+    "created_time": "2026-09-08T15:18:55-0400",
+    "start_time": "2026-09-08T15:18:55-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 77.42,
+    "impressions": 1966,
+    "link_clicks": 6,
+    "CPM": 39.38,
+    "link_CTR_pct": 0.305,
+    "link_CPC": 12.9,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 38.71,
+    "CPL_new": 38.71,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001087430660",
+    "name": "CP Metro - Houston - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2527622",
+            "name": "Houston",
+            "radius": 25,
+            "region": "Texas",
+            "region_id": "3886"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895911
+    },
+    "created_time": "2026-09-08T15:18:28-0400",
+    "start_time": "2026-09-08T15:18:28-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 79.83,
+    "impressions": 2065,
+    "link_clicks": 11,
+    "CPM": 38.66,
+    "link_CTR_pct": 0.533,
+    "link_CPC": 7.26,
+    "completed_saved": 4,
+    "new_acquisitions": 3,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 19.96,
+    "CPL_new": 26.61,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  },
+  {
+    "id": "120251001084230660",
+    "name": "CP Metro - Dallas - $20 - Lead",
+    "campaign_id": "120251001083740660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "daily_budget": "2000",
+    "lifetime_budget": "0",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "cities": [
+          {
+            "country": "US",
+            "distance_unit": "mile",
+            "key": "2526493",
+            "name": "Dallas",
+            "radius": 25,
+            "region": "Texas",
+            "region_id": "3886"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home",
+          "recent"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ],
+      "device_platforms": [
+        "mobile",
+        "desktop"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "7d_click"
+      ],
+      "last_sig_edit_ts": 1788895911
+    },
+    "created_time": "2026-09-08T15:17:57-0400",
+    "start_time": "2026-09-08T15:17:57-0400",
+    "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 7
+      }
+    ],
+    "spend": 77.42,
+    "impressions": 1896,
+    "link_clicks": 12,
+    "CPM": 40.83,
+    "link_CTR_pct": 0.633,
+    "link_CPC": 6.45,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 2,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns"
+  }
+]

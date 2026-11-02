@@ -1,4 +1,12 @@
 import QuoteSplash, { type SplashConfig } from "@/components/QuoteSplash";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Restaurant Insurance Quote | Cohesive Insurance",
+  description: "Request a restaurant insurance quote from Cohesive Insurance.",
+  alternates: { canonical: "/restaurants" },
+  robots: { index: false, follow: true },
+};
 
 const config: SplashConfig = {
   "slug": "restaurants",

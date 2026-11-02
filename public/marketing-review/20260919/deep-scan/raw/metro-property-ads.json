@@ -1,0 +1,4933 @@
+[
+  {
+    "id": "120251001085430660",
+    "name": "CP Metro - Dallas - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001084230660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:18:06-0400",
+    "updated_time": "2026-09-08T15:31:46-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Dallas, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=dallas",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/918d659d4298342c.jpg",
+    "creative_id": "952363907193088",
+    "spend": 66.31,
+    "impressions": 1651,
+    "link_clicks": 10,
+    "CPM": 40.16,
+    "link_CTR_pct": 0.606,
+    "link_CPC": 6.63,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 2,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.64,
+    "set_spend_share_pct": 85.65,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Dallas - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/918d659d4298342c.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "10"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "7"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "7"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "10"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "10"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001087290660",
+    "name": "CP Metro - Dallas - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001084230660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:18:25-0400",
+    "updated_time": "2026-09-08T15:31:46-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Dallas, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=dallas",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/43f6ec7d998f33c2.jpg",
+    "creative_id": "1326259129583978",
+    "spend": 6.04,
+    "impressions": 112,
+    "link_clicks": 1,
+    "CPM": 53.93,
+    "link_CTR_pct": 0.893,
+    "link_CPC": 6.04,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.33,
+    "set_spend_share_pct": 7.8,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Dallas - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/43f6ec7d998f33c2.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001086630660",
+    "name": "CP Metro - Dallas - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001084230660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:18:16-0400",
+    "updated_time": "2026-09-08T15:31:47-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Dallas, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=dallas",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/955a9a1f97730393.jpg",
+    "creative_id": "1010557595376720",
+    "spend": 5.07,
+    "impressions": 133,
+    "link_clicks": 1,
+    "CPM": 38.12,
+    "link_CTR_pct": 0.752,
+    "link_CPC": 5.07,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.28,
+    "set_spend_share_pct": 6.55,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Dallas - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/955a9a1f97730393.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001088240660",
+    "name": "CP Metro - Houston - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001087430660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:18:35-0400",
+    "updated_time": "2026-09-08T15:31:48-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Houston, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=houston",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/8e29e0135a017e89.jpg",
+    "creative_id": "1807403266940486",
+    "spend": 69.71,
+    "impressions": 1875,
+    "link_clicks": 10,
+    "CPM": 37.18,
+    "link_CTR_pct": 0.533,
+    "link_CPC": 6.97,
+    "completed_saved": 4,
+    "new_acquisitions": 3,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 17.43,
+    "CPL_new": 23.24,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.82,
+    "set_spend_share_pct": 87.32,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Houston - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/8e29e0135a017e89.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "10"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "10"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "10"
+      },
+      {
+        "action_type": "onsite_conversion.post_unlike",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "13"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "3"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "13"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "4"
+      },
+      {
+        "action_type": "post",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001088620660",
+    "name": "CP Metro - Houston - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001087430660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:18:44-0400",
+    "updated_time": "2026-09-08T15:31:47-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Houston, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=houston",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/3deab3431b03c358.jpg",
+    "creative_id": "26819879361043177",
+    "spend": 8.27,
+    "impressions": 136,
+    "link_clicks": 1,
+    "CPM": 60.81,
+    "link_CTR_pct": 0.735,
+    "link_CPC": 8.27,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.45,
+    "set_spend_share_pct": 10.36,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Houston - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/3deab3431b03c358.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001089170660",
+    "name": "CP Metro - Houston - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001087430660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:18:52-0400",
+    "updated_time": "2026-09-08T15:31:49-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Houston, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=houston",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/75875b7f7db1e83b.jpg",
+    "creative_id": "2813737095670548",
+    "spend": 1.85,
+    "impressions": 54,
+    "link_clicks": 0,
+    "CPM": 34.26,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.1,
+    "set_spend_share_pct": 2.32,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Houston - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 3,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-10",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/75875b7f7db1e83b.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001090570660",
+    "name": "CP Metro - Austin - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001089630660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:02-0400",
+    "updated_time": "2026-09-08T15:31:49-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Austin, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=austin",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/549aa3b7fc1746d5.jpg",
+    "creative_id": "1607184214359119",
+    "spend": 52.13,
+    "impressions": 1411,
+    "link_clicks": 6,
+    "CPM": 36.95,
+    "link_CTR_pct": 0.425,
+    "link_CPC": 8.69,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 26.07,
+    "CPL_new": 26.07,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.86,
+    "set_spend_share_pct": 67.33,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Austin - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/549aa3b7fc1746d5.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "6"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "4"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "4"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001091180660",
+    "name": "CP Metro - Austin - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001089630660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:09-0400",
+    "updated_time": "2026-09-08T15:31:50-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Austin, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=austin",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/2dc8a9163f4c1ec8.jpg",
+    "creative_id": "1625667922520891",
+    "spend": 15.39,
+    "impressions": 350,
+    "link_clicks": 0,
+    "CPM": 43.97,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.84,
+    "set_spend_share_pct": 19.88,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Austin - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/2dc8a9163f4c1ec8.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001091790660",
+    "name": "CP Metro - Austin - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001089630660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:16-0400",
+    "updated_time": "2026-09-08T15:31:49-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Austin, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=austin",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/e330a7ade8582466.jpg",
+    "creative_id": "2088984095337884",
+    "spend": 9.9,
+    "impressions": 205,
+    "link_clicks": 0,
+    "CPM": 48.29,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.54,
+    "set_spend_share_pct": 12.79,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Austin - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/e330a7ade8582466.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001092950660",
+    "name": "CP Metro - San Antonio - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001091900660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:25-0400",
+    "updated_time": "2026-09-08T15:31:49-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in San Antonio, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=san-antonio",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/367056013b6e02d8.jpg",
+    "creative_id": "1581118910123397",
+    "spend": 68.61,
+    "impressions": 1968,
+    "link_clicks": 17,
+    "CPM": 34.86,
+    "link_CTR_pct": 0.864,
+    "link_CPC": 4.04,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.76,
+    "set_spend_share_pct": 89.3,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - San Antonio - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/367056013b6e02d8.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "17"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "19"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "19"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "18"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "18"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001093160660",
+    "name": "CP Metro - San Antonio - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001091900660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:30-0400",
+    "updated_time": "2026-09-08T15:31:51-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in San Antonio, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=san-antonio",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/468304f402254d7c.jpg",
+    "creative_id": "4441188089530564",
+    "spend": 4.62,
+    "impressions": 77,
+    "link_clicks": 0,
+    "CPM": 60.0,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.25,
+    "set_spend_share_pct": 6.01,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - San Antonio - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/468304f402254d7c.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001093660660",
+    "name": "CP Metro - San Antonio - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001091900660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:36-0400",
+    "updated_time": "2026-09-08T15:31:51-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in San Antonio, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=san-antonio",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/3b9a7926b430198a.jpg",
+    "creative_id": "1598710924986705",
+    "spend": 3.6,
+    "impressions": 86,
+    "link_clicks": 0,
+    "CPM": 41.86,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.2,
+    "set_spend_share_pct": 4.69,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - San Antonio - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/3b9a7926b430198a.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001094450660",
+    "name": "CP Metro - Atlanta - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001093820660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:44-0400",
+    "updated_time": "2026-09-08T15:31:50-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Atlanta, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=atlanta",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/5058760bae236f40.jpg",
+    "creative_id": "1351372396807663",
+    "spend": 59.16,
+    "impressions": 1503,
+    "link_clicks": 9,
+    "CPM": 39.36,
+    "link_CTR_pct": 0.599,
+    "link_CPC": 6.57,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 59.16,
+    "CPL_new": 59.16,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.25,
+    "set_spend_share_pct": 77.05,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Atlanta - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/5058760bae236f40.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "9"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "2"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "9"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "3"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "9"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "10"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "10"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "3"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "3"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "2"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001095130660",
+    "name": "CP Metro - Atlanta - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001093820660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:51-0400",
+    "updated_time": "2026-09-08T15:31:50-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Atlanta, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=atlanta",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/8229dcfc3f2fac70.jpg",
+    "creative_id": "2197922464114731",
+    "spend": 9.42,
+    "impressions": 166,
+    "link_clicks": 0,
+    "CPM": 56.75,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.52,
+    "set_spend_share_pct": 12.27,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Atlanta - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/8229dcfc3f2fac70.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001096440660",
+    "name": "CP Metro - Atlanta - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001093820660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:19:59-0400",
+    "updated_time": "2026-09-08T15:31:50-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Atlanta, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=atlanta",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/2fce94b7995fd17f.jpg",
+    "creative_id": "1142827141404233",
+    "spend": 8.2,
+    "impressions": 168,
+    "link_clicks": 0,
+    "CPM": 48.81,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.45,
+    "set_spend_share_pct": 10.68,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Atlanta - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/2fce94b7995fd17f.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001100600660",
+    "name": "CP Metro - Charlotte - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001097460660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:20:24-0400",
+    "updated_time": "2026-09-08T15:31:53-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Charlotte, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=charlotte",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/13ecb750b57e82b3.jpg",
+    "creative_id": "2858067731237155",
+    "spend": 51.63,
+    "impressions": 1598,
+    "link_clicks": 14,
+    "CPM": 32.31,
+    "link_CTR_pct": 0.876,
+    "link_CPC": 3.69,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.83,
+    "set_spend_share_pct": 68.22,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Charlotte - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/13ecb750b57e82b3.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "14"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "3"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "16"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "16"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "15"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "15"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_save",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001098490660",
+    "name": "CP Metro - Charlotte - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001097460660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:20:07-0400",
+    "updated_time": "2026-09-08T15:31:55-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Charlotte, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=charlotte",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/71a1b5cc97f40cd9.jpg",
+    "creative_id": "1389380382659728",
+    "spend": 21.29,
+    "impressions": 661,
+    "link_clicks": 5,
+    "CPM": 32.21,
+    "link_CTR_pct": 0.756,
+    "link_CPC": 4.26,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.17,
+    "set_spend_share_pct": 28.13,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Charlotte - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/71a1b5cc97f40cd9.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "5"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "4"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "4"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "5"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "5"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001099100660",
+    "name": "CP Metro - Charlotte - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001097460660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:20:14-0400",
+    "updated_time": "2026-09-08T15:31:53-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Charlotte, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=charlotte",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/8f00a6b0258af07c.jpg",
+    "creative_id": "1086895857378802",
+    "spend": 2.76,
+    "impressions": 89,
+    "link_clicks": 0,
+    "CPM": 31.01,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.15,
+    "set_spend_share_pct": 3.65,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Charlotte - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/8f00a6b0258af07c.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001102450660",
+    "name": "CP Metro - Raleigh - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001101050660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:20:48-0400",
+    "updated_time": "2026-09-08T15:31:52-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Raleigh, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=raleigh",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/301ef525f69c670b.jpg",
+    "creative_id": "2137819403787136",
+    "spend": 34.71,
+    "impressions": 974,
+    "link_clicks": 5,
+    "CPM": 35.64,
+    "link_CTR_pct": 0.513,
+    "link_CPC": 6.94,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.9,
+    "set_spend_share_pct": 45.7,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Raleigh - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/301ef525f69c670b.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "5"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "5"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "5"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "5"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "5"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001101770660",
+    "name": "CP Metro - Raleigh - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001101050660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:20:39-0400",
+    "updated_time": "2026-09-08T15:31:53-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Raleigh, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=raleigh",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/ba8c0c31f3e5c810.jpg",
+    "creative_id": "2097191777850228",
+    "spend": 28.23,
+    "impressions": 822,
+    "link_clicks": 5,
+    "CPM": 34.34,
+    "link_CTR_pct": 0.608,
+    "link_CPC": 5.65,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.55,
+    "set_spend_share_pct": 37.16,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Raleigh - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/ba8c0c31f3e5c810.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "5"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "5"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "5"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001103570660",
+    "name": "CP Metro - Raleigh - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001101050660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:20:56-0400",
+    "updated_time": "2026-09-08T15:31:53-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Raleigh, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=raleigh",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/256c8d5f1bd99a9e.jpg",
+    "creative_id": "1435430718443326",
+    "spend": 13.02,
+    "impressions": 356,
+    "link_clicks": 2,
+    "CPM": 36.57,
+    "link_CTR_pct": 0.562,
+    "link_CPC": 6.51,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.71,
+    "set_spend_share_pct": 17.14,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Raleigh - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/256c8d5f1bd99a9e.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "2"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001106080660",
+    "name": "CP Metro - Nashville - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001104000660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-08T15:21:16-0400",
+    "updated_time": "2026-09-08T15:31:54-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Nashville, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=nashville",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/a2de70427614501d.jpg",
+    "creative_id": "4703451296579546",
+    "spend": 135.05,
+    "impressions": 3916,
+    "link_clicks": 18,
+    "CPM": 34.49,
+    "link_CTR_pct": 0.46,
+    "link_CPC": 7.5,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 13,
+    "CPL_saved": 135.05,
+    "CPL_new": 135.05,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 7.41,
+    "set_spend_share_pct": 64.47,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Nashville - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 11,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 8.51,
+    "Sep19_partial_impressions": 201,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/a2de70427614501d.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "18"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "3"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "12"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "12"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "18"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "18"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001105320660",
+    "name": "CP Metro - Nashville - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001104000660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-08T15:21:06-0400",
+    "updated_time": "2026-09-08T15:31:54-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Nashville, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=nashville",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/d651056b8e9c66d6.jpg",
+    "creative_id": "28528773006756670",
+    "spend": 68.44,
+    "impressions": 1909,
+    "link_clicks": 6,
+    "CPM": 35.85,
+    "link_CTR_pct": 0.314,
+    "link_CPC": 11.41,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.75,
+    "set_spend_share_pct": 32.67,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Nashville - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 11,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.79,
+    "Sep19_partial_impressions": 16,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/d651056b8e9c66d6.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "6"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "8"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "2"
+      },
+      {
+        "action_type": "comment",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "8"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "2"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_comment",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001107000660",
+    "name": "CP Metro - Nashville - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001104000660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-08T15:21:24-0400",
+    "updated_time": "2026-09-08T15:31:54-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Nashville, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=nashville",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/57594884e699c984.jpg",
+    "creative_id": "1722665188815366",
+    "spend": 5.98,
+    "impressions": 157,
+    "link_clicks": 0,
+    "CPM": 38.09,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.33,
+    "set_spend_share_pct": 2.85,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Nashville - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 10,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/57594884e699c984.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001108160660",
+    "name": "CP Metro - Phoenix - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001107290660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:21:34-0400",
+    "updated_time": "2026-09-08T15:31:53-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Phoenix, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=phoenix",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/5067a74c2b9ef6be.jpg",
+    "creative_id": "1334885638510004",
+    "spend": 37.37,
+    "impressions": 1081,
+    "link_clicks": 6,
+    "CPM": 34.57,
+    "link_CTR_pct": 0.555,
+    "link_CPC": 6.23,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.05,
+    "set_spend_share_pct": 47.85,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Phoenix - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/5067a74c2b9ef6be.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "6"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "7"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "7"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "8"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "2"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "8"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "2"
+      },
+      {
+        "action_type": "onsite_conversion.post_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001108830660",
+    "name": "CP Metro - Phoenix - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001107290660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:21:42-0400",
+    "updated_time": "2026-09-08T15:31:56-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Phoenix, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=phoenix",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/57b710111eb2e51a.jpg",
+    "creative_id": "2103257391076360",
+    "spend": 34.83,
+    "impressions": 846,
+    "link_clicks": 6,
+    "CPM": 41.17,
+    "link_CTR_pct": 0.709,
+    "link_CPC": 5.8,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 34.83,
+    "CPL_new": 34.83,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.91,
+    "set_spend_share_pct": 44.6,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Phoenix - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/57b710111eb2e51a.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "6"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001109840660",
+    "name": "CP Metro - Phoenix - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001107290660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:21:49-0400",
+    "updated_time": "2026-09-08T15:31:57-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Phoenix, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=phoenix",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/4f87919ac7ef1481.jpg",
+    "creative_id": "2207236860672812",
+    "spend": 5.9,
+    "impressions": 118,
+    "link_clicks": 0,
+    "CPM": 50.0,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.32,
+    "set_spend_share_pct": 7.55,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Phoenix - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/4f87919ac7ef1481.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001110560660",
+    "name": "CP Metro - Denver - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001109960660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:21:56-0400",
+    "updated_time": "2026-09-08T15:31:58-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Denver, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=denver",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/4cafccd1286ecb8c.jpg",
+    "creative_id": "3005025206514058",
+    "spend": 68.91,
+    "impressions": 1660,
+    "link_clicks": 9,
+    "CPM": 41.51,
+    "link_CTR_pct": 0.542,
+    "link_CPC": 7.66,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.78,
+    "set_spend_share_pct": 88.66,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Denver - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/4cafccd1286ecb8c.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "9"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "9"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "9"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "9"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "9"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001111970660",
+    "name": "CP Metro - Denver - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001109960660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:22:10-0400",
+    "updated_time": "2026-09-08T15:31:56-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Denver, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=denver",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/53e6398cce4baf64.jpg",
+    "creative_id": "28838963225716296",
+    "spend": 5.52,
+    "impressions": 139,
+    "link_clicks": 1,
+    "CPM": 39.71,
+    "link_CTR_pct": 0.719,
+    "link_CPC": 5.52,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.3,
+    "set_spend_share_pct": 7.1,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Denver - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/53e6398cce4baf64.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001111590660",
+    "name": "CP Metro - Denver - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001109960660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:22:03-0400",
+    "updated_time": "2026-09-08T15:31:55-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Denver, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=denver",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/f27b21bec8365603.jpg",
+    "creative_id": "1783780599607101",
+    "spend": 3.29,
+    "impressions": 121,
+    "link_clicks": 1,
+    "CPM": 27.19,
+    "link_CTR_pct": 0.826,
+    "link_CPC": 3.29,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.18,
+    "set_spend_share_pct": 4.23,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Denver - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/f27b21bec8365603.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001116790660",
+    "name": "CP Metro - Chicago - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001112050660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-08T15:22:35-0400",
+    "updated_time": "2026-09-08T15:31:58-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Chicago, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=chicago",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/a49409038d7ceecf.jpg",
+    "creative_id": "1390668946547306",
+    "spend": 165.06,
+    "impressions": 3353,
+    "link_clicks": 29,
+    "CPM": 49.23,
+    "link_CTR_pct": 0.865,
+    "link_CPC": 5.69,
+    "completed_saved": 6,
+    "new_acquisitions": 6,
+    "observed_starts": null,
+    "observed_sessions": 13,
+    "CPL_saved": 27.51,
+    "CPL_new": 27.51,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 9.05,
+    "set_spend_share_pct": 77.03,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Chicago - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 11,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 7.35,
+    "Sep19_partial_impressions": 122,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/a49409038d7ceecf.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "29"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "5"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "23"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "5"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "23"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "31"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "2"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "31"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "2"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "2"
+      },
+      {
+        "action_type": "lead",
+        "value": "5"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "5"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "5"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "5"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "2"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001113110660",
+    "name": "CP Metro - Chicago - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001112050660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-08T15:22:17-0400",
+    "updated_time": "2026-09-08T15:31:58-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Chicago, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=chicago",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/a65f3a9623ffcf91.jpg",
+    "creative_id": "1369974801886776",
+    "spend": 46.66,
+    "impressions": 784,
+    "link_clicks": 7,
+    "CPM": 59.52,
+    "link_CTR_pct": 0.893,
+    "link_CPC": 6.67,
+    "completed_saved": 3,
+    "new_acquisitions": 3,
+    "observed_starts": null,
+    "observed_sessions": 2,
+    "CPL_saved": 15.55,
+    "CPL_new": 15.55,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.56,
+    "set_spend_share_pct": 21.77,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Chicago - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 10,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-17",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.23,
+    "Sep19_partial_impressions": 5,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/a65f3a9623ffcf91.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "7"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "10"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "10"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001114910660",
+    "name": "CP Metro - Chicago - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001112050660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-08T15:22:25-0400",
+    "updated_time": "2026-09-08T15:31:58-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Chicago, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=chicago",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/404e39722507a8b1.jpg",
+    "creative_id": "988686276963838",
+    "spend": 2.57,
+    "impressions": 48,
+    "link_clicks": 1,
+    "CPM": 53.54,
+    "link_CTR_pct": 2.083,
+    "link_CPC": 2.57,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.14,
+    "set_spend_share_pct": 1.2,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Chicago - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 6,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-17",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/404e39722507a8b1.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001119990660",
+    "name": "CP Metro - Indianapolis - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001117230660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:22:43-0400",
+    "updated_time": "2026-09-08T15:32:00-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Indianapolis, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=indianapolis",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/e50fd2b7b5c3d04d.jpg",
+    "creative_id": "1446866040692980",
+    "spend": 39.04,
+    "impressions": 1248,
+    "link_clicks": 7,
+    "CPM": 31.28,
+    "link_CTR_pct": 0.561,
+    "link_CPC": 5.58,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.14,
+    "set_spend_share_pct": 48.99,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Indianapolis - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/e50fd2b7b5c3d04d.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "7"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001121000660",
+    "name": "CP Metro - Indianapolis - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001117230660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:22:57-0400",
+    "updated_time": "2026-09-08T15:31:59-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Indianapolis, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=indianapolis",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/e7787767bbbc4a8b.jpg",
+    "creative_id": "1607156317613766",
+    "spend": 35.48,
+    "impressions": 1089,
+    "link_clicks": 7,
+    "CPM": 32.58,
+    "link_CTR_pct": 0.643,
+    "link_CPC": 5.07,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.95,
+    "set_spend_share_pct": 44.52,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Indianapolis - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/e7787767bbbc4a8b.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "7"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "5"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "5"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "9"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "2"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "9"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "2"
+      },
+      {
+        "action_type": "onsite_conversion.post_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001120620660",
+    "name": "CP Metro - Indianapolis - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001117230660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:22:51-0400",
+    "updated_time": "2026-09-08T15:31:58-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Indianapolis, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=indianapolis",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/d4a5323aa0aa818b.jpg",
+    "creative_id": "2220212398540008",
+    "spend": 5.17,
+    "impressions": 153,
+    "link_clicks": 1,
+    "CPM": 33.79,
+    "link_CTR_pct": 0.654,
+    "link_CPC": 5.17,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.28,
+    "set_spend_share_pct": 6.49,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Indianapolis - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/d4a5323aa0aa818b.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001121780660",
+    "name": "CP Metro - Columbus - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001121210660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:06-0400",
+    "updated_time": "2026-09-08T15:31:59-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Columbus, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=columbus",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/0ecf3c94997c5182.jpg",
+    "creative_id": "4553432861534977",
+    "spend": 59.23,
+    "impressions": 1983,
+    "link_clicks": 14,
+    "CPM": 29.87,
+    "link_CTR_pct": 0.706,
+    "link_CPC": 4.23,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.25,
+    "set_spend_share_pct": 76.56,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Columbus - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/0ecf3c94997c5182.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "14"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "3"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "15"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "15"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "14"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "14"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "2"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001125660660",
+    "name": "CP Metro - Columbus - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001121210660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:23-0400",
+    "updated_time": "2026-09-08T15:31:58-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Columbus, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=columbus",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/7742d1c0dfdaa98f.jpg",
+    "creative_id": "1423011276402199",
+    "spend": 16.07,
+    "impressions": 443,
+    "link_clicks": 1,
+    "CPM": 36.28,
+    "link_CTR_pct": 0.226,
+    "link_CPC": 16.07,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 16.07,
+    "CPL_new": 16.07,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.88,
+    "set_spend_share_pct": 20.77,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Columbus - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/7742d1c0dfdaa98f.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001122580660",
+    "name": "CP Metro - Columbus - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001121210660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:14-0400",
+    "updated_time": "2026-09-08T15:31:59-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Columbus, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=columbus",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/97d1e30a5e7ae292.jpg",
+    "creative_id": "1390396262623683",
+    "spend": 2.06,
+    "impressions": 79,
+    "link_clicks": 0,
+    "CPM": 26.08,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.11,
+    "set_spend_share_pct": 2.66,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Columbus - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/97d1e30a5e7ae292.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001127550660",
+    "name": "CP Metro - Cleveland - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001126440660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:34-0400",
+    "updated_time": "2026-09-08T15:32:05-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Cleveland, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=cleveland",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/dab226b67fc5dfa1.jpg",
+    "creative_id": "1056783380473441",
+    "spend": 47.13,
+    "impressions": 994,
+    "link_clicks": 10,
+    "CPM": 47.41,
+    "link_CTR_pct": 1.006,
+    "link_CPC": 4.71,
+    "completed_saved": 3,
+    "new_acquisitions": 3,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 15.71,
+    "CPL_new": 15.71,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.59,
+    "set_spend_share_pct": 60.55,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Cleveland - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/dab226b67fc5dfa1.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "10"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "10"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "3"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "10"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "10"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "10"
+      },
+      {
+        "action_type": "lead",
+        "value": "3"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "3"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001128720660",
+    "name": "CP Metro - Cleveland - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001126440660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:42-0400",
+    "updated_time": "2026-09-08T15:39:17-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Cleveland, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=cleveland",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/09cd33a2944bd87f.jpg",
+    "creative_id": "1230615709231591",
+    "spend": 19.95,
+    "impressions": 430,
+    "link_clicks": 3,
+    "CPM": 46.4,
+    "link_CTR_pct": 0.698,
+    "link_CPC": 6.65,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.09,
+    "set_spend_share_pct": 25.63,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Cleveland - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/09cd33a2944bd87f.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "3"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "3"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "3"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001129240660",
+    "name": "CP Metro - Cleveland - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001126440660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:49-0400",
+    "updated_time": "2026-09-08T15:33:38-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Cleveland, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=cleveland",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/8c3cb0e3b50c7ccc.jpg",
+    "creative_id": "1071239192329654",
+    "spend": 10.76,
+    "impressions": 138,
+    "link_clicks": 0,
+    "CPM": 77.97,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.59,
+    "set_spend_share_pct": 13.82,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Cleveland - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/8c3cb0e3b50c7ccc.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001131640660",
+    "name": "CP Metro - Pittsburgh - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001129720660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:23:57-0400",
+    "updated_time": "2026-09-08T15:32:02-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Pittsburgh, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=pittsburgh",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/66f2a209c552a2e4.jpg",
+    "creative_id": "1425369666191392",
+    "spend": 53.85,
+    "impressions": 1458,
+    "link_clicks": 7,
+    "CPM": 36.93,
+    "link_CTR_pct": 0.48,
+    "link_CPC": 7.69,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 53.85,
+    "CPL_new": 53.85,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.95,
+    "set_spend_share_pct": 68.08,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Pittsburgh - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/66f2a209c552a2e4.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "7"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "7"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001139460660",
+    "name": "CP Metro - Pittsburgh - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001129720660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:24:14-0400",
+    "updated_time": "2026-09-08T15:32:17-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Pittsburgh, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=pittsburgh",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/5421eba67297f912.jpg",
+    "creative_id": "1995188781196729",
+    "spend": 22.04,
+    "impressions": 533,
+    "link_clicks": 4,
+    "CPM": 41.35,
+    "link_CTR_pct": 0.75,
+    "link_CPC": 5.51,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.21,
+    "set_spend_share_pct": 27.86,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Pittsburgh - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/5421eba67297f912.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "4"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "3"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "3"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "4"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "4"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001136920660",
+    "name": "CP Metro - Pittsburgh - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001129720660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:24:06-0400",
+    "updated_time": "2026-09-08T15:32:30-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Pittsburgh, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=pittsburgh",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/cbe05c00019b0c31.jpg",
+    "creative_id": "1511623134060297",
+    "spend": 3.21,
+    "impressions": 133,
+    "link_clicks": 1,
+    "CPM": 24.14,
+    "link_CTR_pct": 0.752,
+    "link_CPC": 3.21,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 3.21,
+    "CPL_new": 3.21,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.18,
+    "set_spend_share_pct": 4.06,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Pittsburgh - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/cbe05c00019b0c31.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001141330660",
+    "name": "CP Metro - Philadelphia - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001140100660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:24:25-0400",
+    "updated_time": "2026-09-08T15:32:03-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Philadelphia, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=philadelphia",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/bb9da84ecd9a30d3.jpg",
+    "creative_id": "2327896174413740",
+    "spend": 71.94,
+    "impressions": 1890,
+    "link_clicks": 18,
+    "CPM": 38.06,
+    "link_CTR_pct": 0.952,
+    "link_CPC": 4.0,
+    "completed_saved": 2,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 35.97,
+    "CPL_new": 71.94,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.95,
+    "set_spend_share_pct": 91.87,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Philadelphia - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/bb9da84ecd9a30d3.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "18"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "16"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "3"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "16"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "21"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "3"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "21"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "3"
+      },
+      {
+        "action_type": "onsite_conversion.post_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "2"
+      },
+      {
+        "action_type": "lead",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "3"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "3"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001144610660",
+    "name": "CP Metro - Philadelphia - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001140100660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:24:45-0400",
+    "updated_time": "2026-09-08T15:33:11-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Philadelphia, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=philadelphia",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/f024de9ee94be162.jpg",
+    "creative_id": "1647065870086697",
+    "spend": 4.19,
+    "impressions": 82,
+    "link_clicks": 0,
+    "CPM": 51.1,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.23,
+    "set_spend_share_pct": 5.35,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Philadelphia - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 3,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-10",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/f024de9ee94be162.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001142590660",
+    "name": "CP Metro - Philadelphia - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001140100660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:24:33-0400",
+    "updated_time": "2026-09-08T15:32:56-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Philadelphia, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=philadelphia",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/98bc1ac05916c507.jpg",
+    "creative_id": "1593041908755598",
+    "spend": 2.18,
+    "impressions": 60,
+    "link_clicks": 0,
+    "CPM": 36.33,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.12,
+    "set_spend_share_pct": 2.78,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Philadelphia - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/98bc1ac05916c507.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001146750660",
+    "name": "CP Metro - Minneapolis - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001144860660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:02-0400",
+    "updated_time": "2026-09-08T15:33:41-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Minneapolis, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=minneapolis",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/df869eda7414f8f5.jpg",
+    "creative_id": "1568986227488857",
+    "spend": 43.75,
+    "impressions": 1330,
+    "link_clicks": 9,
+    "CPM": 32.89,
+    "link_CTR_pct": 0.677,
+    "link_CPC": 4.86,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.4,
+    "set_spend_share_pct": 57.69,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Minneapolis - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/df869eda7414f8f5.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "9"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "9"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "9"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "9"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "9"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001145810660",
+    "name": "CP Metro - Minneapolis - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001144860660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:24:54-0400",
+    "updated_time": "2026-09-08T15:33:34-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Minneapolis, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=minneapolis",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/8ab39b83476f0e39.jpg",
+    "creative_id": "1617510686437949",
+    "spend": 26.73,
+    "impressions": 751,
+    "link_clicks": 3,
+    "CPM": 35.59,
+    "link_CTR_pct": 0.399,
+    "link_CPC": 8.91,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 26.73,
+    "CPL_new": 26.73,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.47,
+    "set_spend_share_pct": 35.25,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Minneapolis - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/8ab39b83476f0e39.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "3"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "3"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "3"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "3"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "3"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001148530660",
+    "name": "CP Metro - Minneapolis - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001144860660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:11-0400",
+    "updated_time": "2026-09-08T15:44:16-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Minneapolis, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=minneapolis",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/034c5586385b019c.jpg",
+    "creative_id": "1825728665538498",
+    "spend": 5.35,
+    "impressions": 122,
+    "link_clicks": 0,
+    "CPM": 43.85,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.29,
+    "set_spend_share_pct": 7.06,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Minneapolis - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/034c5586385b019c.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001149840660",
+    "name": "CP Metro - Richmond - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001148890660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:20-0400",
+    "updated_time": "2026-09-08T15:32:04-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Richmond, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=richmond",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/ba9b2883ef1094e5.jpg",
+    "creative_id": "1807871383991681",
+    "spend": 67.92,
+    "impressions": 2132,
+    "link_clicks": 11,
+    "CPM": 31.86,
+    "link_CTR_pct": 0.516,
+    "link_CPC": 6.17,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 33.96,
+    "CPL_new": 33.96,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.73,
+    "set_spend_share_pct": 89.13,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Richmond - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/ba9b2883ef1094e5.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "11"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "11"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "11"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "11"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "11"
+      },
+      {
+        "action_type": "lead",
+        "value": "2"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "2"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001152610660",
+    "name": "CP Metro - Richmond - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001148890660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:35-0400",
+    "updated_time": "2026-09-08T15:33:48-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Richmond, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=richmond",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/c4902dd5192f1288.jpg",
+    "creative_id": "2102043647365594",
+    "spend": 5.73,
+    "impressions": 177,
+    "link_clicks": 0,
+    "CPM": 32.37,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.31,
+    "set_spend_share_pct": 7.52,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Richmond - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/c4902dd5192f1288.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001151300660",
+    "name": "CP Metro - Richmond - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001148890660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:28-0400",
+    "updated_time": "2026-09-08T15:33:17-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Richmond, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=richmond",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/471fffb8bf000533.jpg",
+    "creative_id": "1458031086431348",
+    "spend": 2.55,
+    "impressions": 87,
+    "link_clicks": 0,
+    "CPM": 29.31,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.14,
+    "set_spend_share_pct": 3.35,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Richmond - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/471fffb8bf000533.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001154190660",
+    "name": "CP Metro - Las Vegas - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001152940660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:42-0400",
+    "updated_time": "2026-09-08T15:33:46-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Las Vegas, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=las-vegas",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/83ab321285bb02f7.jpg",
+    "creative_id": "1849694066412543",
+    "spend": 56.2,
+    "impressions": 1434,
+    "link_clicks": 6,
+    "CPM": 39.19,
+    "link_CTR_pct": 0.418,
+    "link_CPC": 9.37,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 56.2,
+    "CPL_new": 56.2,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 3.08,
+    "set_spend_share_pct": 70.79,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Las Vegas - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/83ab321285bb02f7.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "6"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "6"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "6"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001155840660",
+    "name": "CP Metro - Las Vegas - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001152940660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:53-0400",
+    "updated_time": "2026-09-08T15:34:12-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Las Vegas, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=las-vegas",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/7664bbbf39f0e7fe.jpg",
+    "creative_id": "1396459781897910",
+    "spend": 21.15,
+    "impressions": 624,
+    "link_clicks": 1,
+    "CPM": 33.89,
+    "link_CTR_pct": 0.16,
+    "link_CPC": 21.15,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 21.15,
+    "CPL_new": 21.15,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.16,
+    "set_spend_share_pct": 26.64,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Las Vegas - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/7664bbbf39f0e7fe.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001155540660",
+    "name": "CP Metro - Las Vegas - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001152940660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:25:48-0400",
+    "updated_time": "2026-09-08T15:34:00-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Las Vegas, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=las-vegas",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/83777d626a9bb4d8.jpg",
+    "creative_id": "1444763364218799",
+    "spend": 2.04,
+    "impressions": 54,
+    "link_clicks": 0,
+    "CPM": 37.78,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.11,
+    "set_spend_share_pct": 2.57,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Las Vegas - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/83777d626a9bb4d8.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001158780660",
+    "name": "CP Metro - Milwaukee - text-only - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001156410660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:26:01-0400",
+    "updated_time": "2026-09-08T15:34:06-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Milwaukee, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=milwaukee",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/cc16d86ade4b9d2d.jpg",
+    "creative_id": "5307488929477923",
+    "spend": 50.11,
+    "impressions": 1775,
+    "link_clicks": 15,
+    "CPM": 28.23,
+    "link_CTR_pct": 0.845,
+    "link_CPC": 3.34,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 25.05,
+    "CPL_new": 25.05,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 2.75,
+    "set_spend_share_pct": 62.72,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Milwaukee - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/cc16d86ade4b9d2d.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "15"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "12"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "12"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "15"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "15"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001161220660",
+    "name": "CP Metro - Milwaukee - ai-image - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001156410660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:26:15-0400",
+    "updated_time": "2026-09-08T15:34:17-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Milwaukee, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=milwaukee",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/3015a3ae9ab019ce.jpg",
+    "creative_id": "1841666657242462",
+    "spend": 27.41,
+    "impressions": 848,
+    "link_clicks": 5,
+    "CPM": 32.32,
+    "link_CTR_pct": 0.59,
+    "link_CPC": 5.48,
+    "completed_saved": 1,
+    "new_acquisitions": 1,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": 27.41,
+    "CPL_new": 27.41,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 1.5,
+    "set_spend_share_pct": 34.31,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Milwaukee - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 5,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-12",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/3015a3ae9ab019ce.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "5"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "2"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "6"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "5"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "5"
+      },
+      {
+        "action_type": "lead",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "1"
+      }
+    ],
+    "review_feedback": {}
+  },
+  {
+    "id": "120251001159800660",
+    "name": "CP Metro - Milwaukee - real-photo - repricing v1",
+    "campaign_id": "120251001083740660",
+    "adset_id": "120251001156410660",
+    "status": "ACTIVE",
+    "effective_status": "ADSET_PAUSED",
+    "created_time": "2026-09-08T15:26:08-0400",
+    "updated_time": "2026-09-08T15:34:26-0400",
+    "format": "static image",
+    "headline": "Compare building insurance rates",
+    "primary_text": "If you own a commercial property in Milwaukee, you might be overpaying on insurance.\n\nOne of our carriers is lowering commercial property insurance rates in the area. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/commercial-property-quote",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}&metro=milwaukee",
+    "form_version": "Property step",
+    "experiment_cell": "See property route; starts added Sep19, not backfilled",
+    "creative_variant": "",
+    "image": "images/745c71a62551eb23.jpg",
+    "creative_id": "942457428289449",
+    "spend": 2.37,
+    "impressions": 53,
+    "link_clicks": 0,
+    "CPM": 44.72,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Metro property",
+    "operating_window": "2026-09-08 to 2026-09-18",
+    "campaign_spend_share_pct": 0.13,
+    "set_spend_share_pct": 2.97,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "CP Metro - Milwaukee - $20 - Lead",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-08",
+    "last_observed_delivery_day": "2026-09-11",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/745c71a62551eb23.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": [],
+    "review_feedback": {}
+  }
+]

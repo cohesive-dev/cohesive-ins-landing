@@ -1,0 +1,143 @@
+{
+  "at_utc": "2026-09-19T19:26:46.752821+00:00",
+  "rows": [
+    {
+      "id": "120251080550890660",
+      "name": "CT Themes 20260913 | hvac",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "daily_budget": "12000",
+      "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251080550480660",
+      "name": "CT Themes 20260913 | painting",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "daily_budget": "12000",
+      "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251080550210660",
+      "name": "CT Themes 20260913 | tree",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "daily_budget": "10000",
+      "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251080550110660",
+      "name": "CT Themes 20260913 | roof",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "daily_budget": "10000",
+      "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251080550020660",
+      "name": "CT Themes 20260913 | remodel",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "daily_budget": "25000",
+      "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251080549940660",
+      "name": "CT Themes 20260913 | pool",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "daily_budget": "37000",
+      "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251073255950660",
+      "name": "CT Sprint 20260912",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120251001083740660",
+      "name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250714570810660",
+      "name": "Local Service Network - free leads (high-premium trades)",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250602165530660",
+      "name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250540492410660",
+      "name": "Commercial Property - form vs landing (2-cell)",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250513372720660",
+      "name": "Restaurants - Landing Page (Website Leads)",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250465734500660",
+      "name": "Religious - Landing Page (Website Leads)",
+      "status": "ACTIVE",
+      "effective_status": "ACTIVE",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250412284720660",
+      "name": "Contractors \u2014 Foxquilt (9 states)",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120250214453700660",
+      "name": "LRO / Building owners - leads",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120249822083780660",
+      "name": "Gate-free \u2192 Next - Website Leads (multi-industry)",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120249667362340660",
+      "name": "Form Fill Leads - NY (instant form)",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "objective": "OUTCOME_LEADS"
+    },
+    {
+      "id": "120249655386740660",
+      "name": "website ad - Leads",
+      "status": "PAUSED",
+      "effective_status": "PAUSED",
+      "objective": "OUTCOME_LEADS"
+    }
+  ]
+}

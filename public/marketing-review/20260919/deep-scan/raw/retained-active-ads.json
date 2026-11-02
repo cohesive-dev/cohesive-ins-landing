@@ -1,0 +1,672 @@
+[
+  {
+    "id": "120251182369630660",
+    "name": "CT Native Voice 20260918 | gc-rate_creep",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120250674343900660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-18T17:38:59-0400",
+    "updated_time": "2026-09-18T17:45:40-0400",
+    "format": "static image",
+    "headline": "Insurance for general contracting",
+    "primary_text": "if my general contracting insurance renewal comes back higher when i've had no claims, i'm not treating the new price as a done deal.\n\nthat's my cue to compare before renewal. not after the payment goes out.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/2a5dba82927c7340.jpg",
+    "creative_id": "1510371874146428",
+    "spend": 9.05,
+    "impressions": 144,
+    "link_clicks": 0,
+    "CPM": 62.85,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 0.07,
+    "set_spend_share_pct": 0.36,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "HV Contractors - LARGE BUSINESS (revenue $1M+, LargeBusinessLead) - all trades",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 1,
+    "first_observed_delivery_day": "2026-09-18",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 12.61,
+    "Sep19_partial_impressions": 135,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/2a5dba82927c7340.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": []
+  },
+  {
+    "id": "120251182364940660",
+    "name": "CT Native Voice 20260918 | gc-coverage_gap",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120250674343900660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-18T17:38:36-0400",
+    "updated_time": "2026-09-18T17:44:29-0400",
+    "format": "static image",
+    "headline": "Insurance for general contracting",
+    "primary_text": "note to self as a gc: a sub's insurance certificate in my inbox isn't proof their cover is still current.\n\ni'm checking the policy dates and confirming it's in force before the crew starts.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/d9db9b2145fa652a.jpg",
+    "creative_id": "1389573196664873",
+    "spend": 2.03,
+    "impressions": 45,
+    "link_clicks": 0,
+    "CPM": 45.11,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 0.02,
+    "set_spend_share_pct": 0.08,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "HV Contractors - LARGE BUSINESS (revenue $1M+, LargeBusinessLead) - all trades",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 1,
+    "first_observed_delivery_day": "2026-09-18",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 8.81,
+    "Sep19_partial_impressions": 151,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/d9db9b2145fa652a.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": []
+  },
+  {
+    "id": "120251054842280660",
+    "name": "2026-09-10 - remodeling-photo - rate comparison v1",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120251012009850660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-10T21:07:56-0400",
+    "updated_time": "2026-09-10T21:16:30-0400",
+    "format": "static image",
+    "headline": "Get a remodeler insurance quote",
+    "primary_text": "Remodelers do more than one trade.\n\nTell us your mix of carpentry, drywall, flooring and subcontracted work. We will shop general liability around the business you actually run. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/e88543c561c71870.jpg",
+    "creative_id": "1544064973709203",
+    "spend": 9.95,
+    "impressions": 67,
+    "link_clicks": 0,
+    "CPM": 148.51,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 0.08,
+    "set_spend_share_pct": 1.08,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "2026-09-09 - REMODELER - submitted LEAD test",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 7,
+    "first_observed_delivery_day": "2026-09-10",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/e88543c561c71870.jpg",
+    "meta_actions_unreconciled": [],
+    "meta_conversions_unreconciled": []
+  },
+  {
+    "id": "120251012015050660",
+    "name": "2026-09-09 - remodeler-text - submitted Lead",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120251012009850660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-09T00:36:10-0400",
+    "updated_time": "2026-09-09T00:54:31-0400",
+    "format": "static image",
+    "headline": "Get a remodeler insurance quote",
+    "primary_text": "Remodelers do more than one trade.\n\nTell us your mix of carpentry, drywall, flooring and subcontracted work. We will shop general liability around the business you actually run. Get a quote and see how much you could save.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/102b9ab852e10ed7.jpg",
+    "creative_id": "28668901789407940",
+    "spend": 915.25,
+    "impressions": 15695,
+    "link_clicks": 84,
+    "CPM": 58.31,
+    "link_CTR_pct": 0.535,
+    "link_CPC": 10.9,
+    "completed_saved": 7,
+    "new_acquisitions": 7,
+    "observed_starts": null,
+    "observed_sessions": 52,
+    "CPL_saved": 130.75,
+    "CPL_new": 130.75,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 7.28,
+    "set_spend_share_pct": 98.92,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "2026-09-09 - REMODELER - submitted LEAD test",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 10,
+    "first_observed_delivery_day": "2026-09-09",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 53.31,
+    "Sep19_partial_impressions": 778,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/102b9ab852e10ed7.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "84"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "2"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "8"
+      },
+      {
+        "action_type": "onsite_conversion.messaging_conversation_replied_7d",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "83"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "9"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "83"
+      },
+      {
+        "action_type": "onsite_conversion.total_messaging_connection",
+        "value": "1"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "93"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "9"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "93"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "9"
+      },
+      {
+        "action_type": "onsite_conversion.messaging_first_reply",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_save",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "8"
+      },
+      {
+        "action_type": "lead",
+        "value": "9"
+      },
+      {
+        "action_type": "onsite_conversion.messaging_conversation_started_7d",
+        "value": "1"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "9"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "9"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "2"
+      }
+    ]
+  },
+  {
+    "id": "120251012014290660",
+    "name": "2026-09-09 - roof-text - submitted Lead",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120251012010260660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-09T00:36:00-0400",
+    "updated_time": "2026-09-09T00:54:29-0400",
+    "format": "static image",
+    "headline": "Get a roofing insurance quote",
+    "primary_text": "Residential roofs, commercial jobs or both?\n\nTell us about your roofing work, payroll and subcontractors. We will shop your general liability across carriers. Get a quote and compare it with your current rate.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/7c0bc115fa4ce0bb.jpg",
+    "creative_id": "852087097894371",
+    "spend": 566.29,
+    "impressions": 12953,
+    "link_clicks": 74,
+    "CPM": 43.72,
+    "link_CTR_pct": 0.571,
+    "link_CPC": 7.65,
+    "completed_saved": 7,
+    "new_acquisitions": 7,
+    "observed_starts": null,
+    "observed_sessions": 32,
+    "CPL_saved": 80.9,
+    "CPL_new": 80.9,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 4.51,
+    "set_spend_share_pct": 96.94,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "2026-09-09 - ROOF - submitted LEAD test",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 10,
+    "first_observed_delivery_day": "2026-09-09",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 21.59,
+    "Sep19_partial_impressions": 475,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/7c0bc115fa4ce0bb.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "74"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "8"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "4"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "68"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "13"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "68"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "80"
+      },
+      {
+        "action_type": "like",
+        "value": "1"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "6"
+      },
+      {
+        "action_type": "comment",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "81"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "6"
+      },
+      {
+        "action_type": "post",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_comment",
+        "value": "1"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "4"
+      },
+      {
+        "action_type": "lead",
+        "value": "13"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "8"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "13"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "13"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "5"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LargeBusinessLead",
+        "value": "2"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "1"
+      }
+    ]
+  },
+  {
+    "id": "120251012013200660",
+    "name": "2026-09-09 - roof-photo - submitted Lead",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120251012010260660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-09-09T00:35:55-0400",
+    "updated_time": "2026-09-09T00:54:26-0400",
+    "format": "static image",
+    "headline": "Get a roofing insurance quote",
+    "primary_text": "Residential roofs, commercial jobs or both?\n\nTell us about your roofing work, payroll and subcontractors. We will shop your general liability across carriers. Get a quote and compare it with your current rate.",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/2e82cfed3329a9c7.jpg",
+    "creative_id": "2545972699227932",
+    "spend": 17.9,
+    "impressions": 228,
+    "link_clicks": 1,
+    "CPM": 78.51,
+    "link_CTR_pct": 0.439,
+    "link_CPC": 17.9,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": null,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 0.14,
+    "set_spend_share_pct": 3.06,
+    "completion_evidence": "Delivery without confirmed completion",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "2026-09-09 - ROOF - submitted LEAD test",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 4,
+    "first_observed_delivery_day": "2026-09-09",
+    "last_observed_delivery_day": "2026-09-14",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 0.0,
+    "Sep19_partial_impressions": 0,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/2e82cfed3329a9c7.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "1"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "2"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "1"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "1"
+      }
+    ],
+    "meta_conversions_unreconciled": []
+  },
+  {
+    "id": "120250674389360660",
+    "name": "LBL - pool_builder_callout",
+    "campaign_id": "120250602165530660",
+    "adset_id": "120250674343900660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "created_time": "2026-08-17T11:54:46-0400",
+    "updated_time": "2026-08-17T14:51:34-0400",
+    "format": "static image",
+    "headline": "GL for pool builders",
+    "primary_text": "Build in-ground pools? Carriers price pool construction thousands of dollars apart for the same work, and half of them decline it outright. We use AI to automatically shop the markets that actually want pool builders, with installation and construction declared properly so the policy covers what you build. What are you paying now?",
+    "description": "",
+    "CTA": "GET_QUOTE",
+    "destination": "https://www.cohesiveinsure.com/contractors",
+    "url_tags": "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_content={{ad.name}}&utm_term={{adset.name}}&ad_id={{ad.id}}&adset_id={{adset.id}}",
+    "form_version": "Legacy/site route; see destination",
+    "experiment_cell": "Not specified in ad URL",
+    "creative_variant": "",
+    "image": "images/6f81afd8161e413e.jpg",
+    "creative_id": "2382367342288587",
+    "spend": 1908.12,
+    "impressions": 46053,
+    "link_clicks": 339,
+    "CPM": 41.43,
+    "link_CTR_pct": 0.736,
+    "link_CPC": 5.63,
+    "completed_saved": 20,
+    "new_acquisitions": 20,
+    "observed_starts": null,
+    "observed_sessions": 53,
+    "CPL_saved": 95.41,
+    "CPL_new": 95.41,
+    "cost_per_observed_start": null,
+    "campaign_label": "Retained HIGH-VALUE",
+    "operating_window": "2026-08-13 to 2026-09-18",
+    "campaign_spend_share_pct": 15.19,
+    "set_spend_share_pct": 76.81,
+    "completion_evidence": "Confirmed completed intake",
+    "measurement_flags": "S: sessions only since Sep12 01:50 ET; F: starts not historically recorded; C: reconciled completed intakes, including returns",
+    "level": "AD",
+    "adset_name": "HV Contractors - LARGE BUSINESS (revenue $1M+, LargeBusinessLead) - all trades",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "days_live_observed_delivery_through_Sep18": 33,
+    "first_observed_delivery_day": "2026-08-17",
+    "last_observed_delivery_day": "2026-09-18",
+    "ever_delivered_asof_Sep19": true,
+    "Sep19_partial_spend": 2.65,
+    "Sep19_partial_impressions": 44,
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/deep-scan/images/6f81afd8161e413e.jpg",
+    "meta_actions_unreconciled": [
+      {
+        "action_type": "link_click",
+        "value": "339"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom",
+        "value": "27"
+      },
+      {
+        "action_type": "post_reaction",
+        "value": "19"
+      },
+      {
+        "action_type": "landing_page_view",
+        "value": "319"
+      },
+      {
+        "action_type": "onsite_web_lead",
+        "value": "25"
+      },
+      {
+        "action_type": "omni_landing_page_view",
+        "value": "319"
+      },
+      {
+        "action_type": "post_engagement",
+        "value": "370"
+      },
+      {
+        "action_type": "like",
+        "value": "4"
+      },
+      {
+        "action_type": "post_interaction_gross",
+        "value": "31"
+      },
+      {
+        "action_type": "comment",
+        "value": "3"
+      },
+      {
+        "action_type": "page_engagement",
+        "value": "374"
+      },
+      {
+        "action_type": "post_interaction_net",
+        "value": "31"
+      },
+      {
+        "action_type": "post",
+        "value": "5"
+      },
+      {
+        "action_type": "onsite_conversion.post_save",
+        "value": "4"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_comment",
+        "value": "3"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_save",
+        "value": "4"
+      },
+      {
+        "action_type": "onsite_conversion.post_net_like",
+        "value": "19"
+      },
+      {
+        "action_type": "lead",
+        "value": "25"
+      },
+      {
+        "action_type": "custom_event_actions_add_20_s_calls",
+        "value": "27"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_lead",
+        "value": "25"
+      },
+      {
+        "action_type": "offsite_lead_add_20_s_calls",
+        "value": "25"
+      }
+    ],
+    "meta_conversions_unreconciled": [
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LeadUrgentQuoted",
+        "value": "14"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.QualifiedLead",
+        "value": "5"
+      },
+      {
+        "action_type": "offsite_conversion.fb_pixel_custom.LargeBusinessLead",
+        "value": "8"
+      }
+    ]
+  }
+]

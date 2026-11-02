@@ -1,0 +1,487 @@
+import { findTradeMetroGrowthLink } from "@/lib/seo/trade-metro-research";
+import { GROWTH_BUNDLE } from "@/lib/guides/lead-bundle";
+import { metroLinksFor, poolLeadGuidePath } from "@/lib/seo/metro-pages";
+import { relatedServiceLinks } from "@/lib/seo/service-industries";
+import { TRADE_COVERAGE_RESOURCES } from "@/lib/guides/trade-coverage-resources";
+import { WC_NO_RESTAURANT_TEASER, WC_TRADE_TEASERS, wcTeaserAllowed } from "@/lib/guides/workers-comp-resources";
+import Link from "next/link";
+import RestaurantQuickQuote, { type RestaurantPageType } from "@/components/RestaurantQuickQuote";
+import ContractorQuoteForm from "@/components/ContractorQuoteForm";
+import CommercialPropertyForm from "@/components/CommercialPropertyForm";
+import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
+import type { PageContent } from "@/lib/seo/data";
+import { licenseLineForArea, PRIMARY_NPN } from "@/lib/licenses";
+import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164, PRODUCER_PATH, ORG_NAME, PRODUCER_NAME } from "@/lib/entity";
+import { TRADE_PRICES_AS_OF, tradePrice, tradePriceRow } from "@/lib/seo/trade-prices";
+import { spanishLinkFor } from "@/lib/es/pages";
+
+// Shared layout for the /insurance SEO pages (state pages + national vertical
+// pages). Server component; the only client island is the intake form.
+
+export default function SeoPage({
+  content,
+  eyebrow,
+  source,
+  areaServed,
+  formMode,
+  tradeLabel,
+  tradeSlug,
+  stateSlug,
+  metroSlug,
+  breadcrumbs,
+  resourceScopeLabel = "State resources checked",
+  operationsPrompt,
+  costHeading,
+  coverageHeading,
+  stateFactsHeading,
+  stateLinks,
+  stateLinksHeading,
+  relatedLinks,
+  relatedLinksHeading,
+  quoteHref,
+  restaurantPageType,
+}: {
+  content: PageContent;
+  eyebrow: string;
+  source: string;
+  areaServed: string;
+  // Restaurant, contractor and building-owner pages keep their own intake
+  // contracts while sharing the same crawlable editorial shell.
+  formMode: "restaurant" | "bar" | "contractor" | "property" | "church";
+  tradeLabel?: string;
+  tradeSlug?: string;
+  stateSlug?: string;
+  metroSlug?: string;
+  breadcrumbs?: { label: string; href: string }[];
+  resourceScopeLabel?: string;
+  operationsPrompt?: string;
+  costHeading: string;
+  coverageHeading: string;
+  stateFactsHeading?: string;
+  stateLinks?: { label: string; href: string }[];
+  stateLinksHeading?: string;
+  relatedLinks?: { label: string; href: string }[];
+  relatedLinksHeading?: string;
+  quoteHref?: string;
+  // Restaurant/bar pages: the page's own type, which pre-fills (editable) the short form's type select.
+  restaurantPageType?: RestaurantPageType;
+}) {
+  const stateLicense = licenseLineForArea(areaServed);
+  // Workers' comp teaser (2026-10-15): the trade's real WC policy + a link to its WC guide. Restaurant pages use the
+  // restaurant teaser (a sandwich shop and a buffet); catering, food-truck and bakery pages share the restaurant
+  // form but are not restaurants, so they get none. Never in the state-fund states or Texas.
+  const wcTeaser = formMode === "contractor" && tradeSlug ? WC_TRADE_TEASERS[tradeSlug]
+    : formMode === "restaurant" && !WC_NO_RESTAURANT_TEASER.includes(restaurantPageType?.slug ?? "") ? WC_TRADE_TEASERS.restaurant
+      : undefined;
+  const showWcTeaser = Boolean(wcTeaser) && wcTeaserAllowed(stateSlug, areaServed);
+  const localLinks = metroLinksFor(tradeSlug, stateSlug, metroSlug);
+  const growthLink = tradeSlug === "pool" && stateSlug && metroSlug
+    ? { href: poolLeadGuidePath({ state: stateSlug, city: metroSlug }), label: `How to find pool construction leads in ${areaServed}` }
+    : findTradeMetroGrowthLink(tradeSlug, stateSlug, metroSlug) ?? (tradeSlug === "cleaning" && stateSlug === "new-york" && !metroSlug
+      ? { href: "/guides/how-to-get-janitorial-leads-in-new-york-city", label: "How to get janitorial leads in New York City" }
+      : undefined);
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: content.faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
+
+  const agencyJsonLd = organizationJsonLd(areaServed);
+  // "En español" link to the matching Spanish page (lib/es/pages.ts), server-rendered in the header.
+  const spanish = spanishLinkFor({
+    tradeSlug: formMode === "contractor" ? tradeSlug : undefined,
+    restaurantSlug: formMode === "restaurant" ? restaurantPageType?.slug : undefined,
+    national: areaServed === "United States",
+  });
+
+  // "prices as of" only where this page actually carries a dated trade price row (trade-prices.ts).
+  const pagePrice = formMode === "contractor" && tradeSlug ? tradePrice(tradeSlug) : undefined;
+  const pricesAsOf = pagePrice && content.costRows.some((row) => row.coverage === tradePriceRow(pagePrice).coverage)
+    ? pagePrice.asOf ?? TRADE_PRICES_AS_OF
+    : undefined;
+  const examples = content.priceExamples;
+
+  const quoteCta = (
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+      <a
+        href="#quote"
+        className="inline-block text-center px-8 py-4 rounded-md bg-[#2040E7] text-white text-lg font-bold hover:bg-[#1A33B9] transition-colors"
+      >
+        Get my quote →
+      </a>
+      <p className="text-sm text-[#6B6D71]">
+        Prefer to talk? Call{" "}
+        <a href={`tel:${PHONE_E164}`} className="font-semibold text-[#2040E7]">
+          {PHONE_DISPLAY}
+        </a>
+      </p>
+    </div>
+  );
+
+  return (
+    <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(agencyJsonLd) }}
+      />
+
+      <header className="border-b border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+          <Link href="/">
+            <img
+              src="/logo-long.png"
+              alt="Cohesive"
+              className="h-7 sm:h-8 w-auto object-contain"
+            />
+          </Link>
+          {spanish && (
+            <Link href={spanish.href} hrefLang="es-US" lang="es" data-es-link="" className="rounded-full px-3 py-1 text-sm font-semibold text-[#2040E7] underline">
+              {spanish.label}
+            </Link>
+          )}
+        </div>
+      </header>
+
+      {breadcrumbs && <nav aria-label="Breadcrumb" className="max-w-6xl mx-auto px-4 sm:px-6 py-3 text-sm flex flex-wrap gap-x-4 gap-y-2">{breadcrumbs.map(b => <Link key={b.href} href={b.href} className="text-[#2040E7] underline">{b.label}</Link>)}</nav>}
+
+      {/* Hero - deliberately compact: the cost content is the point of the
+          page, so it should be visible without scrolling. */}
+      <section className="border-b border-[#EEF1FF] bg-[#F7F9FF]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 lg:py-7">
+          <div className="text-[11px] font-bold text-[#2040E7] tracking-[0.08em] uppercase mb-1.5">
+            {eyebrow}
+          </div>
+          <h1 className="text-2xl lg:text-3xl font-extrabold text-[#131517] leading-tight mb-2 max-w-3xl">
+            {content.heroH1}
+          </h1>
+          <p className="text-sm lg:text-base text-[#6B6D71] leading-relaxed max-w-2xl mb-1">
+            {content.heroSub}
+          </p>
+          {content.alsoCovers && (
+            <p className="text-xs text-[#6B6D71] max-w-2xl mb-4">
+              {content.alsoCovers}
+            </p>
+          )}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <a
+              href="#quote"
+              className="inline-block text-center px-6 py-2.5 rounded-md bg-[#2040E7] text-white text-base font-bold hover:bg-[#1A33B9] transition-colors"
+            >
+              Get my quote →
+            </a>
+            <p className="text-sm text-[#6B6D71]">
+              Prefer to talk? Call{" "}
+              <a
+                href={`tel:${PHONE_E164}`}
+                className="font-semibold text-[#2040E7]"
+              >
+                {PHONE_DISPLAY}
+              </a>
+            </p>
+          </div>
+          <p className="mt-3 text-xs text-[#6B6D71]">
+            {ORG_NAME} · licensed producer{" "}
+            <Link href={PRODUCER_PATH} className="underline hover:text-[#2040E7]">{PRODUCER_NAME}</Link>, NPN {PRIMARY_NPN}
+            {pricesAsOf && <> · prices as of {pricesAsOf}</>}
+          </p>
+        </div>
+      </section>
+
+      {/* Cost */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+        <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-4">
+          {costHeading}
+        </h2>
+        <div className="max-w-3xl space-y-4 mb-8">
+          {content.costNarrative.map((p) => (
+            <p
+              key={p.slice(0, 40)}
+              className="text-[15px] text-[#27455C] leading-relaxed"
+            >
+              {p}
+            </p>
+          ))}
+        </div>
+        {/* Real prices by size (roofer, 2026-10-22): revenue sits beside every price. */}
+        {examples && (
+          <div className="max-w-3xl mb-10 rounded-xl border border-blue-200 bg-[#F7F9FF] p-5">
+            <h3 className="text-lg font-extrabold text-[#131517] mb-3">{examples.heading}</h3>
+            {examples.table ? (
+              <>
+                <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white mb-3">
+                  <table className="w-full text-left text-sm min-w-[480px]">
+                    <thead>
+                      <tr className="bg-slate-50 text-[#27455C]">
+                        <th className="px-4 py-3 font-bold">Annual revenue</th>
+                        <th className="px-4 py-3 font-bold">Business</th>
+                        <th className="px-4 py-3 font-bold whitespace-nowrap">General liability</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {examples.items.filter((e) => e.revenue).map((e) => (
+                        <tr key={e.sentence} className="border-t border-slate-200">
+                          <td className="px-4 py-3 font-semibold text-[#131517] whitespace-nowrap">{e.revenue}</td>
+                          <td className="px-4 py-3 text-[#6B6D71]">{e.business}</td>
+                          <td className="px-4 py-3 whitespace-nowrap text-[#2040E7] font-bold">{e.price}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                {examples.items.filter((e) => !e.revenue).map((e) => (
+                  <p key={e.sentence} className="text-[15px] text-[#27455C] mb-3">{e.sentence}</p>
+                ))}
+              </>
+            ) : (
+              <ul className="space-y-2 mb-3">
+                {examples.items.map((e) => (
+                  <li key={e.sentence} className="flex gap-2.5 text-[15px] text-[#27455C]">
+                    <span className="text-[#2040E7] font-bold shrink-0">✓</span>
+                    {e.sentence}
+                  </li>
+                ))}
+              </ul>
+            )}
+            <p className="text-sm text-[#6B6D71] mb-4">{examples.note}</p>
+            <a href="#quote" className="inline-block font-bold text-[#2040E7] hover:underline">See what yours comes in at →</a>
+          </div>
+        )}
+
+        <div className="overflow-x-auto rounded-xl border border-slate-200 mb-3">
+          <table className="w-full text-left text-sm min-w-[560px]">
+            <thead>
+              <tr className="bg-slate-50 text-[#27455C]">
+                <th className="px-4 py-3 font-bold">Coverage</th>
+                <th className="px-4 py-3 font-bold whitespace-nowrap">
+                  Typical cost
+                </th>
+                <th className="px-4 py-3 font-bold">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {content.costRows.map((row) => (
+                <tr key={row.coverage} className="border-t border-slate-200">
+                  <td className="px-4 py-3 font-semibold text-[#131517]">
+                    {row.coverage}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap text-[#2040E7] font-bold">
+                    {row.range}
+                  </td>
+                  <td className="px-4 py-3 text-[#6B6D71]">{row.note}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-xs text-[#6B6D71] max-w-3xl">
+          {content.costDisclaimer ?? "Figures are estimates from published small-business premium medians and quotes we have run for similar businesses. Your premium depends on your operations. This is not a quote or an offer of insurance."}
+        </p>
+
+        <h3 className="text-lg font-extrabold text-[#131517] mt-10 mb-3">
+          What moves your price
+        </h3>
+        <ul className="max-w-3xl space-y-2">
+          {content.priceDrivers.map((d) => (
+            <li key={d} className="flex gap-2.5 text-[15px] text-[#27455C]">
+              <span className="text-[#2040E7] font-bold shrink-0">✓</span>
+              {d}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {/* Coverages */}
+      <section className="bg-slate-50 border-y border-slate-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-6">
+            {coverageHeading}
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {content.coverages.map((c) => (
+              <div
+                key={c.name}
+                className="rounded-xl border border-slate-200 bg-white p-5"
+              >
+                <div className="font-bold text-[#131517] mb-1.5">{c.name}</div>
+                <p className="text-sm text-[#6B6D71] leading-relaxed">
+                  {c.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* State facts */}
+      {content.stateFacts.length > 0 && stateFactsHeading && (
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-6">
+            {stateFactsHeading}
+          </h2>
+          {content.reviewedOn && <p className="mb-6 text-sm text-[#6B6D71]">{resourceScopeLabel} <time dateTime={content.reviewedOn}>{new Date(`${content.reviewedOn}T00:00:00Z`).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric", timeZone: "UTC" })}</time>. Confirm current requirements with the linked agencies.</p>}
+          <div className="max-w-3xl space-y-7">
+            {content.stateFacts.map((f) => (
+              <div key={f.title}>
+                <h3 className="text-lg font-extrabold text-[#131517] mb-1.5">
+                  {f.title}
+                </h3>
+                <p className="text-[15px] text-[#27455C] leading-relaxed">
+                  {f.body}
+                </p>
+                {f.source && <a href={f.source.href} className="mt-2 inline-block text-sm font-semibold text-[#2040E7] hover:underline">{f.source.label} →</a>}
+              </div>
+            ))}
+          </div>
+          <div className="mt-8">{quoteCta}</div>
+        </section>
+      )}
+
+      {localLinks.length > 0 && <section className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="text-xl font-bold mb-4">City insurance guides</h2><div className="flex flex-wrap gap-x-5 gap-y-3">{localLinks.map(link => <Link key={link.href} href={link.href} className="text-[#2040E7] underline">{link.label}</Link>)}</div></section>}
+
+      {/* FAQ */}
+      <section className="bg-slate-50 border-y border-slate-100">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-6">
+            Frequently asked questions
+          </h2>
+          <div className="max-w-3xl space-y-6">
+            {content.faqs.map((f) => (
+              <div key={f.q}>
+                <h3 className="font-bold text-[#131517] mb-1.5">{f.q}</h3>
+                <p className="text-[15px] text-[#27455C] leading-relaxed">
+                  {f.a}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Quote form. Restaurant/bar pages use the short form (2026-10-12); /restaurant keeps the deep intake. */}
+      <section
+        id="quote"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14 scroll-mt-6"
+      >
+        <div className="max-w-2xl mx-auto mb-2 text-center">
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-2">
+            Get your quote
+          </h2>
+          <p className="text-sm text-[#6B6D71]">
+            We know you&apos;re busy - we can get you a quote without needing
+            hours of your time.
+          </p>
+        </div>
+        {formMode === "church" ? (
+          <div className="mx-auto mt-8 max-w-xl rounded-xl border border-blue-200 bg-[#F7F9FF] p-6 text-center">
+            <p className="mb-4 text-sm leading-relaxed text-[#27455C]">
+              Answer only the questions that apply to your ministry and property. You can start without every document.
+            </p>
+            <a
+              href={quoteHref ?? "/religious?source=seo-church-national"}
+              className="inline-block rounded-md bg-[#2040E7] px-7 py-3 font-bold text-white transition-colors hover:bg-[#1A33B9]"
+            >
+              Continue to the church quote form →
+            </a>
+          </div>
+        ) : formMode === "contractor" ? (
+          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} askRevenue={tradeSlug === "roofer"} />
+        ) : formMode === "property" ? (
+          <CommercialPropertyForm embedded source={source} />
+        ) : (
+          <RestaurantQuickQuote source={source} mode={formMode} pageType={restaurantPageType} />
+        )}
+      </section>
+
+      {showWcTeaser && wcTeaser && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="font-bold text-[#131517]">{wcTeaser.heading}</h2>
+            {wcTeaser.sentences.map((sentence) => <p key={sentence} className="mt-2 text-sm text-[#6B6D71]">{sentence}</p>)}
+            <Link href={wcTeaser.href} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">{wcTeaser.label} →</Link>
+          </div>
+        </section>
+      )}
+      {/* Cross-links use route identity, never acquisition labels. */}
+      {relatedServiceLinks(tradeSlug, stateSlug).length > 0 && <section className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Match your insurance to the work you do</h2>{relatedServiceLinks(tradeSlug, stateSlug).map(link => <Link key={link.href} href={link.href} className="mt-3 block text-sm font-semibold text-[#2040E7] underline">{link.label} →</Link>)}</div></section>}
+      {formMode === "contractor" && SERVICE_INDUSTRIES.filter((industry) => tradeSlug === industry.insuranceSlug).map((industry) => (
+        <section key={industry.id} className="border-t border-slate-100"><div className="max-w-6xl mx-auto px-4 sm:px-6 py-8"><h2 className="font-bold">Starting a {industry.noun}?</h2><Link href={`/guides/${industry.slug}${stateSlug ? `-in-${stateSlug}` : ""}`} className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Explore the startup plan and state resources →</Link></div></section>
+      ))}
+      {(formMode === "restaurant" || formMode === "bar") && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="font-bold text-[#131517]">Opening a restaurant?</h2>
+            <p className="mt-2 text-sm text-[#6B6D71]">Plan the steps before your first service, from the opening budget to approvals and lease requirements.</p>
+            <Link href="/guides/how-to-open-a-restaurant" className="mt-3 inline-block text-sm font-semibold text-[#2040E7] hover:underline">Read the restaurant opening guide →</Link>
+            <Link href="/guides/restaurant-lease-insurance-requirements" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What your landlord&apos;s lease will ask for, with real examples →</Link>
+            {formMode === "restaurant" && <Link href="/guides/restaurant-insurance-cost" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What restaurant insurance costs: real policies and quotes →</Link>}
+            {formMode === "restaurant" && restaurantPageType?.slug === "coffee-shop" && <Link href="/guides/coffee-shop-insurance-cost" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What coffee shop insurance costs: real quotes →</Link>}
+            {formMode === "restaurant" && restaurantPageType?.slug === "bakery" && <Link href="/guides/bakery-insurance-cost" className="mt-3 block text-sm font-semibold text-[#2040E7] hover:underline">What bakery insurance costs: a real policy and a quote →</Link>}
+          </div>
+        </section>
+      )}
+      {relatedLinks && relatedLinks.length > 0 && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="text-sm font-bold text-[#27455C] uppercase tracking-wide mb-3">
+              {relatedLinksHeading ?? "Related pages"}
+            </h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+              {relatedLinks.map((l) => (
+                <a key={l.href} href={l.href} className="text-[#2040E7] hover:underline">
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      {stateLinks && stateLinks.length > 0 && (
+        <section className="border-t border-slate-100">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <h2 className="text-sm font-bold text-[#27455C] uppercase tracking-wide mb-3">
+              {stateLinksHeading ?? "More states"}
+            </h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm">
+              {stateLinks.map((l) => (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="text-[#2040E7] hover:underline"
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {formMode === "contractor" && <section className="border-t border-slate-100"><div className="mx-auto max-w-6xl px-4 py-8 sm:px-6"><h2 className="font-bold">Prepare and compare your insurance request</h2><Link href="/guides/contractor-certificate-of-insurance-before-starting-work" className="mt-3 block font-semibold text-[#2040E7] underline">Customer needs a COI before you start? →</Link><Link href="/guides/new-contractor-insurance-no-employees" className="mt-3 block font-semibold text-[#2040E7] underline">Starting a business or hiring only subcontractors? →</Link><Link href="/guides/contractor-insurance-real-quote-examples" className="mt-3 block font-semibold text-[#2040E7] underline">Read three real quote examples →</Link><Link href="/guides/contractor-workers-comp-insurance" className="mt-3 block font-semibold text-[#2040E7] underline">Need workers&apos; comp? What it covers and what we need to quote →</Link><Link href="/guides/contractor-insurance-quote-comparison" className="mt-3 inline-block font-semibold text-[#2040E7] underline">Use the contractor quote-comparison checklist →</Link>{TRADE_COVERAGE_RESOURCES.filter((guide) => [guide.insurancePath, ...(guide.relatedInsurancePaths ?? [])].some((path) => tradeSlug === path.split("/").pop())).map((guide) => <Link key={guide.slug} href={`/guides/${guide.slug}`} className="mt-3 block font-semibold text-[#2040E7] underline">{guide.title} →</Link>)}{tradeSlug === "cleaning" && <Link href="/guides/cleaning-insurance-customer-property-damage" className="mt-3 block font-semibold text-[#2040E7] underline">Does your policy cover damage to the property you clean? →</Link>}{tradeSlug === "pool" && <Link href="/guides/pool-construction-vs-maintenance-insurance" className="mt-3 block font-semibold text-[#2040E7] underline">Compare pool construction and maintenance operations →</Link>}{tradeSlug === "tree-service" && <Link href="/guides/tree-service-insurance-quote-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare tree heights, equipment and subcontractor details →</Link>}{tradeSlug === "general-contractor" && <Link href="/guides/general-contractor-subcontractor-insurance-checklist" className="mt-3 block font-semibold text-[#2040E7] underline">Prepare an all-subcontractor GC insurance request →</Link>}</div></section>}
+
+      <footer className="border-t border-slate-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
+          <span>Cohesive Insurance Services - licensed insurance agency</span>
+          {stateLicense && <span>{stateLicense}</span>}
+          <Link href="/insurance" className="hover:underline">
+            Insurance guides
+          </Link>
+          <a href="/privacy" className="hover:underline">
+            Privacy
+          </a>
+          <a href="/terms" className="hover:underline">
+            Terms
+          </a>
+        </div>
+      </footer>
+      {growthLink && <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6"><h2 className="text-2xl font-bold">Find customers as well as coverage</h2><p className="mt-3 max-w-3xl leading-7 text-slate-600">{GROWTH_BUNDLE.summary} Leads and jobs are not guaranteed.</p><a href={growthLink.href} className="mt-4 inline-block font-semibold text-[#2040E7] underline">{growthLink.label} →</a></section>}
+    </main>
+  );
+}

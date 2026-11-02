@@ -19,8 +19,8 @@ export default function DataDeletionPage() {
         <div className="text-[15px] leading-relaxed text-[#6B6D71] space-y-4">
           <p>
             If you would like Cohesive Insurance Services to delete the personal information we
-            hold about you — including information submitted through our website, Facebook or
-            Instagram lead forms, phone, text message, or email — you can request deletion at any
+            hold about you, including information submitted through our website, Facebook or
+            Instagram lead forms, phone, text message, or email, you can request deletion at any
             time.
           </p>
 

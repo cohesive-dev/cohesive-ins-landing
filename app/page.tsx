@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import Cal, { getCalApi } from "@calcom/embed-react";
+import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+import { filterTrades } from '@/lib/trade-search';
+
 import HeroParticles from "@/components/HeroParticles";
+import { attributionDetails, captureAttribution, type Attribution } from "@/lib/attribution";
+import { COST_GUIDE_LINKS, ROOFER_DISCOVERY_LINKS } from "@/lib/seo/outcome-priority-links";
+import Cal, { getCalApi } from "@calcom/embed-react";
+import Link from "next/link";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 
 const CAL_LINK = "https://cal.com/team/cohesive-insurance-services/quote";
 // The path cal.com's embed expects (everything after cal.com/).
@@ -119,7 +125,7 @@ function Navbar({ onOpenQuote }: { onOpenQuote: () => void }) {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-function TradeSelect({ options, value, onChange }: { options: string[]; value: string; onChange: (v: string) => void }) {
+function TradeSelect({ options, value, onChange, onRawChange }: { options: string[]; value: string; onChange: (v: string) => void; onRawChange: (v: string) => void }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const ref = useRef<HTMLDivElement>(null);
@@ -142,7 +148,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
     }
   }, [open]);
 
-  const filtered = options.filter((o) => o.toLowerCase().includes(query.trim().toLowerCase()));
+  const filtered = filterTrades(options.map(value => ({ value, label: value })), query).map(o => o.value);
 
   return (
     <div ref={ref} className="relative">
@@ -164,7 +170,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
               ref={searchRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => { setQuery(e.target.value); if (e.target.value) onRawChange(e.target.value); }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -186,7 +192,7 @@ function TradeSelect({ options, value, onChange }: { options: string[]; value: s
                 aria-selected={value === "Other"}
                 onClick={() => { onChange("Other"); setOpen(false); }}
                 className="px-3 py-2 text-sm cursor-pointer text-[#272A2D] hover:bg-[#2040E7]/10 hover:text-[#2040E7]">
-                No matches — use <span className="font-semibold">Other</span>
+                No matches, use <span className="font-semibold">Other</span>
               </li>
             ) : (
               filtered.map((opt) => {
@@ -236,6 +242,14 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
     "Carpentry", "Concrete & Masonry", "Drywall & Insulation", "Excavation & Grading", "Flooring",
     "Landscaping & Lawn Care", "Fencing", "Welding & Metal Fabrication", "Glass & Glazing", "Demolition",
     "Solar Installation", "Pest Control", "Janitorial & Cleaning", "Locksmith", "Handyman Services",
+    "Tree Service & Trimming", "Stump Grinding", "Remodeling & Renovation", "New Home Construction", "Framing",
+    "Cabinetry & Finish Carpentry", "Foundation Contractor", "Paving & Asphalt", "Siding & Decking", "Gutter Installation & Cleaning",
+    "Door & Window Installation", "Garage Door Installation", "Plastering & Stucco", "Tile, Stone & Marble Installation", "Countertop Installation",
+    "Insulation", "Sheet Metal", "Steel & Metal Erection", "Fire Sprinkler Installation", "Low Voltage & Security Systems",
+    "Refrigeration", "Appliance Installation", "Septic Tank Installation", "Water & Sewer Line Contractor", "Irrigation & Sprinkler Systems",
+    "Pressure Washing & Exterior Cleaning", "Roof Cleaning", "Window Cleaning", "Carpet Cleaning", "House Cleaning",
+    "Chimney Sweep & Cleaning", "Debris Removal & Junk Hauling", "Snow Removal & Plowing", "Pool Construction", "Pool Cleaning & Service",
+    "Solar Panel Cleaning", "Water & Fire Restoration", "Waterproofing", "Sign Installation", "Home Inspection",
     "Auto Repair", "Auto Body & Detailing", "Towing", "Courier & Delivery", "Moving & Storage",
     "Manufacturing", "Wholesale & Distribution", "Warehousing", "Grocery & Convenience", "Bakery & Catering",
     "Coffee Shop & Café", "Salon & Barbershop", "Spa & Wellness", "Gym & Fitness Studio", "Daycare & Childcare",
@@ -245,10 +259,24 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const rawTradeRef = useRef('');
   const [businessType, setBusinessType] = useState("");
   const [zip, setZip] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [contactError, setContactError] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const attributionRef = useRef<Attribution>({});
+  useEffect(() => { attributionRef.current = captureAttribution(); }, []);
+  const sourceDetails = useCallback(() => {
+    const attr = { ...captureAttribution(), ...attributionRef.current };
+    return [
+      ...attributionDetails(attr),
+      ...(rawTradeRef.current ? [{ label: "Primary trade search text", value: rawTradeRef.current }] : []),
+      { label: "Submission page", value: window.location.pathname },
+      ...(attr.referrer ? [{ label: "Referrer", value: attr.referrer }] : []),
+    ];
+  }, []);
 
   // ── Partial-fill capture ──────────────────────────────────────────────────
   // Once the visitor has typed a usable contact handle, autosave silently in
@@ -269,7 +297,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
     const timer = setTimeout(() => {
       const f = fieldsRef.current;
       if (submittedRef.current || !hasContactHandle(f)) return;
-      const payload = JSON.stringify({ ...f, partial: true });
+      const payload = JSON.stringify({ ...f, source: "website-form", details: sourceDetails(), partial: true });
       if (payload === lastAutosaveRef.current) return;
       lastAutosaveRef.current = payload;
       void fetch("/api/intake", {
@@ -280,7 +308,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       }).catch(() => { });
     }, 2500);
     return () => clearTimeout(timer);
-  }, [name, email, phone, businessType, zip, submitted]);
+  }, [name, email, phone, businessType, zip, submitted, sourceDetails]);
 
   useEffect(() => {
     // One abandonment alert per browser session, across tab switches too —
@@ -296,7 +324,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       // otherwise a later exit event gets another chance.
       const queued = navigator.sendBeacon(
         "/api/intake",
-        new Blob([JSON.stringify({ ...f, partial: true, final: true })], {
+        new Blob([JSON.stringify({ ...f, source: "website-form", details: sourceDetails(), partial: true, final: true })], {
           type: "application/json",
         }),
       );
@@ -314,29 +342,43 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       window.removeEventListener("pagehide", flush);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, []);
+  }, [sourceDetails]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Re-entry guard: a double-click must not double-POST or double-fire the
-    // Meta Pixel Lead event.
     if (submittedRef.current) return;
-    // Minimum to work a lead: at least one way to reach them.
     if (!hasContactHandle({ email, phone })) {
       setContactError(true);
       return;
     }
     submittedRef.current = true;
-    // Fire-and-forget: record the submission if we can, but never block the
-    // customer or surface an error — they always see the confirmation.
-    void fetch("/api/intake", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, phone, businessType, zip }),
-    }).catch(() => { });
-    // Meta Pixel standard Lead event — lets ad campaigns optimize on form fills.
-    (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead");
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const response = await fetch("/api/intake", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone, businessType, zip, source: "website-form", details: sourceDetails() }),
+      });
+      const result = await response.json();
+      if (!response.ok || result?.ok !== true ||
+        (result.crm !== "sent" && result.notification !== "sent")) {
+        throw new Error("Intake was not accepted");
+      }
+      // Email fallback is an accepted request, but not a confirmed CRM save.
+      // Keep it out of the browser Lead count until the CRM has saved it.
+      if (result.crm === "sent" && result.conversion?.eligible !== false) {
+        try {
+          (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead");
+        } catch { /* Analytics failure must not turn a saved inquiry into a retry. */ }
+      }
+      setSubmitted(true);
+    } catch {
+      submittedRef.current = false;
+      setSubmitError("We could not confirm your request. Please try again or call (929) 594-5450.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -367,6 +409,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
           <input required type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Jane Smith"
             className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
         </label>
+        {submitError && <p role="alert" className="text-sm text-red-600 text-left">{submitError}</p>}
         <div className="flex flex-col sm:flex-row gap-3">
           <label className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Email <span className="font-normal text-[#6B6D71]">(email or phone required)</span></span>
@@ -395,7 +438,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="flex-1 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Type of business</span>
-            <TradeSelect options={trades} value={businessType} onChange={setBusinessType} />
+            <TradeSelect options={trades} value={businessType} onChange={setBusinessType} onRawChange={v => { rawTradeRef.current = v; }} />
           </div>
           <label className="sm:w-36 text-left">
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">ZIP code</span>
@@ -404,8 +447,8 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
               className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
           </label>
           <div className="flex items-end">
-            <button type="submit" className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors whitespace-nowrap">
-              Get a Quote
+            <button type="submit" disabled={submitting} className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors whitespace-nowrap">
+              {submitting ? "Sending..." : "Get a Quote"}
             </button>
           </div>
         </div>
@@ -415,6 +458,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
         {" "}or call{" "}
         <a href="tel:+19295945450" className="text-[#2040E7] font-semibold hover:underline">+1 (929) 594-5450</a>
       </p>
+      <PartialCaptureDisclosure />
     </form>
   );
 }
@@ -466,7 +510,7 @@ function CalEmbed({ prefill, onBack, layout = "month_view" }: { prefill?: Prefil
           <img src="/logo.png" alt="Cohesive" className="h-8 w-auto object-contain brightness-0 invert" />
           <div className="text-left">
             <div className="text-white font-bold text-sm leading-tight">Schedule a phone call</div>
-            <div className="text-white/70 text-xs">Pick a time — we&apos;ll bring the quote.</div>
+            <div className="text-white/70 text-xs">Pick a time, we&apos;ll bring the quote.</div>
           </div>
         </div>
         <button
@@ -624,8 +668,9 @@ function Industries() {
       { title: "Trucking & Logistics", image: "/industries/trucking-logistics.jpg", desc: "Fleet, cargo, and liability coverage for owner-operators and small fleets.", ratio: 0.25 },
     ],
     [
-      { title: "Retail", image: "/industries/retail.jpg", desc: "Property, liability, and business income coverage for storefronts and retail teams.", ratio: 0.55 },
-      { title: "Garages", image: "/industries/garages.jpg", desc: "Garagekeepers liability and equipment coverage for auto repair shops.", ratio: 0.45 },
+      { title: "Retail", image: "/industries/retail.jpg", desc: "Property, liability, and business income coverage for storefronts and retail teams.", ratio: 0.4 },
+      { title: "Churches & Worship", image: "/industries/churches.jpg", desc: "General liability and property coverage for churches, synagogues, mosques, and temples.", ratio: 0.32 },
+      { title: "Garages", image: "/industries/garages.jpg", desc: "Garagekeepers liability and equipment coverage for auto repair shops.", ratio: 0.28 },
     ],
   ];
 
@@ -1266,18 +1311,33 @@ function Footer() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">
           {/* Industries */}
-          <div className="md:col-start-4">
+          <div className="md:col-start-3">
             <h4 className="text-white font-semibold text-sm mb-4">Industries</h4>
             <ul className="space-y-2 text-sm">
               {/* Instant-quote splash pages (Next appetite verticals) */}
               {[
-                { label: "Restaurants & Food Service", href: "/restaurants" },
+                { label: "Restaurants & Food Service", href: "/insurance/restaurant" },
+                { label: "Restaurant Insurance in New York", href: "/insurance/restaurant/new-york" },
                 { label: "Cleaning & Janitorial", href: "/cleaning" },
                 { label: "Salons & Beauty", href: "/beauty" },
                 { label: "Fitness & Studios", href: "/fitness" },
                 { label: "Retail Stores", href: "/retail" },
                 { label: "Landscaping & Lawn Care", href: "/landscaping" },
                 { label: "Painting", href: "/painting" },
+                { label: "Churches & Houses of Worship", href: "/religious" },
+              ].map((l) => (
+                <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Cost guides (2026-10-16): the homepage is the most-crawled page, so these new guides are one hop away. */}
+          <div>
+            <h4 className="text-white font-semibold text-sm mb-4">Cost guides</h4>
+            <ul className="space-y-2 text-sm">
+              {[
+                ...COST_GUIDE_LINKS.map((l) => ({ label: l.short, href: l.href })),
+                { label: "Church insurance", href: "/insurance/church" },
               ].map((l) => (
                 <li key={l.label}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
               ))}
@@ -1300,6 +1360,10 @@ function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 { label: "How It Works", href: "#how-it-works" },
+                { label: "Business Startup Guides", href: "/guides" },
+                { label: "Insurance Guides", href: "/insurance" },
+                { label: "En español: contratistas", href: "/es/seguro/contratistas" },
+                { label: "En español: restaurantes mexicanos", href: "/es/seguro/restaurantes-mexicanos" },
                 { label: "Carriers", href: "#carriers" },
                 { label: "Contact", href: "tel:+19295945450" },
               ].map((l) => (
@@ -1308,6 +1372,24 @@ function Footer() {
             </ul>
           </div>
         </div>
+
+        {/* Roofer state pages Google has not indexed yet (2026-10-24), one hop from the homepage. */}
+        <nav aria-label="Roofer insurance by state" className="md:ml-[33.333%] mb-10 text-sm">
+          <h4 className="text-white font-semibold text-sm mb-3">
+            <a href="/insurance/roofer" className="hover:text-white transition-colors">Roofer insurance</a> by state
+          </h4>
+          <ul className="flex flex-wrap gap-x-4 gap-y-2">
+            {ROOFER_DISCOVERY_LINKS.map((l) => (
+              <li key={l.href}><a href={l.href} className="hover:text-white transition-colors">{l.label}</a></li>
+            ))}
+            <li><a href="/es/seguro/techadores" hrefLang="es-US" lang="es" className="hover:text-white transition-colors">Techadores (en español)</a></li>
+          </ul>
+        </nav>
+
+        <p className="md:ml-[33.333%] mb-10 text-sm">
+          <Link href="/insurance/tree-service" className="font-semibold text-white hover:underline">Tree service insurance</Link>
+          {" "}has a real bound price, tree-removal questions, height restrictions and quote details.
+        </p>
 
         <div className="pt-8 md:w-1/2 md:ml-auto">
           <div className="h-px w-full bg-white/20 mb-6" />

@@ -1,0 +1,169 @@
+day_ET,vertical,sessions_observed,form_starts_observed,completed_submissions,new_acquisitions,native_completions,coverage
+2026-09-05,Pool,0,0,0,0,0,Campaign not launched
+2026-09-05,Tree,0,0,0,0,0,Campaign not launched
+2026-09-05,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-05,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-05,Main property,,,9,9,0,Property starts not instrumented
+2026-09-05,Retained HIGH-VALUE,,,2,2,0,No telemetry before Sep12
+2026-09-05,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-05,Painting,0,0,0,0,0,Campaign not launched
+2026-09-05,Metro property,,,0,0,0,Property starts not instrumented
+2026-09-05,Other paid campaigns,,,0,0,0,No telemetry before Sep12
+2026-09-05,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-05,"Website, no paid attribution",,,2,2,0,No telemetry before Sep12
+2026-09-06,Pool,0,0,0,0,0,Campaign not launched
+2026-09-06,Tree,0,0,0,0,0,Campaign not launched
+2026-09-06,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-06,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-06,Main property,,,14,14,0,Property starts not instrumented
+2026-09-06,Retained HIGH-VALUE,,,3,3,0,No telemetry before Sep12
+2026-09-06,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-06,Painting,0,0,0,0,0,Campaign not launched
+2026-09-06,Metro property,,,0,0,0,Property starts not instrumented
+2026-09-06,Other paid campaigns,,,2,2,2,No telemetry before Sep12
+2026-09-06,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-06,"Website, no paid attribution",,,0,0,0,No telemetry before Sep12
+2026-09-07,Pool,0,0,0,0,0,Campaign not launched
+2026-09-07,Tree,0,0,0,0,0,Campaign not launched
+2026-09-07,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-07,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-07,Main property,,,11,11,0,Property starts not instrumented
+2026-09-07,Retained HIGH-VALUE,,,5,5,0,No telemetry before Sep12
+2026-09-07,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-07,Painting,0,0,0,0,0,Campaign not launched
+2026-09-07,Metro property,,,0,0,0,Property starts not instrumented
+2026-09-07,Other paid campaigns,,,2,2,2,No telemetry before Sep12
+2026-09-07,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-07,"Website, no paid attribution",,,1,1,0,No telemetry before Sep12
+2026-09-08,Pool,0,0,0,0,0,Campaign not launched
+2026-09-08,Tree,0,0,0,0,0,Campaign not launched
+2026-09-08,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-08,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-08,Main property,,,9,9,0,Property starts not instrumented
+2026-09-08,Retained HIGH-VALUE,,,0,0,0,No telemetry before Sep12
+2026-09-08,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-08,Painting,0,0,0,0,0,Campaign not launched
+2026-09-08,Metro property,,,7,5,0,Property starts not instrumented
+2026-09-08,Other paid campaigns,,,3,3,3,No telemetry before Sep12
+2026-09-08,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-08,"Website, no paid attribution",,,2,2,0,No telemetry before Sep12
+2026-09-09,Pool,0,0,0,0,0,Campaign not launched
+2026-09-09,Tree,0,0,0,0,0,Campaign not launched
+2026-09-09,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-09,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-09,Main property,,,6,6,0,Property starts not instrumented
+2026-09-09,Retained HIGH-VALUE,,,3,2,0,No telemetry before Sep12
+2026-09-09,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-09,Painting,0,0,0,0,0,Campaign not launched
+2026-09-09,Metro property,,,9,9,0,Property starts not instrumented
+2026-09-09,Other paid campaigns,,,0,0,0,No telemetry before Sep12
+2026-09-09,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-09,"Website, no paid attribution",,,1,1,0,No telemetry before Sep12
+2026-09-10,Pool,0,0,0,0,0,Campaign not launched
+2026-09-10,Tree,0,0,0,0,0,Campaign not launched
+2026-09-10,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-10,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-10,Main property,,,9,8,0,Property starts not instrumented
+2026-09-10,Retained HIGH-VALUE,,,4,4,0,No telemetry before Sep12
+2026-09-10,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-10,Painting,0,0,0,0,0,Campaign not launched
+2026-09-10,Metro property,,,5,5,0,Property starts not instrumented
+2026-09-10,Other paid campaigns,,,0,0,0,No telemetry before Sep12
+2026-09-10,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-10,"Website, no paid attribution",,,2,2,0,No telemetry before Sep12
+2026-09-11,Pool,0,0,0,0,0,Campaign not launched
+2026-09-11,Tree,0,0,0,0,0,Campaign not launched
+2026-09-11,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-11,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-11,Main property,,,7,7,0,Property starts not instrumented
+2026-09-11,Retained HIGH-VALUE,,,2,2,0,No telemetry before Sep12
+2026-09-11,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-11,Painting,0,0,0,0,0,Campaign not launched
+2026-09-11,Metro property,,,7,7,0,Property starts not instrumented
+2026-09-11,Other paid campaigns,,,0,0,0,No telemetry before Sep12
+2026-09-11,"Paid signal, no campaign join",,,0,0,0,No telemetry before Sep12
+2026-09-11,"Website, no paid attribution",,,4,4,0,No telemetry before Sep12
+2026-09-12,Pool,0,0,0,0,0,Campaign not launched
+2026-09-12,Tree,0,0,0,0,0,Campaign not launched
+2026-09-12,Remodeling / GC,0,0,0,0,0,Campaign not launched
+2026-09-12,Roofing,0,0,0,0,0,Campaign not launched
+2026-09-12,Main property,9,0,7,7,0,Property starts not instrumented
+2026-09-12,Retained HIGH-VALUE,13,0,4,4,0,Partial tracking start Sep12
+2026-09-12,HVAC,0,0,0,0,0,Campaign not launched
+2026-09-12,Painting,0,0,0,0,0,Campaign not launched
+2026-09-12,Metro property,0,0,2,2,0,Property starts not instrumented
+2026-09-12,Other paid campaigns,128,1,21,14,10,Partial tracking start Sep12
+2026-09-12,"Paid signal, no campaign join",0,0,0,0,0,Partial tracking start Sep12
+2026-09-12,"Website, no paid attribution",0,0,1,1,0,Partial tracking start Sep12
+2026-09-13,Pool,82,5,4,4,0,Observed first-party sessions; not certified humans
+2026-09-13,Tree,26,4,2,2,0,Observed first-party sessions; not certified humans
+2026-09-13,Remodeling / GC,37,4,3,3,0,Observed first-party sessions; not certified humans
+2026-09-13,Roofing,13,1,0,0,0,Observed first-party sessions; not certified humans
+2026-09-13,Main property,38,0,7,6,0,Property starts not instrumented
+2026-09-13,Retained HIGH-VALUE,50,0,1,1,0,Observed attribution only; retained uses mixed/legacy forms
+2026-09-13,HVAC,16,1,1,1,0,Observed first-party sessions; not certified humans
+2026-09-13,Painting,5,1,0,0,0,Observed first-party sessions; not certified humans
+2026-09-13,Metro property,3,0,1,1,0,Property starts not instrumented
+2026-09-13,Other paid campaigns,3,1,0,0,0,Observed first-party sessions; not certified humans
+2026-09-13,"Paid signal, no campaign join",0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-13,"Website, no paid attribution",0,0,3,3,0,Observed first-party sessions; not certified humans
+2026-09-14,Pool,55,6,4,4,0,Observed first-party sessions; not certified humans
+2026-09-14,Tree,21,5,3,3,0,Observed first-party sessions; not certified humans
+2026-09-14,Remodeling / GC,42,10,7,7,0,Observed first-party sessions; not certified humans
+2026-09-14,Roofing,6,2,0,0,0,Observed first-party sessions; not certified humans
+2026-09-14,Main property,40,0,7,7,0,Property starts not instrumented
+2026-09-14,Retained HIGH-VALUE,35,0,2,2,0,Observed attribution only; retained uses mixed/legacy forms
+2026-09-14,HVAC,23,3,2,2,0,Observed first-party sessions; not certified humans
+2026-09-14,Painting,9,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-14,Metro property,7,0,1,1,0,Property starts not instrumented
+2026-09-14,Other paid campaigns,0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-14,"Paid signal, no campaign join",0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-14,"Website, no paid attribution",0,0,6,6,0,Observed first-party sessions; not certified humans
+2026-09-15,Pool,33,2,1,1,0,Observed first-party sessions; not certified humans
+2026-09-15,Tree,26,5,2,2,0,Observed first-party sessions; not certified humans
+2026-09-15,Remodeling / GC,53,6,5,5,0,Observed first-party sessions; not certified humans
+2026-09-15,Roofing,13,2,1,1,0,Observed first-party sessions; not certified humans
+2026-09-15,Main property,41,0,5,5,0,Property starts not instrumented
+2026-09-15,Retained HIGH-VALUE,42,0,3,3,0,Observed attribution only; retained uses mixed/legacy forms
+2026-09-15,HVAC,12,2,1,1,0,Observed first-party sessions; not certified humans
+2026-09-15,Painting,19,3,3,3,0,Observed first-party sessions; not certified humans
+2026-09-15,Metro property,4,0,1,1,0,Property starts not instrumented
+2026-09-15,Other paid campaigns,0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-15,"Paid signal, no campaign join",0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-15,"Website, no paid attribution",0,0,6,6,0,Observed first-party sessions; not certified humans
+2026-09-16,Pool,34,1,1,1,0,Observed first-party sessions; not certified humans
+2026-09-16,Tree,15,3,2,2,0,Observed first-party sessions; not certified humans
+2026-09-16,Remodeling / GC,36,3,1,1,0,Observed first-party sessions; not certified humans
+2026-09-16,Roofing,21,1,0,0,0,Observed first-party sessions; not certified humans
+2026-09-16,Main property,47,0,9,9,0,Property starts not instrumented
+2026-09-16,Retained HIGH-VALUE,55,0,1,1,0,Observed attribution only; retained uses mixed/legacy forms
+2026-09-16,HVAC,7,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-16,Painting,22,3,1,1,0,Observed first-party sessions; not certified humans
+2026-09-16,Metro property,7,0,1,1,0,Property starts not instrumented
+2026-09-16,Other paid campaigns,0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-16,"Paid signal, no campaign join",0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-16,"Website, no paid attribution",0,0,1,1,0,Observed first-party sessions; not certified humans
+2026-09-17,Pool,33,2,1,0,0,Observed first-party sessions; not certified humans
+2026-09-17,Tree,8,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-17,Remodeling / GC,36,6,4,4,0,Observed first-party sessions; not certified humans
+2026-09-17,Roofing,18,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-17,Main property,45,0,8,8,0,Property starts not instrumented
+2026-09-17,Retained HIGH-VALUE,38,0,1,1,0,Observed attribution only; retained uses mixed/legacy forms
+2026-09-17,HVAC,11,1,1,1,0,Observed first-party sessions; not certified humans
+2026-09-17,Painting,10,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-17,Metro property,3,0,0,0,0,Property starts not instrumented
+2026-09-17,Other paid campaigns,0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-17,"Paid signal, no campaign join",0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-17,"Website, no paid attribution",0,0,6,6,0,Observed first-party sessions; not certified humans
+2026-09-18,Pool,43,3,0,0,0,Observed first-party sessions; not certified humans
+2026-09-18,Tree,21,3,2,1,0,Observed first-party sessions; not certified humans
+2026-09-18,Remodeling / GC,30,7,5,5,0,Observed first-party sessions; not certified humans
+2026-09-18,Roofing,84,7,5,5,0,Observed first-party sessions; not certified humans
+2026-09-18,Main property,44,0,4,4,0,Property starts not instrumented
+2026-09-18,Retained HIGH-VALUE,28,0,0,0,0,Observed attribution only; retained uses mixed/legacy forms
+2026-09-18,HVAC,20,1,0,0,0,Observed first-party sessions; not certified humans
+2026-09-18,Painting,10,2,0,0,0,Observed first-party sessions; not certified humans
+2026-09-18,Metro property,6,0,0,0,0,Property starts not instrumented
+2026-09-18,Other paid campaigns,0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-18,"Paid signal, no campaign join",0,0,0,0,0,Observed first-party sessions; not certified humans
+2026-09-18,"Website, no paid attribution",0,0,3,3,0,Observed first-party sessions; not certified humans

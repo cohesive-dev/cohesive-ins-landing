@@ -1,0 +1,187 @@
+import { INSURANCE_SERVICES, getInsuranceService, serviceContent, serviceStateLinks } from "@/lib/seo/service-industries";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import SeoPage from "@/components/SeoPage";
+import {
+  STATES,
+  STATE_VERTICALS,
+  VERTICALS,
+  getNationalContent,
+  getVertical,
+} from "@/lib/seo/data";
+import {
+  TRADES,
+  getTrade,
+  getContractorNationalContent,
+} from "@/lib/seo/contractors";
+import {
+  CONTRACTOR_STATE_SLUGS,
+  getContractorState,
+  contractorStateBuildable,
+} from "@/lib/seo/contractor-states";
+import {
+  RESTAURANT_TYPES,
+  buildRestaurantTypeNational,
+  getRestaurantTypeNational as getRestaurantType,
+  getRestaurantType as getAnyRestaurantType,
+  restaurantTypeStateLinks,
+  allRestaurantStateLinks,
+} from "@/lib/seo/restaurant-types";
+import { withArticle } from "@/lib/seo/restaurant-cities";
+import { englishLanguages } from "@/lib/es/pages";
+
+// Hub-and-spoke (2026-10-02): concept pages link up to the restaurant hub, and the hub links down to
+// every concept. Neither link existed before.
+const RESTAURANT_BREADCRUMBS = [
+  { label: "Insurance guides", href: "/insurance" },
+  { label: "Restaurant insurance", href: "/insurance/restaurant" },
+];
+function restaurantTypeNationalLinks() {
+  return RESTAURANT_TYPES.filter((type) => !type.stateOnly).map((type) => ({
+    label: `${type.name} insurance`,
+    href: `/insurance/${type.slug}`,
+  }));
+}
+
+// National pages: /insurance/{restaurant|bar|food-truck|...} (food verticals)
+// and /insurance/{electrician|plumber|roofer|...} (58 contractor trades).
+// Restaurant/bar/trades also act as hubs linking their state pages.
+
+export const dynamicParams = false;
+
+type Params = { vertical: string };
+
+export function generateStaticParams(): Params[] {
+  return [
+    ...VERTICALS.map((v) => ({ vertical: v.slug })),
+    ...RESTAURANT_TYPES.filter((type) => !type.stateOnly).map((type) => ({ vertical: type.slug })),
+    ...TRADES.map((t) => ({ vertical: t.slug })),
+    ...INSURANCE_SERVICES.map((s) => ({ vertical: s.slug })),
+  ];
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
+  const { vertical } = await params;
+  const restaurantType = getRestaurantType(vertical);
+  const content = restaurantType
+    ? buildRestaurantTypeNational(restaurantType)
+    : serviceContent(vertical) ?? getNationalContent(vertical) ?? getContractorNationalContent(vertical);
+  if (!content) return {};
+  return {
+    title: content.title,
+    description: content.metaDescription,
+    // English pages paired with a Spanish page carry the reciprocal hreflang in their own <head> (2026-10-24).
+    alternates: { canonical: `/insurance/${vertical}`, ...(englishLanguages(`/insurance/${vertical}`) ? { languages: englishLanguages(`/insurance/${vertical}`) } : {}) },
+    ...(vertical === "bar" ? { robots: { index: false, follow: true } } : {}),
+  };
+}
+
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { vertical: slug } = await params;
+
+  const restaurantType = getRestaurantType(slug);
+  if (restaurantType) {
+    const content = buildRestaurantTypeNational(restaurantType);
+    return (
+      <SeoPage
+        content={content}
+        eyebrow={restaurantType.name}
+        source={`seo-${restaurantType.slug}-national`}
+        areaServed="United States"
+        formMode="restaurant"
+        restaurantPageType={{ slug: restaurantType.slug, noun: restaurantType.noun }}
+        costHeading={`How ${withArticle(restaurantType.noun)} quote is built`}
+        coverageHeading={`Coverage questions for ${withArticle(restaurantType.noun)}`}
+        stateFactsHeading="Prepare a more specific restaurant submission"
+        resourceScopeLabel="Coverage resources checked"
+        stateLinksHeading={`${restaurantType.name} insurance by state`}
+        stateLinks={restaurantTypeStateLinks(restaurantType)}
+        breadcrumbs={RESTAURANT_BREADCRUMBS}
+      />
+    );
+  }
+
+  const service = getInsuranceService(slug);
+  if (service) {
+    const content = serviceContent(slug)!;
+    return <SeoPage content={content} eyebrow={service.name} source={`seo-${slug}-national`}
+      areaServed="United States" formMode="contractor" tradeSlug={slug}
+      tradeLabel={service.intakeLabel} operationsPrompt={service.operationsPrompt}
+      costHeading={`What ${service.noun} insurance costs`} coverageHeading="Coverage questions to review"
+      stateFactsHeading="Resources and operations to check" stateLinksHeading="Choose your state"
+      stateLinks={serviceStateLinks(service)} />;
+  }
+
+  // --- contractor trade national page ---
+  const trade = getTrade(slug);
+  if (trade) {
+    const content = getContractorNationalContent(slug);
+    if (!content) notFound();
+    const states = (trade.nationalOnly ? [] : CONTRACTOR_STATE_SLUGS).filter((s) =>
+      contractorStateBuildable(slug, s),
+    )
+      .map((s) => getContractorState(s))
+      .filter((s): s is NonNullable<typeof s> => Boolean(s));
+    return (
+      <SeoPage
+        content={content}
+        eyebrow={trade.name}
+        source={`seo-${trade.slug}-national`}
+        areaServed="United States"
+        formMode="contractor"
+        tradeLabel={trade.intakeLabel ?? trade.name}
+        tradeSlug={trade.slug}
+        costHeading={`What ${trade.noun} insurance costs`}
+        coverageHeading={`The coverage ${withArticle(trade.noun)} needs`}
+        stateFactsHeading={trade.slug === "fire-sprinkler" ? "What fire sprinkler installers should prepare for a quote" : trade.slug === "roofer" || trade.slug === "tree-service" ? `What to check before buying ${trade.name.toLowerCase()} insurance` : undefined}
+        stateLinksHeading={`${trade.name} insurance by state`}
+        stateLinks={states.map((s) => ({
+          label: s.name,
+          href: `/insurance/${trade.slug}/${s.slug}`,
+        }))}
+      />
+    );
+  }
+
+  // --- food vertical national page ---
+  const content = getNationalContent(slug);
+  const vertical = getVertical(slug);
+  if (!content || !vertical) notFound();
+
+  const hasStates = STATE_VERTICALS.includes(vertical.slug);
+
+  return (
+    <SeoPage
+      content={content}
+      eyebrow={vertical.name}
+      source={`seo-${vertical.slug}-national`}
+      areaServed="United States"
+      formMode={vertical.slug === "bar" ? "bar" : "restaurant"}
+      restaurantPageType={{ slug: vertical.slug, noun: vertical.noun }}
+      costHeading={`What ${vertical.noun} insurance costs`}
+      coverageHeading={`The coverage a ${vertical.noun} needs`}
+      relatedLinksHeading={vertical.slug === "restaurant" ? "Restaurant insurance by type" : undefined}
+      relatedLinks={vertical.slug === "restaurant" ? restaurantTypeNationalLinks() : undefined}
+      stateLinksHeading={`${vertical.name} insurance by state`}
+      stateLinks={
+        vertical.slug === "restaurant"
+          ? allRestaurantStateLinks()
+          : getAnyRestaurantType(vertical.slug)
+            ? restaurantTypeStateLinks(getAnyRestaurantType(vertical.slug)!)
+          : hasStates
+          ? STATES.map((s) => ({
+              label: s.name,
+              href: `/insurance/${vertical.slug}/${s.slug}`,
+            }))
+          : VERTICALS.filter((v) => v.slug !== vertical.slug).map((v) => ({
+              label: `${v.name} insurance`,
+              href: `/insurance/${v.slug}`,
+            }))
+      }
+    />
+  );
+}

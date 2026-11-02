@@ -1,0 +1,250 @@
+import { INSURANCE_SERVICES, getInsuranceService, serviceContent, serviceStateLinks, SERVICE_STATE_NAMES } from "@/lib/seo/service-industries";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import SeoPage from "@/components/SeoPage";
+import {
+  STATES,
+  STATE_VERTICALS,
+  getState,
+  getStateContent,
+  getVertical,
+} from "@/lib/seo/data";
+import { TRADES, getTrade } from "@/lib/seo/contractors";
+import {
+  CONTRACTOR_STATE_SLUGS,
+  getContractorState,
+  buildContractorState,
+  contractorStateBuildable,
+} from "@/lib/seo/contractor-states";
+import {
+  RESTAURANT_TYPES,
+  RESTAURANT_TYPE_STATES,
+  buildRestaurantTypeState,
+  getRestaurantType,
+  getRestaurantTypeState,
+  restaurantTypeStateLinks,
+  RESTAURANT_EXTRA_STATES,
+  isExtraRestaurantState,
+  buildGenericRestaurantState,
+  allRestaurantStateLinks,
+  restaurantTypesInStateLinks,
+  restaurantStateHubLink,
+  restaurantTypeCityLinks,
+  GENERIC_RESTAURANT,
+} from "@/lib/seo/restaurant-types";
+import { withAbbrArticle, withArticle } from "@/lib/seo/restaurant-cities";
+import { STARTUP_STATES } from "@/lib/guides/states";
+
+// The state's restaurant opening guide, when one exists (those guides already rank ~10-18 for
+// "<state> restaurants for lease"), plus the lease-requirements guide.
+function restaurantGuideLinks(stateSlug: string, stateName: string) {
+  const opening = STARTUP_STATES.some((st) => st.slug === stateSlug)
+    ? [{ label: `How to open a restaurant in ${stateName}`, href: `/guides/how-to-open-a-restaurant-in-${stateSlug}` }]
+    : [];
+  return [...opening, { label: "What your lease will require", href: "/guides/restaurant-lease-insurance-requirements" }];
+}
+
+// State pages link up to their national hub (2026-10-02): contractor and restaurant state pages
+// previously linked only sideways to other states.
+function hubBreadcrumbs(label: string, href: string) {
+  return [{ label: "Insurance guides", href: "/insurance" }, { label, href }];
+}
+
+// State pages: /insurance/{restaurant|bar}/{state} (food) and
+// /insurance/{trade}/{state} (trades x 50 jurisdictions; roofing NY/FL restored 2026-10-22).
+// Content is composed per-combo; unknown combos 404.
+
+export const dynamicParams = false;
+
+type Params = { vertical: string; geo: string };
+
+export function generateStaticParams(): Params[] {
+  const food = STATE_VERTICALS.flatMap((v) =>
+    STATES.map((s) => ({ vertical: v, geo: s.slug })),
+  );
+  const trades = TRADES.flatMap((t) =>
+    (t.nationalOnly ? [] : CONTRACTOR_STATE_SLUGS).filter((s) =>
+      contractorStateBuildable(t.slug, s),
+    ).map((s) => ({ vertical: t.slug, geo: s })),
+  );
+  const extraRestaurant = RESTAURANT_EXTRA_STATES.map((st) => ({ vertical: "restaurant", geo: st.slug }));
+  const restaurantTypes = RESTAURANT_TYPES.flatMap((type) =>
+    RESTAURANT_TYPE_STATES.map((state) => ({ vertical: type.slug, geo: state.slug })),
+  );
+  return [...food, ...extraRestaurant, ...restaurantTypes, ...trades, ...INSURANCE_SERVICES.flatMap(service => Object.keys(service.stateProfiles).map(geo => ({ vertical: service.slug, geo })))];
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>;
+}): Promise<Metadata> {
+  const { vertical, geo } = await params;
+  if (vertical === "restaurant" && isExtraRestaurantState(geo)) {
+    const content = buildGenericRestaurantState(getRestaurantTypeState(geo)!);
+    return { title: content.title, description: content.metaDescription, alternates: { canonical: `/insurance/${vertical}/${geo}` } };
+  }
+  const restaurantType = getRestaurantType(vertical);
+  const restaurantState = getRestaurantTypeState(geo);
+  if (restaurantType && restaurantState) {
+    const content = buildRestaurantTypeState(restaurantType, restaurantState);
+    return {
+      title: content.title,
+      description: content.metaDescription,
+      alternates: { canonical: `/insurance/${vertical}/${geo}` },
+    };
+  }
+  const trade = getTrade(vertical);
+  let content = serviceContent(vertical, geo);
+  if (!content && trade) {
+    const cs = getContractorState(geo);
+    if (cs && contractorStateBuildable(vertical, geo))
+      content = buildContractorState(cs, trade);
+  } else if (!content) {
+    content = getStateContent(vertical, geo);
+  }
+  if (!content) return {};
+  return {
+    title: content.title,
+    description: content.metaDescription,
+    alternates: { canonical: `/insurance/${vertical}/${geo}` },
+    ...(vertical === "bar" ? { robots: { index: false, follow: true } } : {}),
+  };
+}
+
+export default async function Page({ params }: { params: Promise<Params> }) {
+  const { vertical: verticalSlug, geo: geoSlug } = await params;
+
+  if (verticalSlug === "restaurant" && isExtraRestaurantState(geoSlug)) {
+    const st = getRestaurantTypeState(geoSlug)!;
+    return (
+      <SeoPage
+        content={buildGenericRestaurantState(st)}
+        eyebrow={`Restaurant · ${st.name}`}
+        source={`seo-restaurant-${st.slug}`}
+        areaServed={st.name}
+        formMode="restaurant"
+        restaurantPageType={{ slug: "restaurant", noun: "restaurant" }}
+        costHeading={`What restaurant insurance costs in ${st.name}`}
+        coverageHeading={`The coverage ${withArticle(st.name)} restaurant needs`}
+        stateFactsHeading={`What to check in ${st.name}`}
+        relatedLinksHeading={`Restaurant types in ${st.name}`}
+        relatedLinks={[...restaurantTypesInStateLinks(st.slug, st.name), ...restaurantGuideLinks(st.slug, st.name)]}
+        stateLinksHeading="Restaurant insurance in other states"
+        stateLinks={[...restaurantTypeCityLinks(GENERIC_RESTAURANT, st.slug), ...allRestaurantStateLinks(st.slug)]}
+        breadcrumbs={hubBreadcrumbs("Restaurant insurance", "/insurance/restaurant")}
+      />
+    );
+  }
+
+  const restaurantType = getRestaurantType(verticalSlug);
+  if (restaurantType) {
+    const state = getRestaurantTypeState(geoSlug);
+    if (!state) notFound();
+    const content = buildRestaurantTypeState(restaurantType, state);
+    return (
+      <SeoPage
+        content={content}
+        eyebrow={`${restaurantType.name} · ${state.name}`}
+        source={`seo-${restaurantType.slug}-${state.slug}`}
+        areaServed={state.name}
+        formMode="restaurant"
+        restaurantPageType={{ slug: restaurantType.slug, noun: restaurantType.noun }}
+        costHeading={`How ${withArticle(restaurantType.noun)} quote is built in ${state.name}`}
+        coverageHeading={`Coverage questions for ${withArticle(state.name)} ${restaurantType.noun}`}
+        stateFactsHeading={`What to check in ${state.name}`}
+        resourceScopeLabel="State food resources checked"
+        relatedLinksHeading={`More for ${state.name} restaurants`}
+        relatedLinks={[restaurantStateHubLink(state.slug, state.name), ...restaurantGuideLinks(state.slug, state.name)]}
+        stateLinksHeading={`${restaurantType.name} insurance in other states`}
+        stateLinks={[...restaurantTypeCityLinks(restaurantType, state.slug), ...restaurantTypeStateLinks(restaurantType, state.slug)]}
+        // The state's restaurant page is the hub for every restaurant type in that state (Kevin 2026-10-15).
+        breadcrumbs={[
+          { label: "Insurance guides", href: "/insurance" },
+          { label: `${restaurantType.name} insurance`, href: `/insurance/${restaurantType.slug}` },
+          restaurantStateHubLink(state.slug, state.name),
+        ]}
+      />
+    );
+  }
+
+  const service = getInsuranceService(verticalSlug);
+  if (service) {
+    const content = serviceContent(verticalSlug, geoSlug);
+    if (!content) notFound();
+    const stateName = SERVICE_STATE_NAMES[geoSlug];
+    return <SeoPage content={content} eyebrow={`${service.name} · ${stateName}`}
+      source={`seo-${verticalSlug}-${geoSlug}`} areaServed={stateName} formMode="contractor"
+      tradeSlug={verticalSlug} stateSlug={geoSlug} tradeLabel={service.intakeLabel}
+      operationsPrompt={service.operationsPrompt} costHeading={`Insurance costs in ${stateName}`}
+      coverageHeading="Coverage questions to review" stateFactsHeading={`What to check in ${stateName}`}
+      stateLinksHeading="Explore other states" stateLinks={serviceStateLinks(service).filter(l => !l.href.endsWith(`/${geoSlug}`))} />;
+  }
+
+  // --- contractor trade x state page ---
+  const trade = getTrade(verticalSlug);
+  if (trade) {
+    if (trade.nationalOnly) notFound();
+    const cs = getContractorState(geoSlug);
+    if (!cs || !contractorStateBuildable(verticalSlug, geoSlug)) notFound();
+    const content = buildContractorState(cs, trade);
+    const others = CONTRACTOR_STATE_SLUGS.filter(
+      (s) => s !== geoSlug && contractorStateBuildable(verticalSlug, s),
+    )
+      .map((s) => getContractorState(s))
+      .filter((s): s is NonNullable<typeof s> => Boolean(s));
+    return (
+      <SeoPage
+        content={content}
+        eyebrow={`${trade.name} · ${cs.name}`}
+        source={`seo-${trade.slug}-${cs.slug}`}
+        areaServed={cs.name}
+        formMode="contractor"
+        tradeLabel={trade.intakeLabel ?? trade.name}
+        tradeSlug={trade.slug}
+        stateSlug={cs.slug}
+        costHeading={`What ${trade.noun} insurance costs in ${cs.name}`}
+        coverageHeading={`The coverage ${withAbbrArticle(cs.abbr)} ${trade.noun} needs`}
+        stateFactsHeading={`What's different about ${cs.name}`}
+        stateLinksHeading={`${trade.name} insurance in other states`}
+        stateLinks={others.map((s) => ({
+          label: s.name,
+          href: `/insurance/${trade.slug}/${s.slug}`,
+        }))}
+        breadcrumbs={hubBreadcrumbs(`${trade.name} insurance`, `/insurance/${trade.slug}`)}
+      />
+    );
+  }
+
+  // --- food vertical x state page ---
+  const content = getStateContent(verticalSlug, geoSlug);
+  const vertical = getVertical(verticalSlug);
+  const state = getState(geoSlug);
+  if (!content || !vertical || !state) notFound();
+
+  return (
+    <SeoPage
+      content={content}
+      eyebrow={`${vertical.name} · ${state.name}`}
+      source={`seo-${vertical.slug}-${state.slug}`}
+      areaServed={state.name}
+      formMode={vertical.slug === "bar" ? "bar" : "restaurant"}
+      restaurantPageType={{ slug: vertical.slug, noun: vertical.noun }}
+      costHeading={`What ${vertical.noun} insurance costs in ${state.name}`}
+      coverageHeading={`The coverage ${withAbbrArticle(state.abbr)} ${vertical.noun} needs`}
+      stateFactsHeading={`What's different about ${state.name}`}
+      relatedLinksHeading={vertical.slug === "restaurant" ? `Restaurant types in ${state.name}` : undefined}
+      relatedLinks={vertical.slug === "restaurant"
+        ? [...restaurantTypesInStateLinks(state.slug, state.name), ...restaurantGuideLinks(state.slug, state.name)]
+        : undefined}
+      stateLinksHeading={`${vertical.name} insurance in other states`}
+      stateLinks={vertical.slug === "restaurant"
+        ? [...restaurantTypeCityLinks(GENERIC_RESTAURANT, state.slug), ...allRestaurantStateLinks(state.slug)]
+        : STATES.filter((s) => s.slug !== state.slug).map((s) => ({
+            label: s.name,
+            href: `/insurance/${vertical.slug}/${s.slug}`,
+          }))}
+      breadcrumbs={vertical.slug === "restaurant" ? hubBreadcrumbs("Restaurant insurance", "/insurance/restaurant") : undefined}
+    />
+  );
+}

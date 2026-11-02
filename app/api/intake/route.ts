@@ -1,5 +1,12 @@
+import { createHash } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { sendIntakeNotification } from "@/lib/notify";
+import { getStartupGuide } from "@/lib/guides/catalog";
+import { STARTUP_STATES } from "@/lib/guides/states";
+import { startupPlacementRestriction } from "@/lib/guides/eligibility";
+import { assessSubmission, acquisitionEventId } from '@/lib/submission-quality';
+import { REQUESTED_COVERAGE_ALLOWLIST, type RequestedCoverage } from "@/lib/requested-coverage";
+import { referralCode } from "@/lib/referral-code";
 
 // This route no longer owns lead storage. A completed submission is forwarded to the CRM's
 // inbound-lead webhook, which is the single fan-out point for every lead source (FB Lead Ads,
@@ -10,19 +17,90 @@ import { sendIntakeNotification } from "@/lib/notify";
 // texts and emails the lead, which must not happen to someone who is still typing or who never
 // submitted. Those keep the local quotes@ alert as their only signal.
 
-const CRM_BASE_URL = process.env.CRM_BASE_URL ?? "https://crm.cohesiveinsure.com";
-const CRM_INBOUND_LEAD_URL = `${CRM_BASE_URL}/api/webhooks/inbound-lead`;
+// Deliberately NOT env-configurable. The Vercel env had CRM_BASE_URL=https://www.cohesiveinsure.com
+// (this site), so every forward POSTed to itself, got its own 404 page, and silently dropped the
+// CRM handoff for weeks (2026-08-13 diagnosis — 4 church fills that day alone survived only via
+// the quotes@ fallback). The CRM host changes ~never; a hard-coded constant fails loudly in code
+// review instead of silently in a dashboard. Delete the stale CRM_BASE_URL var from Vercel.
+const CRM_INBOUND_LEAD_URL =
+  "https://crm.cohesiveinsure.com/api/webhooks/inbound-lead";
+
+// Meta Conversions API (server-side Lead, deduped with the browser pixel via a
+// shared event_id). Dark-safe: if META_CAPI_TOKEN isn't set it no-ops, exactly
+// like the quotes@ mailer without a password — so deploying this is harmless
+// until the token is added to the environment.
+const CAPI_PIXEL_ID = process.env.META_PIXEL_ID ?? "831179966599677";
+const sha256 = (v: string) => createHash("sha256").update(v).digest("hex");
 
 type IntakePayload = {
+  website?: unknown;
   name?: unknown;
   email?: unknown;
   phone?: unknown;
+  // Legal business name — forwarded to the CRM as business_name so the
+  // Account gets named after the business, not the person.
+  company?: unknown;
   businessType?: unknown;
   zip?: unknown;
   partial?: unknown;
   final?: unknown;
   source?: unknown;
+  startupState?: unknown;
+  // Ordered [{label, value}] answers from a deep intake form (e.g. /church).
+  details?: unknown;
+  // Browser-pixel Lead event id, forwarded so the CAPI Lead can dedupe to it.
+  eventId?: unknown;
+  // OPTIONAL server-side CAPI event name. Absent => "Lead" (today's behavior,
+  // so /religious and every existing caller are unchanged). Present => fire the
+  // CAPI event under THIS name (used by /restaurant to fire a non-Lead signal
+  // for E&S and disqualified/bar outcomes, so the ad optimizer only trains on
+  // instant-quotable restaurants). "RestaurantDisqualified" is special-cased
+  // below: it fires the custom event but NEVER forwards to the CRM.
+  capiEventName?: unknown;
+  // Optional 2nd browser+server event id: when present, the server ALSO sends
+  // "QualifiedLead" (deduped with the page's matching fbq call). Set by lanes
+  // whose form can tell a high-value lead apart at submit time (see /contractors).
+  qualifiedEventId?: unknown;
+  // Optional 3rd event id: "UninsuredLead" - the yellow-flag tier (buying, but no incumbent
+  // premium to beat). Kept separable from QualifiedLead so the adset can chase only the primary.
+  uninsuredEventId?: unknown;
+  // Optional: restaurant landing sends this for qualified + now/30d leads; server ALSO
+  // fires "LeadUrgentQuoted" (deduped with the page's fbq by shared id).
+  urgentEventId?: unknown;
+  // Contractors: urgent AND self-reported $5K+ -> "QualifiedUrgentLead" (phase-2 stage).
+  qualifiedUrgentEventId?: unknown;
+  // Contractors: self-reported revenue >= $1M, any trade -> "LargeBusinessLead". The size proxy
+  // for a $5K+ premium; fires ~2x as often as the premium self-report and catches the large
+  // uninsured/underpaying businesses the premium filter drops.
+  largeBusinessEventId?: unknown;
+  // Optional requested coverage (CRM line names), e.g. ["Workers Comp"] from the workers' comp
+  // guides. Forwarded ONLY when every value is in REQUESTED_COVERAGE_ALLOWLIST; see requestedCoverage().
+  coverage?: unknown;
 };
+
+// The allowlist lives in lib/requested-coverage.ts. Anything else is dropped so a crafted body
+// can't write an arbitrary line onto a lead.
+const ALLOWED: readonly string[] = REQUESTED_COVERAGE_ALLOWLIST;
+function requestedCoverage(raw: unknown): RequestedCoverage[] | undefined {
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > ALLOWED.length) return undefined;
+  if (!raw.every((value) => typeof value === "string" && ALLOWED.includes(value))) return undefined;
+  return [...new Set(raw as RequestedCoverage[])];
+}
+
+// Coerce an unknown `details` payload into a safe ordered [{label, value}].
+function sanitizeDetails(
+  raw: unknown,
+): Array<{ label: string; value: string }> | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: Array<{ label: string; value: string }> = [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") continue;
+    const label = asTrimmedString((item as Record<string, unknown>).label);
+    const value = asTrimmedString((item as Record<string, unknown>).value);
+    if (label && value) out.push({ label, value: value.slice(0, 2000) });
+  }
+  return out.length > 0 ? out.slice(0, 40) : undefined;
+}
 
 const asTrimmedString = (value: unknown): string | undefined =>
   typeof value === "string" && value.trim().length > 0
@@ -53,14 +131,20 @@ function toE164(raw: string | undefined): string | undefined {
   return candidate && E164_RE.test(candidate) ? candidate : undefined;
 }
 
-async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
+async function forwardToCrm(
+  // `details` rides through as an array of {label, value} objects, so this cannot be
+  // Record<string, string | string[]> any more.
+  payload: Record<
+    string,
+    string | string[] | Array<{ label: string; value: string }>
+  >,
+): Promise<{ ok: boolean; duplicate: boolean }> {
   try {
     const response = await fetch(CRM_INBOUND_LEAD_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ source: "webform", ...payload }),
-      // The browser call is fire-and-forget, so a hung CRM would otherwise pin this
-      // function open until the platform timeout.
+      // Bound the CRM leg so notification delivery can still accept the request.
       signal: AbortSignal.timeout(10_000),
     });
     if (!response.ok) {
@@ -69,12 +153,89 @@ async function forwardToCrm(payload: Record<string, string>): Promise<boolean> {
         response.status,
         await response.text().catch(() => ""),
       );
-      return false;
+      return { ok: false, duplicate: false };
     }
-    return true;
+    const result: unknown = await response.json();
+    const ok = Boolean(result && typeof result === "object" && "ok" in result && result.ok === true);
+    const duplicate = Boolean(result && typeof result === 'object' && 'notificationDelivery' in result && result.notificationDelivery === 'duplicate');
+    return { ok, duplicate };
   } catch (error) {
     console.error("CRM inbound-lead request failed", error);
-    return false;
+    return { ok: false, duplicate: false };
+  }
+}
+
+// Fire a server-side conversion event to the Conversions API. event_id MUST
+// match the browser pixel's eventID so Meta dedupes the two into a single
+// conversion. `eventName` defaults to "Lead" (the only value the church /
+// religious lane ever uses); /restaurant passes "RestaurantLeadES" or
+// "RestaurantDisqualified" to emit a NON-Lead signal. Hashes PII (email/phone)
+// per Meta's spec; pulls fbp/fbc/ip/ua from the request for match quality.
+// Never throws into the route — logs and returns on failure.
+async function sendCapiEvent(
+  request: NextRequest,
+  eventName: string,
+  eventId: string,
+  email?: string,
+  phone?: string,
+): Promise<"sent" | "skipped" | "failed"> {
+  const token = process.env.META_CAPI_TOKEN;
+  if (!token) {
+    console.error("META_CAPI_TOKEN not set — skipping CAPI event");
+    return "skipped";
+  }
+
+  const userData: Record<string, unknown> = {};
+  if (email) userData.em = [sha256(email.trim().toLowerCase())];
+  if (phone) userData.ph = [sha256(phone.replace(/\D/g, ""))];
+  const fbp = request.cookies.get("_fbp")?.value;
+  const fbc = request.cookies.get("_fbc")?.value;
+  if (fbp) userData.fbp = fbp;
+  if (fbc) userData.fbc = fbc;
+  const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+  if (ip) userData.client_ip_address = ip;
+  const ua = request.headers.get("user-agent");
+  if (ua) userData.client_user_agent = ua;
+
+  const payload = {
+    data: [
+      {
+        event_name: eventName,
+        event_time: Math.floor(Date.now() / 1000),
+        event_id: eventId,
+        action_source: "website",
+        event_source_url:
+          request.headers.get("referer") ??
+          "https://cohesiveinsure.com/religious",
+        user_data: userData,
+      },
+    ],
+  };
+
+  try {
+    const res = await fetch(
+      `https://graph.facebook.com/v21.0/${CAPI_PIXEL_ID}/events?access_token=${encodeURIComponent(
+        token,
+      )}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(8000),
+      },
+    );
+    if (!res.ok) {
+      console.error(
+        "CAPI event rejected",
+        res.status,
+        await res.text().catch(() => ""),
+      );
+      return "failed";
+    }
+    return "sent";
+  } catch (error) {
+    console.error("CAPI event request failed", error);
+    return "failed";
   }
 }
 
@@ -84,6 +245,10 @@ export async function POST(request: NextRequest) {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    return NextResponse.json({ ok: false, error: "Invalid form payload" }, { status: 400 });
   }
 
   // A final beacon always represents an abandoned form, even if the client
@@ -99,8 +264,21 @@ export async function POST(request: NextRequest) {
   const rawPhone = asTrimmedString(body.phone);
   const phone = toE164(rawPhone) ?? rawPhone;
   const businessType = asTrimmedString(body.businessType);
+  const company = asTrimmedString(body.company) ?? ((asTrimmedString(body.source) || '').startsWith('commercial-property') ? sanitizeDetails(body.details)?.find(d => d.label === 'Owner / LLC name')?.value : undefined);
   const zip = asTrimmedString(body.zip);
   const source = asTrimmedString(body.source);
+  // Startup guides collect a state explicitly. Reject unsupported inquiries before
+  // any CRM, notification, or CAPI side effect; preserve existing intake sources.
+  const isStartupGuideLane = source?.startsWith("seo-startup-") ?? false;
+  if (isStartupGuideLane) {
+    const guide = getStartupGuide(source!.slice("seo-startup-".length));
+    const startupState = asTrimmedString(body.startupState);
+    if (!guide || !startupState || !STARTUP_STATES.some((state) => state.slug === startupState)) {
+      return NextResponse.json({ ok: false, error: "Choose a valid business state and try again." }, { status: 400 });
+    }
+    const restriction = startupPlacementRestriction(startupState, guide.industry ?? "Restaurants");
+    if (restriction) return NextResponse.json({ ok: false, error: restriction }, { status: 400 });
+  }
 
   // Minimum to accept a submission: some way to reach the person. Phone-only submissions are
   // valid leads — the CRM keys those on phone alone.
@@ -112,48 +290,331 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Deep intake forms (e.g. /religious) carry structured answers the CRM webhook can't hold
+  // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
+  // Declared here rather than further down because the abandoned-fill branch below needs it too.
+  let details = sanitizeDetails(body.details);
+  if (source === "customer-referral") {
+    const supplied = details?.find((item) => item.label === "Referral code")?.value;
+    if (supplied && !referralCode(supplied)) {
+      return NextResponse.json({ ok: false, error: "Invalid referral code" }, { status: 400 });
+    }
+    // One canonical code row, so a duplicate detail label cannot change the tracked value.
+    details = [...(supplied ? [{ label: "Referral code", value: referralCode(supplied) }] : []),
+    ...(details ?? []).filter((item) => item.label !== "Referral code")];
+  }
+  if (isStartupGuideLane) {
+    const state = STARTUP_STATES.find((item) => item.slug === asTrimmedString(body.startupState))!;
+    details = [
+      { label: "State", value: state.name },
+      { label: "Startup guide", value: `/guides/${source!.slice("seo-startup-".length)}` },
+      ...(details ?? []).filter((item) => !["State", "Startup guide"].includes(item.label)),
+    ];
+  }
+
+  const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d => d.label === 'Form version' && ['2026-09-18-contact-v3', '2026-09-18-theme-v4', '2026-09-18-trade-v5', '2026-10-22-es-v1'].includes(d.value));
+
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
     if (isFinal && reachable) {
-      await sendIntakeNotification({
+      const partialSaved = await sendIntakeNotification({
         name,
         email,
         phone,
         businessType,
+        company,
         zip,
         partial: true,
         source,
+        // Partials carried a detail block and this branch dropped it, which threw
+        // away the only thing an abandon can tell us: how far they got before
+        // leaving. On a completed submit "furthest step" is always the last one,
+        // so the abandon path is precisely where it has any value.
+        details,
       });
+      if (contactFirstExperiment) return NextResponse.json({ ok: partialSaved, crm: "skipped", notification: partialSaved ? "sent" : "failed", conversion: { eligible: false } }, { status: partialSaved ? 200 : 503 });
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
 
+  const guardedLane = source === 'contractors-landing' || source === 'customer-referral' || Boolean(source?.startsWith('commercial-property'));
+  const quality = guardedLane ? assessSubmission({ name, email, phone, company, honeypot: body.website }, (process.env.INTAKE_BLOCKED_IDENTITY_HASHES || '').split(',').map(v => v.trim()).filter(Boolean)) : { kind: 'accept', reason: 'legacy' };
+  if (quality.kind === 'reject') {
+    // No contact values in logs. Rejection does not fan out to CRM/mail/CAPI.
+    console.info('intake_quality', { decision: 'reject', reason: quality.reason, source });
+    return NextResponse.json({ ok: false, conversion: { eligible: false }, error: 'Please check your name, business, email and phone. If you need help, call (929) 594-5450.' }, { status: 422 });
+  }
+  if (quality.kind === 'review') details = [...(details ?? []), { label: 'Submission review', value: 'Hold for human verification - do not treat as qualified or send a conversion.' }];
+  const conversionSecret = process.env.INTAKE_CONVERSION_SECRET || process.env.META_CAPI_TOKEN;
+  // Customer referrals are a separate acquisition source, never an ad conversion.
+  const acceptedEventId = guardedLane && source !== "customer-referral" && conversionSecret ? acquisitionEventId({ name, email, phone, company }, conversionSecret) : undefined;
+  if (guardedLane) details = [...(details ?? []), { label: 'Submission validation', value: quality.reason }, ...(acceptedEventId ? [{ label: 'Acquisition event id', value: acceptedEventId }] : [])];
+
+  // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
+  // and every other caller are untouched).
+  const capiEventName = asTrimmedString(body.capiEventName);
+
+  // Disqualified outcome (e.g. a bar from /restaurant): fire the NON-Lead CAPI
+  // signal so Meta's optimizer learns to stop serving this segment, and do NOT
+  // forward to the CRM (that fan-out would text/email the prospect).
+  // ★ Kevin 2026-08-16: "disqualified" is a CAPI signal ONLY, not a dead lead - the page
+  // now tells them "we'll need a bit longer ... we will be in touch", so bar / high-alcohol
+  // fills MUST still reach quotes@ (route to Hedge + ask for the existing policy). Nothing is
+  // dropped - "we can technically quote anything through Hedge" - so even a "Not a food
+  // business" pick (often a misclick) lands in quotes@ for a human to triage.
+  if (capiEventName === "RestaurantDisqualified") {
+    const disqEventId = asTrimmedString(body.eventId);
+    let emailed = false;
+    {
+      const disqDetails = sanitizeDetails(body.details) ?? [];
+      emailed = await sendIntakeNotification({
+        name,
+        email,
+        phone,
+        businessType,
+        company,
+        zip,
+        partial: false,
+        source,
+        details: [
+          {
+            label: "⚠️ NOT INSTANT-QUOTABLE",
+            value: `${businessType === "Not a food business" ? "Picked 'Not a food business' (verify - may be a misclick)" : "Bar / high-alcohol"} - CAPI marked disqualified (non-Lead). Route to Hedge (E&S) + ask for the existing policy. Page told them we need a bit longer and will be in touch.`,
+          },
+          ...disqDetails,
+        ],
+      });
+    }
+    if (!emailed) return NextResponse.json({ ok: false, crm: "skipped", notification: "failed", error: "We could not save your request. Please try again." }, { status: 503 });
+    const capi =
+      disqEventId && reachable
+        ? await sendCapiEvent(
+          request,
+          "RestaurantDisqualified",
+          disqEventId,
+          email,
+          phone,
+        )
+        : "skipped";
+    return NextResponse.json(
+      { ok: true, crm: "skipped", notification: "sent", capi },
+      { status: 200 },
+    );
+  }
+
+  // `source` is a page label (e.g. "restaurants-splash-next-handoff"), not a per-lead id, so it
+  // must not go through as providerId — the CRM builds its Activity dedupe key from it, and a
+  // shared value would collapse every lead from that page into one Activity. Omitting it lets the
+  // CRM fall back to contact.id; the label rides along in the description instead, where it shows
+  // up in the Activity notes and the Slack lead card.
   const description = [businessType, source ? `via ${source}` : undefined]
     .filter(Boolean)
     .join(" — ");
 
-  const forwarded = await forwardToCrm({
+  // The restaurant lane USED to bypass the CRM inbound-lead webhook entirely (like the Foxquilt FB
+  // lane) because upsertInboundLead fires an automated first-touch SMS and we must never auto-text
+  // these leads — the supervised auto-quoter (rest_loop.py) sweeps quotes@ and sends the QUOTE
+  // itself as the only outbound touch. The bypass worked but made the lane INVISIBLE: a restaurant
+  // landing fill existed only as a quotes@ email and a pixel event, so landing-lane volume could
+  // not be counted or reconciled in the CRM at all (2026-08-17: 12 pixel-recorded fills, 0 CRM rows,
+  // and no way to tell a real lead from test traffic).
+  // ★ Kevin 2026-08-17: do what contractors do instead — FORWARD, with suppress_first_touch. The
+  // deployed CRM honors that flag (contractor lane has relied on it since 2026-08-13), so the lead
+  // is recorded without any automated SMS/dial, and rest_loop.py keeps owning the first touch via
+  // quotes@ exactly as before.
+  const fbc = request.cookies.get("_fbc")?.value;
+  const fbp = request.cookies.get("_fbp")?.value;
+  // "bar-landing" is the paid bar route (/bar), the restaurant lane's sibling: same
+  // RestaurantIntakeForm in mode="bar", same quote loop, so it must inherit the same
+  // suppression. Without it a bar fill would trigger the CRM's automated SMS/dial and
+  // beat our own quote to the client, breaking the standing "never auto-text leads"
+  // rule. Kept as an explicit list rather than a prefix so /insurance/bar's
+  // "seo-bar-national" source is NOT swept in by accident.
+  const isRestaurantLane =
+    source === "restaurant-landing" || source === "bar-landing";
+  // The contractor lane records the contact in the CRM but suppresses the automated
+  // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
+  // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
+  const isContractorLane = source === "contractors-landing";
+  // Commercial property owns its own first touch too: the lane is Pathpoint-first
+  // behind a judgment gate (clean instant quote -> send it; any gap -> ack + Hedge),
+  // so a generic automated SMS the moment the form lands would beat our own quote
+  // to the client and breaks the standing "never auto-text leads" rule. Covers both
+  // A/B cells: "commercial-property-landing" (long) and "-steps".
+  const isCommercialPropertyLane = (source ?? "").startsWith(
+    "commercial-property",
+  );
+  const askedCoverage = requestedCoverage(body.coverage);
+  const crmDelivery = forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
     ...(phone ? { phone } : {}),
     ...(description ? { business_type: description } : {}),
+    ...(company ? { business_name: company } : {}),
     ...(zip ? { zip } : {}),
+    ...(isContractorLane || source === "customer-referral" || isRestaurantLane || isCommercialPropertyLane || isStartupGuideLane
+      ? { suppress_first_touch: "true" }
+      : {}),
+    // ★ Kevin 2026-08-19: the CP lane must record Property, not GL. The CRM webhook defaults
+    // a lead with no `coverage` to General Liability (inboundLead.ts: `input.coverage?.length
+    // ? input.coverage : [Line.GeneralLiability]`), and this route never sent one — so every
+    // commercial-property fill landed as a GL lead, indistinguishable from a contractor in any
+    // coverage-based query or route (found while reconciling the 8/18-19 CP A/B: 9 real leads
+    // in Slack, only 2 findable by coverage in the CRM). The lane is Property-first; GL is at
+    // most a secondary line on a building owner, never the requested one.
+    // Any other lane may name its requested coverage (workers' comp guides: ["Workers Comp"]); only
+    // allowlisted values pass, and the commercial-property line above always wins.
+    // Kevin 2026-10-21: a church that ticks "Do you also need general liability?" requests GL too, so the CP lane may add
+    // General Liability (and only that) beside Property; Property stays first and always present.
+    ...(isCommercialPropertyLane
+      ? { coverage: askedCoverage?.includes("General Liability") ? ["Property", "General Liability"] : ["Property"] }
+      : askedCoverage ? { coverage: askedCoverage } : {}),
+    // Meta click/browser ids, read off the pixel's own cookies. Persisted on the CRM's
+    // inbound_lead Activity so the LATER LeadQuoted CAPI event (fired after we quote, from
+    // lead_quoted_capi.py) can match on fbc/fbp instead of email+phone alone. Without this
+    // the ids die with the request and every value event is a weak match.
+    ...(fbc ? { fbc } : {}),
+    ...(fbp ? { fbp } : {}),
+    // The full questionnaire (COPE answers, claims, ad attribution). Already parsed and
+    // capped by sanitizeDetails() above. The CRM webhook reads this key as `details` and maps
+    // it onto InboundLeadInput.slackExtraFields, the existing pass-through for data-heavy
+    // sources, which renders as the Slack card's collapsible "More details" block and is
+    // persisted to activities.meta->formAnswers. Note the key: `slackExtraFields` here would
+    // be silently ignored. Without this the answers reached quotes@ by email and nowhere else.
+    ...(details ? { details } : {}),
   });
 
-  if (!forwarded) {
-    await sendIntakeNotification({
-      name,
-      email,
-      phone,
-      businessType,
-      zip,
-      partial: false,
-      source,
-    });
+  // Attempt both destinations independently. Accept when at least one confirms delivery;
+  // if both fail, return a retryable error instead of reporting a captured lead.
+  // (2026-07-09 incident: storage failures 500'd and silently dropped real submissions while
+  // the pixel kept counting them.)
+  // ★ Kevin 2026-08-18: EVERY completed submission emails quotes@, unconditionally. This used to
+  // be gated on `!forwarded || details || isRestaurantLane`, which meant a form with no detail
+  // block whose CRM forward SUCCEEDED sent no email at all — precisely the generic homepage
+  // QuoteModal (app/page.tsx) and the splash gates (QuoteSplash.tsx), neither of which sends
+  // `details`. Those leads existed only as a CRM row and a Slack card, so every quotes@-driven
+  // sweep and auto-quoter was structurally blind to them (found via Lauren Parton /
+  // billing@poolprosllc.com, a pool contractor asking for GL: Slack card posted, zero email).
+  // The old rationale still holds as a floor and is now subsumed: forward failure is still the
+  // zero-miss fallback (2026-07-09 incident), deep-form `details` still ride to quotes@ because
+  // the CRM webhook carries flat contact fields only, and the restaurant lane still always gets
+  // its email because rest_loop.py sweeps this inbox and owns the lane's only outbound touch.
+  // A duplicate alert on a lane that was already emailing costs nothing; a silent drop costs a lead.
+  const [crmResult, emailed] = await Promise.all([crmDelivery, sendIntakeNotification({
+    name,
+    email,
+    phone,
+    businessType,
+    company,
+    zip,
+    partial: false,
+    source,
+    details,
+  })]);
+  const forwarded = crmResult.ok;
+  const conversionEligible = (!contactFirstExperiment || forwarded) && (!guardedLane || (quality.kind === 'accept' && !!acceptedEventId && !crmResult.duplicate));
+
+  if (!forwarded && !emailed) {
+    return NextResponse.json({
+      ok: false, crm: "failed", notification: "failed",
+      error: "We could not save your request. Please try again, or call Cohesive at (929) 594-5450.",
+    }, { status: 503 });
   }
 
+  // Server-side CAPI event, deduped with the browser pixel via the shared event
+  // id. Real submissions only — partials returned above, so they never count as
+  // a conversion (and thus never train ad optimization on non-submitters).
+  // eventName defaults to "Lead" (church/religious + any legacy caller); the
+  // /restaurant lane sends "Lead" for instant-quotable and "RestaurantLeadES"
+  // for the E&S lane so Meta captures the lead without optimizing toward it.
+  const eventId = guardedLane ? acceptedEventId : asTrimmedString(body.eventId);
+  const eventName = capiEventName ?? "Lead";
+  const capi =
+    // A CRM duplicate may retry the SAME CAPI event ID after an earlier send failure.
+    // Never mint another event ID for a same-day repeat; browser emission stays suppressed.
+    eventId && reachable && (!contactFirstExperiment || forwarded) && (conversionEligible || (guardedLane && quality.kind === 'accept' && !!acceptedEventId))
+      ? await sendCapiEvent(request, eventName, eventId, email, phone)
+      : "skipped";
+  // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead
+  // self-reports a current GL premium of $5K+ ("$5K - $20K" / "$20K+"). That is the
+  // winnability signal - what the market already extracts from them - not what we would
+  // quote (a big quote can just be an uncompetitive market; ARGC said $26K and closed,
+  // Steve said $2-5K and was unwinnable at our $8-16K). Sent server-side with the same
+  // fbc/fbp/ip/ua match quality as Lead, deduped with the browser fbq by shared event id.
+  // The plain Lead above still fires for EVERY submit - this is additive, never a filter.
+  const qualifiedEventId = conversionEligible && body.qualifiedEventId ? (guardedLane ? `${acceptedEventId}-q` : asTrimmedString(body.qualifiedEventId)) : undefined;
+  const capiQualified =
+    qualifiedEventId && reachable
+      ? await sendCapiEvent(
+        request,
+        "QualifiedLead",
+        qualifiedEventId,
+        email,
+        phone,
+      )
+      : "skipped";
+
+  const uninsuredEventId = conversionEligible && body.uninsuredEventId ? (guardedLane ? `${acceptedEventId}-u` : asTrimmedString(body.uninsuredEventId)) : undefined;
+  const capiUninsured =
+    uninsuredEventId && reachable
+      ? await sendCapiEvent(
+        request,
+        "UninsuredLead",
+        uninsuredEventId,
+        email,
+        phone,
+      )
+      : "skipped";
+
+  const urgentEventId = conversionEligible && body.urgentEventId ? (guardedLane ? `${acceptedEventId}-ur` : asTrimmedString(body.urgentEventId)) : undefined;
+  const capiUrgent =
+    urgentEventId && reachable
+      ? await sendCapiEvent(
+        request,
+        "LeadUrgentQuoted",
+        urgentEventId,
+        email,
+        phone,
+      )
+      : "skipped";
+
+  const qualifiedUrgentEventId = conversionEligible && body.qualifiedUrgentEventId ? (guardedLane ? `${acceptedEventId}-qu` : asTrimmedString(body.qualifiedUrgentEventId)) : undefined;
+  const capiQualifiedUrgent =
+    qualifiedUrgentEventId && reachable
+      ? await sendCapiEvent(
+        request,
+        "QualifiedUrgentLead",
+        qualifiedUrgentEventId,
+        email,
+        phone,
+      )
+      : "skipped";
+
+  const largeBusinessEventId = conversionEligible && body.largeBusinessEventId ? (guardedLane ? `${acceptedEventId}-lg` : asTrimmedString(body.largeBusinessEventId)) : undefined;
+  const capiLargeBusiness =
+    largeBusinessEventId && reachable
+      ? await sendCapiEvent(
+        request,
+        "LargeBusinessLead",
+        largeBusinessEventId,
+        email,
+        phone,
+      )
+      : "skipped";
+
   return NextResponse.json(
-    { ok: true, crm: forwarded ? "sent" : "failed" },
+    {
+      ok: true,
+      crm: forwarded ? "sent" : "failed",
+      ...(guardedLane ? { conversion: { eligible: conversionEligible, eventId: acceptedEventId, reason: crmResult.duplicate ? 'duplicate' : quality.reason } } : {}),
+      notification: emailed ? "sent" : "failed",
+      capi,
+      capiQualified,
+      capiUninsured,
+      capiUrgent,
+      capiQualifiedUrgent,
+      capiLargeBusiness,
+    },
     { status: 200 },
   );
 }

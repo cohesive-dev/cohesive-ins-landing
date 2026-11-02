@@ -1,0 +1,4075 @@
+[
+  {
+    "id": "120251082243910660",
+    "name": "CT People r2 | pool__gunite",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 9,
+      "last_sig_edit_ts": 1789319238,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-13T01:25:14-0400",
+    "start_time": "2026-09-13T01:25:14-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 1178.52,
+    "impressions": 23938,
+    "link_clicks": 133,
+    "CPM": 49.23,
+    "link_CTR_pct": 0.556,
+    "link_CPC": 8.86,
+    "completed_saved": 8,
+    "new_acquisitions": 8,
+    "observed_starts": 13,
+    "observed_sessions": 131,
+    "CPL_saved": 147.31,
+    "CPL_new": 147.31,
+    "cost_per_observed_start": 90.66,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251082240280660",
+    "name": "CT People r2 | pool__savings",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 0,
+      "last_sig_edit_ts": 1789314100,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-13T01:24:36-0400",
+    "start_time": "2026-09-13T01:24:36-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 12.19,
+    "impressions": 321,
+    "link_clicks": 1,
+    "CPM": 37.98,
+    "link_CTR_pct": 0.312,
+    "link_CPC": 12.19,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 1,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251082235550660",
+    "name": "CT People r2 | pool__coi",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "daily_min_spend_target": "19200",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 7,
+      "last_sig_edit_ts": 1789313157,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-13T01:23:55-0400",
+    "start_time": "2026-09-13T01:23:55-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 324.89,
+    "impressions": 7914,
+    "link_clicks": 56,
+    "CPM": 41.05,
+    "link_CTR_pct": 0.708,
+    "link_CPC": 5.8,
+    "completed_saved": 2,
+    "new_acquisitions": 2,
+    "observed_starts": 4,
+    "observed_sessions": 51,
+    "CPL_saved": 162.44,
+    "CPL_new": 162.44,
+    "cost_per_observed_start": 81.22,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251082232080660",
+    "name": "CT People r2 | pool__work",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 0,
+      "last_sig_edit_ts": 1789313146,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-13T01:23:15-0400",
+    "start_time": "2026-09-13T01:23:15-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 0.58,
+    "impressions": 15,
+    "link_clicks": 0,
+    "CPM": 38.67,
+    "link_CTR_pct": 0.0,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251082229630660",
+    "name": "CT People r2 | pool__monthly",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 0,
+      "last_sig_edit_ts": 1789313136,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-13T01:22:36-0400",
+    "start_time": "2026-09-13T01:22:36-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 42.54,
+    "impressions": 1010,
+    "link_clicks": 4,
+    "CPM": 42.12,
+    "link_CTR_pct": 0.396,
+    "link_CPC": 10.63,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 4,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251081772950660",
+    "name": "CT Themes 20260913 | pool__user_video",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 0,
+      "last_sig_edit_ts": 1789618488,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-12T23:40:21-0400",
+    "start_time": "2026-09-12T23:40:21-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 76.21,
+    "impressions": 1179,
+    "link_clicks": 43,
+    "CPM": 64.64,
+    "link_CTR_pct": 3.647,
+    "link_CPC": 1.77,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 43,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080705580660",
+    "name": "CT Themes 20260913 | pool__gunite",
+    "campaign_id": "120251080549940660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "created_time": "2026-09-12T22:22:26-0400",
+    "start_time": "2026-09-12T22:22:27-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 0,
+    "impressions": 0,
+    "link_clicks": 0,
+    "CPM": null,
+    "link_CTR_pct": null,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080701390660",
+    "name": "CT Themes 20260913 | pool__quick",
+    "campaign_id": "120251080549940660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ]
+    },
+    "created_time": "2026-09-12T22:22:07-0400",
+    "start_time": "2026-09-12T22:22:08-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 0,
+    "impressions": 0,
+    "link_clicks": 0,
+    "CPM": null,
+    "link_CTR_pct": null,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080701120660",
+    "name": "CT Themes 20260913 | pool__monthly",
+    "campaign_id": "120251080549940660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ]
+    },
+    "created_time": "2026-09-12T22:22:05-0400",
+    "start_time": "2026-09-12T22:22:05-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 0,
+    "impressions": 0,
+    "link_clicks": 0,
+    "CPM": null,
+    "link_CTR_pct": null,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080561430660",
+    "name": "CT Themes 20260913 | pool__crew",
+    "campaign_id": "120251080549940660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "created_time": "2026-09-12T22:09:42-0400",
+    "start_time": "2026-09-12T22:09:42-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 0,
+    "impressions": 0,
+    "link_clicks": 0,
+    "CPM": null,
+    "link_CTR_pct": null,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080561010660",
+    "name": "CT Themes 20260913 | pool__renewal",
+    "campaign_id": "120251080549940660",
+    "status": "PAUSED",
+    "effective_status": "PAUSED",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "created_time": "2026-09-12T22:09:40-0400",
+    "start_time": "2026-09-12T22:09:40-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 0,
+    "impressions": 0,
+    "link_clicks": 0,
+    "CPM": null,
+    "link_CTR_pct": null,
+    "link_CPC": null,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 0,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080559780660",
+    "name": "CT Themes 20260913 | pool__coi",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 0,
+      "last_sig_edit_ts": 1789273430,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-12T22:09:38-0400",
+    "start_time": "2026-09-12T22:09:38-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 13.22,
+    "impressions": 164,
+    "link_clicks": 1,
+    "CPM": 80.61,
+    "link_CTR_pct": 0.61,
+    "link_CPC": 13.22,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 0,
+    "observed_sessions": 10,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": null,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080557630660",
+    "name": "CT Themes 20260913 | pool__work",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 1,
+      "last_sig_edit_ts": 1789273436,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-12T22:09:32-0400",
+    "start_time": "2026-09-12T22:09:32-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 185.64,
+    "impressions": 4093,
+    "link_clicks": 25,
+    "CPM": 45.36,
+    "link_CTR_pct": 0.611,
+    "link_CPC": 7.43,
+    "completed_saved": 1,
+    "new_acquisitions": 0,
+    "observed_starts": 1,
+    "observed_sessions": 27,
+    "CPL_saved": 185.64,
+    "CPL_new": null,
+    "cost_per_observed_start": 185.64,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  },
+  {
+    "id": "120251080556040660",
+    "name": "CT Themes 20260913 | pool__price",
+    "campaign_id": "120251080549940660",
+    "status": "ACTIVE",
+    "effective_status": "ACTIVE",
+    "targeting": {
+      "age_max": 65,
+      "age_min": 18,
+      "geo_locations": {
+        "regions": [
+          {
+            "key": "3843",
+            "name": "Alabama",
+            "country": "US"
+          },
+          {
+            "key": "3844",
+            "name": "Alaska",
+            "country": "US"
+          },
+          {
+            "key": "3845",
+            "name": "Arizona",
+            "country": "US"
+          },
+          {
+            "key": "3846",
+            "name": "Arkansas",
+            "country": "US"
+          },
+          {
+            "key": "3848",
+            "name": "Colorado",
+            "country": "US"
+          },
+          {
+            "key": "3849",
+            "name": "Connecticut",
+            "country": "US"
+          },
+          {
+            "key": "3850",
+            "name": "Delaware",
+            "country": "US"
+          },
+          {
+            "key": "3853",
+            "name": "Georgia",
+            "country": "US"
+          },
+          {
+            "key": "3854",
+            "name": "Hawaii",
+            "country": "US"
+          },
+          {
+            "key": "3855",
+            "name": "Idaho",
+            "country": "US"
+          },
+          {
+            "key": "3856",
+            "name": "Illinois",
+            "country": "US"
+          },
+          {
+            "key": "3857",
+            "name": "Indiana",
+            "country": "US"
+          },
+          {
+            "key": "3858",
+            "name": "Iowa",
+            "country": "US"
+          },
+          {
+            "key": "3859",
+            "name": "Kansas",
+            "country": "US"
+          },
+          {
+            "key": "3860",
+            "name": "Kentucky",
+            "country": "US"
+          },
+          {
+            "key": "3861",
+            "name": "Louisiana",
+            "country": "US"
+          },
+          {
+            "key": "3862",
+            "name": "Maine",
+            "country": "US"
+          },
+          {
+            "key": "3863",
+            "name": "Maryland",
+            "country": "US"
+          },
+          {
+            "key": "3864",
+            "name": "Massachusetts",
+            "country": "US"
+          },
+          {
+            "key": "3866",
+            "name": "Minnesota",
+            "country": "US"
+          },
+          {
+            "key": "3867",
+            "name": "Mississippi",
+            "country": "US"
+          },
+          {
+            "key": "3868",
+            "name": "Missouri",
+            "country": "US"
+          },
+          {
+            "key": "3869",
+            "name": "Montana",
+            "country": "US"
+          },
+          {
+            "key": "3870",
+            "name": "Nebraska",
+            "country": "US"
+          },
+          {
+            "key": "3871",
+            "name": "Nevada",
+            "country": "US"
+          },
+          {
+            "key": "3872",
+            "name": "New Hampshire",
+            "country": "US"
+          },
+          {
+            "key": "3873",
+            "name": "New Jersey",
+            "country": "US"
+          },
+          {
+            "key": "3874",
+            "name": "New Mexico",
+            "country": "US"
+          },
+          {
+            "key": "3876",
+            "name": "North Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3877",
+            "name": "North Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3878",
+            "name": "Ohio",
+            "country": "US"
+          },
+          {
+            "key": "3879",
+            "name": "Oklahoma",
+            "country": "US"
+          },
+          {
+            "key": "3880",
+            "name": "Oregon",
+            "country": "US"
+          },
+          {
+            "key": "3881",
+            "name": "Pennsylvania",
+            "country": "US"
+          },
+          {
+            "key": "3882",
+            "name": "Rhode Island",
+            "country": "US"
+          },
+          {
+            "key": "3883",
+            "name": "South Carolina",
+            "country": "US"
+          },
+          {
+            "key": "3884",
+            "name": "South Dakota",
+            "country": "US"
+          },
+          {
+            "key": "3885",
+            "name": "Tennessee",
+            "country": "US"
+          },
+          {
+            "key": "3886",
+            "name": "Texas",
+            "country": "US"
+          },
+          {
+            "key": "3887",
+            "name": "Utah",
+            "country": "US"
+          },
+          {
+            "key": "3888",
+            "name": "Vermont",
+            "country": "US"
+          },
+          {
+            "key": "3889",
+            "name": "Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3891",
+            "name": "West Virginia",
+            "country": "US"
+          },
+          {
+            "key": "3892",
+            "name": "Wisconsin",
+            "country": "US"
+          },
+          {
+            "key": "3893",
+            "name": "Wyoming",
+            "country": "US"
+          }
+        ],
+        "location_types": [
+          "frequently_in",
+          "home"
+        ]
+      },
+      "targeting_automation": {
+        "advantage_audience": 1
+      },
+      "publisher_platforms": [
+        "facebook",
+        "instagram"
+      ],
+      "facebook_positions": [
+        "feed"
+      ],
+      "instagram_positions": [
+        "stream"
+      ]
+    },
+    "optimization_goal": "OFFSITE_CONVERSIONS",
+    "promoted_object": {
+      "pixel_id": "831179966599677",
+      "custom_event_type": "LEAD",
+      "smart_pse_enabled": false
+    },
+    "learning_stage_info": {
+      "attribution_windows": [
+        "1d_click"
+      ],
+      "conversions": 0,
+      "last_sig_edit_ts": 1789273434,
+      "status": "LEARNING"
+    },
+    "created_time": "2026-09-12T22:09:27-0400",
+    "start_time": "2026-09-12T22:09:27-0400",
+    "attribution_spec": [
+      {
+        "event_type": "CLICK_THROUGH",
+        "window_days": 1
+      }
+    ],
+    "spend": 109.61,
+    "impressions": 2468,
+    "link_clicks": 13,
+    "CPM": 44.41,
+    "link_CTR_pct": 0.527,
+    "link_CPC": 8.43,
+    "completed_saved": 0,
+    "new_acquisitions": 0,
+    "observed_starts": 1,
+    "observed_sessions": 13,
+    "CPL_saved": null,
+    "CPL_new": null,
+    "cost_per_observed_start": 109.61,
+    "measurement_flags": "O: observed session IDs, not verified people; C: reconciled completed intakes, including returns; V: form versions changed Sep18"
+  }
+]

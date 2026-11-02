@@ -1,0 +1,182 @@
+[
+  {
+    "campaign_id": "120251080550890660",
+    "campaign_name": "CT Themes 20260913 | hvac",
+    "status": "PAUSED",
+    "budget_mode": "Campaign (CBO)",
+    "configured_daily_budget_active_sets": 120.0,
+    "funded_daily_budget": 0,
+    "active_adsets": 8,
+    "all_adsets": 13
+  },
+  {
+    "campaign_id": "120251080550480660",
+    "campaign_name": "CT Themes 20260913 | painting",
+    "status": "PAUSED",
+    "budget_mode": "Campaign (CBO)",
+    "configured_daily_budget_active_sets": 120.0,
+    "funded_daily_budget": 0,
+    "active_adsets": 8,
+    "all_adsets": 13
+  },
+  {
+    "campaign_id": "120251080550210660",
+    "campaign_name": "CT Themes 20260913 | tree",
+    "status": "ACTIVE",
+    "budget_mode": "Campaign (CBO)",
+    "configured_daily_budget_active_sets": 100.0,
+    "funded_daily_budget": 100.0,
+    "active_adsets": 8,
+    "all_adsets": 12
+  },
+  {
+    "campaign_id": "120251080550110660",
+    "campaign_name": "CT Themes 20260913 | roof",
+    "status": "ACTIVE",
+    "budget_mode": "Campaign (CBO)",
+    "configured_daily_budget_active_sets": 100.0,
+    "funded_daily_budget": 100.0,
+    "active_adsets": 8,
+    "all_adsets": 13
+  },
+  {
+    "campaign_id": "120251080550020660",
+    "campaign_name": "CT Themes 20260913 | remodel",
+    "status": "ACTIVE",
+    "budget_mode": "Campaign (CBO)",
+    "configured_daily_budget_active_sets": 250.0,
+    "funded_daily_budget": 250.0,
+    "active_adsets": 8,
+    "all_adsets": 12
+  },
+  {
+    "campaign_id": "120251080549940660",
+    "campaign_name": "CT Themes 20260913 | pool",
+    "status": "ACTIVE",
+    "budget_mode": "Campaign (CBO)",
+    "configured_daily_budget_active_sets": 370.0,
+    "funded_daily_budget": 370.0,
+    "active_adsets": 9,
+    "all_adsets": 14
+  },
+  {
+    "campaign_id": "120251073255950660",
+    "campaign_name": "CT Sprint 20260912",
+    "status": "ACTIVE",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 46
+  },
+  {
+    "campaign_id": "120251001083740660",
+    "campaign_name": "CP - Metro repricing test - 20 x $20 - 2026-09-08",
+    "status": "ACTIVE",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 40.0,
+    "funded_daily_budget": 40.0,
+    "active_adsets": 2,
+    "all_adsets": 20
+  },
+  {
+    "campaign_id": "120250714570810660",
+    "campaign_name": "Local Service Network - free leads (high-premium trades)",
+    "status": "PAUSED",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 10.0,
+    "funded_daily_budget": 0,
+    "active_adsets": 1,
+    "all_adsets": 1
+  },
+  {
+    "campaign_id": "120250602165530660",
+    "campaign_name": "Contractors HIGH-VALUE - hybrid Foxquilt/Hedge",
+    "status": "ACTIVE",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 180.0,
+    "funded_daily_budget": 180.0,
+    "active_adsets": 3,
+    "all_adsets": 27
+  },
+  {
+    "campaign_id": "120250540492410660",
+    "campaign_name": "Commercial Property - form vs landing (2-cell)",
+    "status": "ACTIVE",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 150.0,
+    "funded_daily_budget": 150.0,
+    "active_adsets": 2,
+    "all_adsets": 3
+  },
+  {
+    "campaign_id": "120250513372720660",
+    "campaign_name": "Restaurants - Landing Page (Website Leads)",
+    "status": "ACTIVE",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 10
+  },
+  {
+    "campaign_id": "120250465734500660",
+    "campaign_name": "Religious - Landing Page (Website Leads)",
+    "status": "ACTIVE",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 3
+  },
+  {
+    "campaign_id": "120250412284720660",
+    "campaign_name": "Contractors — Foxquilt (9 states)",
+    "status": "PAUSED",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 5
+  },
+  {
+    "campaign_id": "120250214453700660",
+    "campaign_name": "LRO / Building owners - leads",
+    "status": "PAUSED",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 2
+  },
+  {
+    "campaign_id": "120249822083780660",
+    "campaign_name": "Gate-free → Next - Website Leads (multi-industry)",
+    "status": "PAUSED",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 4
+  },
+  {
+    "campaign_id": "120249667362340660",
+    "campaign_name": "Form Fill Leads - NY (instant form)",
+    "status": "PAUSED",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 300.0,
+    "funded_daily_budget": 0,
+    "active_adsets": 1,
+    "all_adsets": 16
+  },
+  {
+    "campaign_id": "120249655386740660",
+    "campaign_name": "website ad - Leads",
+    "status": "PAUSED",
+    "budget_mode": "Ad set (ABO)",
+    "configured_daily_budget_active_sets": 0,
+    "funded_daily_budget": 0,
+    "active_adsets": 0,
+    "all_adsets": 2
+  }
+]

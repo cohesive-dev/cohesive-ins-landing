@@ -1,0 +1,54 @@
+[
+  {
+    "headline": "my notes after handover",
+    "primary": "the pool is handed over. that doesn't mean my liability is over.\n\ni'm checking the completed-operations cover and exclusions. 'we finished the job' isn't an insurance policy.",
+    "mechanism": "Liability after completion; same primary text as control, different photographed-note medium.",
+    "vertical": "pool",
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/pool-challenger.png",
+    "status": "REVIEW ONLY, NOT LAUNCHED",
+    "format": "Staged finished-pool photo with handover note",
+    "description": "",
+    "cta": "GET_QUOTE",
+    "generation": "Built-in imagegen; illustrative concepts, not customer photos or real message screenshots",
+    "promotion": "40 starts/arm, challenger >=33% cheaper per start, 10 new completions/arm, no worse completed CPL; inconclusive means no swap"
+  },
+  {
+    "headline": "the cert in my folder",
+    "primary": "his cert shows last month's expiration date. he says the policy renewed.\n\ni still need the current cert, and i need to check what my own policy requires for subs. i thought collecting it once was enough.",
+    "mechanism": "Subcontractor policy conditions and current evidence of insurance; an old certificate alone does not prove no insurance.",
+    "vertical": "remodeling",
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/remodeling-challenger.png",
+    "status": "REVIEW ONLY, NOT LAUNCHED",
+    "format": "Illustrative message-thread screenshot",
+    "description": "",
+    "cta": "GET_QUOTE",
+    "generation": "Built-in imagegen; illustrative concepts, not customer photos or real message screenshots",
+    "promotion": "40 starts/arm, challenger >=33% cheaper per start, 10 new completions/arm, no worse completed CPL; inconclusive means no swap"
+  },
+  {
+    "headline": "roofing isn't my whole business",
+    "primary": "i use subs for roofing, siding, gutters and interior remodels.\n\nroofing isn't my whole business. i'm checking that my policy reflects all the work i take on. one trade on the paperwork isn't the full picture.",
+    "mechanism": "Full operations and classification scope for multi-trade GCs. Changes qualification angle as well as medium; cannot isolate format alone.",
+    "vertical": "roofing",
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/roofing-challenger.png",
+    "status": "REVIEW ONLY, NOT LAUNCHED",
+    "format": "Authored plain text post",
+    "description": "",
+    "cta": "GET_QUOTE",
+    "generation": "Built-in imagegen; illustrative concepts, not customer photos or real message screenshots",
+    "promotion": "40 starts/arm, challenger >=33% cheaper per start, 10 new completions/arm, no worse completed CPL; inconclusive means no swap"
+  },
+  {
+    "headline": "a note before the next removal",
+    "primary": "the tree came down. not where i planned.\n\ni'm checking what my policy says about damage from removal work. 'tree service' on page one isn't the whole policy.",
+    "mechanism": "Liability scope for removal work; asks to review terms rather than claiming every policy excludes falling-tree damage.",
+    "vertical": "tree",
+    "image_url": "https://www.cohesiveinsure.com/marketing-review/20260919/tree-challenger.png",
+    "status": "REVIEW ONLY, NOT LAUNCHED",
+    "format": "Staged handwritten note",
+    "description": "",
+    "cta": "GET_QUOTE",
+    "generation": "Built-in imagegen; illustrative concepts, not customer photos or real message screenshots",
+    "promotion": "40 starts/arm, challenger >=33% cheaper per start, 10 new completions/arm, no worse completed CPL; inconclusive means no swap"
+  }
+]

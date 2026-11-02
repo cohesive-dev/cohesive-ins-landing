@@ -54,6 +54,10 @@ export default function PrivacyPolicyPage() {
               The contents of communications with us by phone, text message, email, web chat, or
               scheduling tools.
             </li>
+            <li>
+              A customer referral code when you use a shared referral link, so we can credit the
+              customer who referred you and track the resulting quote request.
+            </li>
           </ul>
           <p>
             We also automatically collect certain technical information when you visit our site,
