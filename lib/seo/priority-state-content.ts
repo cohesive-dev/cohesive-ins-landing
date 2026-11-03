@@ -67,8 +67,8 @@ const profiles: Record<string, Profile> = {
     ],
     faqs: [
       { q: "Does a New Jersey lawn-care policy cover tree removal?", a: "Do not assume it does. Describe full removals, rigging, heights and equipment to the insurer, and ask which operations and exclusions the proposed policy accepts." },
-      { q: "What is the difference between an NJ tree-care operator and a tree expert?", a: "The Board describes Licensed Tree Care Operator work as standard pruning, removal and stump services. Licensed Tree Experts have a broader scope that can include cabling, diagnosis and tree-risk assessment. Check the current Board definitions for your exact services." },
-      { q: "Does a certificate replace New Jersey tree-care business registration?", a: "No. The Board requires its own business registration and a licensed individual in the company. Insurance evidence and customer certificate requests are separate from that registration." },
+      { q: "What specialist tree work should I describe when requesting insurance?", a: "List cabling, tree-health advice, risk assessments and pesticide work separately from pruning, removals and stump work. Include your maximum working height and any cranes or subcontractors so the insurer can review the actual operations." },
+      { q: "Does a tree-service certificate confirm every job is covered?", a: "No. A certificate summarizes policy information; ask the insurer to review the proposed job, operations, limits and exclusions against the policy before promising coverage to a customer." },
     ],
   },
   "cleaning/indiana": {
