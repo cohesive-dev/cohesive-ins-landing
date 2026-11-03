@@ -32,6 +32,45 @@ export type Profile = {
 };
 
 const profiles: Record<string, Profile> = {
+  "tree-service/new-jersey": {
+    name: "Tree Service",
+    state: "New Jersey",
+    reviewedOn: "2026-11-03",
+    intro: "New Jersey tree-care businesses should describe pruning, removals and stump work separately from tree-health advice, cabling and risk assessments. Tell us the highest trees, equipment and subcontracted work so the insurance request matches the jobs you take.",
+    pricing: "Prepare annual receipts, payroll, subcontractor costs, claims history and the share of pruning, removals, stump work and specialist tree services. Include maximum working height, climbing, lifts, cranes and utility-line exposure. Compare the operations and exclusions accepted by each insurer before comparing premiums; a general tree-service label does not establish coverage for every job.",
+    facts: [
+      {
+        title: "Register the tree-care business with the Board",
+        body: "The New Jersey Board of Tree Experts says businesses providing tree care for hire in the state must register, including businesses based elsewhere. It requires at least one licensed individual working full time in the company. Check the current registration and branch requirements with the Board before advertising or taking a job.",
+        source: { label: "NJ Board of Tree Experts: information for businesses", href: "https://www.nj.gov/njbte/operators/information-for-businesses/" },
+      },
+      {
+        title: "Match the license to the services offered",
+        body: "The Board distinguishes a Licensed Tree Care Operator's pruning, removals and stump work from a Licensed Tree Expert's broader scope, which can include cabling, diagnosis and risk assessment. Describe those specialist services separately in the insurance request; a license title does not establish policy coverage.",
+        source: { label: "NJ Board of Tree Experts: tree-care license scopes", href: "https://www.nj.gov/njbte/licensing/licensing/licensing-te-teo/" },
+      },
+      {
+        title: "Check the Board's financial and worker-coverage requirements",
+        body: "The Board lists at least $1 million in general liability insurance or a $1 million bank letter of credit, plus workers' compensation for employees or approved self-insurance. A customer contract can ask for different policy limits or endorsements; send it with the job description for review.",
+        source: { label: "NJ Board of Tree Experts: business insurance requirements", href: "https://www.nj.gov/njbte/operators/information-for-businesses/" },
+      },
+    ],
+    questions: [
+      "Do you only prune, remove and grind stumps, or also assess tree risk, cable or treat trees?",
+      "What are the maximum tree and working heights, including occasional jobs?",
+      "Who operates lifts or cranes, and does any crew work near utility lines?",
+      "What are your receipts, payroll, subcontractor costs and requested customer limits?",
+    ],
+    coverages: [
+      { name: "Accepted tree operations and completed work", desc: "Review pruning, felling, removals, rigging, specialist advice and any pesticide work against the actual policy terms. Ask about height, utility-line and subcontractor restrictions before accepting a quote." },
+      { name: "Workers, vehicles and equipment", desc: "Review employee coverage, trucks, chippers, aerial lifts and owned or rented equipment separately. A liability certificate does not insure all of these exposures." },
+    ],
+    faqs: [
+      { q: "Does a New Jersey lawn-care policy cover tree removal?", a: "Do not assume it does. Describe full removals, rigging, heights and equipment to the insurer, and ask which operations and exclusions the proposed policy accepts." },
+      { q: "What specialist tree work should I describe when requesting insurance?", a: "List cabling, tree-health advice, risk assessments and pesticide work separately from pruning, removals and stump work. Include your maximum working height and any cranes or subcontractors so the insurer can review the actual operations." },
+      { q: "Does a tree-service certificate confirm every job is covered?", a: "No. A certificate summarizes policy information; ask the insurer to review the proposed job, operations, limits and exclusions against the policy before promising coverage to a customer." },
+    ],
+  },
   "cleaning/indiana": {
   "name": "Janitorial & Cleaning",
   "state": "Indiana",
