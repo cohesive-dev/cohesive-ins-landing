@@ -170,7 +170,13 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     (t.nationalOnly ? [] : CONTRACTOR_STATE_SLUGS).filter((s) => contractorStateBuildable(t.slug, s)).map(
       (s) => ({
         url: `${BASE}/insurance/${t.slug}/${s}`,
-        ...((["pool", "remodeler"].includes(t.slug) || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? { lastModified: ["pool", "remodeler"].includes(t.slug) ? "2026-09-15" : priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
+        ...((["pool", "remodeler"].includes(t.slug) || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? {
+          lastModified: t.slug === "pool" && ["texas", "north-carolina"].includes(s)
+            ? "2026-11-03"
+            : ["pool", "remodeler"].includes(t.slug)
+              ? "2026-09-15"
+              : priorityStateUpdated(`/insurance/${t.slug}/${s}`),
+        } : {}),
         // A dated price release (roofer 2026-10-22) is the page's latest change, only where the price applies.
         ...(tradePriceUpdated(t.slug, getContractorState(s)?.abbr) ? { lastModified: tradePriceUpdated(t.slug, getContractorState(s)?.abbr) } : {}),
         changeFrequency: "monthly" as const,
