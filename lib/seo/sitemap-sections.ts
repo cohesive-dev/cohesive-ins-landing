@@ -179,6 +179,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
         } : {}),
         // A dated price release (roofer 2026-10-22) is the page's latest change, only where the price applies.
         ...(tradePriceUpdated(t.slug, getContractorState(s)?.abbr) ? { lastModified: tradePriceUpdated(t.slug, getContractorState(s)?.abbr) } : {}),
+        ...(t.slug === "tree-service" && s === "new-jersey" ? { lastModified: "2026-11-03" } : {}),
         changeFrequency: "monthly" as const,
       }),
     ),
