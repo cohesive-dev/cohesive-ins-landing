@@ -437,6 +437,13 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
     ...(t.slug === "pool" ? swimmingPoolContent(cs.name) : {}),
     ...priorityStateContent(t.slug, cs.slug),
   }, t.slug), t, { name: cs.name, abbr: cs.abbr }, [`Plus ${cs.abbr} licensing, workers' comp and bond rules.`, "Get a quote."]);
+  if (t.slug === "pool" && ["texas", "north-carolina"].includes(cs.slug)) {
+    return {
+      ...content,
+      heroH1: `Pool Builder Insurance in ${cs.name}`,
+      metaDescription: `Pool builder insurance in ${cs.name}: describe excavation, shell installation and subcontractors. Compare construction and completed-work terms before requesting a quote.`,
+    };
+  }
   if (t.slug !== "roofer" || cs.slug !== "texas") return content;
   return {
     ...content,

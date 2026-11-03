@@ -49,7 +49,7 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     ],
   },
   {
-    ...common, updatedAt: "2026-09-15", slug: "pool-construction-vs-maintenance-insurance", title: "Pool construction vs. pool maintenance insurance", category: "Swimming pool operations", industry: "Pool construction", tradeLabel: "Pool construction", insurancePath: "/insurance/pool",
+    ...common, updatedAt: "2026-11-03", slug: "pool-construction-vs-maintenance-insurance", title: "Pool construction vs. pool maintenance insurance", category: "Swimming pool operations", industry: "Pool construction", tradeLabel: "Pool construction", insurancePath: "/insurance/pool",
     description: "Separate pool building, renovation and maintenance when requesting insurance. Review gunite, silica, excavation, subcontractors and completed-work questions.",
     intro: "A pool builder and a pool-cleaning business may serve the same homeowner, but perform different work. Separate those services before using a price or policy description as a comparison.",
     sections: [
@@ -70,6 +70,14 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     {
       "label": "Compare the full terms of contractor quotes",
       "href": "/guides/contractor-insurance-quote-comparison"
+    },
+    {
+      "label": "Texas pool builder insurance: construction and completed operations",
+      "href": "/insurance/pool/texas"
+    },
+    {
+      "label": "North Carolina pool builder insurance: construction and subcontractors",
+      "href": "/insurance/pool/north-carolina"
     }
   ]
 },
