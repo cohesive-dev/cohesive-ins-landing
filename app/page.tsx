@@ -548,8 +548,7 @@ function Hero() {
 
   if (showCal) {
     return (
-      <section className="relative overflow-hidden pt-20 bg-white">
-        <HeroParticles />
+      <section className="relative overflow-hidden pt-20">
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 text-center">
           {/* Soft white halo keeps the particle network clear of the headline */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-6 bottom-[-1.5rem] mx-auto max-w-4xl rounded-full bg-white/90 blur-2xl" />
@@ -571,8 +570,7 @@ function Hero() {
   }
 
   return (
-    <section className="relative overflow-hidden pt-20 bg-white">
-      <HeroParticles />
+    <section className="relative overflow-hidden pt-20">
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 md:pt-20 text-center">
         {/* Soft white halo keeps the particle network clear of the headline */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-6 bottom-[-1.5rem] mx-auto max-w-4xl rounded-full bg-white/90 blur-2xl" />
@@ -630,7 +628,7 @@ function SocialProof() {
   ];
 
   return (
-    <section className="bg-white border-t border-slate-200 py-10">
+    <section className="bg-white border-y border-slate-200 py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-3 gap-6 text-center">
           {stats.map((s) => (
@@ -686,8 +684,7 @@ function Industries() {
   }, []);
 
   return (
-    <section id="industries" className="relative overflow-hidden py-24 bg-white border-t border-slate-200">
-      <HeroParticles />
+    <section id="industries" className="relative overflow-hidden py-24 border-t border-slate-200">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <div className="text-xs font-bold text-[#2040E7] uppercase tracking-widest mb-3">Industry Programs</div>
@@ -889,8 +886,7 @@ function Coverage() {
   }, [inView]);
 
   return (
-    <section id="coverage" className="relative overflow-hidden py-24 bg-white border-t border-slate-200">
-      <HeroParticles />
+    <section id="coverage" className="relative overflow-hidden py-24">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-24 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
           <div>
@@ -965,8 +961,8 @@ function HowItWorks() {
   ];
 
   return (
-    <section id="how-it-works" className="py-24 bg-white border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="how-it-works" className="relative overflow-hidden py-24">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center max-w-2xl mx-auto">
           <div className="text-xs font-bold text-[#2040E7] uppercase tracking-widest mb-3">Process</div>
           <h2 className="text-3xl sm:text-4xl font-bold text-[#131517] mb-4">
@@ -1017,7 +1013,7 @@ function Carriers() {
   ];
 
   return (
-    <section id="carriers" className="py-20 bg-[#2040E7] text-white overflow-hidden">
+    <section id="carriers" className="overflow-hidden border-t border-slate-200 bg-[#2040E7] py-20 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-start justify-between gap-6 mb-14">
           <div>
@@ -1152,7 +1148,7 @@ function Testimonials() {
   };
 
   return (
-    <section className="py-24 bg-white border-t border-slate-200">
+    <section className="py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-10 text-center sm:text-left">
           <div className="text-xs font-bold text-[#2040E7] uppercase tracking-widest mb-3">Client Stories</div>
@@ -1227,8 +1223,7 @@ function CTA() {
   const [prefill, setPrefill] = useState<Prefill>({});
 
   return (
-    <section id="get-quote" className="relative overflow-hidden py-24 bg-white border-t border-slate-200">
-      <HeroParticles />
+    <section id="get-quote" className="relative overflow-hidden py-24">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center mb-10">
           <h2 className="text-3xl sm:text-4xl font-bold text-[#131517] mb-6">
@@ -1414,7 +1409,8 @@ export default function Home() {
   return (
     <>
       <Navbar onOpenQuote={openQuote} />
-      <main>
+      <HeroParticles fixed />
+      <main className="relative z-10">
         <Hero />
         <SocialProof />
         <Industries />
