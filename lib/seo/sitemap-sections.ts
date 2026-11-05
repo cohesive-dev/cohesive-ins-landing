@@ -168,13 +168,21 @@ function buildSections(): Record<SitemapSection, Entry[]> {
 
   const tradeStates = TRADES.flatMap((t) =>
     (t.nationalOnly ? [] : CONTRACTOR_STATE_SLUGS).filter((s) => contractorStateBuildable(t.slug, s)).map(
-      (s) => ({
-        url: `${BASE}/insurance/${t.slug}/${s}`,
-        ...((["pool", "remodeler"].includes(t.slug) || priorityStateUpdated(`/insurance/${t.slug}/${s}`)) ? { lastModified: ["pool", "remodeler"].includes(t.slug) ? "2026-09-15" : priorityStateUpdated(`/insurance/${t.slug}/${s}`) } : {}),
-        // A dated price release (roofer 2026-10-22) is the page's latest change, only where the price applies.
-        ...(tradePriceUpdated(t.slug, getContractorState(s)?.abbr) ? { lastModified: tradePriceUpdated(t.slug, getContractorState(s)?.abbr) } : {}),
-        changeFrequency: "monthly" as const,
-      }),
+      (s) => {
+        const path = `/insurance/${t.slug}/${s}`;
+        const profileDate = priorityStateUpdated(path);
+        const baseDate = t.slug === "pool" && ["texas", "north-carolina"].includes(s)
+          ? "2026-11-03"
+          : ["pool", "remodeler"].includes(t.slug) ? "2026-09-15" : undefined;
+        const priceDate = tradePriceUpdated(t.slug, getContractorState(s)?.abbr);
+        // The newest verified page, profile or price release supplies the sitemap date.
+        const lastModified = [baseDate, profileDate, priceDate].filter((date): date is string => !!date).sort().at(-1);
+        return {
+          url: `${BASE}${path}`,
+          ...(lastModified ? { lastModified } : {}),
+          changeFrequency: "monthly" as const,
+        };
+      },
     ),
   );
 

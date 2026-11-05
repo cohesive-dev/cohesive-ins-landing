@@ -43,6 +43,10 @@ async function submit(b){calls=[];const req=new Request('https://www.cohesiveins
  const contactBody={...body,details:[...body.details,{label:'Form version',value:'2026-09-18-trade-v5'}]};
  r=await submit({...contactBody,partial:true,final:true});assert.equal(r.body.notification,'sent');assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);assert.equal(calls.filter(c=>c.url).length,0);
  mail=false;r=await submit({...contactBody,partial:true,final:true});assert.equal(r.status,503);assert.equal(r.body.ok,false);assert.equal(capis().length,0);mail=true;
+ const shortBody={...body,details:[...body.details,{label:'Form version',value:'2026-11-05-shortfirst-v1'},{label:'Website form arm',value:'short-first-v1'},{label:'Primary trade',value:'Tree service'}]};
+ r=await submit({...shortBody,partial:true,final:true});assert.equal(r.body.notification,'sent');assert.equal(r.body.crm,'skipped');assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);assert.equal(calls.filter(c=>c.url).length,0);
+ mail=false;r=await submit({...shortBody,partial:true,final:true});assert.equal(r.status,503);assert.equal(r.body.ok,false);assert.equal(capis().length,0);mail=true;
+ r=await submit(shortBody);assert.equal(r.body.conversion.eligible,true);assert.equal(capis().length,1);
  crm=false;r=await submit(contactBody);assert.equal(r.status,200);assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);crm=true;
  r=await submit(contactBody);assert.equal(r.body.conversion.eligible,true);assert.equal(capis().length,1);
  delete process.env.INTAKE_CONVERSION_SECRET;delete process.env.META_CAPI_TOKEN;r=await submit(body);assert.equal(r.status,200);assert.equal(r.body.conversion.eligible,false);assert.equal(capis().length,0);

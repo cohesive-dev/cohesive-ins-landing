@@ -2,11 +2,13 @@
 import PartialCaptureDisclosure from './PartialCaptureDisclosure';
 import {contractorButtonClass} from './ContractorPageTheme';
 
-export function ContractorFormActions({status,error,enabled,next=false,onBack}:{status:string;error:string;enabled:boolean;next?:boolean;onBack?:()=>void}){
+export function ContractorFormActions({status,error,enabled,next=false,onBack,submitLabel,disclosureFirst=false}:{status:string;error:string;enabled:boolean;next?:boolean;onBack?:()=>void;submitLabel?:string;disclosureFirst?:boolean}){
+ const disclosure=<PartialCaptureDisclosure>{disclosureFirst?'By saving your details, you ask us to contact you about a contractor insurance quote. More questions follow.':"We’ll only use your details to prepare and send your insurance quote."}</PartialCaptureDisclosure>;
  return <>{error&&<p role="alert" className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
  {onBack&&<button type="button" onClick={onBack} className="border rounded p-4">Back</button>}
- <button type="submit" disabled={!enabled} className={contractorButtonClass}>{status==='sending'?'Sending…':next?'Next':'Get my quote'}</button>
- <PartialCaptureDisclosure>We&rsquo;ll only use your details to prepare and send your insurance quote.</PartialCaptureDisclosure></>;
+ {disclosureFirst&&disclosure}
+ <button type="submit" disabled={!enabled} className={contractorButtonClass}>{status==='saving'?'Saving…':status==='sending'?'Sending…':submitLabel??(next?'Next':'Get my quote')}</button>
+ {!disclosureFirst&&disclosure}</>;
 }
 export function ContractorFormSuccess(){return <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF1FF] text-3xl">🛠️</div>
