@@ -5,6 +5,8 @@ const base = process.argv[2] || 'http://localhost:3021';
 
 async function open(browser, path, init) {
   const context = await browser.newContext();
+  // This suite protects the existing control while the short-first A/B is live.
+  await context.addInitScript(() => localStorage.setItem('cohesive_contractor_short_first_ab_v1', 'current'));
   if (init) await context.addInitScript(init);
   const payloads = [], finals = [];
   await context.route('**/*', async route => {
