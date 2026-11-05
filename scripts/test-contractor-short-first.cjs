@@ -7,12 +7,13 @@ new Function('require', 'module', 'exports', validatorJs)(require, compiled, com
 const { validateFunnelEvent } = compiled.exports;
 
 const base = process.argv[2] || 'http://localhost:3021';
-async function open(browser, arm, layout = 'step', failFirst = false, query = 'industry=tree&angle=savings&ad_id=120251397789610660') {
+async function open(browser, arm, layout = 'step', failFirst = false, query = 'industry=tree&angle=savings&ad_id=120251397789610660', storedAttribution = null) {
   const context = await browser.newContext();
-  await context.addInitScript(({ arm, layout }) => {
+  await context.addInitScript(({ arm, layout, storedAttribution }) => {
     localStorage.setItem('cohesive_contractor_short_first_ab_v1', arm);
     localStorage.setItem('cohesive_experiment_tree_savings_v1', layout);
-  }, { arm, layout });
+    if (storedAttribution) sessionStorage.setItem('cohesive_attr_v1', JSON.stringify(storedAttribution));
+  }, { arm, layout, storedAttribution });
   const attempts = [], finals = [];
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
@@ -31,6 +32,7 @@ async function open(browser, arm, layout = 'step', failFirst = false, query = 'i
   });
   const page = await context.newPage();
   await page.goto(base + '/contractor-test?' + query, { waitUntil: 'networkidle', timeout: 120000 });
+  await page.getByRole('button', { name: arm === 'short' ? 'Save my details and continue' : 'Next', exact: true }).waitFor();
   return { context, page, attempts, finals };
 }
 const details = payload => Object.fromEntries((payload.details || []).map(item => [item.label, item.value]));
@@ -112,7 +114,8 @@ async function trade(page) {
       // This live roofing URL currently falls back to the generic form. Its ad URL
       // still identifies the advertised industry even if the visitor gives only email.
       const { context, page, attempts, finals } = await open(browser, 'short', 'step', false,
-        'industry=roof&angle=dollars&creative_variant=roof_quote_card&fbclid=IwARsourceOnly');
+        'industry=roof&angle=dollars&creative_variant=roof_quote_card&fbclid=IwARsourceOnly&utm_source=facebook&utm_medium=paid_social&utm_campaign=Roof%20Campaign',
+        { ad_id: '120250000000000001', utm_source: 'facebook', utm_campaign: 'Earlier Campaign' });
       await page.getByLabel('Email', { exact: true }).fill('source-only@example.invalid');
       const receipt = page.waitForResponse(response => new URL(response.url()).pathname === '/api/intake');
       await page.evaluate(() => {
@@ -127,6 +130,9 @@ async function trade(page) {
       assert.equal(source['Ad URL industry key'], 'roof');
       assert.equal(source['Ad URL creative variant'], 'roof_quote_card');
       assert.equal(source['Current Meta click id'], 'IwARsourceOnly');
+      assert.equal(source['Current URL traffic source'], 'facebook');
+      assert.equal(source['Current URL campaign'], 'Roof Campaign');
+      assert.equal(source['Campaign'], 'Earlier Campaign', 'first-touch history stays separate');
       assert.equal(source['Current ad_id'], undefined, 'click ID does not imply exact ad ID');
       assert.equal(source['Primary trade'], undefined, 'advertised industry is not customer-confirmed trade');
       await context.close();
