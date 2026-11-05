@@ -27,15 +27,16 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const valid=!!fallbackReason||validExperiment(industry,angle)&&(!coldLayout||isColdIndustry(industry));
  const industryLabel=INDUSTRIES[industry as keyof typeof INDUSTRIES]||'Contractor';
  const [assignedLayout,setLayout]=useState<'step'|'long'|null>(null),[answers,setAnswers]=useState<Answers>({});
+ const [arm,setArm]=useState<'current'|'short'|null>(null);
  const layout=coldLayout||assignedLayout;
  const [step,setStep]=useState(0),[status,setStatus]=useState('idle'),[error,setError]=useState('');
  const form=useRef<HTMLFormElement>(null),tracker=useRef<ReturnType<typeof attachFunnelTracker>|null>(null);
  const submission=useRef<string>('');
  const sentPartial=useRef(false),partialInFlight=useRef(false);
- const capturePartial=useRef<()=>Promise<void>>(async()=>{});
+ const capturePartial=useRef<()=>Promise<boolean>>(async()=>false);
  const honeypot=useRef<HTMLInputElement>(null);
  const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
- const formVersion=coldLayout?'2026-09-12-v1':'2026-09-18-trade-v5';
+ const formVersion=coldLayout?'2026-09-12-v1':arm==='short'?'2026-11-05-shortfirst-v1':'2026-09-18-trade-v5';
  const labels=coldLayout?LABELS:FULL_LABELS;
  const sourceDetails=useMemo(()=>cold?[{label:'Acquisition channel',value:'Cold email landing'},
    {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:fallbackReason?[
@@ -45,12 +46,14 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  useEffect(()=>{
    if(!layout||!valid||query.get('preview')==='1')return;
    const capture=async()=>{
-    if(sentPartial.current||partialInFlight.current||status==='sending'||status==='done')return;
+    if(sentPartial.current)return true;
+    if(partialInFlight.current||status==='sending'||status==='saving'||status==='done')return false;
     const email=validField('email',answers.email)?answers.email:undefined;
     const phone=validField('phone',answers.phone)?answers.phone:undefined;
-    if(!email&&!phone)return;
+    if(!email&&!phone)return false;
     submission.current ||=crypto.randomUUID();
     const details=[{label:'Experiment cell',value:cellId},{label:'Form version',value:formVersion},
+      ...(arm==='short'?[{label:'Website form arm',value:'short-first-v1'}]:arm==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB==='true'?[{label:'Website form arm',value:'current-v1'}]:[]),
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
       {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,value])=>({label:labels[k],value})),
@@ -59,11 +62,12 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
       ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!}))];
     const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
     const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||'',...(coverage?{coverage}:{})});
-    if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return;}
+    if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return sentPartial.current;}
     partialInFlight.current=true;
     try{const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});
-      const result=await res.json();if(res.ok&&result.ok===true&&result.notification==='sent'){sentPartial.current=true;tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();}
+      const result=await res.json();if(res.ok&&result.ok===true&&result.notification==='sent'){sentPartial.current=true;tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();return true;}
     }catch{/* retain leave/idle retry; never block completion */}finally{partialInFlight.current=false;}
+    return false;
    };
    capturePartial.current=capture;
    const hidden=()=>{if(document.visibilityState==='hidden')capture();};
@@ -73,16 +77,21 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
- },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout,labels,askWc]);
+ },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout,labels,askWc,arm]);
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
    const key=`cohesive_experiment_${industry}_${angle}_v1`;
    let chosen:'step'|'long'=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'step':'long';
    try{const stored=localStorage.getItem(key);if(stored==='step'||stored==='long')chosen=stored;else localStorage.setItem(key,chosen);}catch{/* stable for this mount only */}
+   let chosenArm:'current'|'short'='current';
+   if(process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB==='true'){
+     try{const stored=localStorage.getItem('cohesive_contractor_short_first_ab_v1');if(stored==='current'||stored==='short')chosenArm=stored;else{chosenArm=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'current':'short';localStorage.setItem('cohesive_contractor_short_first_ab_v1',chosenArm);}}catch{/* current form if assignment cannot persist */}
+   }
    // Preview controls never enter production experiment assignment or lead submission.
    if(query.get('preview')==='1'&&(query.get('layout')==='step'||query.get('layout')==='long'))chosen=query.get('layout') as 'step'|'long';
-   const timer=setTimeout(()=>setLayout(chosen),0);
+   if(query.get('preview')==='1'&&query.get('arm')==='short')chosenArm='short';
+   const timer=setTimeout(()=>{setArm(chosenArm);setLayout(chosenArm==='short'?'step':chosen);},0);
    return()=>clearTimeout(timer);
  },[industry,angle,query,coldLayout,valid]);
  useEffect(()=>{
@@ -95,7 +104,8 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  },[layout,query,cellId,coldLayout,valid,formVersion]);
  if(!valid&&coldLayout)return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">Get a contractor insurance quote</h1><p className="my-4">What type of work do you do?</p><ul className="space-y-3">{Object.entries(INDUSTRIES).map(([id,name])=><li key={id}><a className="underline" href={`?${new URLSearchParams({...Object.fromEntries(query),industry:id})}`}>{name}</a></li>)}</ul><a className="mt-6 inline-block underline" href="/contractors">Another trade</a></main>;
  if(!layout)return <main className="p-8">Loading your quote request…</main>;
- const screens=coldLayout?fieldsFor(answers,layout).map(k=>[k]):fullScreens(answers,askWc),lastStep=screens.length-1;
+ const originalScreens=coldLayout?fieldsFor(answers,layout).map(k=>[k]):fullScreens(answers,askWc);
+ const screens=arm==='short'?[ [...originalScreens[0],'trade'],originalScreens[1],originalScreens[2].filter(k=>k!=='trade'),...originalScreens.slice(3) ]:originalScreens,lastStep=screens.length-1;
  const fields=screens.flat(),shown=layout==='step'?screens[Math.min(step,lastStep)]:fields;
  const fieldValid=coldLayout?validField:validFullField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
@@ -110,6 +120,13 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  async function submit(e:React.FormEvent){
    e.preventDefault();
    if(layout==='step'&&step<lastStep){const invalid=shown.find(k=>!fieldValid(k,answers[k]));if(invalid){showFieldError(invalid);return;}
+    if(arm==='short'&&step===0&&!preview){
+      const save=capturePartial.current;
+      setStatus('saving');
+      const saved=await save();
+      setStatus('idle');
+      if(!saved){setError('We could not save your details. Please try again.');return;}
+    }
     setError('');setStep(step+1);return;}
    const invalid=fields.find(k=>!fieldValid(k,answers[k]));if(invalid){showFieldError(invalid);return;}
    if(preview){setStatus('done');return;}
@@ -119,6 +136,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const details=[
     {label:'Experiment cell',value:cellId},
     {label:'Form version',value:formVersion},
+    ...(arm==='short'?[{label:'Website form arm',value:'short-first-v1'}]:arm==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB==='true'?[{label:'Website form arm',value:'current-v1'}]:[]),
     {label:'Session id',value:tracker.current?.sessionId||'unavailable'},
     {label:'Submission id',value:submission.current},
     {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,
@@ -148,16 +166,24 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  {offer&&coldLayout&&<figure className="mb-6"><img src={`/contractor-proof/${industry}-reply.png`} alt={`Actual ${label.toLowerCase()} outreach reply excerpt`} className="w-full rounded-lg border"/><figcaption className="text-xs mt-2 text-slate-600">Actual outreach reply - excerpt. An interested reply is not a booked job.</figcaption></figure>}
  {preview&&<p role="status">Preview only - no lead will be sent.</p>}
  </div>
- <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===lastStep?'true':'false'} className={coldLayout?"space-y-6":contractorFormClass}>
+ <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===lastStep?'true':'false'} className={coldLayout?"space-y-6":arm==='short'&&step===0?'mx-auto max-w-2xl space-y-5 px-5 py-5 sm:px-6':contractorFormClass}>
  <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
- {layout==='step'&&<div><p>Step {step+1} of {screens.length}</p><div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}><div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/></div></div>}
- {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst askWorkersComp={askWc} visible={layout==='step'?shown:undefined}/></>:<>
+ {layout==='step'&&<div>
+   {arm==='short'&&step===0 ? <p>Start with your details. More quote questions come next.</p> : <>
+     <p>Step {step+1} of {screens.length}</p>
+     <div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}>
+       <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/>
+     </div>
+   </>}
+ </div>}
+ {arm==='short'&&step>0&&<p role="status" className="rounded-lg bg-[#EEF1FF] px-4 py-3 text-sm text-[#27455C]">Your contact details are saved. Answer the remaining questions so we can prepare an accurate quote.</p>}
+ {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst askWorkersComp={askWc} compact={arm==='short'&&step===0} visible={layout==='step'?shown:undefined}/></>:<>
  {shown.map(k=><div key={k} data-funnel-field={k}><label htmlFor={k} className="block font-semibold mb-2">{LABELS[k]}{k==='mailingAddress'?' (optional)':' *'}</label>
  {k==='payroll'&&<p>Select $0 if you have no W2 payroll. Do not include subcontractor payments.</p>}
  {k==='trade'?<select id={k} name={k} required value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"><option value="" disabled>Select your primary trade</option>{TRADES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select>:k==='mailingAddress'?<AddressAutocomplete id={k} value={answers[k]} onChange={v=>update(k,v)} ariaLabel={LABELS[k]} placeholder="Street, city, state, ZIP"/>:k in QUESTION_OPTIONS?<div id={k} role="group" aria-label={LABELS[k]} className="flex flex-wrap gap-2">{QUESTION_OPTIONS[k as keyof typeof QUESTION_OPTIONS].map(v=><button type="button" key={v} aria-pressed={answers[k]===v} onClick={()=>update(k,v)} className={'min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition '+(answers[k]===v?'border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]':'border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]')}>{v}</button>)}</div>:
  <input id={k} name={k} required maxLength={200} type={k==='email'?'email':k==='phone'?'tel':'text'} autoComplete={k==='fullName'?'name':k==='email'?'email':k==='phone'?'tel':'organization'} value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"/>}</div>)}
  </>}
- {!coldLayout?<ContractorFormActions status={status} error={error} enabled={status!=='sending'&&shown.every(k=>fieldValid(k,answers[k]))} next={layout==='step'&&step<lastStep} onBack={layout==='step'&&step>0?()=>setStep(step-1):undefined}/>:<> {error&&<p role="alert">{error}</p>}
+ {!coldLayout?<ContractorFormActions status={status} error={error} enabled={status!=='sending'&&status!=='saving'&&shown.every(k=>fieldValid(k,answers[k]))} next={layout==='step'&&step<lastStep} submitLabel={arm==='short'&&step===0?'Save my details and continue':undefined} disclosureFirst={arm==='short'&&step===0} onBack={layout==='step'&&step>0?()=>setStep(step-1):undefined}/>:<> {error&&<p role="alert">{error}</p>}
  <div className="flex gap-4">{layout==='step'&&step>0&&<button type="button" onClick={()=>setStep(step-1)} className="border rounded p-4">Back</button>}<button disabled={status==='sending'} className={coldLayout?"bg-blue-700 text-white rounded p-4":contractorButtonClass} type="submit">{status==='sending'?'Sending…':layout==='step'&&step<lastStep?'Next':'Get my insurance quote'}</button></div>
  <PartialCaptureDisclosure>By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}</PartialCaptureDisclosure></>}
  </form></main>;

@@ -8,9 +8,9 @@ import {TRADES} from '@/lib/contractor-trades';
 import {wantsWc} from '@/lib/contractor-full-form';
 import {OTHER_TRADES,PRIMARY_PCT,REVENUE,EMPLOYEES,PAYROLL,USES_SUBCONTRACTORS,SUBCONTRACTOR_COSTS,STRUCTURE,CURRENT_GL,CURRENT_PREMIUM,WC_REQUESTED,type Option} from '@/lib/contractor-full-options';
 const FIELD_KEYS:Record<string,string>={'Full name':'fullName','Email':'email','Phone':'phone','Legal business name':'legalName','Business address':'address',"What's your primary trade?":'trade','Any other trades?':'otherTrades','How much of your work is your primary trade?':'primaryPct','Describe your other trade or services':'otherTradeDescription','Annual revenue (roughly)':'revenue','W2 employees':'employees','Annual W2 payroll (roughly)':'payroll','Do you hire subcontractors?':'usesSubcontractors','Annual subcontractor costs (roughly)':'subcontractorCosts','Business structure':'structure','What year did you start the business?':'yearStarted','Do you have general liability coverage today?':'currentGl','What are you paying now for GL, per year?':'currentPremium','What coverage do you need?':'wcRequested','Full-time W2 employees':'wcFullTime','Part-time W2 employees':'wcPartTime','Annual W2 payroll':'wcPayroll'};
-const VisibleFields=createContext<{keys:string[];sections:string[]}|null>(null);
+const VisibleFields=createContext<{keys:string[];sections:string[];compact:boolean}|null>(null);
 // askWorkersComp: the staged WC question (/contractor-test?wc=1, i.e. WC ads), rendered first. Off (every other caller) renders nothing new.
-export default function ContractorQuestionSet({f,set,visible,contactFirst=false,askWorkersComp=false}:{f:Record<string,string>;set:(k:string,v:string)=>void;visible?:string[];contactFirst?:boolean;askWorkersComp?:boolean}){
+export default function ContractorQuestionSet({f,set,visible,contactFirst=false,askWorkersComp=false,compact=false}:{f:Record<string,string>;set:(k:string,v:string)=>void;visible?:string[];contactFirst?:boolean;askWorkersComp?:boolean;compact?:boolean}){
  const qualified=true,hasW2Employees=!!f.employees&&!f.employees.startsWith('0'),usesSubcontractors=f.usesSubcontractors==='Yes';
  const exactWc=askWorkersComp&&wantsWc(f),wcHasEmployees=(Number(f.wcFullTime)||0)+(Number(f.wcPartTime)||0)>0;
  const emailValid=/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(f.email||''),phoneValid=acceptedPhoneShape(f.phone);
@@ -19,7 +19,7 @@ export default function ContractorQuestionSet({f,set,visible,contactFirst=false,
  const needsOtherTradeDescription=f.trade==='Other trade'||selectedOtherTrades.includes('Other trade');
  function toggleOtherTrade(value:string){if(value==='None'){set('otherTrades','None');return;}const cur=selectedOtherTrades.filter(t=>t!=='None');set('otherTrades',(cur.includes(value)?cur.filter(t=>t!==value):[...cur,value]).join(', '));}
  const sections=visible?[...(visible.includes('wcRequested')?['Coverage you need']:[]),...(visible.some(k=>['fullName','email','phone'].includes(k))?['Your contact info']:[]),...(visible.some(k=>!['fullName','email','phone','currentGl','currentPremium','wcRequested','mailingAddress'].includes(k))?['About your business']:[]),...(visible.some(k=>['currentGl','currentPremium'].includes(k))?['Your current coverage']:[])]:[];
- return <VisibleFields.Provider value={visible?{keys:visible,sections}:null}><div className="space-y-8">
+ return <VisibleFields.Provider value={visible?{keys:visible,sections,compact}:null}><div className={compact?'space-y-4':'space-y-8'}>
         {/* Workers' comp: first thing a WC-ad visitor sees (wc=1 only) */}
         {askWorkersComp && (
           <Section title="Coverage you need">
@@ -161,7 +161,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   const ctx=useContext(VisibleFields);
   if(ctx && !ctx.sections.includes(title))return null;
   return (
-    <section className="space-y-4">
+    <section className={ctx?.compact?'space-y-2':'space-y-4'}>
       <h2 className="text-lg font-semibold text-[#27455C]">{title}</h2>
       {children}
     </section>
