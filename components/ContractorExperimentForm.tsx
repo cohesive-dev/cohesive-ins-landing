@@ -13,6 +13,7 @@ import {TRADES} from '@/lib/contractor-trades';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import PartialCaptureDisclosure from '@/components/PartialCaptureDisclosure';
 import {contractorFallbackReason} from '@/lib/contractor-landing-params';
+import {contractorSourceDetails} from '@/lib/contractor-source';
 
 export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
  const query=useSearchParams();
@@ -34,6 +35,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const submission=useRef<string>('');
  const sentPartial=useRef(false),partialInFlight=useRef(false);
  const capturePartial=useRef<()=>Promise<boolean>>(async()=>false);
+ const sourceAtEntry=useRef<ReturnType<typeof contractorSourceDetails>|null>(null);
  const honeypot=useRef<HTMLInputElement>(null);
  const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
  const formVersion=coldLayout?'2026-09-12-v1':arm==='short'?'2026-11-05-shortfirst-v1':'2026-09-18-trade-v5';
@@ -43,6 +45,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
      {label:'Landing fallback reason',value:fallbackReason},
      {label:'Landing form mode',value:'Generic contractor fallback; trade not inferred'},
    ]:[],[cold,coldLayout,fallbackReason]);
+ useEffect(()=>{if(!coldLayout)sourceAtEntry.current ??= contractorSourceDetails(new URLSearchParams(window.location.search));},[coldLayout]);
  useEffect(()=>{
    if(!layout||!valid||query.get('preview')==='1')return;
    const capture=async()=>{
@@ -59,7 +62,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,value])=>({label:labels[k],value})),
       ...attributionDetails(captureAttribution()),
       ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
-      ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!}))];
+      ...(!coldLayout?(sourceAtEntry.current??contractorSourceDetails(new URLSearchParams(query.toString()))):[])];
     const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
     const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||'',...(coverage?{coverage}:{})});
     if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return sentPartial.current;}
@@ -145,7 +148,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,v])=>({label:labels[k],value:v})),
     ...attributionDetails(captureAttribution()),
     ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
-    ...['ad_id','adset_id','campaign_id'].filter(k=>/^\d{5,30}$/.test(query.get(k)||'')).map(k=>({label:`Current ${k}`,value:query.get(k)!})),
+    ...(!coldLayout?(sourceAtEntry.current??contractorSourceDetails(new URLSearchParams(query.toString()))):[]),
    ];
    const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
    try{

@@ -7,7 +7,7 @@ new Function('require', 'module', 'exports', validatorJs)(require, compiled, com
 const { validateFunnelEvent } = compiled.exports;
 
 const base = process.argv[2] || 'http://localhost:3021';
-async function open(browser, arm, layout = 'step', failFirst = false) {
+async function open(browser, arm, layout = 'step', failFirst = false, query = 'industry=tree&angle=savings&ad_id=120251397789610660') {
   const context = await browser.newContext();
   await context.addInitScript(({ arm, layout }) => {
     localStorage.setItem('cohesive_contractor_short_first_ab_v1', arm);
@@ -30,7 +30,7 @@ async function open(browser, arm, layout = 'step', failFirst = false) {
     return route.continue();
   });
   const page = await context.newPage();
-  await page.goto(base + '/contractor-test?industry=tree&angle=savings&ad_id=120251397789610660', { waitUntil: 'networkidle' });
+  await page.goto(base + '/contractor-test?' + query, { waitUntil: 'networkidle', timeout: 120000 });
   return { context, page, attempts, finals };
 }
 const details = payload => Object.fromEntries((payload.details || []).map(item => [item.label, item.value]));
@@ -108,6 +108,29 @@ async function trade(page) {
       assert.equal(completed['Submission id'], first['Submission id'], 'partial and final share a submission ID');
       await context.close();
     }
-    console.log('PASS: control unchanged; short first screen, receipt failure/retry, source/trade/arm, no premature final, no duplicate save, same-ID final application. All intake requests intercepted.');
+    {
+      // This live roofing URL currently falls back to the generic form. Its ad URL
+      // still identifies the advertised industry even if the visitor gives only email.
+      const { context, page, attempts, finals } = await open(browser, 'short', 'step', false,
+        'industry=roof&angle=dollars&creative_variant=roof_quote_card&fbclid=IwARsourceOnly');
+      await page.getByLabel('Email', { exact: true }).fill('source-only@example.invalid');
+      const receipt = page.waitForResponse(response => new URL(response.url()).pathname === '/api/intake');
+      await page.evaluate(() => {
+        Object.defineProperty(document, 'visibilityState', { configurable: true, value: 'hidden' });
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      await receipt;
+      assert.equal(attempts.length, 1, 'email-only abandonment sends a partial');
+      assert.equal(finals.length, 0);
+      const source = details(attempts[0]);
+      assert.equal(source['Ad URL industry (not confirmed trade)'], 'Roofing');
+      assert.equal(source['Ad URL industry key'], 'roof');
+      assert.equal(source['Ad URL creative variant'], 'roof_quote_card');
+      assert.equal(source['Current Meta click id'], 'IwARsourceOnly');
+      assert.equal(source['Current ad_id'], undefined, 'click ID does not imply exact ad ID');
+      assert.equal(source['Primary trade'], undefined, 'advertised industry is not customer-confirmed trade');
+      await context.close();
+    }
+    console.log('PASS: control unchanged; short first screen, receipt failure/retry, source/trade/arm, email-only ad-source partial, no premature final, no duplicate save, same-ID final application. All intake requests intercepted.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });
