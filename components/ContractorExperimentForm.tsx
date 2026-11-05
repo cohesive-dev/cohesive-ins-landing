@@ -56,7 +56,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     if(!email&&!phone)return false;
     submission.current ||=crypto.randomUUID();
     const details=[{label:'Experiment cell',value:cellId},{label:'Form version',value:formVersion},
-      ...(arm==='short'?[{label:'Website form arm',value:'short-first-v1'}]:arm==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB==='true'?[{label:'Website form arm',value:'current-v1'}]:[]),
+      ...(arm==='short'?[{label:'Website form arm',value:'short-first-v1'}]:arm==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'?[{label:'Website form arm',value:'current-v1'}]:[]),
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
       {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,value])=>({label:labels[k],value})),
@@ -88,7 +88,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    let chosen:'step'|'long'=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'step':'long';
    try{const stored=localStorage.getItem(key);if(stored==='step'||stored==='long')chosen=stored;else localStorage.setItem(key,chosen);}catch{/* stable for this mount only */}
    let chosenArm:'current'|'short'='current';
-   if(process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB==='true'){
+   if(process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'){
      try{const stored=localStorage.getItem('cohesive_contractor_short_first_ab_v1');if(stored==='current'||stored==='short')chosenArm=stored;else{chosenArm=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'current':'short';localStorage.setItem('cohesive_contractor_short_first_ab_v1',chosenArm);}}catch{/* current form if assignment cannot persist */}
    }
    // Preview controls never enter production experiment assignment or lead submission.
@@ -139,7 +139,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const details=[
     {label:'Experiment cell',value:cellId},
     {label:'Form version',value:formVersion},
-    ...(arm==='short'?[{label:'Website form arm',value:'short-first-v1'}]:arm==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB==='true'?[{label:'Website form arm',value:'current-v1'}]:[]),
+    ...(arm==='short'?[{label:'Website form arm',value:'short-first-v1'}]:arm==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'?[{label:'Website form arm',value:'current-v1'}]:[]),
     {label:'Session id',value:tracker.current?.sessionId||'unavailable'},
     {label:'Submission id',value:submission.current},
     {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,
