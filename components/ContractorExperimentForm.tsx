@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useMemo,useRef,useState} from 'react';
 import {useSearchParams} from 'next/navigation';
-import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers,validExperiment,contractorScreens,contractorFields,validContractorField,type Answers} from '@/lib/contractor-experiment';
+import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers,validExperiment,type Answers} from '@/lib/contractor-experiment';
 import {captureAttribution,attributionDetails} from '@/lib/attribution';
 import {attachFunnelTracker} from '@/lib/funnel-tracker';
 import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-landing';
@@ -18,7 +18,6 @@ import {contractorSourceDetails} from '@/lib/contractor-source';
 export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
  const query=useSearchParams();
  const cold=useMemo(()=>coldLayout?coldEmailContext(query,coldLayout):null,[query,coldLayout]);
- const needsTrade=!coldLayout&&!isColdIndustry(query.get('industry')||'');
  const fallbackReason=coldLayout?null:contractorFallbackReason(query);
  // Staged (Kevin 2026-10-14): the workers' comp question exists only on the paid form with ?wc=1.
  // Without it nothing below changes: no question, no answer, no `coverage` key.
@@ -38,7 +37,9 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const sourceAtEntry=useRef<ReturnType<typeof contractorSourceDetails>|null>(null);
  const honeypot=useRef<HTMLInputElement>(null);
  const cellId=cold?.cellId||`${industry}__${angle}__${layout}__v1`;
- const formVersion=coldLayout?'2026-09-12-v1':arm==='short'?'2026-11-05-shortfirst-v1':'2026-09-18-trade-v5';
+ // Both paid arms now have two pages. Distinct versions keep this release separate
+ // from the earlier seven-screen test in first-party and CRM reporting.
+ const formVersion=coldLayout?'2026-09-12-v1':arm==='short'?'2026-11-07-two-page-short-v1':'2026-11-07-two-page-current-v1';
  const labels=coldLayout?LABELS:FULL_LABELS;
  const sourceDetails=useMemo(()=>cold?[{label:'Acquisition channel',value:'Cold email landing'},
    {label:'Cold email campaign',value:cold.campaign},{label:'Landing layout',value:coldLayout!}]:fallbackReason?[
@@ -84,17 +85,16 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
-   const key=`cohesive_experiment_${industry}_${angle}_v1`;
-   let chosen:'step'|'long'=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'step':'long';
-   try{const stored=localStorage.getItem(key);if(stored==='step'||stored==='long')chosen=stored;else localStorage.setItem(key,chosen);}catch{/* stable for this mount only */}
    let chosenArm:'current'|'short'='current';
    if(process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'){
      try{const stored=localStorage.getItem('cohesive_contractor_short_first_ab_v1');if(stored==='current'||stored==='short')chosenArm=stored;else{chosenArm=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'current':'short';localStorage.setItem('cohesive_contractor_short_first_ab_v1',chosenArm);}}catch{/* current form if assignment cannot persist */}
    }
    // Preview controls never enter production experiment assignment or lead submission.
-   if(query.get('preview')==='1'&&(query.get('layout')==='step'||query.get('layout')==='long'))chosen=query.get('layout') as 'step'|'long';
    if(query.get('preview')==='1'&&query.get('arm')==='short')chosenArm='short';
-   const timer=setTimeout(()=>{setArm(chosenArm);setLayout(chosenArm==='short'?'step':chosen);},0);
+   // A and B share the same two-page layout; B alone confirms the contact save.
+   // The long preview remains available for visual QA, never for paid assignment.
+   const previewLong=query.get('preview')==='1'&&query.get('layout')==='long'&&chosenArm==='current';
+   const timer=setTimeout(()=>{setArm(chosenArm);setLayout(previewLong?'long':'step');},0);
    return()=>clearTimeout(timer);
  },[industry,angle,query,coldLayout,valid]);
  useEffect(()=>{
@@ -108,7 +108,8 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  if(!valid&&coldLayout)return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">Get a contractor insurance quote</h1><p className="my-4">What type of work do you do?</p><ul className="space-y-3">{Object.entries(INDUSTRIES).map(([id,name])=><li key={id}><a className="underline" href={`?${new URLSearchParams({...Object.fromEntries(query),industry:id})}`}>{name}</a></li>)}</ul><a className="mt-6 inline-block underline" href="/contractors">Another trade</a></main>;
  if(!layout)return <main className="p-8">Loading your quote request…</main>;
  const originalScreens=coldLayout?fieldsFor(answers,layout).map(k=>[k]):fullScreens(answers,askWc);
- const screens=arm==='short'?[ [...originalScreens[0],'trade'],originalScreens[1],originalScreens[2].filter(k=>k!=='trade'),...originalScreens.slice(3) ]:originalScreens,lastStep=screens.length-1;
+ const firstPage=coldLayout?[]:[...originalScreens[0],'trade'];
+ const screens=coldLayout?originalScreens:[firstPage,originalScreens.flat().filter(k=>!firstPage.includes(k))],lastStep=screens.length-1;
  const fields=screens.flat(),shown=layout==='step'?screens[Math.min(step,lastStep)]:fields;
  const fieldValid=coldLayout?validField:validFullField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
@@ -172,12 +173,12 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  <form ref={form} onSubmit={submit} data-funnel-final={layout==='long'||step===lastStep?'true':'false'} className={coldLayout?"space-y-6":arm==='short'&&step===0?'mx-auto max-w-2xl space-y-5 px-5 py-5 sm:px-6':contractorFormClass}>
  <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
  {layout==='step'&&<div>
-   {arm==='short'&&step===0 ? <p>Start with your details. More quote questions come next.</p> : <>
-     <p>Step {step+1} of {screens.length}</p>
+   <>
+     <p>Step {step+1} of {screens.length}{coldLayout?'':step===0?' · Your details':' · Business details'}</p>
      <div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}>
        <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/>
      </div>
-   </>}
+   </>
  </div>}
  {arm==='short'&&step>0&&<p role="status" className="rounded-lg bg-[#EEF1FF] px-4 py-3 text-sm text-[#27455C]">Your contact details are saved. Answer the remaining questions so we can prepare an accurate quote.</p>}
  {!coldLayout?<><ContractorQuestionSet f={answers} set={update} contactFirst askWorkersComp={askWc} compact={arm==='short'&&step===0} visible={layout==='step'?shown:undefined}/></>:<>

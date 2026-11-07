@@ -39,66 +39,82 @@ const details = payload => Object.fromEntries((payload.details || []).map(item =
 async function contact(page) {
   await page.getByLabel('Email', { exact: true }).fill('qa-short@example.invalid');
   await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-  await page.getByLabel('Full name', { exact: true }).fill('QA Short Test');
+  await page.getByLabel('Your full name', { exact: true }).fill('QA Short Test');
 }
 async function trade(page) {
   await page.getByRole('combobox', { name: "What's your primary trade?" }).fill('Tree');
   await page.getByRole('option', { name: 'Tree service' }).getByRole('button').click();
 }
+async function businessDetails(page) {
+  await page.getByLabel("Company's legal name", { exact: true }).fill('QA Tree LLC');
+  await page.getByLabel('Business address', { exact: true }).fill('123 Main St, Austin, TX 78701');
+  await page.getByLabel('Any other trades?', { exact: true }).click();
+  await page.getByRole('button', { name: 'None - just my primary trade' }).click();
+  await page.getByLabel('Any other trades?', { exact: true }).click();
+  await page.getByLabel('How much of your work is your primary trade?', { exact: true }).selectOption('All of it (100%)');
+  await page.getByLabel('Annual revenue (roughly)', { exact: true }).selectOption('Under $250k');
+  await page.getByLabel('W2 employees', { exact: true }).selectOption('0 - no W2 employees');
+  await page.getByLabel('Do you hire subcontractors?', { exact: true }).selectOption('No');
+}
 
 (async () => {
   for (const cellId of ['tree__savings__step__v1', 'fire_sprinkler__project_coi__step__v1', 'home_builder__ground_up__step__v1']) {
-    assert.ok(validateFunnelEvent({ eventId: '00000000-0000-4000-8000-000000000001', sessionId: '00000000-0000-4000-8000-000000000002', cellId, version: '2026-11-05-shortfirst-v1', event: 'variant_view', elapsedMs: 0 }), cellId);
+    for (const version of ['2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1'])
+      assert.ok(validateFunnelEvent({ eventId: '00000000-0000-4000-8000-000000000001', sessionId: '00000000-0000-4000-8000-000000000002', cellId, version, event: 'variant_view', elapsedMs: 0 }), `${cellId} ${version}`);
   }
   const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
   try {
     {
-      const { context, page, attempts } = await open(browser, 'current');
-      assert.equal(await page.getByText('Step 1 of 7').count(), 1);
+      const { context, page, attempts } = await open(browser, 'short', 'step', false,
+        'industry=tree&angle=quote&ad_id=120252306015840660');
+      await contact(page); await trade(page);
+      await page.getByRole('button', { name: 'Save my details and continue' }).click();
+      await page.getByText(/Step 2 of 2/).waitFor();
+      assert.equal(details(attempts[0])['Experiment cell'], 'tree__quote__step__v1', 'new tree quote ad keeps its trade-specific landing');
+      await context.close();
+    }
+    {
+      const { context, page, attempts, finals } = await open(browser, 'current');
+      assert.equal(await page.getByText(/Step 1 of 2/).count(), 1);
       assert.equal(await page.getByRole('button', { name: 'Save my details and continue' }).count(), 0);
-      await contact(page);
+      assert.equal(await page.getByLabel("Company's legal name", { exact: true }).count(), 0);
+      await contact(page); await trade(page);
       await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByLabel('Legal business name', { exact: true }).waitFor();
-      assert.equal(attempts.length, 0, 'control Next keeps existing no-save behavior');
+      await page.getByLabel("Company's legal name", { exact: true }).waitFor();
+      assert.equal(await page.getByText(/Step 2 of 2/).count(), 1);
+      assert.equal(attempts.length, 0, 'control Next does not save a partial');
+      await businessDetails(page);
+      await page.getByRole('button', { name: 'Get my quote', exact: true }).click();
+      await page.getByText('Thanks - we').waitFor();
+      assert.equal(finals.length, 1);
+      assert.equal(details(finals[0])['Form version'], '2026-11-07-two-page-current-v1');
       await context.close();
     }
     {
       const { context, page, attempts, finals } = await open(browser, 'short', 'long', true);
-      assert.equal(await page.getByText('Step 1 of 7').count(), 0);
-      assert.equal(await page.getByLabel('Legal business name', { exact: true }).count(), 0);
+      assert.equal(await page.getByText(/Step 1 of 2/).count(), 1);
+      assert.equal(await page.getByLabel("Company's legal name", { exact: true }).count(), 0);
       await contact(page); await trade(page);
       await page.getByRole('button', { name: 'Save my details and continue' }).click();
       await page.getByRole('alert').getByText('We could not save your details').waitFor();
-      assert.equal(await page.getByLabel('Legal business name', { exact: true }).count(), 0, 'failure holds first screen');
+      assert.equal(await page.getByLabel("Company's legal name", { exact: true }).count(), 0, 'failure holds first screen');
       assert.equal(attempts.length, 1);
       await page.getByRole('button', { name: 'Save my details and continue' }).click();
-      await page.getByLabel('Legal business name', { exact: true }).waitFor();
+      await page.getByLabel("Company's legal name", { exact: true }).waitFor();
+      assert.equal(await page.getByText(/Step 2 of 2/).count(), 1);
       assert.equal(attempts.length, 2, 'retry saved once');
       assert.equal(finals.length, 0, 'stage one is not a completed application');
       const first = details(attempts[1]);
       assert.equal(first['Website form arm'], 'short-first-v1');
-      assert.equal(first['Form version'], '2026-11-05-shortfirst-v1');
+      assert.equal(first['Form version'], '2026-11-07-two-page-short-v1');
       assert.equal(first['Primary trade'], 'Tree service');
       assert.equal(first['Current ad_id'], '120251397789610660');
       await page.getByRole('button', { name: 'Back', exact: true }).click();
       await page.getByRole('button', { name: 'Save my details and continue' }).click();
-      await page.getByLabel('Legal business name', { exact: true }).waitFor();
+      await page.getByLabel("Company's legal name", { exact: true }).waitFor();
       assert.equal(attempts.length, 2, 'back and continue cannot duplicate stage-one capture');
-      await page.getByLabel('Legal business name', { exact: true }).fill('QA Tree LLC');
-      await page.getByLabel('Business address', { exact: true }).fill('123 Main St, Austin, TX 78701');
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
+      await businessDetails(page);
       assert.equal(await page.getByRole('combobox', { name: "What's your primary trade?" }).count(), 0, 'trade is not asked twice');
-      await page.getByLabel('Any other trades?', { exact: true }).click();
-      await page.getByRole('button', { name: 'None - just my primary trade' }).click();
-      await page.getByLabel('Any other trades?', { exact: true }).click();
-      await page.getByLabel('How much of your work is your primary trade?', { exact: true }).selectOption('All of it (100%)');
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByLabel('Annual revenue (roughly)', { exact: true }).selectOption('Under $250k');
-      await page.getByLabel('W2 employees', { exact: true }).selectOption('0 - no W2 employees');
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByLabel('Do you hire subcontractors?', { exact: true }).selectOption('No');
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
-      await page.getByRole('button', { name: 'Next', exact: true }).click();
       await page.getByRole('button', { name: 'Get my quote', exact: true }).click();
       await page.getByText('Thanks - we').waitFor();
       assert.equal(finals.length, 1);
@@ -137,6 +153,6 @@ async function trade(page) {
       assert.equal(source['Primary trade'], undefined, 'advertised industry is not customer-confirmed trade');
       await context.close();
     }
-    console.log('PASS: control unchanged; short first screen, receipt failure/retry, source/trade/arm, email-only ad-source partial, no premature final, no duplicate save, same-ID final application. All intake requests intercepted.');
+    console.log('PASS: both paid arms have two pages and separate versions; short first screen saves with failure/retry, source/trade/arm, email-only ad-source partial, no premature final, no duplicate save, same-ID final application. All intake requests intercepted.');
   } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -19,8 +19,10 @@ const fs = require('node:fs');
   try {
     const page = await context.newPage();
     await page.goto(base + '/contractors', { waitUntil: 'networkidle' });
-    for (const [label, value] of [['Full name', 'QA Intercept'], ['Email', 'intercept@example.invalid'], ['Phone', '2021234567'], ['Legal business name', 'QA Test LLC'], ['Business address', '123 Example St, Austin, TX 78701']]) await page.getByLabel(label, { exact: true }).fill(value);
-    for (const [label, value] of [["What's your primary trade?", 'Pool construction / service'], ['How much of your work is your primary trade?', 'All of it (100%)'], ['Annual revenue (roughly)', 'Under $250k'], ['W2 employees', '0 - no W2 employees'], ['Do you hire subcontractors?', 'No']]) await page.getByLabel(label, { exact: true }).selectOption(value);
+    for (const [label, value] of [['Full name', 'QA Intercept'], ['Email', 'intercept@example.invalid'], ['Phone', '2021234567'], ["Company's legal name", 'QA Test LLC'], ['Business address', '123 Example St, Austin, TX 78701']]) await page.getByLabel(label, { exact: true }).fill(value);
+    await page.getByRole('combobox', { name: "What's your primary trade?" }).fill('Pool');
+    await page.getByRole('option', { name: 'Pool construction / service' }).getByRole('button').click();
+    for (const [label, value] of [['How much of your work is your primary trade?', 'All of it (100%)'], ['Annual revenue (roughly)', 'Under $250k'], ['W2 employees', '0 - no W2 employees'], ['Do you hire subcontractors?', 'No']]) await page.getByLabel(label, { exact: true }).selectOption(value);
     await page.getByLabel('Any other trades?', { exact: true }).click();
     await page.getByRole('button', { name: 'None - just my primary trade', exact: true }).click();
     await page.getByLabel('Any other trades?', { exact: true }).click();

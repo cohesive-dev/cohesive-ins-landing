@@ -34,16 +34,17 @@ const FINAL_KEYS = ['name', 'email', 'phone', 'company', 'businessType', 'source
 // A contact-screen-only partial: no business name yet, so `company` is undefined and JSON drops it.
 const PARTIAL_KEYS = ['name', 'email', 'phone', 'businessType', 'source', 'partial', 'final', 'details', 'website'];
 
-// Fill every required answer on the long layout (all questions on one screen). exactWc: a visitor who asked for WC
+// Fill every required answer on the two-page paid layout. exactWc: a visitor who asked for WC
 // (wc=1 + WC answer) gives exact full-time / part-time / payroll numbers instead of the W2 bands (Kevin 2026-10-15).
 async function fillRequired(page, exactWc = false) {
   await page.getByLabel('Email', { exact: true }).fill('wc-test@example.invalid');
   await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-  await page.getByLabel('Full name', { exact: true }).fill('QA WC Test');
-  await page.getByLabel('Legal business name', { exact: true }).fill('QA WC Remodel LLC');
-  await page.getByLabel('Business address', { exact: true }).fill('123 Main St, Austin, TX 78701');
+  await page.getByLabel('Your full name', { exact: true }).fill('QA WC Test');
   await page.getByRole('combobox', { name: "What's your primary trade?" }).fill('Remodel');
   await page.getByRole('option', { name: 'Remodeling / renovations' }).getByRole('button').click();
+  await page.getByRole('button', { name: 'Next', exact: true }).click();
+  await page.getByLabel("Company's legal name", { exact: true }).fill('QA WC Remodel LLC');
+  await page.getByLabel('Business address', { exact: true }).fill('123 Main St, Austin, TX 78701');
   await page.getByLabel('Any other trades?', { exact: true }).click();
   await page.getByRole('button', { name: 'None - just my primary trade' }).click();
   await page.getByLabel('Any other trades?', { exact: true }).click();
@@ -86,11 +87,13 @@ function details(payload) {
       });
       await page.getByLabel('Email', { exact: true }).fill('partial-test@example.invalid');
       await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-      await page.getByLabel('Full name', { exact: true }).fill('QA Partial Test');
+      await page.getByLabel('Your full name', { exact: true }).fill('QA Partial Test');
+      await page.getByRole('combobox', { name: "What's your primary trade?" }).fill('Remodel');
+      await page.getByRole('option', { name: 'Remodeling / renovations' }).getByRole('button').click();
       await page.getByRole('button', { name: 'Next', exact: true }).click();
       await page.waitForTimeout(750);
       assert.equal(payloads.length, 0, 'contact-screen advance must not send an early partial');
-      await page.getByLabel('Legal business name', { exact: true }).fill('QA Complete Snapshot LLC');
+      await page.getByLabel("Company's legal name", { exact: true }).fill('QA Complete Snapshot LLC');
       await page.getByLabel('Business address', { exact: true }).fill('123 Main St, Austin, TX 78701');
       await leave(page);
       await page.waitForTimeout(300);
@@ -110,8 +113,11 @@ function details(payload) {
       });
       await page.getByLabel('Email', { exact: true }).fill('idle-test@example.invalid');
       await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-      await page.getByLabel('Full name', { exact: true }).fill('QA Idle Test');
-      await page.getByLabel('Legal business name', { exact: true }).fill('QA Idle Snapshot LLC');
+      await page.getByLabel('Your full name', { exact: true }).fill('QA Idle Test');
+      await page.getByRole('combobox', { name: "What's your primary trade?" }).fill('Remodel');
+      await page.getByRole('option', { name: 'Remodeling / renovations' }).getByRole('button').click();
+      await page.getByRole('button', { name: 'Next', exact: true }).click();
+      await page.getByLabel("Company's legal name", { exact: true }).fill('QA Idle Snapshot LLC');
       await page.getByLabel('Business address', { exact: true }).fill('456 Main St, Dallas, TX 75201');
       await page.waitForTimeout(1600);
       assert.equal(payloads.length, 1, 'idle should send one latest partial');
@@ -127,7 +133,7 @@ function details(payload) {
       const { context, page, payloads } = await open(browser, path);
       await page.getByLabel('Email', { exact: true }).fill('partial-test@example.invalid');
       await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-      await page.getByLabel('Legal business name', { exact: true }).fill('QA Legacy Snapshot LLC');
+      await page.getByLabel("Company's legal name", { exact: true }).fill('QA Legacy Snapshot LLC');
       await leave(page);
       await page.waitForTimeout(300);
       assert.equal(payloads.length, 1, `${path} should send one partial`);
@@ -173,7 +179,7 @@ function details(payload) {
     }
 
     // --- Staged WC question -------------------------------------------------------------------
-    // No wc=1 (all current paid traffic): no question rendered and today's exact payload, on both layouts.
+    // No wc=1: no WC question and no coverage key on the two-page paid form.
     {
       const { context, page, finals } = await open(browser, '/contractor-test?industry=remodel&angle=trade_mix', () => localStorage.setItem('cohesive_experiment_remodel_trade_mix_v1', 'long'));
       assert.equal(await page.getByText(WC_QUESTION).count(), 0, 'no wc=1 -> no WC question');
@@ -189,10 +195,10 @@ function details(payload) {
     }
     {
       const { context, page, payloads } = await open(browser, '/contractor-test?industry=roof&angle=coi', () => localStorage.setItem('cohesive_experiment_roof_coi_v1', 'step'));
-      assert.equal(await page.getByText('Step 1 of 7').count(), 1, 'no wc=1 -> same 7 steps');
+      assert.equal(await page.getByText(/Step 1 of 2/).count(), 1, 'no wc=1 -> two pages');
       await page.getByLabel('Email', { exact: true }).fill('wc-partial@example.invalid');
       await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-      await page.getByLabel('Full name', { exact: true }).fill('QA WC Partial');
+      await page.getByLabel('Your full name', { exact: true }).fill('QA WC Partial');
       await leave(page);
       await page.waitForTimeout(300);
       assert.equal(payloads.length, 1);
@@ -232,12 +238,12 @@ function details(payload) {
       assert.equal(details(body)[WC_ROW], row, `wc=1 + ${answer} -> details row`);
       await context.close();
     }
-    // wc=1 on the step layout: no extra step; the question LEADS the first screen (above Email, so a WC-ad
+    // wc=1 on the paid layout: no extra page; the question LEADS the first screen (above Email, so a WC-ad
     // visitor sees it first; Kevin 2026-10-15) and is gone from the coverage screen; a partial carries the
     // answer only once the visitor gave one.
     for (const answer of [null, "Workers' comp + general liability"]) {
       const { context, page, payloads } = await open(browser, '/contractor-test?industry=tree&angle=coi&wc=1', () => localStorage.setItem('cohesive_experiment_tree_coi_v1', 'step'));
-      assert.equal(await page.getByText('Step 1 of 7').count(), 1, 'wc=1 adds no step');
+      assert.equal(await page.getByText(/Step 1 of 2/).count(), 1, 'wc=1 adds no page');
       const group = page.getByRole('group', { name: WC_QUESTION });
       assert.equal(await group.count(), 1, 'WC question on the first screen');
       const wcY = (await group.boundingBox()).y, emailY = (await page.getByLabel('Email', { exact: true }).boundingBox()).y;
@@ -245,28 +251,23 @@ function details(payload) {
       if (answer) await group.getByRole('button', { name: answer, exact: true }).click();
       await page.getByLabel('Email', { exact: true }).fill('wc-step@example.invalid');
       await page.getByLabel('Phone', { exact: true }).fill('2025550123');
-      await page.getByLabel('Full name', { exact: true }).fill('QA WC Step');
+      await page.getByLabel('Your full name', { exact: true }).fill('QA WC Step');
       if (answer) {
-        await page.getByRole('button', { name: 'Next', exact: true }).click();
-        await page.getByLabel('Legal business name', { exact: true }).fill('QA WC Tree LLC');
-        await page.getByLabel('Business address', { exact: true }).fill('9 Oak St, Austin, TX 78701');
-        await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByRole('combobox', { name: "What's your primary trade?" }).fill('Tree');
         await page.getByRole('option', { name: 'Tree service' }).getByRole('button').click();
+        await page.getByRole('button', { name: 'Next', exact: true }).click();
+        await page.getByLabel("Company's legal name", { exact: true }).fill('QA WC Tree LLC');
+        await page.getByLabel('Business address', { exact: true }).fill('9 Oak St, Austin, TX 78701');
         await page.getByLabel('Any other trades?', { exact: true }).click();
         await page.getByRole('button', { name: 'None - just my primary trade' }).click();
         await page.getByLabel('Any other trades?', { exact: true }).click();
         await page.getByLabel('How much of your work is your primary trade?', { exact: true }).selectOption('All of it (100%)');
-        await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByLabel('Annual revenue (roughly)', { exact: true }).selectOption('Under $250k');
         await page.getByLabel('Full-time W2 employees', { exact: true }).fill('0');
         await page.getByLabel('Part-time W2 employees', { exact: true }).fill('0');
         assert.equal(await page.getByLabel('Annual W2 payroll', { exact: true }).count(), 0, 'no payroll with 0 employees');
-        await page.getByRole('button', { name: 'Next', exact: true }).click();
         await page.getByLabel('Do you hire subcontractors?', { exact: true }).selectOption('No');
-        await page.getByRole('button', { name: 'Next', exact: true }).click();
-        await page.getByRole('button', { name: 'Next', exact: true }).click();
-        await page.getByText('Step 7 of 7').waitFor();
+        await page.getByText(/Step 2 of 2/).waitFor();
         assert.equal(await page.getByText(WC_QUESTION).count(), 0, 'not repeated on the coverage screen');
       }
       await leave(page);
