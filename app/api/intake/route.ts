@@ -312,7 +312,7 @@ export async function POST(request: NextRequest) {
     ];
   }
 
-  const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d => d.label === 'Form version' && ['2026-09-18-contact-v3', '2026-09-18-theme-v4', '2026-09-18-trade-v5', '2026-10-22-es-v1', '2026-11-05-shortfirst-v1'].includes(d.value));
+  const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d => d.label === 'Form version' && ['2026-09-18-contact-v3', '2026-09-18-theme-v4', '2026-09-18-trade-v5', '2026-10-22-es-v1', '2026-11-05-shortfirst-v1', '2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1'].includes(d.value));
 
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {

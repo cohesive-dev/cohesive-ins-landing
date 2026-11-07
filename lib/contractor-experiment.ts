@@ -11,7 +11,7 @@ export type Answers = Record<string,string>;
 export const ANGLES:Record<Industry,string[]> = {
   pool:['percent','dollars','installation','coi'],
   remodel:['percent','dollars','trade_mix','coi'], roof:['percent','coi','free_gen','claims_occurrence'],
-  tree:['coverage','savings','coi','job_coi'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen','dollars'],
+  tree:['coverage','savings','coi','job_coi','quote'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen','dollars'],
   electrical:['dollars','coi'],plumbing:['dollars','coi'],welding:['dollars','coi'],
   fire_sprinkler:['quote','renewal','job','coi','project_coi'],
   home_builder:['quote','renewal','job','coi','ground_up'],
