@@ -863,11 +863,11 @@ export function buildContractorNational(t: Trade): PageContent {
         ...examples,
         heading: "Real roofing insurance quotes by business size",
         items: [
-          ...examples.items.slice(0, 4),
+          ...examples.items.slice(0, 3),
           { business: "A roofer, $200K subcontracted, $50K W-2 payroll", revenue: "About $800K", price: "$4,280/yr, quoted", sentence: "A roofer at about $800K revenue, $200K subcontracted and $50K W-2 payroll received a $4,280/yr occurrence general liability quote." },
-          ...examples.items.slice(4, 5),
+          ...examples.items.slice(3, 4),
           { business: "A roofer, $420K subcontracted, no W-2 employees", revenue: "About $1.8M", price: "$12,220/yr, quoted", sentence: "A roofer at about $1.8M revenue, $420K subcontracted and no W-2 employees received a $12,220/yr occurrence general liability quote." },
-          ...examples.items.slice(5),
+          ...examples.items.slice(4),
         ],
         note: "Real prices from our own book, not averages, each labelled bound or quoted. The $1,359 claims-made and $1,795 occurrence quotes for the $377K roofer came from the same application, but the forms differ. A lower price alone does not mean suitable coverage. Revenue, subcontracted work, payroll and the share of commercial work can change the quote.",
       } : undefined,
@@ -931,6 +931,11 @@ export function buildContractorNational(t: Trade): PageContent {
     return {
       ...content,
       title: "Tree Service Insurance Cost: $1,271 Claims-Made Quote",
+      costNarrative: [
+        ...content.costNarrative.slice(0, 1),
+        `Two other tree services bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE} per year. Those are customer-paid policies, while the lower $1,271.18 figure is a quote on a different tree-service application. Compare the actual accepted operations, limits and policy form before comparing premiums.`,
+        ...content.costNarrative.slice(1),
+      ],
       stateFacts: [
         {
           title: "Split trimming, removal and stump work",
@@ -954,6 +959,14 @@ export function buildContractorNational(t: Trade): PageContent {
         {
           q: "Does tree-service insurance cover tree removal?",
           a: "Do not assume every tree-service policy accepts every removal. Describe climbing, rigging, crane use, storm-damaged trees and work near utilities. Compare the accepted operations, height terms and exclusions in the proposed policy before taking a job.",
+        },
+        {
+          q: "Does tree removal insurance cost more than tree trimming insurance?",
+          a: `The work mix can change a quote, but our $1,271.18 claims-made general liability example was for a tree-service application, not a trimming-only price. Two separate tree services bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year. To compare your cost, split annual receipts among trimming, removals, stump grinding and other work, then describe the heights, crew and equipment used for each.`,
+        },
+        {
+          q: "Are storm cleanup, crane work and tall trees covered?",
+          a: "A tree-service label does not establish coverage for those jobs. Before taking them, tell us your maximum working height, whether the tree is storm damaged, how the crane is hired, who operates it and whether you work near utilities. We will check the proposed policy's accepted operations and exclusions. Send any customer or general contractor insurance requirements too; a certificate cannot override an exclusion.",
         },
       ],
     };

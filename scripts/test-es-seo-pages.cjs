@@ -36,20 +36,22 @@ const BASE='https://www.cohesiveinsure.com';
  {const llms=fs.readFileSync(path.join(root,'public/llms.txt'),'utf8');
   for(const p of P.ES_PAGES)assert.ok(llms.includes(`https://www.cohesiveinsure.com${p.path})`),`llms.txt lists ${p.path}`);
   assert.doesNotMatch(llms,/—/);assert.doesNotMatch(llms,/encore|pcic|hartford|amtrust|great american|rainbow|pathpoint|foxquilt|next insurance|coterie|simply business|blitz|thimble/i,'llms.txt: no carrier names');
-  for(const m of llms.matchAll(/\$(1,795|7,497)\/yr/g)){const near=llms.slice(Math.max(0,m.index-160),m.index);assert.match(near,/came in at/,'roofer figures say "came in at"');assert.match(near,/revenue/,'roofer figures sit beside revenue');}
+  for(const m of llms.matchAll(/\$(1,359|1,795|7,497)\/yr/g)){const near=llms.slice(Math.max(0,m.index-160),m.index);assert.match(near,/came in at/,'roofer figures say "came in at"');assert.match(near,/revenue/,'roofer figures sit beside revenue');}
   // Every $/yr figure is one the site already publishes from lib/seo (roofer quotes, the bound Mexican-restaurant GL).
-  for(const m of llms.matchAll(/\$([\d,]+)\/yr/g))assert.ok(['1,795','7,497','1,027'].includes(m[1]),`unapproved llms.txt amount ${m[0]}`);}
+  for(const m of llms.matchAll(/\$([\d,]+)\/yr/g))assert.ok(['1,359','1,795','7,497','1,027'].includes(m[1]),`unapproved llms.txt amount ${m[0]}`);
+  assert.doesNotMatch(llms,/\$475K|\$150K/,'llms.txt excludes the unsupported roofer basis');}
  // Roofer (and other contractor) prices are QUOTES with revenue beside them; never "aseguramos".
  const C=require('../lib/es/contractor-content.ts');
  const contractorCopy=JSON.stringify(C.ES_TRADE_CONTENT)+visible('app/es/seguro/contratistas/page.tsx');
  assert.doesNotMatch(contractorCopy,/aseguramos/i,'contractor prices are quotes, never "aseguramos"');
- const contractorPrices=new Set(contractorCopy.match(/\$[\d,]+(?= al año)/g));
- assert.deepEqual([...contractorPrices].sort(),['$1,795','$7,497'],'only the two verified roofer quotes');
- // Every dollar figure in contractor copy, in any format, is one of the approved facts (2 premiums, their revenue/subs, $1M/$2M limits).
- const APPROVED=new Set(['$1,795','$7,497','$475,000','$150,000','$1.3','$800,000','$1M','$2M']);
+ const contractorPrices=new Set(C.ES_ROOFER.prices.map(p=>p.price.match(/^\$[\d,]+/)[0]));
+ assert.deepEqual([...contractorPrices].sort(),['$1,359','$1,795','$7,497'],'only verified roofer quotes');
+ // Every dollar figure in contractor copy is one of the approved quote facts or limits.
+ const APPROVED=new Set(['$1,359','$1,795','$7,497','$377,000','$133,000','$1.3','$800,000','$1M','$2M']);
  for(const amt of contractorCopy.match(/\$\s?\d[\d,.]*[MKk]?/g)||[])assert.ok(APPROVED.has(amt.replace(/\s/g,'').replace(/[.,]$/,'')),`unapproved contractor amount ${amt}`);
  for(const p of C.ES_ROOFER.prices)assert.match(p.who,/ingresos/,'revenue beside every roofer price');
- for(const m of contractorCopy.matchAll(/[^.;:]*\$(?:1,795|7,497)[^.;]*/g))assert.match(m[0]+contractorCopy.slice(Math.max(0,m.index-160),m.index),/ingresos/,`revenue near "${m[0].trim()}"`);
+ assert.match(visible('app/es/seguro/contratistas/page.tsx'),/\$377,000 de ingresos.*\$1,359 al año claims-made.*\$1,795 al año por ocurrencia/,'hub ties both quotes to one revenue basis');
+ assert.doesNotMatch(contractorCopy,/\$475,000|\$150,000/,'Spanish roofer copy excludes the unsupported basis');
  assert.equal(C.ES_GENERAL_CONTRACTOR.prices,undefined);assert.equal(C.ES_REMODELER.prices,undefined);
  assert.match(JSON.stringify(C.ES_ROOFER),/Hablamos español/);assert.match(JSON.stringify(C.ES_ROOFER),/en inglés/,'documents-in-English note');
  // Restaurant prices: exactly the three approved binds, worded "que aseguramos paga", no state names.

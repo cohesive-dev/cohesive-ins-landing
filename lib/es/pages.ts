@@ -5,10 +5,10 @@ export type SpanishPage = { path: string; english?: string; name: string; update
 
 export const ES_UPDATED = "2026-10-22";
 
-export const ES_CONTRACTOR_HUB: SpanishPage = { path: "/es/seguro/contratistas", name: "Seguro para contratistas", updated: ES_UPDATED };
+export const ES_CONTRACTOR_HUB: SpanishPage = { path: "/es/seguro/contratistas", name: "Seguro para contratistas", updated: "2026-11-08" };
 
 export const ES_CONTRACTOR_PAGES: SpanishPage[] = [
-  { path: "/es/seguro/techadores", english: "/insurance/roofer", name: "Seguro para techadores", updated: ES_UPDATED },
+  { path: "/es/seguro/techadores", english: "/insurance/roofer", name: "Seguro para techadores", updated: "2026-11-08" },
   { path: "/es/seguro/contratistas-generales", english: "/insurance/general-contractor", name: "Seguro para contratistas generales", updated: ES_UPDATED },
   { path: "/es/seguro/remodelacion", english: "/insurance/remodeler", name: "Seguro para contratistas de remodelación", updated: ES_UPDATED },
 ];

@@ -38,9 +38,10 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   electrician: { usd: 500, kind: "quote", line: GL, business: "an electrical contractor in New Jersey" },
   plumber: { usd: 1117, kind: "bound", line: GL, business: "a plumbing contractor in Colorado" },
   painter: { usd: 378, kind: "quote", line: GL, business: "a solo painting contractor in Maryland" },
-  // QC-verified Encore quote, $1,271.18 exact, repeated across tree submissions on 2026-10-20..26.
+  // QC-verified $1,271.18 claims-made quote q_ext_d83b2f23c3438dc84676, on a
+  // client-corrected $300K revenue / no subs / one W-2 basis (payroll was our disclosed assumption).
   // Claims-made is material: never describe this starting quote as a bound or occurrence policy.
-  "tree-service": { usd: 1271, kind: "quote", line: "Claims-made general liability", business: "a tree service at about $300K revenue with one W-2 employee", asOf: "2026-10-27" },
+  "tree-service": { usd: 1271, kind: "quote", line: "Claims-made general liability", business: "a tree service at about $300K revenue with one W-2 employee", asOf: "2026-11-08" },
   pool: { usd: 916, kind: "bound", line: GL, business: "a pool contractor in Texas" },
   hvac: { usd: 885, kind: "bound", line: GL, business: "an HVAC contractor in Florida" },
   // Second release, 2026-10-02.
@@ -55,7 +56,7 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
   // Kevin 2026-10-29 asked for the lowest roofing quote to lead. This claims-made indication
   // has the same application and client-reported basis as the $1,795 occurrence option below.
-  roofer: { usd: 1359, kind: "quote", line: "Claims-made general liability", business: "a roofer at about $377K revenue with $133K subcontracted", asOf: "2026-10-29" },
+  roofer: { usd: 1359, kind: "quote", line: "Claims-made general liability", business: "a roofer at about $377K revenue with $133K subcontracted", asOf: "2026-11-08" },
 };
 
 // States where a trade's price does not apply because the market behind it does not write there (state abbreviations).
@@ -105,7 +106,6 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
         { business: "A roofer, $133K subcontracted, no W-2 employees", revenue: "About $377K", price: "$1,359/yr, claims-made quote", sentence: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359/yr claims-made general liability quote." },
         { business: "The same roofer and filed work", revenue: "About $377K", price: "$1,795/yr, occurrence quote", sentence: "The same roofer also received a $1,795/yr occurrence general liability quote on the same filed business figures." },
         { business: "A Colorado residential contractor whose work includes roofing", price: "$1,795/yr, bound", sentence: "A Colorado residential contractor whose work includes roofing bound general liability with us at $1,795/yr, $1M/$2M occurrence." },
-        { business: "A roofer, $150K subcontracted, one W-2 employee", revenue: "About $475K", price: "$1,795/yr, occurrence quote", sentence: "A roofer at about $475K revenue, $150K subcontracted and one W-2 employee came in at $1,795/yr for occurrence general liability." },
         { business: "A roofing company, $800K subcontracted", revenue: "About $1.3M", price: "$7,497/yr, quoted", sentence: "A roofing company at about $1.3M revenue, $800K subcontracted, came in at $7,497/yr." },
         { business: "A roofing and remodeling company", revenue: "About $2.5M", price: "$14,904/yr, quoted", sentence: "A roofing and remodeling company at about $2.5M revenue came in at $14,904/yr." },
         { business: "A roofing company", revenue: "About $4.5M", price: "$20,830/yr, quoted", sentence: "A roofing company at about $4.5M revenue came in at $20,830/yr." },
@@ -129,6 +129,18 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
         q: "What do you need from me to quote roofing insurance?",
         a: "Your business name and address, annual revenue, what you pay subcontractors, payroll and number of employees, your split of residential and commercial work, " +
           "the roof types and heights you work on, whether you do torch or hot work, and any claims in the last few years. Your current declarations page helps if you have one.",
+      },
+      {
+        q: "How do 1099 subcontractors affect a roofer's insurance cost?",
+        a: "Report your own payroll and the amount paid to subcontractors separately. For the same roofer with about $377K revenue, $133K subcontracted and no W-2 employees, we received a $1,359/year claims-made general liability quote and a $1,795/year occurrence quote. That example does not set a rate for other crews. Tell us which roof work the subs perform, and have their insurance certificates and your subcontract agreements ready for review.",
+      },
+      {
+        q: "Will a roofer's general liability policy cover a roof leak after the job?",
+        a: "It depends on the cause of the damage and the actual policy. Ask us to check open-roof water damage, completed operations, roof-system and subcontractor restrictions in the proposed wording. Tell us when the work happened and when the damage was found. A claims-made policy also has reporting and continuity terms that matter when a leak is discovered later.",
+      },
+      {
+        q: "What should I send to meet a general contractor's roofing insurance requirements?",
+        a: "Send the contract's insurance section before choosing a quote. We will compare its required limits, occurrence form, additional insured wording, waiver requests and completed-operations terms with the proposed policy. A certificate shows policy information; it does not add coverage or additional insured status by itself.",
       },
     ],
   },
