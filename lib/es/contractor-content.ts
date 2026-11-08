@@ -107,7 +107,7 @@ export const ES_ROOFER: EsTradeContent = {
     },
     {
       price: "$1,795 al año, cotización por ocurrencia",
-      who: "El mismo techador y los mismos datos del negocio",
+      who: "El mismo techador, con los mismos ingresos de unos $377,000 al año",
       detail: "La cobertura tiene condiciones distintas a la opción claims-made. Compare ambas pólizas y lo que exige su contrato.",
     },
     {
