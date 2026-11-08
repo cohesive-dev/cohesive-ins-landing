@@ -864,6 +864,9 @@ export function buildContractorNational(t: Trade): PageContent {
         heading: "Real roofing insurance quotes by business size",
         items: [
           ...examples.items.slice(0, 3),
+          // Separate QC-verified NY indication q_ext_d543b5d3cada976844c3. These are
+          // agency-assumed exposure figures, not the applicant's reported financials.
+          { business: "A New York roofer, $150K subcontracted, $100K W-2 payroll, one employee (agency-assumed figures)", revenue: "About $475K", price: "$1,795/yr, occurrence quote", sentence: "A separate New York roofing application returned a $1,795/yr occurrence general liability quote on our stated assumptions of $475K revenue, $150K subcontracted, $100K W-2 payroll and one employee, with $1M/$2M limits and a $2,500 self-insured retention." },
           { business: "A roofer, $200K subcontracted, $50K W-2 payroll", revenue: "About $800K", price: "$4,280/yr, quoted", sentence: "A roofer at about $800K revenue, $200K subcontracted and $50K W-2 payroll received a $4,280/yr occurrence general liability quote." },
           ...examples.items.slice(3, 4),
           { business: "A roofer, $420K subcontracted, no W-2 employees", revenue: "About $1.8M", price: "$12,220/yr, quoted", sentence: "A roofer at about $1.8M revenue, $420K subcontracted and no W-2 employees received a $12,220/yr occurrence general liability quote." },
