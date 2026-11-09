@@ -11,32 +11,32 @@ import type { Metadata } from "next";
 // state links. Two routes, two jobs. Indexing this one would put a bare form in
 // competition with the page written to rank.
 export const metadata: Metadata = {
-  title: "Bar & Tavern Insurance | Cohesive Insurance",
+  title: "Bar & Nightclub Insurance | Cohesive Insurance",
   description:
-    "Liquor liability, general liability, and property coverage for bars, taverns, and breweries. Fast quotes, A-rated carriers, and plain-English guidance.",
+    "Compare general liability and liquor liability options for bars, taverns, and nightclubs with a licensed agent.",
   alternates: { canonical: "/bar" },
   robots: { index: false, follow: true },
   openGraph: {
     type: "website",
     url: "/bar",
     siteName: "Cohesive Insurance",
-    title: "Insurance for your bar",
+    title: "Insurance for bars and nightclubs",
     description:
-      "Liquor liability, general liability, and property coverage for bars and taverns. Fast quotes, A-rated carriers.",
+      "Tell us about your venue and a licensed agent will review general liability and liquor liability options.",
     images: [
       {
         url: "/og/default.png",
         width: 1200,
         height: 630,
-        alt: "Cohesive Insurance, insurance for bars and taverns",
+        alt: "Cohesive Insurance, insurance for bars and nightclubs",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Insurance for your bar",
+    title: "Insurance for bars and nightclubs",
     description:
-      "Liquor liability, general liability, and property coverage for bars and taverns.",
+      "Review general liability and liquor liability options for your venue.",
     images: ["/og/default.png"],
   },
 };

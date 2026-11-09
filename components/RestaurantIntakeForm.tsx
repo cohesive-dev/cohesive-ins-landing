@@ -79,6 +79,7 @@ type Option = { label: string; value: string };
 // Q2 gate. "Bar / lounge / tavern" and "Not a food business" drive the
 // qualification below; "Not a food business" is an immediate hard disqualify.
 const BAR_TYPE = "Bar / tavern / brewery";
+const NIGHTCLUB_TYPE = "Nightclub / dance club";
 const NOT_FOOD_TYPE = "Not a food business";
 // Each valid type maps STRAIGHT to a Rainbow `type_of_restaurant` class code so
 // the quoter needs zero inference; the code rides into /api/intake details as
@@ -188,7 +189,8 @@ function qualify(
   barOk = false,
 ): Qualification {
   if (businessType === NOT_FOOD_TYPE) return "disqualified";
-  if (businessType === BAR_TYPE) return barOk ? "es" : "disqualified";
+  if (businessType === BAR_TYPE || businessType === NIGHTCLUB_TYPE)
+    return barOk ? "es" : "disqualified";
   if (alcohol === "Over 50%") return barOk ? "es" : "disqualified";
   if (alcohol && ES_ALCOHOL.has(alcohol)) return "es";
   return "qualified";
@@ -221,6 +223,7 @@ export default function RestaurantIntakeForm({
   const businessTypes = barOk
     ? [
         BUSINESS_TYPES.find((o) => o.value === BAR_TYPE)!,
+        { label: NIGHTCLUB_TYPE, value: NIGHTCLUB_TYPE },
         ...BUSINESS_TYPES.filter((o) => o.value !== BAR_TYPE),
       ]
     : BUSINESS_TYPES;
@@ -631,17 +634,18 @@ export default function RestaurantIntakeForm({
                 destination (Kevin 2026-09-24). barOk is mode === "bar". */}
             <span className="text-[11px] font-semibold uppercase tracking-wide text-[#2040E7]">
               {barOk
-                ? "For bars, taverns, breweries \u0026 pubs"
+                ? "For bars, taverns \u0026 nightclubs"
                 : "For restaurants, bars, cafes \u0026 food businesses"}
             </span>
             <h1 className="mt-1.5 text-xl font-bold leading-snug text-[#131517] sm:text-2xl">
               {barOk
-                ? "Business insurance built for bars"
+                ? "Business insurance for bars and nightclubs"
                 : "Business insurance built for restaurants"}
             </h1>
             <p className="mt-2 text-sm leading-relaxed text-[#27455C] sm:text-base">
-              We use AI to automatically shop your coverage and find you a
-              better rate, reviewed by a licensed agent.
+              {barOk
+                ? "Tell us about your venue and a licensed agent will review your coverage options."
+                : "We use AI to automatically shop your coverage and find you a better rate, reviewed by a licensed agent."}
             </p>
           </div>
         </section>
