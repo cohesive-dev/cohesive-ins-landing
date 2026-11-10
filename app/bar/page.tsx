@@ -12,11 +12,11 @@ import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
 // "native form vs website form" — handing native an artificial win on a
 // destination defect (Kevin, 2026-09-24).
 //
-// mode="bar" keeps the bar and >50%-alcohol answers as E&S leads rather than
-// disqualifying them, which is the whole point of the bar lane. layout="steps"
+// mode="bar-paid" keeps bar/tavern/brewery answers as E&S leads and excludes
+// other restaurant types from this paid route. layout="steps"
 // matches /restaurant: one question per screen, Instant-Form order.
 export default function Page() {
   return (
-    <RestaurantIntakeForm layout="steps" mode="bar" source="bar-landing" />
+    <RestaurantIntakeForm layout="steps" mode="bar-paid" source="bar-landing" />
   );
 }
