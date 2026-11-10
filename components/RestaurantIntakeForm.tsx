@@ -15,6 +15,7 @@ import { isValidPhoneNumber } from "libphonenumber-js/min";
 import isEmail from "validator/lib/isEmail";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { track as vaTrack } from "@vercel/analytics";
+import type { RequestedCoverage } from "@/lib/requested-coverage";
 
 /**
  * The restaurant deep-intake form — shared by /restaurant (full-page lane,
@@ -144,7 +145,36 @@ const ALCOHOL: Option[] = [
   { label: "35-50%", value: "35-50%" },
   { label: "Over 50%", value: "Over 50%" },
 ];
+// Keep the established Over 50% routing value for both new bar-specific ranges.
+// The precise answer is saved separately in the questionnaire details.
+const BAR_ALCOHOL: Option[] = [
+  ...ALCOHOL.slice(0, -1),
+  { label: "Over 50% to under 70%", value: "50-70%" },
+  { label: "70% or more", value: "70%+" },
+];
+const HIGH_ALCOHOL = new Set(["Over 50%", "50-70%", "70%+"]);
+const alcoholForRouting = (value?: string) => value && HIGH_ALCOHOL.has(value) ? "Over 50%" : value;
 const ES_ALCOHOL = new Set(["35-50%", "30-50%"]);  // 30-50% kept for any in-flight sessions
+
+const BAR_LIQUOR = "Liquor liability";
+const BAR_GL = "General liability";
+const BAR_CONTENTS = "Business property (equipment, furniture, inventory)";
+const BAR_BUILDING = "Building (if you own it)";
+const BAR_UNSURE = "Help me decide";
+const BAR_COVERAGE = [BAR_LIQUOR, BAR_GL, BAR_CONTENTS, BAR_BUILDING, BAR_UNSURE];
+function barCoverageLines(selected: string[]): RequestedCoverage[] {
+  if (selected.includes(BAR_UNSURE)) return ["Other"];
+  const wantsProperty = selected.includes(BAR_CONTENTS) || selected.includes(BAR_BUILDING);
+  const wantsGL = selected.includes(BAR_GL);
+  const lines: RequestedCoverage[] = [];
+  if (wantsGL && wantsProperty) lines.push("BOP");
+  else {
+    if (wantsGL) lines.push("General Liability");
+    if (wantsProperty) lines.push("Property");
+  }
+  if (selected.includes(BAR_LIQUOR)) lines.push("Liquor Liability");
+  return lines;
+}
 
 // Coverage timeline — mirrors the Instant Form's `coverage_timeline` buckets so the
 // website lane and the form lane are comparable. now/30d = URGENT. On a qualified
@@ -189,7 +219,7 @@ function qualify(
 ): Qualification {
   if (businessType === NOT_FOOD_TYPE) return "disqualified";
   if (businessType === BAR_TYPE) return barOk ? "es" : "disqualified";
-  if (alcohol === "Over 50%") return barOk ? "es" : "disqualified";
+  if (alcohol && HIGH_ALCOHOL.has(alcohol)) return barOk ? "es" : "disqualified";
   if (alcohol && ES_ALCOHOL.has(alcohol)) return "es";
   return "qualified";
 }
@@ -227,6 +257,7 @@ export default function RestaurantIntakeForm({
   // Claims defaults to "None" — the common case, and it means the detail block
   // always carries a claims answer even if untouched.
   const [f, setF] = useState<FormState>({ claims: "None" });
+  const [barCoverage, setBarCoverage] = useState<string[]>([]);
   const [status, setStatus] = useState<
     "idle" | "sending" | "done" | "es-done" | "disqualified" | "error"
   >("idle");
@@ -249,6 +280,7 @@ export default function RestaurantIntakeForm({
     track("FormStart");
     if (PROPERTY_SET_FIELDS.has(k)) track("PropertyStarted");
     setF((p) => ({ ...p, [k]: v }));
+    if (k === "ownRent" && v !== "Own") setBarCoverage((p) => p.filter((choice) => choice !== BAR_BUILDING));
   };
 
   // Single coverage gate: BOP (the instant-quote product) reveals the property
@@ -277,12 +309,22 @@ export default function RestaurantIntakeForm({
   // business name, full name, email, phone). Sunk cost is built before the contact fields.
   const [step, setStep] = useState(0);
   const isOwner = f.ownRent === "Own";
+  const barCoverageOptions = isOwner ? BAR_COVERAGE : BAR_COVERAGE.filter((choice) => choice !== BAR_BUILDING);
+  const toggleBarCoverage = (choice: string) => {
+    track("CoverageSelected");
+    setBarCoverage((previous) => {
+      if (choice === BAR_UNSURE) return previous.includes(BAR_UNSURE) ? [] : [BAR_UNSURE];
+      const withoutUnsure = previous.filter((item) => item !== BAR_UNSURE);
+      return withoutUnsure.includes(choice) ? withoutUnsure.filter((item) => item !== choice) : [...withoutUnsure, choice];
+    });
+  };
   const STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean }> = [
     { key: "businessType", label: "Which best describes your business?", ok: () => !!f.businessType },
     { key: "revenue", label: "Approximate annual revenue", hint: "Best guess is fine.", ok: () => !!f.revenue },
     { key: "alcohol", label: "Alcohol as % of sales", hint: "Roughly what share of your sales is alcohol.", ok: () => !!f.alcohol },
     { key: "ownRent", label: "Do you own or rent your space?", ok: () => !!f.ownRent },
     { key: "buildingValue", label: "Estimated building replacement value", hint: "Rough rebuild cost is fine - what it would take to rebuild, not what you paid.", ok: () => true, skip: () => !isOwner },
+    { key: "coverage", label: "What would you like us to quote?", hint: "Select all that apply. We can help if you are unsure.", ok: () => barCoverage.length > 0, skip: () => !barOk },
     { key: "entityType", label: "How is your business structured?", ok: () => !!f.entityType },
     { key: "foundingYear", label: "When did you open?", ok: () => !!f.foundingYear },
     { key: "timeline", label: "When do you need coverage?", ok: () => !!f.timeline },
@@ -341,7 +383,13 @@ export default function RestaurantIntakeForm({
     // Rainbow writes BOP only and auto-derives property, so the quote needs just
     // class + sales + address + alcohol. own/rent captured for bind-time building coverage.
     push("Approximate annual revenue", f.revenue);
-    push("Alcohol as % of sales", f.alcohol);
+    push("Alcohol as % of sales", alcoholForRouting(f.alcohol));
+    if (barOk && f.alcohol && HIGH_ALCOHOL.has(f.alcohol)) push("Alcohol share range", f.alcohol);
+    if (barOk && barCoverage.length) {
+      push("Coverage requested", barCoverage.join(", "));
+      if (barCoverage.includes(BAR_GL) && (barCoverage.includes(BAR_CONTENTS) || barCoverage.includes(BAR_BUILDING))) push("BOP review requested", "Yes");
+      if (barCoverage.includes(BAR_BUILDING)) push("Building coverage requested", "Yes, owner-stated");
+    }
     push("Own or rent", f.ownRent);
     push("When did you open", f.foundingYear);
     if (f.foundingYear === "Not opened yet" || f.foundingYear === "Less than 1 year ago")
@@ -353,7 +401,7 @@ export default function RestaurantIntakeForm({
     if (layout === "steps") push("Furthest step", `${furthestStep + 1} of ${visibleSteps.length} (${visibleSteps[furthestStep]?.key ?? "?"})`);
     d.push(...attributionDetails(attr));
     return d;
-  }, [f, layout, furthestStep, visibleSteps, attr]);
+  }, [f, layout, furthestStep, visibleSteps, attr, barOk, barCoverage]);
 
   // Funnel milestones driven by state.
   useEffect(() => {
@@ -396,6 +444,7 @@ export default function RestaurantIntakeForm({
       partial: true,
       final: true,
       details: det,
+      ...(barOk && barCoverage.length ? { coverage: barCoverageLines(barCoverage) } : {}),
     });
     try {
       const ok = navigator.sendBeacon(
@@ -497,6 +546,7 @@ export default function RestaurantIntakeForm({
           zip: extractZip(f.address),
           source,
           details,
+          ...(barOk ? { coverage: barCoverageLines(barCoverage) } : {}),
           eventId,
           capiEventName,
           ...(urgentEventId ? { urgentEventId } : {}),
@@ -679,7 +729,15 @@ export default function RestaurantIntakeForm({
                 <Radio name="revenue" value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} />
               )}
               {cur.key === "alcohol" && (
-                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={ALCOHOL} />
+                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={barOk ? BAR_ALCOHOL : ALCOHOL} />
+              )}
+              {cur.key === "coverage" && (
+                <div className="space-y-3">
+                  <CheckGroup options={barCoverageOptions} selected={barCoverage} onToggle={toggleBarCoverage} ariaLabel="Coverage to quote" />
+                  <p className="text-xs text-[#6B6D71]">
+                    Liability plus business property may fit a business owner’s policy. We’ll review liquor liability separately.
+                  </p>
+                </div>
               )}
               {cur.key === "ownRent" && (
                 <Radio name="ownRent" value={f.ownRent} onChange={(v) => set("ownRent", v)} options={[{ label: "Own", value: "Own" }, { label: "Rent (tenant)", value: "Rent" }]} />
@@ -867,7 +925,7 @@ export default function RestaurantIntakeForm({
               name="alcohol"
               value={f.alcohol}
               onChange={(v) => set("alcohol", v)}
-              options={ALCOHOL}
+              options={barOk ? BAR_ALCOHOL : ALCOHOL}
             />
           </Field>
           <Field label="When do you need coverage?">

@@ -1,8 +1,8 @@
 // Coverage a page may request on a lead (CRM line names; the CRM normalises them in
 // src/lib/insuranceLines.ts). /api/intake forwards ONLY these, so a crafted body can't write an
 // arbitrary line onto a lead; the type keeps a guide from setting a value the route would drop.
-export const REQUESTED_COVERAGE_ALLOWLIST = ["Workers Comp", "General Liability"] as const;
+export const REQUESTED_COVERAGE_ALLOWLIST = ["Workers Comp", "General Liability", "Property", "BOP", "Liquor Liability", "Other"] as const;
 export type RequestedCoverage = (typeof REQUESTED_COVERAGE_ALLOWLIST)[number];
 
 // Human-readable names for the "Coverage requested" detail row (quotes@ and the Slack card).
-export const REQUESTED_COVERAGE_LABELS: Record<RequestedCoverage, string> = { "Workers Comp": "Workers' comp", "General Liability": "General liability" };
+export const REQUESTED_COVERAGE_LABELS: Record<RequestedCoverage, string> = { "Workers Comp": "Workers' comp", "General Liability": "General liability", "Property": "Property", "BOP": "Business owner’s policy", "Liquor Liability": "Liquor liability", "Other": "Needs advice" };
