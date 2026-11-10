@@ -304,9 +304,8 @@ export default function RestaurantIntakeForm({
     status !== "sending";
 
   // ---- STEP LAYOUT (Kevin 2026-08-16) -------------------------------------------------
-  // Order = the v6 Instant Form: taps first (business type, revenue, alcohol, own/rent
-  // [+building value if own], structure, founding year, timeline), then typing (address,
-  // business name, full name, email, phone). Sunk cost is built before the contact fields.
+  // /restaurant retains the v6 Instant Form order. /bar asks for a reachable contact
+  // first, so an abandoned bar inquiry can carry the contact the visitor entered.
   const [step, setStep] = useState(0);
   const isOwner = f.ownRent === "Own";
   const barCoverageOptions = isOwner ? BAR_COVERAGE : BAR_COVERAGE.filter((choice) => choice !== BAR_BUILDING);
@@ -318,7 +317,12 @@ export default function RestaurantIntakeForm({
       return withoutUnsure.includes(choice) ? withoutUnsure.filter((item) => item !== choice) : [...withoutUnsure, choice];
     });
   };
-  const STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean }> = [
+  const CONTACT_STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean }> = [
+    { key: "email", label: "Email", ok: () => emailValid },
+    { key: "phone", label: "Phone", ok: () => phoneValid },
+    { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
+  ];
+  const BUSINESS_STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean }> = [
     { key: "businessType", label: "Which best describes your business?", ok: () => !!f.businessType },
     { key: "revenue", label: "Approximate annual revenue", hint: "Best guess is fine.", ok: () => !!f.revenue },
     { key: "alcohol", label: "Alcohol as % of sales", hint: "Roughly what share of your sales is alcohol.", ok: () => !!f.alcohol },
@@ -330,10 +334,8 @@ export default function RestaurantIntakeForm({
     { key: "timeline", label: "When do you need coverage?", ok: () => !!f.timeline },
     { key: "address", label: "Exact building address", hint: "Start typing and pick the match.", ok: () => addressValid },
     { key: "businessName", label: "Legal business name", hint: "As registered - e.g., Glenwood Grill LLC", ok: () => !!f.businessName?.trim() },
-    { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
-    { key: "email", label: "Email", ok: () => emailValid },
-    { key: "phone", label: "Phone", ok: () => phoneValid },
   ];
+  const STEPS = barOk ? [...CONTACT_STEPS, ...BUSINESS_STEPS] : [...BUSINESS_STEPS, ...CONTACT_STEPS];
   const visibleSteps = STEPS.filter((st) => !(st.skip && st.skip()));
   const cur = visibleSteps[Math.min(step, visibleSteps.length - 1)];
   const isLast = step >= visibleSteps.length - 1;
@@ -415,10 +417,9 @@ export default function RestaurantIntakeForm({
   latest.current = { f, details, status };
   const sentPartial = useRef(false);
 
-  // Partial capture: the moment a visitor gives us ANY way to reach them (a
-  // valid email or a phone), capture them as a partial (final) lead so a
-  // mid-form abandoner is never lost. Fires at most once, on whichever comes
-  // first: leaving/backgrounding the page OR 120s of inactivity. The intake
+  // Partial capture: once a visitor gives us a way to reach them (a valid
+  // email or a phone), an exit/background event or 120s of inactivity sends
+  // the latest answers at most once. The intake
   // route routes partials to quotes@ ONLY (no CRM/SMS, no CAPI), with a
   // no-consent note — correct for a non-submitter.
   const firePartial = useRef(() => {});
@@ -432,13 +433,14 @@ export default function RestaurantIntakeForm({
     const email = (cur.email ?? "").trim();
     const phone = (cur.phone ?? "").trim();
     const validEmail = EMAIL_RE.test(email) ? email : undefined;
-    if (!(validEmail || phone)) return;
+    const partialPhone = barOk ? (PHONE_OK(phone) ? phone : undefined) : phone || undefined;
+    if (!(validEmail || partialPhone)) return;
     sentPartial.current = true;
     const body = JSON.stringify({
       name: cur.fullName,
       email: validEmail,
-      phone: phone || undefined,
-      businessType: cur.businessType || "Restaurant",
+      phone: partialPhone,
+      businessType: cur.businessType || (barOk ? undefined : "Restaurant"),
       zip: extractZip(cur.address),
       source,
       partial: true,
@@ -765,7 +767,10 @@ export default function RestaurantIntakeForm({
               )}
               {cur.key === "email" && (
                 <>
-                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder="you@restaurant.com" type="email" autoComplete="email" inputMode="email" />
+                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder={barOk ? "you@yourbusiness.com" : "you@restaurant.com"} type="email" autoComplete="email" inputMode="email" />
+                  {barOk && step === 0 && (
+                    <PartialCaptureDisclosure>We use your contact details to help with your insurance request.</PartialCaptureDisclosure>
+                  )}
                   {emailSuggestion(f.email ?? "") && (
                     <p className="mt-2 text-xs text-[#6B7A90]">
                       Did you mean{" "}
