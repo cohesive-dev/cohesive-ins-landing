@@ -186,9 +186,7 @@ function qualify(
   businessType?: string,
   alcohol?: string,
   barOk = false,
-  barOnly = false,
 ): Qualification {
-  if (barOnly && businessType !== BAR_TYPE) return "disqualified";
   if (businessType === NOT_FOOD_TYPE) return "disqualified";
   if (businessType === BAR_TYPE) return barOk ? "es" : "disqualified";
   if (alcohol === "Over 50%") return barOk ? "es" : "disqualified";
@@ -215,15 +213,12 @@ export default function RestaurantIntakeForm({
   // true = render just the form (no hero, terminal states as inline cards)
   // for embedding inside another page.
   embedded?: boolean;
-  // "bar" keeps the SEO bar form broad; "bar-paid" accepts only bar/tavern/brewery
-  // on the paid route and never optimizes toward other restaurant types.
-  mode?: "restaurant" | "bar" | "bar-paid";
+  // "bar" (SEO bar pages): bar/high-alcohol answers are captured as E&S leads
+  // instead of disqualified, and the bar chip is listed first.
+  mode?: "restaurant" | "bar";
 }) {
-  const barOnly = mode === "bar-paid";
-  const barOk = mode === "bar" || barOnly;
-  const businessTypes = barOnly
-    ? BUSINESS_TYPES.filter((o) => o.value === BAR_TYPE || o.value === NOT_FOOD_TYPE)
-    : barOk
+  const barOk = mode === "bar";
+  const businessTypes = barOk
     ? [
         BUSINESS_TYPES.find((o) => o.value === BAR_TYPE)!,
         ...BUSINESS_TYPES.filter((o) => o.value !== BAR_TYPE),
@@ -466,7 +461,7 @@ export default function RestaurantIntakeForm({
     setStatus("sending");
     setErrMsg("");
 
-    const qualification = qualify(f.businessType, f.alcohol, barOk, barOnly);
+    const qualification = qualify(f.businessType, f.alcohol, barOk);
 
     // Shared event id: sent in the POST body so the server-side CAPI event
     // (/api/intake) dedupes to a single conversion with the browser event below.
