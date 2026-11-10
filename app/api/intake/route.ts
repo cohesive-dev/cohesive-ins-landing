@@ -5,7 +5,7 @@ import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
 import { assessSubmission, acquisitionEventId } from '@/lib/submission-quality';
-import { REQUESTED_COVERAGE_ALLOWLIST, type RequestedCoverage } from "@/lib/requested-coverage";
+import { REQUESTED_COVERAGE_ALLOWLIST, BAR_REQUESTED_COVERAGE_ALLOWLIST, type RequestedCoverage, type BarRequestedCoverage } from "@/lib/requested-coverage";
 import { referralCode } from "@/lib/referral-code";
 
 // This route no longer owns lead storage. A completed submission is forwarded to the CRM's
@@ -80,11 +80,12 @@ type IntakePayload = {
 
 // The allowlist lives in lib/requested-coverage.ts. Anything else is dropped so a crafted body
 // can't write an arbitrary line onto a lead.
-const ALLOWED: readonly string[] = REQUESTED_COVERAGE_ALLOWLIST;
-function requestedCoverage(raw: unknown): RequestedCoverage[] | undefined {
-  if (!Array.isArray(raw) || raw.length === 0 || raw.length > ALLOWED.length) return undefined;
-  if (!raw.every((value) => typeof value === "string" && ALLOWED.includes(value))) return undefined;
-  return [...new Set(raw as RequestedCoverage[])];
+function requestedCoverage(raw: unknown, source?: string): Array<RequestedCoverage | BarRequestedCoverage> | undefined {
+  const allowed: readonly string[] = source === "bar-landing"
+    ? BAR_REQUESTED_COVERAGE_ALLOWLIST : REQUESTED_COVERAGE_ALLOWLIST;
+  if (!Array.isArray(raw) || raw.length === 0 || raw.length > allowed.length) return undefined;
+  if (!raw.every((value) => typeof value === "string" && allowed.includes(value))) return undefined;
+  return [...new Set(raw as Array<RequestedCoverage | BarRequestedCoverage>)];
 }
 
 // Coerce an unknown `details` payload into a safe ordered [{label, value}].
@@ -444,7 +445,7 @@ export async function POST(request: NextRequest) {
   const isCommercialPropertyLane = (source ?? "").startsWith(
     "commercial-property",
   );
-  const askedCoverage = requestedCoverage(body.coverage);
+  const askedCoverage = requestedCoverage(body.coverage, source);
   const crmDelivery = forwardToCrm({
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),

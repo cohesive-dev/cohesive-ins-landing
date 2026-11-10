@@ -15,7 +15,7 @@ import { isValidPhoneNumber } from "libphonenumber-js/min";
 import isEmail from "validator/lib/isEmail";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { track as vaTrack } from "@vercel/analytics";
-import type { RequestedCoverage } from "@/lib/requested-coverage";
+import type { BarRequestedCoverage } from "@/lib/requested-coverage";
 
 /**
  * The restaurant deep-intake form — shared by /restaurant (full-page lane,
@@ -162,11 +162,11 @@ const BAR_CONTENTS = "Business property (equipment, furniture, inventory)";
 const BAR_BUILDING = "Building (if you own it)";
 const BAR_UNSURE = "Help me decide";
 const BAR_COVERAGE = [BAR_LIQUOR, BAR_GL, BAR_CONTENTS, BAR_BUILDING, BAR_UNSURE];
-function barCoverageLines(selected: string[]): RequestedCoverage[] {
+function barCoverageLines(selected: string[]): BarRequestedCoverage[] {
   if (selected.includes(BAR_UNSURE)) return ["Other"];
   const wantsProperty = selected.includes(BAR_CONTENTS) || selected.includes(BAR_BUILDING);
   const wantsGL = selected.includes(BAR_GL);
-  const lines: RequestedCoverage[] = [];
+  const lines: BarRequestedCoverage[] = [];
   if (wantsGL && wantsProperty) lines.push("BOP");
   else {
     if (wantsGL) lines.push("General Liability");
