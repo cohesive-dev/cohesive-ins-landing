@@ -721,7 +721,7 @@ export default function RestaurantIntakeForm({
             </div>
             <Field label={cur.label} hint={cur.hint} required={cur.key !== "buildingValue"}>
               {cur.key === "businessType" && (
-                <Radio name="businessType" value={f.businessType} onChange={(v) => { set("businessType", v); }} options={businessTypes} />
+                <Radio name="businessType" value={f.businessType} onChange={(v) => { set("businessType", v); }} options={businessTypes} ariaLabel={cur.label} />
               )}
               {cur.key === "businessType" && notFood && (
                 <p className="mt-2 rounded-lg bg-[#F1F3F5] px-4 py-3 text-sm text-[#6B6D71]">
@@ -729,42 +729,42 @@ export default function RestaurantIntakeForm({
                 </p>
               )}
               {cur.key === "revenue" && (
-                <Radio name="revenue" value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} />
+                <Radio name="revenue" value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} ariaLabel={cur.label} />
               )}
               {cur.key === "alcohol" && (
-                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={barOk ? BAR_ALCOHOL : ALCOHOL} />
+                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={barOk ? BAR_ALCOHOL : ALCOHOL} ariaLabel={cur.label} />
               )}
               {cur.key === "coverage" && (
                 <div className="space-y-3">
-                  <CheckGroup options={barCoverageOptions} selected={barCoverage} onToggle={toggleBarCoverage} ariaLabel="Coverage to quote" />
+                  <CheckGroup options={barCoverageOptions} selected={barCoverage} onToggle={toggleBarCoverage} ariaLabel={cur.label} />
                   <p className="text-xs text-[#6B6D71]">
                     Liability plus business property may fit a business owner’s policy. We’ll review liquor liability separately.
                   </p>
                 </div>
               )}
               {cur.key === "ownRent" && (
-                <Radio name="ownRent" value={f.ownRent} onChange={(v) => set("ownRent", v)} options={[{ label: "Own", value: "Own" }, { label: "Rent (tenant)", value: "Rent" }]} />
+                <Radio name="ownRent" value={f.ownRent} onChange={(v) => set("ownRent", v)} options={[{ label: "Own", value: "Own" }, { label: "Rent (tenant)", value: "Rent" }]} ariaLabel={cur.label} />
               )}
               {cur.key === "buildingValue" && (
-                <Input value={f.buildingValue} onChange={(v) => set("buildingValue", v)} placeholder="e.g. 350,000" inputMode="numeric" />
+                <Input value={f.buildingValue} onChange={(v) => set("buildingValue", v)} placeholder="e.g. 350,000" inputMode="numeric" ariaLabel={cur.label} />
               )}
               {cur.key === "entityType" && (
-                <Radio name="entityType" value={f.entityType} onChange={(v) => set("entityType", v)} options={ENTITY_TYPES} />
+                <Radio name="entityType" value={f.entityType} onChange={(v) => set("entityType", v)} options={ENTITY_TYPES} ariaLabel={cur.label} />
               )}
               {cur.key === "foundingYear" && (
-                <Radio name="foundingYear" value={f.foundingYear} onChange={(v) => set("foundingYear", v)} options={FOUNDING_YEAR} />
+                <Radio name="foundingYear" value={f.foundingYear} onChange={(v) => set("foundingYear", v)} options={FOUNDING_YEAR} ariaLabel={cur.label} />
               )}
               {cur.key === "timeline" && (
-                <Radio name="timeline" value={f.timeline} onChange={(v) => set("timeline", v)} options={TIMELINE} />
+                <Radio name="timeline" value={f.timeline} onChange={(v) => set("timeline", v)} options={TIMELINE} ariaLabel={cur.label} />
               )}
               {cur.key === "address" && (
-                <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" />
+                <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" ariaLabel={cur.label} />
               )}
               {cur.key === "businessName" && (
-                <Input value={f.businessName} onChange={(v) => set("businessName", v)} placeholder="Glenwood Grill LLC" autoComplete="organization" />
+                <Input value={f.businessName} onChange={(v) => set("businessName", v)} placeholder="Glenwood Grill LLC" autoComplete="organization" ariaLabel={cur.label} />
               )}
               {cur.key === "fullName" && (
-                <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jordan Lee" autoComplete="name" />
+                <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jordan Lee" autoComplete="name" ariaLabel={cur.label} />
               )}
               {cur.key === "email" && (
                 <>
