@@ -1,8 +1,12 @@
-// Coverage a page may request on a lead (CRM line names; the CRM normalises them in
-// src/lib/insuranceLines.ts). /api/intake forwards ONLY these, so a crafted body can't write an
-// arbitrary line onto a lead; the type keeps a guide from setting a value the route would drop.
+// General guide coverage remains deliberately narrow. The paid bar form has a
+// separate line set so it can record liquor and property requests without changing
+// what contractor and other intake pages are permitted to forward.
 export const REQUESTED_COVERAGE_ALLOWLIST = ["Workers Comp", "General Liability"] as const;
 export type RequestedCoverage = (typeof REQUESTED_COVERAGE_ALLOWLIST)[number];
+export const BAR_REQUESTED_COVERAGE_ALLOWLIST = ["General Liability", "Property", "BOP", "Liquor Liability", "Other"] as const;
+export type BarRequestedCoverage = (typeof BAR_REQUESTED_COVERAGE_ALLOWLIST)[number];
 
-// Human-readable names for the "Coverage requested" detail row (quotes@ and the Slack card).
-export const REQUESTED_COVERAGE_LABELS: Record<RequestedCoverage, string> = { "Workers Comp": "Workers' comp", "General Liability": "General liability" };
+export const REQUESTED_COVERAGE_LABELS: Record<RequestedCoverage, string> = {
+  "Workers Comp": "Workers' comp",
+  "General Liability": "General liability",
+};

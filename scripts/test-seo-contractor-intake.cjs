@@ -88,6 +88,10 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   for(const junk of [['General Liability','Workers Comp','Commercial Auto'],['Property'],['workers comp'],'Workers Comp',[],['Workers Comp','Workers Comp','General Liability']]){
    fwd=await send(paid({row:'WC + GL',coverage:junk}));assert.equal(fwd.coverage,undefined,`allowlist drops ${JSON.stringify(junk)}`);
   }
+  const bar={...paid({}),source:'bar-landing',businessType:'Bar / tavern / brewery',coverage:['BOP','Liquor Liability'],details:[{label:'Coverage requested',value:'General liability, Business property (equipment, furniture, inventory), Liquor liability'},{label:'Alcohol as % of sales',value:'Over 50%'},{label:'Alcohol share range',value:'70%+'}]};
+  fwd=await send(bar);assert.deepEqual(fwd.coverage,['BOP','Liquor Liability'],'bar can request a BOP plus separate liquor liability');
+  assert.ok(JSON.stringify(fwd).includes('70%+'),'precise bar alcohol range reaches servicing');
+  fwd=await send({...bar,coverage:['Workers Comp']});assert.equal(fwd.coverage,undefined,'bar-specific allowlist does not admit unrelated coverage');
  }
  // Workers' comp trade/state/restaurant pages (Kevin 2026-10-15): real bound policies only, every page records WC.
  {const WC=require('../lib/guides/workers-comp-resources.ts'),{getStartupGuide}=require('../lib/guides/catalog.ts');
