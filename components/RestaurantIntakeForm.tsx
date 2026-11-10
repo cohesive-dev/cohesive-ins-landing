@@ -160,10 +160,8 @@ const BAR_LIQUOR = "Liquor liability";
 const BAR_GL = "General liability";
 const BAR_CONTENTS = "Business property (equipment, furniture, inventory)";
 const BAR_BUILDING = "Building (if you own it)";
-const BAR_UNSURE = "Help me decide";
-const BAR_COVERAGE = [BAR_LIQUOR, BAR_GL, BAR_CONTENTS, BAR_BUILDING, BAR_UNSURE];
+const BAR_COVERAGE = [BAR_LIQUOR, BAR_GL, BAR_CONTENTS, BAR_BUILDING];
 function barCoverageLines(selected: string[]): BarRequestedCoverage[] {
-  if (selected.includes(BAR_UNSURE)) return ["Other"];
   const wantsProperty = selected.includes(BAR_CONTENTS) || selected.includes(BAR_BUILDING);
   const wantsGL = selected.includes(BAR_GL);
   const lines: BarRequestedCoverage[] = [];
@@ -311,11 +309,7 @@ export default function RestaurantIntakeForm({
   const barCoverageOptions = isOwner ? BAR_COVERAGE : BAR_COVERAGE.filter((choice) => choice !== BAR_BUILDING);
   const toggleBarCoverage = (choice: string) => {
     track("CoverageSelected");
-    setBarCoverage((previous) => {
-      if (choice === BAR_UNSURE) return previous.includes(BAR_UNSURE) ? [] : [BAR_UNSURE];
-      const withoutUnsure = previous.filter((item) => item !== BAR_UNSURE);
-      return withoutUnsure.includes(choice) ? withoutUnsure.filter((item) => item !== choice) : [...withoutUnsure, choice];
-    });
+    setBarCoverage((previous) => previous.includes(choice) ? previous.filter((item) => item !== choice) : [...previous, choice]);
   };
   type FormStep = { key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean };
   const CONTACT_STEPS: FormStep[] = [
@@ -329,7 +323,7 @@ export default function RestaurantIntakeForm({
     { key: "alcohol", label: "Alcohol as % of sales", hint: "Roughly what share of your sales is alcohol.", ok: () => !!f.alcohol },
     { key: "ownRent", label: "Do you own or rent your space?", ok: () => !!f.ownRent },
     { key: "buildingValue", label: "Estimated building replacement value", hint: "Rough rebuild cost is fine - what it would take to rebuild, not what you paid.", ok: () => true, skip: () => !isOwner },
-    { key: "coverage", label: "What would you like us to quote?", hint: "Select all that apply. We can help if you are unsure.", ok: () => barCoverage.length > 0, skip: () => !barOk },
+    { key: "coverage", label: "What would you like us to quote?", hint: "Select all that apply.", ok: () => barCoverage.length > 0, skip: () => !barOk },
     { key: "entityType", label: "How is your business structured?", ok: () => !!f.entityType },
     { key: "foundingYear", label: "When did you open?", ok: () => !!f.foundingYear },
     { key: "timeline", label: "When do you need coverage?", ok: () => !!f.timeline },

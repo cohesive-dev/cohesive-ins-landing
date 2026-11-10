@@ -41,6 +41,13 @@ const details = body => Object.fromEntries((body.details || []).map(({ label, va
     await page.getByRole('button', { name: '$500K - $1M' }).click();
     await page.getByRole('button', { name: 'Next', exact: true }).click();
     await page.getByRole('button', { name: '70% or more' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    await page.getByRole('button', { name: 'Rent (tenant)' }).click();
+    await page.getByRole('button', { name: 'Next', exact: true }).click();
+    assert.equal(await page.getByText('What would you like us to quote?').count(), 1);
+    assert.equal(await page.getByRole('button', { name: 'Help me decide' }).count(), 0, 'removed option stays absent');
+    await page.getByRole('button', { name: 'Liquor liability', exact: true }).click();
+    await page.getByRole('button', { name: 'General liability', exact: true }).click();
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
     await page.waitForTimeout(300);
 
@@ -54,6 +61,7 @@ const details = body => Object.fromEntries((body.details || []).map(({ label, va
     assert.equal(body.businessType, 'Full-service / sit-down restaurant', 'visitor-stated type is preserved');
     assert.equal(details(body)['Alcohol share range'], '70%+');
     assert.equal(details(body)['Alcohol as % of sales'], 'Over 50%');
+    assert.deepEqual(body.coverage, ['General Liability', 'Liquor Liability']);
     await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
     await page.waitForTimeout(100);
     assert.equal(partials.length, 1, 'abandon dedupes');

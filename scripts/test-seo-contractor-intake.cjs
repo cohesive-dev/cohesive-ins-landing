@@ -92,6 +92,7 @@ function fill(trade=formProps.tradeLabel){for(const [placeholder,value] of Objec
   fwd=await send(bar);assert.deepEqual(fwd.coverage,['BOP','Liquor Liability'],'bar can request a BOP plus separate liquor liability');
   assert.ok(JSON.stringify(fwd).includes('70%+'),'precise bar alcohol range reaches servicing');
   fwd=await send({...bar,coverage:['Workers Comp']});assert.equal(fwd.coverage,undefined,'bar-specific allowlist does not admit unrelated coverage');
+  fwd=await send({...bar,coverage:['Other']});assert.equal(fwd.coverage,undefined,'removed Help me decide line cannot be forwarded');
  }
  // Workers' comp trade/state/restaurant pages (Kevin 2026-10-15): real bound policies only, every page records WC.
  {const WC=require('../lib/guides/workers-comp-resources.ts'),{getStartupGuide}=require('../lib/guides/catalog.ts');
