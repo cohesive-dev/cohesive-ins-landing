@@ -768,7 +768,7 @@ export default function RestaurantIntakeForm({
               )}
               {cur.key === "email" && (
                 <>
-                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder={barOk ? "you@yourbusiness.com" : "you@restaurant.com"} type="email" autoComplete="email" inputMode="email" />
+                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder={barOk ? "you@yourbusiness.com" : "you@restaurant.com"} type="email" autoComplete="email" inputMode="email" ariaLabel="Email" />
                   {barOk && step === 0 && (
                     <PartialCaptureDisclosure>We use your contact details to help with your insurance request.</PartialCaptureDisclosure>
                   )}
@@ -788,7 +788,7 @@ export default function RestaurantIntakeForm({
               )}
               {cur.key === "phone" && (
                 <>
-                  <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
+                  <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" ariaLabel="Phone" />
                   {!!f.phone?.trim() && !phoneValid && (
                     <p className="mt-2 text-xs text-[#B42318]">Please enter a valid US phone number.</p>
                   )}
