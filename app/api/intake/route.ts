@@ -179,6 +179,7 @@ async function sendCapiEvent(
   eventId: string,
   email?: string,
   phone?: string,
+  source?: string,
 ): Promise<"sent" | "skipped" | "failed"> {
   const token = process.env.META_CAPI_TOKEN;
   if (!token) {
@@ -207,7 +208,9 @@ async function sendCapiEvent(
         action_source: "website",
         event_source_url:
           request.headers.get("referer") ??
-          "https://cohesiveinsure.com/religious",
+          (source === "bar-landing"
+            ? "https://www.cohesiveinsure.com/bar"
+            : "https://cohesiveinsure.com/religious"),
         user_data: userData,
       },
     ],
@@ -433,6 +436,7 @@ export async function POST(request: NextRequest) {
   // "seo-bar-national" source is NOT swept in by accident.
   const isRestaurantLane =
     source === "restaurant-landing" || source === "bar-landing";
+  const isBarLane = source === "bar-landing";
   // The contractor lane records the contact in the CRM but suppresses the automated
   // first-touch SMS/dial (deployed CRM honors suppress_first_touch): its quote loop
   // (Foxquilt instant-quote or Hedge ack) owns the first outbound touch, church-style.
@@ -513,7 +517,12 @@ export async function POST(request: NextRequest) {
     details,
   })]);
   const forwarded = crmResult.ok;
-  const conversionEligible = (!contactFirstExperiment || forwarded) && (!guardedLane || (quality.kind === 'accept' && !!acceptedEventId && !crmResult.duplicate));
+  const barEventId = isBarLane ? asTrimmedString(body.eventId) : undefined;
+  const conversionEligible = (!contactFirstExperiment || forwarded)
+    && (!guardedLane || (quality.kind === 'accept' && !!acceptedEventId && !crmResult.duplicate))
+    // A quotes@ fallback still saves the request, but cannot train Meta as a
+    // CRM-matched bar lead. A same-person CRM duplicate is not a new lead either.
+    && (!isBarLane || (forwarded && !crmResult.duplicate && !!barEventId));
 
   if (!forwarded && !emailed) {
     return NextResponse.json({
@@ -534,7 +543,7 @@ export async function POST(request: NextRequest) {
     // A CRM duplicate may retry the SAME CAPI event ID after an earlier send failure.
     // Never mint another event ID for a same-day repeat; browser emission stays suppressed.
     eventId && reachable && (!contactFirstExperiment || forwarded) && (conversionEligible || (guardedLane && quality.kind === 'accept' && !!acceptedEventId))
-      ? await sendCapiEvent(request, eventName, eventId, email, phone)
+      ? await sendCapiEvent(request, eventName, eventId, email, phone, source)
       : "skipped";
   // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead
   // self-reports a current GL premium of $5K+ ("$5K - $20K" / "$20K+"). That is the
@@ -607,7 +616,11 @@ export async function POST(request: NextRequest) {
     {
       ok: true,
       crm: forwarded ? "sent" : "failed",
-      ...(guardedLane ? { conversion: { eligible: conversionEligible, eventId: acceptedEventId, reason: crmResult.duplicate ? 'duplicate' : quality.reason } } : {}),
+      ...(guardedLane
+        ? { conversion: { eligible: conversionEligible, eventId: acceptedEventId, reason: crmResult.duplicate ? 'duplicate' : quality.reason } }
+        : isBarLane
+          ? { conversion: { eligible: conversionEligible, eventId: conversionEligible ? barEventId : undefined, reason: crmResult.duplicate ? 'duplicate' : forwarded ? 'crm_accepted' : 'crm_forward_failed' } }
+          : {}),
       notification: emailed ? "sent" : "failed",
       capi,
       capiQualified,

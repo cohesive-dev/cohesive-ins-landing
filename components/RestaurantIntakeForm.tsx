@@ -550,19 +550,33 @@ export default function RestaurantIntakeForm({
         }),
       });
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      const result: unknown = await res.json();
+      if (!result || typeof result !== "object" || !("ok" in result) || result.ok !== true) {
+        throw new Error("We could not confirm your request. Please try again.");
+      }
+      // /bar's quotes@ fallback can succeed while CRM fails. Show the saved
+      // request to the visitor, but count a paid lead only after CRM accepted a
+      // new person and the server explicitly marked this conversion eligible.
+      const trackLead = source !== "bar-landing" || (
+        "conversion" in result && result.conversion !== null &&
+        typeof result.conversion === "object" &&
+        "eligible" in result.conversion && result.conversion.eligible === true
+      );
 
       // Fire the pixel ONLY after the intake POST succeeds (test/failed/
       // abandoned submits never count). Each event carries the shared eventID
       // so browser + server CAPI dedupe to a single conversion.
       if (qualification === "qualified") {
-        fbq("track", "Lead", {}, { eventID: eventId });
-        fbq("trackCustom", "RestaurantQuoteSubmit");
-        if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
+        if (trackLead) {
+          fbq("track", "Lead", {}, { eventID: eventId });
+          fbq("trackCustom", "RestaurantQuoteSubmit");
+          if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
+        }
         setStatus("done");
       } else if (qualification === "es") {
         // A real lead, but NOT a `Lead` conversion — Meta captures it without
         // optimizing toward it.
-        fbq("trackCustom", "RestaurantLeadES", {}, { eventID: eventId });
+        if (trackLead) fbq("trackCustom", "RestaurantLeadES", {}, { eventID: eventId });
         setStatus("es-done");
       } else {
         // Disqualified: non-Lead signal so the optimizer stops serving bars.
