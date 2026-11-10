@@ -42,3 +42,5 @@ jobs:
           cat /tmp/next.log; exit 1
       - name: Browser - contractor partial capture (intake requests are intercepted; nothing real is sent)
         run: node scripts/test-contractor-partial-capture.cjs http://localhost:3021
+      - name: Browser - bar contact first and abandoned capture (intake requests are intercepted)
+        run: node scripts/test-bar-contact-first.cjs http://localhost:3021

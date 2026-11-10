@@ -14,7 +14,8 @@ import RestaurantIntakeForm from "@/components/RestaurantIntakeForm";
 //
 // mode="bar" keeps the bar and >50%-alcohol answers as E&S leads rather than
 // disqualifying them, which is the whole point of the bar lane. layout="steps"
-// matches /restaurant: one question per screen, Instant-Form order.
+// keeps one question per screen but asks for contact first, so an abandoned
+// inquiry can include a reachable contact before the business questions.
 export default function Page() {
   return (
     <RestaurantIntakeForm layout="steps" mode="bar" source="bar-landing" />

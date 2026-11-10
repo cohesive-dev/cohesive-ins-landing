@@ -304,9 +304,8 @@ export default function RestaurantIntakeForm({
     status !== "sending";
 
   // ---- STEP LAYOUT (Kevin 2026-08-16) -------------------------------------------------
-  // Order = the v6 Instant Form: taps first (business type, revenue, alcohol, own/rent
-  // [+building value if own], structure, founding year, timeline), then typing (address,
-  // business name, full name, email, phone). Sunk cost is built before the contact fields.
+  // /restaurant retains the v6 Instant Form order. /bar asks for a reachable contact
+  // first, so an abandoned bar inquiry can carry the contact the visitor entered.
   const [step, setStep] = useState(0);
   const isOwner = f.ownRent === "Own";
   const barCoverageOptions = isOwner ? BAR_COVERAGE : BAR_COVERAGE.filter((choice) => choice !== BAR_BUILDING);
@@ -318,7 +317,13 @@ export default function RestaurantIntakeForm({
       return withoutUnsure.includes(choice) ? withoutUnsure.filter((item) => item !== choice) : [...withoutUnsure, choice];
     });
   };
-  const STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean }> = [
+  type FormStep = { key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean };
+  const CONTACT_STEPS: FormStep[] = [
+    { key: "email", label: "Email", ok: () => emailValid },
+    { key: "phone", label: "Phone", ok: () => phoneValid },
+    { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
+  ];
+  const BUSINESS_STEPS: FormStep[] = [
     { key: "businessType", label: "Which best describes your business?", ok: () => !!f.businessType },
     { key: "revenue", label: "Approximate annual revenue", hint: "Best guess is fine.", ok: () => !!f.revenue },
     { key: "alcohol", label: "Alcohol as % of sales", hint: "Roughly what share of your sales is alcohol.", ok: () => !!f.alcohol },
@@ -330,10 +335,8 @@ export default function RestaurantIntakeForm({
     { key: "timeline", label: "When do you need coverage?", ok: () => !!f.timeline },
     { key: "address", label: "Exact building address", hint: "Start typing and pick the match.", ok: () => addressValid },
     { key: "businessName", label: "Legal business name", hint: "As registered - e.g., Glenwood Grill LLC", ok: () => !!f.businessName?.trim() },
-    { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
-    { key: "email", label: "Email", ok: () => emailValid },
-    { key: "phone", label: "Phone", ok: () => phoneValid },
   ];
+  const STEPS = barOk ? [...CONTACT_STEPS, ...BUSINESS_STEPS] : [...BUSINESS_STEPS, ...CONTACT_STEPS];
   const visibleSteps = STEPS.filter((st) => !(st.skip && st.skip()));
   const cur = visibleSteps[Math.min(step, visibleSteps.length - 1)];
   const isLast = step >= visibleSteps.length - 1;
@@ -415,10 +418,9 @@ export default function RestaurantIntakeForm({
   latest.current = { f, details, status };
   const sentPartial = useRef(false);
 
-  // Partial capture: the moment a visitor gives us ANY way to reach them (a
-  // valid email or a phone), capture them as a partial (final) lead so a
-  // mid-form abandoner is never lost. Fires at most once, on whichever comes
-  // first: leaving/backgrounding the page OR 120s of inactivity. The intake
+  // Partial capture: once a visitor gives us a way to reach them (a valid
+  // email or a phone), an exit/background event or 120s of inactivity sends
+  // the latest answers at most once. The intake
   // route routes partials to quotes@ ONLY (no CRM/SMS, no CAPI), with a
   // no-consent note — correct for a non-submitter.
   const firePartial = useRef(() => {});
@@ -432,13 +434,14 @@ export default function RestaurantIntakeForm({
     const email = (cur.email ?? "").trim();
     const phone = (cur.phone ?? "").trim();
     const validEmail = EMAIL_RE.test(email) ? email : undefined;
-    if (!(validEmail || phone)) return;
+    const partialPhone = barOk ? (PHONE_OK(phone) ? phone : undefined) : phone || undefined;
+    if (!(validEmail || partialPhone)) return;
     sentPartial.current = true;
     const body = JSON.stringify({
       name: cur.fullName,
       email: validEmail,
-      phone: phone || undefined,
-      businessType: cur.businessType || "Restaurant",
+      phone: partialPhone,
+      businessType: cur.businessType || (barOk ? undefined : "Restaurant"),
       zip: extractZip(cur.address),
       source,
       partial: true,
@@ -718,7 +721,7 @@ export default function RestaurantIntakeForm({
             </div>
             <Field label={cur.label} hint={cur.hint} required={cur.key !== "buildingValue"}>
               {cur.key === "businessType" && (
-                <Radio name="businessType" value={f.businessType} onChange={(v) => { set("businessType", v); }} options={businessTypes} />
+                <Radio name="businessType" value={f.businessType} onChange={(v) => { set("businessType", v); }} options={businessTypes} ariaLabel={cur.label} />
               )}
               {cur.key === "businessType" && notFood && (
                 <p className="mt-2 rounded-lg bg-[#F1F3F5] px-4 py-3 text-sm text-[#6B6D71]">
@@ -726,46 +729,49 @@ export default function RestaurantIntakeForm({
                 </p>
               )}
               {cur.key === "revenue" && (
-                <Radio name="revenue" value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} />
+                <Radio name="revenue" value={f.revenue} onChange={(v) => set("revenue", v)} options={REVENUE} ariaLabel={cur.label} />
               )}
               {cur.key === "alcohol" && (
-                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={barOk ? BAR_ALCOHOL : ALCOHOL} />
+                <Radio name="alcohol" value={f.alcohol} onChange={(v) => set("alcohol", v)} options={barOk ? BAR_ALCOHOL : ALCOHOL} ariaLabel={cur.label} />
               )}
               {cur.key === "coverage" && (
                 <div className="space-y-3">
-                  <CheckGroup options={barCoverageOptions} selected={barCoverage} onToggle={toggleBarCoverage} ariaLabel="Coverage to quote" />
+                  <CheckGroup options={barCoverageOptions} selected={barCoverage} onToggle={toggleBarCoverage} ariaLabel={cur.label} />
                   <p className="text-xs text-[#6B6D71]">
                     Liability plus business property may fit a business owner’s policy. We’ll review liquor liability separately.
                   </p>
                 </div>
               )}
               {cur.key === "ownRent" && (
-                <Radio name="ownRent" value={f.ownRent} onChange={(v) => set("ownRent", v)} options={[{ label: "Own", value: "Own" }, { label: "Rent (tenant)", value: "Rent" }]} />
+                <Radio name="ownRent" value={f.ownRent} onChange={(v) => set("ownRent", v)} options={[{ label: "Own", value: "Own" }, { label: "Rent (tenant)", value: "Rent" }]} ariaLabel={cur.label} />
               )}
               {cur.key === "buildingValue" && (
-                <Input value={f.buildingValue} onChange={(v) => set("buildingValue", v)} placeholder="e.g. 350,000" inputMode="numeric" />
+                <Input value={f.buildingValue} onChange={(v) => set("buildingValue", v)} placeholder="e.g. 350,000" inputMode="numeric" ariaLabel={cur.label} />
               )}
               {cur.key === "entityType" && (
-                <Radio name="entityType" value={f.entityType} onChange={(v) => set("entityType", v)} options={ENTITY_TYPES} />
+                <Radio name="entityType" value={f.entityType} onChange={(v) => set("entityType", v)} options={ENTITY_TYPES} ariaLabel={cur.label} />
               )}
               {cur.key === "foundingYear" && (
-                <Radio name="foundingYear" value={f.foundingYear} onChange={(v) => set("foundingYear", v)} options={FOUNDING_YEAR} />
+                <Radio name="foundingYear" value={f.foundingYear} onChange={(v) => set("foundingYear", v)} options={FOUNDING_YEAR} ariaLabel={cur.label} />
               )}
               {cur.key === "timeline" && (
-                <Radio name="timeline" value={f.timeline} onChange={(v) => set("timeline", v)} options={TIMELINE} />
+                <Radio name="timeline" value={f.timeline} onChange={(v) => set("timeline", v)} options={TIMELINE} ariaLabel={cur.label} />
               )}
               {cur.key === "address" && (
-                <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" />
+                <AddressAutocomplete value={f.address} onChange={(v) => set("address", v)} placeholder="123 Main St, Springfield, IL 62704" ariaLabel={cur.label} />
               )}
               {cur.key === "businessName" && (
-                <Input value={f.businessName} onChange={(v) => set("businessName", v)} placeholder="Glenwood Grill LLC" autoComplete="organization" />
+                <Input value={f.businessName} onChange={(v) => set("businessName", v)} placeholder="Glenwood Grill LLC" autoComplete="organization" ariaLabel={cur.label} />
               )}
               {cur.key === "fullName" && (
-                <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jordan Lee" autoComplete="name" />
+                <Input value={f.fullName} onChange={(v) => set("fullName", v)} placeholder="Jordan Lee" autoComplete="name" ariaLabel={cur.label} />
               )}
               {cur.key === "email" && (
                 <>
-                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder="you@restaurant.com" type="email" autoComplete="email" inputMode="email" />
+                  <Input value={f.email} onChange={(v) => set("email", v)} placeholder={barOk ? "you@yourbusiness.com" : "you@restaurant.com"} type="email" autoComplete="email" inputMode="email" ariaLabel="Email" />
+                  {barOk && step === 0 && (
+                    <PartialCaptureDisclosure>We use your contact details to help with your insurance request.</PartialCaptureDisclosure>
+                  )}
                   {emailSuggestion(f.email ?? "") && (
                     <p className="mt-2 text-xs text-[#6B7A90]">
                       Did you mean{" "}
@@ -782,7 +788,7 @@ export default function RestaurantIntakeForm({
               )}
               {cur.key === "phone" && (
                 <>
-                  <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" />
+                  <Input value={f.phone} onChange={(v) => set("phone", v)} placeholder="(555) 123-4567" type="tel" autoComplete="tel" inputMode="tel" ariaLabel="Phone" />
                   {!!f.phone?.trim() && !phoneValid && (
                     <p className="mt-2 text-xs text-[#B42318]">Please enter a valid US phone number.</p>
                   )}
