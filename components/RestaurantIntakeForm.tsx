@@ -317,12 +317,13 @@ export default function RestaurantIntakeForm({
       return withoutUnsure.includes(choice) ? withoutUnsure.filter((item) => item !== choice) : [...withoutUnsure, choice];
     });
   };
-  const CONTACT_STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean }> = [
+  type FormStep = { key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean };
+  const CONTACT_STEPS: FormStep[] = [
     { key: "email", label: "Email", ok: () => emailValid },
     { key: "phone", label: "Phone", ok: () => phoneValid },
     { key: "fullName", label: "Your full name", ok: () => !!f.fullName?.trim() },
   ];
-  const BUSINESS_STEPS: Array<{ key: string; label: string; hint?: string; ok: () => boolean; skip?: () => boolean }> = [
+  const BUSINESS_STEPS: FormStep[] = [
     { key: "businessType", label: "Which best describes your business?", ok: () => !!f.businessType },
     { key: "revenue", label: "Approximate annual revenue", hint: "Best guess is fine.", ok: () => !!f.revenue },
     { key: "alcohol", label: "Alcohol as % of sales", hint: "Roughly what share of your sales is alcohol.", ok: () => !!f.alcohol },
