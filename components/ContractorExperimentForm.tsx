@@ -14,6 +14,7 @@ import AddressAutocomplete from '@/components/AddressAutocomplete';
 import PartialCaptureDisclosure from '@/components/PartialCaptureDisclosure';
 import {contractorFallbackReason} from '@/lib/contractor-landing-params';
 import {contractorSourceDetails} from '@/lib/contractor-source';
+import {contractorArmFromRandom} from '@/lib/contractor-arm';
 
 export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
  const query=useSearchParams();
@@ -87,7 +88,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    if(coldLayout)return;
    let chosenArm:'current'|'short'='current';
    if(process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'){
-     try{const stored=localStorage.getItem('cohesive_contractor_short_first_ab_v1');if(stored==='current'||stored==='short')chosenArm=stored;else{chosenArm=crypto.getRandomValues(new Uint32Array(1))[0]<2147483648?'current':'short';localStorage.setItem('cohesive_contractor_short_first_ab_v1',chosenArm);}}catch{/* current form if assignment cannot persist */}
+     try{const stored=localStorage.getItem('cohesive_contractor_short_first_ab_v1');if(stored==='current'||stored==='short')chosenArm=stored;else{chosenArm=contractorArmFromRandom(crypto.getRandomValues(new Uint32Array(1))[0]);localStorage.setItem('cohesive_contractor_short_first_ab_v1',chosenArm);}}catch{/* current form if assignment cannot persist */}
    }
    // Preview controls never enter production experiment assignment or lead submission.
    if(query.get('preview')==='1'&&query.get('arm')==='short')chosenArm='short';
