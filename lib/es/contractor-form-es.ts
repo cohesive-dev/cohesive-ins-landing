@@ -35,6 +35,7 @@ const ES: Record<string, string> = {
   Painting: "Pintura",
   "Carpentry / framing": "Carpintería / framing",
   "Masonry / concrete": "Albañilería / concreto",
+  "Plastering / stucco": "Estuco / yeso",
   "Siding / gutters": "Siding / canaletas",
   "Flooring / tile": "Pisos / loseta y azulejo",
   "Excavation / grading / site work": "Excavación / nivelación de terreno",
