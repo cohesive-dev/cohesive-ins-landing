@@ -10,6 +10,7 @@ export const TRADES: {label:string;value:string}[] = [
   { label: "Painting", value: "Painting" },
   { label: "Framing / carpentry", value: "Carpentry / framing" },
   { label: "Masonry / concrete", value: "Masonry / concrete" },
+  { label: "Stucco / plastering", value: "Plastering / stucco" },
   { label: "Siding installation / gutters", value: "Siding / gutters" },
   { label: "Flooring / tile", value: "Flooring / tile" },
   { label: "Excavation / grading / site work", value: "Excavation / grading / site work" },
