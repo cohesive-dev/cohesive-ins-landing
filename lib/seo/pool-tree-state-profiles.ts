@@ -263,7 +263,7 @@ export const POOL_TREE_STATE_PROFILES: Record<string, Profile> = {
   "tree-service/georgia": {
     "name": "Tree Service & Tree Removal",
     "state": "Georgia",
-    "reviewedOn": "2026-09-14",
+    "reviewedOn": "2026-11-12",
     "intro": "Georgia arborist and tree-removal businesses should identify climbing, crane-assisted removals, stump grinding and storm work. State both tree height and working height, and identify jobs beside buildings or power lines.",
     "pricing": "Prepare receipts, payroll, subcontractor costs, loss history and the percentage of pruning, removals, stump work and storm cleanup. Quotes should use the same heights and methods. A lower premium with a height or removal restriction may not fit the jobs you actually take.",
     "facts": [
@@ -273,6 +273,14 @@ export const POOL_TREE_STATE_PROFILES: Record<string, Profile> = {
         "source": {
           "label": "Atlanta planning: arborist division",
           "href": "https://www.atlantaga.gov/government/departments/city-planning/nature-urban-ecology/arborist"
+        }
+      },
+      {
+        "title": "Check Georgia's workers' compensation threshold against the whole crew",
+        "body": "Georgia's State Board says a business regularly employing three or more people must provide workers' compensation. Regular part-time workers count, and corporate officers or LLC members are included in the count. Check your structure and actual staffing before assuming a one-person field crew is exempt.",
+        "source": {
+          "label": "Georgia State Board of Workers' Compensation: insurance FAQs",
+          "href": "https://sbwc.georgia.gov/frequently-asked-questions/workers-compensation-insurance-faqs"
         }
       },
       {
@@ -300,6 +308,10 @@ export const POOL_TREE_STATE_PROFILES: Record<string, Profile> = {
       }
     ],
     "faqs": [
+      {
+        "q": "Is the $1,271.18 tree-service quote a Georgia rate?",
+        "a": "No. It is a real claims-made general liability quote for one tree service at about $300K revenue, with one W-2 employee and no subcontractors. It was not a bound policy or a Georgia average. Your quote depends on removals, height, equipment, utility work, crew, location and the policy terms. Send those details for review before comparing prices."
+      },
       {
         "q": "Does tree-service insurance include tree removal?",
         "a": "Only the quoted policy and accepted operations can answer that. Describe full removals and rigging explicitly, and ask the reviewer to identify any removal, height or equipment restrictions."

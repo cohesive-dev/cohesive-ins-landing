@@ -32,6 +32,37 @@ export type Profile = {
 };
 
 const profiles: Record<string, Profile> = {
+  "roofer/new-york": {
+    name: "Roofer", state: "New York", reviewedOn: "2026-11-12",
+    intro: "Describe your roof systems, working heights, residential and commercial jobs, and who performs each part of the work. In New York City, residential roof work can also require a home improvement contractor license; the insurance review and the licensing check are separate.",
+    pricing: "The $1,359.42 claims-made and $1,795.09 occurrence general liability quotes came from one roofer at about $377K revenue, $133K subcontracted and no W-2 employees. They are two policy forms on the same application, not New York rates or bound policies. Send your own receipts, payroll, subcontractor costs, roof types, loss history and customer insurance terms for a New York quote.",
+    facts: [
+      {
+        title: "Check New York City residential licensing before bidding",
+        body: "NYC's consumer agency says businesses that perform or offer home improvement work on private residences need its Home Improvement Contractor license, and says subcontractors doing that work need one too. Check the work and address with the city; this city rule does not describe every New York roofing job.",
+        source: { label: "NYC DCWP: home improvement contractor inspection checklist", href: "https://www.nyc.gov/assets/dca/downloads/pdf/businesses/DCAInspectionChecklist_HomeImprovement.pdf" },
+      },
+      {
+        title: "Describe subcontractor relationships for workers' comp review",
+        body: "New York's Workers' Compensation Board explains that a construction worker performing services for a contractor is presumed an employee unless the statutory independent-contractor test is met. Give us the actual crew and subcontractor arrangements and available coverage evidence; a 1099 label alone does not settle the insurance question.",
+        source: { label: "NY Workers' Compensation Board: identifying an independent contractor", href: "https://www.wcb.ny.gov/content/main/Employers/identifying-independent-contractor.jsp" },
+      },
+    ],
+    questions: [
+      "What share of your work is residential versus commercial, and which jobs are in New York City?",
+      "What roofs, heights, torch or hot work, and open-roof exposure do you take on?",
+      "Which tasks do employees and subcontractors perform, and what are payroll and subcontractor costs?",
+      "Does the customer require occurrence coverage, additional insured status or completed operations?",
+    ],
+    coverages: [
+      { name: "Roofing liability and completed work", desc: "Compare open-roof water damage, roof-system work, heights, hot work and completed operations against the proposed policy wording. Ask about restrictions before treating a lower premium as equivalent coverage." },
+      { name: "Crew, subcontractors and customer contracts", desc: "Review workers' compensation, subcontractor evidence and the customer's insurance exhibit separately. A certificate does not create coverage or additional insured status." },
+    ],
+    faqs: [
+      { q: "Does the $1,359.42 roofing quote set a New York rate?", a: "No. It was one real claims-made general liability quote for a roofer at about $377K revenue with $133K subcontracted and no W-2 employees. The same application also received a $1,795.09 occurrence quote. Neither was a bound New York rate; compare the policy forms and submit your own work, crew and contract details for review." },
+      { q: "What should a New York roofer send to compare two insurance quotes?", a: "Send receipts, payroll, subcontractor spending and insurance evidence, roof types and heights, residential and commercial work, loss history and the customer's insurance requirements. For NYC residential work, check the city licensing requirement separately. Ask us to compare each quote's accepted operations, form and exclusions." },
+    ],
+  },
   "tree-service/new-jersey": {
     name: "Tree Service",
     state: "New Jersey",
