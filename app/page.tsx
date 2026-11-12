@@ -1383,7 +1383,10 @@ function Footer() {
 
         <p className="md:ml-[33.333%] mb-10 text-sm">
           <Link href="/insurance/tree-service" className="font-semibold text-white hover:underline">Tree service insurance</Link>
-          {" "}has a real bound price, tree-removal questions, height restrictions and quote details.
+          {" "}shows a real $1,271.18 claims-made quote and separate bound policy examples. Review tree-removal and height questions for{" "}
+          <Link href="/insurance/tree-service/georgia" className="font-semibold text-white hover:underline">Georgia</Link>
+          {" "}and{" "}
+          <Link href="/insurance/tree-service/north-carolina" className="font-semibold text-white hover:underline">North Carolina</Link>.
         </p>
 
         <div className="pt-8 md:w-1/2 md:ml-auto">
