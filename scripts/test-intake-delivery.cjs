@@ -7,13 +7,13 @@ const Module = require('node:module');
 const ts = require('typescript');
 const root = path.resolve(__dirname, '..');
 const originalLoad = Module._load;
-let emailOk = true, crmMode = 'accepted', crmCalls = [], emails = [], rawMessages = [];
+let emailOk = true, crmMode = 'accepted', crmCalls = [], emails = [], rawMessages = [], missAlerts = [];
 let mockNotification = true;
 require.extensions['.ts'] = (module, filename) => module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true, resolveJsonModule: true }, fileName: filename,
 }).outputText, filename);
 Module._load = function (request, parent, isMain) {
-  if (request === '@/lib/notify' && mockNotification) return { sendIntakeNotification: async fields => { emails.push(fields); return emailOk; } };
+  if (request === '@/lib/notify' && mockNotification) return { sendIntakeNotification: async fields => { emails.push(fields); return emailOk; }, sendCrmMissAlert: async fields => { missAlerts.push(fields); return true; } };
   if (request === '@/lib/gmail') return { QUOTES_ADDRESS: 'quotes@cohesiveinsure.com', sendRawFromQuotes: async raw => { rawMessages.push(raw.toString()); return emailOk; } };
   if (request.startsWith('@/')) request = path.join(root, request.slice(2));
   return originalLoad.call(this, request, parent, isMain);
@@ -29,7 +29,7 @@ const { NextRequest } = require('next/server');
 const { POST } = require('../app/api/intake/route.ts');
 const base = { name: 'Internal Test', email: 'test@example.invalid', phone: '2025550123', company: 'Internal Test LLC', businessType: 'Roofing', source: 'seo-startup-how-to-start-a-roofing-business-in-new-jersey', startupState: 'new-jersey', details: [{ label: 'State', value: 'Wrong client state' }, { label: 'Starting or coverage timeline', value: 'Within 30 days' }, { label: 'Planned operations', value: 'x'.repeat(2000) }] };
 async function submit(body) {
-  crmCalls = []; emails = [];
+  crmCalls = []; emails = []; missAlerts = [];
   const response = await POST(new NextRequest('http://localhost/api/intake', { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } }));
   return { status: response.status, body: await response.json() };
 }
@@ -42,7 +42,12 @@ async function submit(body) {
     assert.equal(result.body.ok, accepted, crm);
     assert.equal(result.body.notification, mail ? 'sent' : 'failed');
     assert.equal(result.body.crm, crm === 'accepted' ? 'sent' : 'failed');
-    assert.equal(crmCalls.length, 1); assert.equal(emails.length, 1);
+    // ENG332: a transport failure, timeout, 5xx or unreadable body retries once; a false ok does not.
+    assert.equal(crmCalls.length, ['http-failure', 'timeout', 'html'].includes(crm) ? 2 : 1, crm); assert.equal(emails.length, 1);
+    assert.deepEqual(crmCalls[crmCalls.length - 1], crmCalls[0], 'a retry reposts the identical payload');
+    // ...and a final CRM failure is never silent: one [NOT IN CRM] alert carrying the exact repost payload.
+    assert.equal(missAlerts.length, crm === 'accepted' ? 0 : 1, crm);
+    if (missAlerts.length) assert.deepEqual(missAlerts[0].payload, crmCalls[0]);
     assert.equal(crmCalls[0].source, 'webform');
     assert.equal(crmCalls[0].suppress_first_touch, 'true');
     assert.equal(crmCalls[0].business_name, base.company);

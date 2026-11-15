@@ -1,6 +1,6 @@
 import { createHash } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { sendIntakeNotification } from "@/lib/notify";
+import { sendCrmMissAlert, sendIntakeNotification } from "@/lib/notify";
 import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
@@ -132,38 +132,51 @@ function toE164(raw: string | undefined): string | undefined {
   return candidate && E164_RE.test(candidate) ? candidate : undefined;
 }
 
+type CrmPayload = Record<
+  string,
+  string | string[] | Array<{ label: string; value: string }>
+>;
+
+// ENG332 (2026-11-15): three real leads (11/04, 11/07, 11/09) never reached the CRM: no inbound_raw receipt exists, and
+// the only trace was a console.error here while quotes@ got its normal alert. The CRM leg now retries once on a
+// transport failure, timeout or 5xx (the CRM dedupes the same payload, so a retry after a slow success is a no-op
+// duplicate), and a final failure sends a loud "[NOT IN CRM]" alert carrying the exact payload for a repost.
 async function forwardToCrm(
   // `details` rides through as an array of {label, value} objects, so this cannot be
   // Record<string, string | string[]> any more.
-  payload: Record<
-    string,
-    string | string[] | Array<{ label: string; value: string }>
-  >,
-): Promise<{ ok: boolean; duplicate: boolean }> {
-  try {
-    const response = await fetch(CRM_INBOUND_LEAD_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source: "webform", ...payload }),
-      // Bound the CRM leg so notification delivery can still accept the request.
-      signal: AbortSignal.timeout(10_000),
-    });
-    if (!response.ok) {
-      console.error(
-        "CRM inbound-lead rejected the submission",
-        response.status,
-        await response.text().catch(() => ""),
-      );
-      return { ok: false, duplicate: false };
+  payload: CrmPayload,
+): Promise<{ ok: boolean; duplicate: boolean; failure?: string }> {
+  let failure = "";
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const response = await fetch(CRM_INBOUND_LEAD_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: "webform", ...payload }),
+        // Bound the CRM leg so notification delivery can still accept the request.
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!response.ok) {
+        failure = `HTTP ${response.status} ${(await response.text().catch(() => "")).slice(0, 300)}`;
+        console.error("CRM inbound-lead rejected the submission", attempt, failure);
+        // A 4xx is a validation answer; repeating the same body cannot change it.
+        if (response.status < 500) break;
+      } else {
+        const result: unknown = await response.json();
+        const ok = Boolean(result && typeof result === "object" && "ok" in result && result.ok === true);
+        const duplicate = Boolean(result && typeof result === 'object' && 'notificationDelivery' in result && result.notificationDelivery === 'duplicate');
+        if (ok) return { ok, duplicate };
+        failure = `200 without ok: ${JSON.stringify(result).slice(0, 300)}`;
+        console.error("CRM inbound-lead did not confirm the submission", attempt, failure);
+        break;
+      }
+    } catch (error) {
+      failure = `request failed: ${String(error).slice(0, 300)}`;
+      console.error("CRM inbound-lead request failed", attempt, error);
     }
-    const result: unknown = await response.json();
-    const ok = Boolean(result && typeof result === "object" && "ok" in result && result.ok === true);
-    const duplicate = Boolean(result && typeof result === 'object' && 'notificationDelivery' in result && result.notificationDelivery === 'duplicate');
-    return { ok, duplicate };
-  } catch (error) {
-    console.error("CRM inbound-lead request failed", error);
-    return { ok: false, duplicate: false };
+    if (attempt === 1) await new Promise((resolve) => setTimeout(resolve, 1_500));
   }
+  return { ok: false, duplicate: false, failure };
 }
 
 // Fire a server-side conversion event to the Conversions API. event_id MUST
@@ -450,7 +463,7 @@ export async function POST(request: NextRequest) {
     "commercial-property",
   );
   const askedCoverage = requestedCoverage(body.coverage, source);
-  const crmDelivery = forwardToCrm({
+  const crmPayload: CrmPayload = {
     ...(name ? { name } : {}),
     ...(email ? { email } : {}),
     ...(phone ? { phone } : {}),
@@ -487,7 +500,8 @@ export async function POST(request: NextRequest) {
     // persisted to activities.meta->formAnswers. Note the key: `slackExtraFields` here would
     // be silently ignored. Without this the answers reached quotes@ by email and nowhere else.
     ...(details ? { details } : {}),
-  });
+  };
+  const crmDelivery = forwardToCrm(crmPayload);
 
   // Attempt both destinations independently. Accept when at least one confirms delivery;
   // if both fail, return a retryable error instead of reporting a captured lead.
@@ -517,6 +531,15 @@ export async function POST(request: NextRequest) {
     details,
   })]);
   const forwarded = crmResult.ok;
+  if (!forwarded) {
+    // Never silent: the quotes@ alert above looks identical whether or not the CRM leg landed.
+    try {
+      await sendCrmMissAlert({ name, email, phone, company, source, failure: crmResult.failure ?? "unknown",
+        payload: { source: "webform", ...crmPayload } });
+    } catch (error) {
+      console.error("CRM miss alert failed", error);
+    }
+  }
   const barEventId = isBarLane ? asTrimmedString(body.eventId) : undefined;
   const conversionEligible = (!contactFirstExperiment || forwarded)
     && (!guardedLane || (quality.kind === 'accept' && !!acceptedEventId && !crmResult.duplicate))
