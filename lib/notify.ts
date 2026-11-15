@@ -252,3 +252,29 @@ export async function sendNetworkSignupNotification(
 export async function sendRoofingLeadAlert(to: string[], subject: string, text: string): Promise<boolean> {
   return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: to.join(", "), subject, text }, "roofing-leads alert");
 }
+
+/** ENG332: the CRM leg of a completed intake failed after its retry. Sent FROM quotes@ to the team (never to quotes@,
+ *  which the fleet ingests as leads), subject "[NOT IN CRM]", with the exact webhook payload on one line so the
+ *  inbound backstop or a human can repost it (the CRM dedupes a repost of the same submission). */
+export async function sendCrmMissAlert(fields: {
+  name?: string; email?: string; phone?: string; company?: string; source?: string; failure: string;
+  payload: Record<string, unknown>;
+}): Promise<boolean> {
+  const to = (process.env.CRM_MISS_ALERT_TO ?? "kevin@cohesiveapp.com,nam@cohesiveapp.com")
+    .split(",").map((address) => address.trim()).filter(Boolean);
+  const who = fields.company || fields.name || fields.email || fields.phone || "unknown";
+  const text = [
+    "A completed website quote request did NOT reach the CRM (the quotes@ alert went out normally).",
+    "",
+    `Who: ${[fields.name, fields.company].filter(Boolean).join(" / ") || "(not provided)"}`,
+    `Email: ${fields.email ?? "(not provided)"}`,
+    `Phone: ${fields.phone ?? "(not provided)"}`,
+    `Form: ${fields.source ?? "website-form"}`,
+    `CRM failure: ${fields.failure}`,
+    "",
+    "Repost payload (POST to the CRM inbound-lead webhook as-is):",
+    `CRM_REPOST_PAYLOAD_JSON: ${JSON.stringify(fields.payload)}`,
+  ].join("\n");
+  return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: to.join(", "),
+    subject: `[NOT IN CRM] Website lead: ${who}`, text }, "crm miss alert");
+}
