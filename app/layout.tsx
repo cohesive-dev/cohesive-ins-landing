@@ -8,6 +8,8 @@ import { WebsiteTraffic } from '@/components/WebsiteTraffic';
 import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
+const GTM_ID = "GTM-PGN427T9";
+const ENABLE_GTM = process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,6 +47,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+      <head>
+        {ENABLE_GTM && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());",
+              }}
+            />
+          </>
+        )}
+      </head>
       <body className="min-h-full flex flex-col font-[var(--font-sans)]">
         {/* Meta Pixel Code */}
         {/* Pixel is PRODUCTION-ONLY: localhost / preview runs must never write to the real
