@@ -122,6 +122,46 @@ export default function SeoPage({
     </div>
   );
 
+  const priorityQuote = formMode === "contractor" && (tradeSlug === "roofer" || tradeSlug === "tree-service");
+  const quoteSection = (
+      <section
+        id="quote"
+        className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14 scroll-mt-6"
+      >
+        <div className="max-w-2xl mx-auto mb-2 text-center">
+          <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-2">
+            Get your quote
+          </h2>
+          <p className="text-sm text-[#6B6D71]">
+            We know you&apos;re busy - we can get you a quote without needing
+            hours of your time.
+          </p>
+        </div>
+        {formMode === "church" ? (
+          <div className="mx-auto mt-8 max-w-xl rounded-xl border border-blue-200 bg-[#F7F9FF] p-6 text-center">
+            <p className="mb-4 text-sm leading-relaxed text-[#27455C]">
+              Answer only the questions that apply to your ministry and property. You can start without every document.
+            </p>
+            <a
+              href={quoteHref ?? "/religious?source=seo-church-national"}
+              className="inline-block rounded-md bg-[#2040E7] px-7 py-3 font-bold text-white transition-colors hover:bg-[#1A33B9]"
+            >
+              Continue to the church quote form →
+            </a>
+          </div>
+        ) : formMode === "contractor" ? (
+          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} askRevenue={tradeSlug === "roofer"} />
+        ) : formMode === "property" ? (
+          <CommercialPropertyForm embedded source={source} />
+        ) : (
+          <RestaurantQuickQuote source={source} mode={formMode} pageType={restaurantPageType} />
+        )}
+        <p className="mx-auto mt-5 max-w-2xl text-center text-xs text-[#6B6D71]">
+          Cohesive Insurance Services · {ORG_ADDRESS} · (929) 594-5450
+        </p>
+      </section>
+  );
+
   return (
     <main className="min-h-screen bg-white">
       <script
@@ -194,6 +234,8 @@ export default function SeoPage({
           </p>
         </div>
       </section>
+
+      {priorityQuote && quoteSection}
 
       {/* Cost */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14">
@@ -365,43 +407,7 @@ export default function SeoPage({
         </div>
       </section>
 
-      {/* Quote form. Restaurant/bar pages use the short form (2026-10-12); /restaurant keeps the deep intake. */}
-      <section
-        id="quote"
-        className="max-w-6xl mx-auto px-4 sm:px-6 py-10 lg:py-14 scroll-mt-6"
-      >
-        <div className="max-w-2xl mx-auto mb-2 text-center">
-          <h2 className="text-2xl lg:text-3xl font-extrabold text-[#131517] mb-2">
-            Get your quote
-          </h2>
-          <p className="text-sm text-[#6B6D71]">
-            We know you&apos;re busy - we can get you a quote without needing
-            hours of your time.
-          </p>
-        </div>
-        {formMode === "church" ? (
-          <div className="mx-auto mt-8 max-w-xl rounded-xl border border-blue-200 bg-[#F7F9FF] p-6 text-center">
-            <p className="mb-4 text-sm leading-relaxed text-[#27455C]">
-              Answer only the questions that apply to your ministry and property. You can start without every document.
-            </p>
-            <a
-              href={quoteHref ?? "/religious?source=seo-church-national"}
-              className="inline-block rounded-md bg-[#2040E7] px-7 py-3 font-bold text-white transition-colors hover:bg-[#1A33B9]"
-            >
-              Continue to the church quote form →
-            </a>
-          </div>
-        ) : formMode === "contractor" ? (
-          <ContractorQuoteForm source={source} tradeLabel={tradeLabel ?? "contractor"} operationsPrompt={operationsPrompt} askRevenue={tradeSlug === "roofer"} />
-        ) : formMode === "property" ? (
-          <CommercialPropertyForm embedded source={source} />
-        ) : (
-          <RestaurantQuickQuote source={source} mode={formMode} pageType={restaurantPageType} />
-        )}
-        <p className="mx-auto mt-5 max-w-2xl text-center text-xs text-[#6B6D71]">
-          Cohesive Insurance Services · {ORG_ADDRESS} · (929) 594-5450
-        </p>
-      </section>
+      {!priorityQuote && quoteSection}
 
       {showWcTeaser && wcTeaser && (
         <section className="border-t border-slate-100">

@@ -15,6 +15,7 @@ import PartialCaptureDisclosure from '@/components/PartialCaptureDisclosure';
 import {contractorFallbackReason} from '@/lib/contractor-landing-params';
 import {contractorSourceDetails} from '@/lib/contractor-source';
 import {contractorArmFromRandom} from '@/lib/contractor-arm';
+import {ORG_ADDRESS} from '@/lib/entity';
 
 export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
  const query=useSearchParams();
@@ -114,6 +115,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const fields=screens.flat(),shown=layout==='step'?screens[Math.min(step,lastStep)]:fields;
  const fieldValid=coldLayout?validField:validFullField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
+ const googleSearch=!coldLayout&&query.get('utm_source')==='google'&&query.get('utm_medium')==='cpc'&&(industry==='roof'||industry==='tree');
  function update(k:string,v:string){setError('');if(!k.endsWith('RawText')&&answers[k]!==v&&fieldValid(k,v)&&v)tracker.current?.emit('field_complete',k);setAnswers(a=>coldLayout?normalizeAnswers({...a,[k]:v}):normalizeFull(a,k,v));}
  function showFieldError(k:string){
    setError(k in QUESTION_OPTIONS?'Please select an option to continue.':`Please enter a valid ${labels[k].toLowerCase()}.`);
@@ -160,12 +162,16 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
     if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
      (window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
+    if(googleSearch&&result.crm==='sent'&&result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
+     (window as unknown as {gtag?:(...args:unknown[])=>void}).gtag?.('event','conversion',{
+      send_to:'AW-18581087843/P5k2CJ2upLodEOPMk5xF',value:1,currency:'USD',
+     });
     setStatus('done');
    }catch(err){tracker.current?.emit('submit_error');setStatus('error');setError(err instanceof Error?err.message:'Something went wrong. Please try again.');}
  }
  if(status==='done'&&!coldLayout&&!preview)return <ContractorFormSuccess/>;
  if(status==='done')return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">{preview?'Preview complete. Nothing sent.':'Thanks - we received your request.'}</h1><p>We’ll contact you about your business insurance{offer?' and the free lead gen offer':''}.</p></main>;
- return <main className={coldLayout?'mx-auto max-w-2xl p-6 text-slate-900':contractorMainClass}>{coldLayout?<><p>Cohesive Insurance Services</p><h1 className="my-6 text-3xl font-bold">{offer?`${label}: free lead gen. Up to 6 leads.`:`Get a ${label.toLowerCase()} insurance quote.`}</h1></>:<ContractorPageHero title={askWc?'Insurance built for contractors':industry==='fire_sprinkler'?'Insurance quotes for fire sprinkler contractors':industry==='home_builder'?'Insurance quotes for new home builders':undefined}/>}
+ return <main className={coldLayout?'mx-auto max-w-2xl p-6 text-slate-900':contractorMainClass}>{coldLayout?<><p>Cohesive Insurance Services</p><h1 className="my-6 text-3xl font-bold">{offer?`${label}: free lead gen. Up to 6 leads.`:`Get a ${label.toLowerCase()} insurance quote.`}</h1></>:<ContractorPageHero title={askWc?'Insurance built for contractors':googleSearch?(industry==='roof'?'Roofing general liability quotes':'Tree service general liability quotes'):industry==='fire_sprinkler'?'Insurance quotes for fire sprinkler contractors':industry==='home_builder'?'Insurance quotes for new home builders':undefined}>{googleSearch?industry==='roof'?'A real roofer received a $1,359.42/year GL quote. Tell us about your work to compare options for your business.':'Real tree service examples include a $1,271.18/year GL quote and a $1,457.48/year bound GL policy. Tell us about your work to compare options.':undefined}</ContractorPageHero>}
  <div className={coldLayout?undefined:'mx-auto max-w-2xl px-5 sm:px-6'}>
  {offer&&coldLayout&&<p className="mb-6">Bind your business insurance with us and we’ll run an email outreach campaign to property and facility managers in your service area at no extra charge.</p>}
  {offer&&coldLayout&&<figure className="mb-6"><img src={`/contractor-proof/${industry}-reply.png`} alt={`Actual ${label.toLowerCase()} outreach reply excerpt`} className="w-full rounded-lg border"/><figcaption className="text-xs mt-2 text-slate-600">Actual outreach reply - excerpt. An interested reply is not a booked job.</figcaption></figure>}
@@ -191,5 +197,5 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  {!coldLayout?<ContractorFormActions status={status} error={error} enabled={status!=='sending'&&status!=='saving'&&shown.every(k=>fieldValid(k,answers[k]))} next={layout==='step'&&step<lastStep} submitLabel={arm==='short'&&step===0?'Save my details and continue':undefined} disclosureFirst={arm==='short'&&step===0} onBack={layout==='step'&&step>0?()=>setStep(step-1):undefined}/>:<> {error&&<p role="alert">{error}</p>}
  <div className="flex gap-4">{layout==='step'&&step>0&&<button type="button" onClick={()=>setStep(step-1)} className="border rounded p-4">Back</button>}<button disabled={status==='sending'} className={coldLayout?"bg-blue-700 text-white rounded p-4":contractorButtonClass} type="submit">{status==='sending'?'Sending…':layout==='step'&&step<lastStep?'Next':'Get my insurance quote'}</button></div>
  <PartialCaptureDisclosure>By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}</PartialCaptureDisclosure></>}
- </form></main>;
+ </form>{googleSearch&&<p className="mx-auto max-w-2xl px-5 pb-8 text-center text-xs text-[#6B6D71]">Cohesive Insurance Services · {ORG_ADDRESS} · (929) 594-5450</p>}</main>;
 }
