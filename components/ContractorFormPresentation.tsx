@@ -10,8 +10,8 @@ export function ContractorFormActions({status,error,enabled,next=false,onBack,su
  <button type="submit" disabled={!enabled} className={contractorButtonClass}>{status==='saving'?'Saving…':status==='sending'?'Sending…':submitLabel??(next?'Next':'Get my quote')}</button>
  {!disclosureFirst&&disclosure}</>;
 }
-export function ContractorFormSuccess(){return <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
+export function ContractorFormSuccess({googleSearch=false}:{googleSearch?:boolean}){const phone=googleSearch?{href:'tel:+18575784979',display:'(857) 578-4979'}:{href:'tel:+19295945450',display:'(929) 594-5450'};return <main className="mx-auto flex min-h-screen max-w-2xl flex-col items-center justify-center px-6 text-center">
  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#EEF1FF] text-3xl">🛠️</div>
  <h1 className="mt-6 text-3xl font-bold text-[#131517]">Thanks - we&rsquo;ve got it.</h1>
- <p className="mt-3 max-w-md text-[#6B6D71]">A licensed agent will run your quote and reach out shortly - most come back within a day. Want to talk now? Call{' '}<a href="tel:+19295945450" className="font-semibold text-[#2040E7]">(929) 594-5450</a>.</p>
+ <p className="mt-3 max-w-md text-[#6B6D71]">A licensed agent will run your quote and reach out shortly - most come back within a day. Want to talk now? Call{' '}<a href={phone.href} className="font-semibold text-[#2040E7]">{phone.display}</a>.</p>
  </main>;}
