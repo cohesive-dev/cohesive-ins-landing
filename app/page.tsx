@@ -701,6 +701,17 @@ function Industries() {
           </p>
         </div>
 
+        <nav aria-label="Roofing and tree service insurance guides" className="mb-8 grid gap-4 sm:grid-cols-2">
+          <Link href="/insurance/roofer" className="rounded-xl border border-blue-200 bg-[#F7F9FF] p-5 hover:border-[#2040E7] hover:underline">
+            <span className="block font-bold text-[#131517]">Roofing insurance costs and quotes</span>
+            <span className="mt-1 block text-sm text-[#27455C]">Compare real GL quotes by roofing business size and review the work to describe.</span>
+          </Link>
+          <Link href="/insurance/tree-service" className="rounded-xl border border-blue-200 bg-[#F7F9FF] p-5 hover:border-[#2040E7] hover:underline">
+            <span className="block font-bold text-[#131517]">Tree service insurance costs and quotes</span>
+            <span className="mt-1 block text-sm text-[#27455C]">See real GL price examples and coverage questions for tree crews.</span>
+          </Link>
+        </nav>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {columns.map((col, ci) => (
             <div key={ci} className="grid gap-4 h-[46rem]"

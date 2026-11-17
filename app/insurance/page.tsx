@@ -186,6 +186,20 @@ export default function Page() {
           ))}
         </div>
 
+        <h2 className="text-2xl font-extrabold text-[#131517] mb-3">
+          Tree service insurance by state
+        </h2>
+        <p className="mb-4 max-w-3xl text-sm leading-6 text-[#6B6D71]">
+          Compare tree-service GL price examples, the work you perform and questions to prepare for a quote.
+        </p>
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm mb-12">
+          {["indiana", "arizona", "illinois", "georgia", "north-carolina", "texas"].map((state) => (
+            <Link key={state} href={`/insurance/tree-service/${state}`} className="text-[#2040E7] hover:underline">
+              {getContractorState(state)?.name} tree service insurance
+            </Link>
+          ))}
+        </div>
+
         <h2 className="text-2xl font-extrabold text-[#131517] mb-4">Cleaning and pool maintenance</h2>
         <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm mb-12">{INSURANCE_SERVICES.map(service => <Link key={service.slug} href={`/insurance/${service.slug}`} className="text-[#2040E7] hover:underline">{service.name} insurance</Link>)}</div>
 
