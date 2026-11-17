@@ -224,6 +224,15 @@ export default function ContractorQuoteForm({
         throw new Error("intake_not_accepted");
       }
       setDone(true);
+      // Count only accepted completed roofer/tree-service quote requests for
+      // the bounded Google Search pilot. Abandoned partials are not counted.
+      if (/^\/insurance\/(?:roofer|tree-service)(?:\/|$)/.test(window.location.pathname)) {
+        (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag?.("event", "conversion", {
+          send_to: "AW-18581087843/P5k2CJ2upLodEOPMk5xF",
+          value: 1,
+          currency: "USD",
+        });
+      }
     } catch {
       setErr("We couldn't save your request. Please try again, or call (929) 594-5450.");
     } finally {

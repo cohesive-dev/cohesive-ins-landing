@@ -9,6 +9,7 @@ import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
 const GTM_ID = "GTM-PGN427T9";
+const GOOGLE_ADS_ID = "AW-18581087843";
 const ENABLE_GTM = process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview";
 
 const inter = Inter({
@@ -51,9 +52,10 @@ export default function RootLayout({
         {ENABLE_GTM && (
           <>
             <script async src={`https://www.googletagmanager.com/gtm.js?id=${GTM_ID}`} />
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
             <script
               dangerouslySetInnerHTML={{
-                __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());",
+                __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GOOGLE_ADS_ID}');`,
               }}
             />
           </>
