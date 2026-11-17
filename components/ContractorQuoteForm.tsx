@@ -224,9 +224,12 @@ export default function ContractorQuoteForm({
         throw new Error("intake_not_accepted");
       }
       setDone(true);
-      // Count only accepted completed roofer/tree-service quote requests for
-      // the bounded Google Search pilot. Abandoned partials are not counted.
-      if (/^\/insurance\/(?:roofer|tree-service)(?:\/|$)/.test(window.location.pathname)) {
+      // Train Google only on a new CRM-accepted person that passed the same
+      // intake quality/dedupe gate as the site's other acquisition events.
+      // Quotes@ fallback, review holds, duplicates and abandoned partials do
+      // not become Google Ads conversions.
+      if (result.crm === "sent" && result.conversion?.eligible === true &&
+          /^\/insurance\/(?:roofer|tree-service)(?:\/|$)/.test(window.location.pathname)) {
         (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag?.("event", "conversion", {
           send_to: "AW-18581087843/P5k2CJ2upLodEOPMk5xF",
           value: 1,
