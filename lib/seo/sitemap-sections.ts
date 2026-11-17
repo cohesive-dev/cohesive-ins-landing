@@ -84,7 +84,7 @@ const BASE = SITEMAP_BASE;
 
 export const SITEMAP_SECTIONS = ["core", "contractor-state", "city", "restaurant", "church-property", "guides"] as const;
 export type SitemapSection = (typeof SITEMAP_SECTIONS)[number];
-const CONTRACTOR_HUB_UPDATED: Record<string, string> = { roofer: "2026-11-12", "fire-sprinkler": "2026-10-30", "tree-service": "2026-11-08" };
+const CONTRACTOR_HUB_UPDATED: Record<string, string> = { roofer: "2026-11-17", "fire-sprinkler": "2026-10-30", "tree-service": "2026-11-17" };
 
 type Entry = MetadataRoute.Sitemap[number];
 

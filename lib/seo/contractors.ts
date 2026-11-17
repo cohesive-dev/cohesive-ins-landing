@@ -853,7 +853,8 @@ export function buildContractorNational(t: Trade): PageContent {
     const examples = content.priceExamples;
     return {
       ...content,
-      heroH1: "Roofer Insurance: Real Quotes by Business Size",
+      title: "Roofing Insurance Cost: Real Quotes from $1,359/yr",
+      heroH1: "Roofing Insurance Cost: Real Quotes by Business Size",
       heroSub: "A roofer at about $377K revenue received a real $1,359.42/yr claims-made general liability quote. Compare its $1,795.09/yr occurrence option and other quotes by business size.",
       costNarrative: [
         "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359.42/yr claims-made general liability quote and a $1,795.09/yr occurrence quote on the same application. A roofer at about $800K revenue received a $4,280/yr occurrence quote, and one at about $1.8M revenue received a $12,220/yr occurrence quote. These are real quotes, not averages or state-specific rates. The policy forms have different terms, so compare the work and coverage as well as the price.",
@@ -934,11 +935,15 @@ export function buildContractorNational(t: Trade): PageContent {
     return {
       ...content,
       title: "Tree Service Insurance Cost: $1,271 Claims-Made Quote",
-      costNarrative: [
-        ...content.costNarrative.slice(0, 1),
-        `Two other tree services bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE} per year. Those are customer-paid policies, while the lower $1,271.18 figure is a quote on a different tree-service application. Compare the actual accepted operations, limits and policy form before comparing premiums.`,
-        ...content.costNarrative.slice(1),
-      ],
+      priceExamples: {
+        heading: "Real tree-service GL prices: a quote and paid policies",
+        table: false,
+        items: [
+          { business: "Tree service, about $300K revenue, one W-2 employee", price: "$1,271.18/yr, claims-made quote", sentence: "One tree service at about $300K revenue with one W-2 employee received a $1,271.18/year claims-made general liability quote. It was not bound." },
+          { business: "Two separate tree-service businesses", price: `${TREE_BOUND_GL_COMPARABLE}/yr each, claims-made policies`, sentence: `Two other tree services each bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE}/year. These were customer-paid policies.` },
+        ],
+        note: "The lower figure is a quote on a different application. These three cases are not an average or a rate for trimming, removal, or a particular state. Compare accepted work, limits and policy form alongside premium.",
+      },
       stateFacts: [
         {
           title: "Split trimming, removal and stump work",
