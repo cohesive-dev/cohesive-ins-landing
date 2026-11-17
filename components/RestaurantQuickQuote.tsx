@@ -6,13 +6,16 @@ import isEmail from "validator/lib/isEmail";
 import { track as vaTrack } from "@vercel/analytics";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 import { REQUESTED_COVERAGE_LABELS, type RequestedCoverage } from "@/lib/requested-coverage";
 
 // Short quote form for the restaurant SEO pages (/insurance/<restaurant type>[/<state>[/<city>]]) and
 // the restaurant cost guide (Kevin 2026-10-12). Restaurant SEO pages had 10,777 impressions and 25 clicks
 // in 28 days, and the CRM had 0 organic restaurant leads in 60 days, while the short contractor form
 // produced all 61 SEO leads. This asks only what a first conversation needs; revenue, alcohol share,
-// address and the rest are collected afterwards by our team. /restaurant and paid traffic keep the full
+// the rest are collected afterwards by our team. Mailing address is captured after contact details.
+// /restaurant and paid traffic keep the full
 // RestaurantIntakeForm unchanged.
 //
 // Backend contract = RestaurantIntakeForm's (POST /api/intake, same per-page `source`, eventId +
@@ -75,14 +78,14 @@ export function capiEventFor(type: string, mode: "restaurant" | "bar"): "Lead" |
 }
 
 export const RENEWAL_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const NOT_ASKED = "Revenue, alcohol share of sales, exact address, business structure, own or rent, opening date and claims. Collect these from the client before quoting.";
+const NOT_ASKED = "Revenue, alcohol share of sales, business structure, own or rent, opening date and claims. Collect these from the client before quoting.";
 // Workers' comp pages (restaurant workers' comp guide, 2026-10-15) also leave payroll and headcount for later.
 const NOT_ASKED_WC = "Payroll, number of full-time and part-time employees, delivery or catering staff and claims. Collect these from the client before quoting workers' comp.";
 
 const emailOk = (v: string) => isEmail(v.trim());
 const phoneOk = (v: string) => isValidPhoneNumber(v.trim(), "US");
 
-type Answers = { company: string; renewal: string };
+type Answers = { company: string; renewal: string; mailingAddress?: string };
 // Detail rows for quotes@ and the CRM note. Only what the visitor gave, plus page context and attribution.
 export function detailsFor(f: Answers, stated: string | undefined, pageLabel: string | undefined, coverage?: RequestedCoverage[]) {
   const captured = captureAttribution();
@@ -91,6 +94,7 @@ export function detailsFor(f: Answers, stated: string | undefined, pageLabel: st
   const rainbowClass = stated ? rainbowClassFor(stated) : undefined;
   return [
     f.company.trim() && { label: "Business name", value: f.company.trim() },
+    f.mailingAddress?.trim() && { label: "Mailing address", value: f.mailingAddress.trim() },
     stated && { label: "Business type", value: stated },
     rainbowClass && { label: "Rainbow class", value: rainbowClass },
     pageLabel && { label: "Page type", value: pageLabel },
@@ -127,7 +131,7 @@ export default function RestaurantQuickQuote({
     name: "",
     email: "",
     phone: "",
-    zip: "",
+    mailingAddress: "",
     type: pageTypeChoice(pageType),
     otherType: "",
     renewal: "",
@@ -162,7 +166,7 @@ export default function RestaurantQuickQuote({
       name: f.name.trim() || undefined,
       email: validEmail,
       phone: phone || undefined,
-      zip: f.zip.trim() || undefined,
+      zip: zipFromMailingAddress(f.mailingAddress),
       company: f.company.trim() || undefined,
       ...(stated ? { businessType: stated } : {}),
       source,
@@ -231,6 +235,7 @@ export default function RestaurantQuickQuote({
     if (!f.name.trim()) return setErr("Please add your name.");
     if (!emailOk(email)) return setErr("Please enter a valid email so we can send your quote.");
     if (!phoneOk(f.phone)) return setErr("Please enter a valid phone number so our team can reach you.");
+    if (!hasMailableAddress(f.mailingAddress)) return setErr("Please enter your full mailing address, including ZIP code.");
     const capiEventName = capiEventFor(stated, mode);
     const eventId = typeof crypto !== "undefined" && crypto.randomUUID
       ? crypto.randomUUID()
@@ -245,7 +250,7 @@ export default function RestaurantQuickQuote({
           name: f.name.trim(),
           email,
           phone: f.phone.trim(),
-          zip: f.zip.trim() || undefined,
+          zip: zipFromMailingAddress(f.mailingAddress),
           company: f.company.trim(),
           businessType: stated,
           source,
@@ -314,12 +319,12 @@ export default function RestaurantQuickQuote({
       )}
       <div className="grid sm:grid-cols-2 gap-3">
         <input className={field} placeholder="Your name" value={f.name} onChange={set("name")} autoComplete="name" required />
-        <input className={field} placeholder="ZIP code" value={f.zip} onChange={set("zip")} inputMode="numeric" autoComplete="postal-code" maxLength={10} />
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
         <input className={field} placeholder="Email" value={f.email} onChange={set("email")} type="email" autoComplete="email" required />
         <input className={field} placeholder="Phone" value={f.phone} onChange={set("phone")} type="tel" autoComplete="tel" required />
       </div>
+      <AddressAutocomplete placeholder="Mailing address, city, state, ZIP" ariaLabel="Mailing address" value={f.mailingAddress} onChange={(value) => setF((current) => ({ ...current, mailingAddress: value }))} required />
       <label className="block text-sm text-[#27455C]">
         When does your current policy renew? (optional)
         <select className={`${field} mt-1`} value={f.renewal} onChange={set("renewal")}>

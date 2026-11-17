@@ -1,6 +1,8 @@
 "use client";
 
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 import { filterTrades } from '@/lib/trade-search';
 
 import HeroParticles from "@/components/HeroParticles";
@@ -261,7 +263,8 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const [phone, setPhone] = useState("");
   const rawTradeRef = useRef('');
   const [businessType, setBusinessType] = useState("");
-  const [zip, setZip] = useState("");
+  const [mailingAddress, setMailingAddress] = useState("");
+  const zip = zipFromMailingAddress(mailingAddress) || "";
   const [submitted, setSubmitted] = useState(false);
   const [contactError, setContactError] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -286,18 +289,18 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
   const submittedRef = useRef(false);
   const partialAlertSentRef = useRef(false);
   const lastAutosaveRef = useRef("");
-  const fieldsRef = useRef({ name, email, phone, businessType, zip });
+  const fieldsRef = useRef({ name, email, phone, businessType, zip, mailingAddress });
 
   useEffect(() => {
-    fieldsRef.current = { name, email, phone, businessType, zip };
-  }, [name, email, phone, businessType, zip]);
+    fieldsRef.current = { name, email, phone, businessType, zip, mailingAddress };
+  }, [name, email, phone, businessType, zip, mailingAddress]);
 
   useEffect(() => {
     if (submitted) return;
     const timer = setTimeout(() => {
       const f = fieldsRef.current;
       if (submittedRef.current || !hasContactHandle(f)) return;
-      const payload = JSON.stringify({ ...f, source: "website-form", details: sourceDetails(), partial: true });
+      const payload = JSON.stringify({ ...f, source: "website-form", details: [...sourceDetails(), ...(f.mailingAddress.trim() ? [{ label: "Mailing address", value: f.mailingAddress.trim() }] : [])], partial: true });
       if (payload === lastAutosaveRef.current) return;
       lastAutosaveRef.current = payload;
       void fetch("/api/intake", {
@@ -308,7 +311,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       }).catch(() => { });
     }, 2500);
     return () => clearTimeout(timer);
-  }, [name, email, phone, businessType, zip, submitted, sourceDetails]);
+  }, [name, email, phone, businessType, zip, mailingAddress, submitted, sourceDetails]);
 
   useEffect(() => {
     // One abandonment alert per browser session, across tab switches too —
@@ -324,7 +327,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       // otherwise a later exit event gets another chance.
       const queued = navigator.sendBeacon(
         "/api/intake",
-        new Blob([JSON.stringify({ ...f, source: "website-form", details: sourceDetails(), partial: true, final: true })], {
+        new Blob([JSON.stringify({ ...f, source: "website-form", details: [...sourceDetails(), ...(f.mailingAddress.trim() ? [{ label: "Mailing address", value: f.mailingAddress.trim() }] : [])], partial: true, final: true })], {
           type: "application/json",
         }),
       );
@@ -351,6 +354,10 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       setContactError(true);
       return;
     }
+    if (!hasMailableAddress(mailingAddress)) {
+      setSubmitError("Please enter your full mailing address, including ZIP code.");
+      return;
+    }
     submittedRef.current = true;
     setSubmitting(true);
     setSubmitError("");
@@ -358,7 +365,7 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
       const response = await fetch("/api/intake", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, businessType, zip, source: "website-form", details: sourceDetails() }),
+        body: JSON.stringify({ name, email, phone, businessType, zip, source: "website-form", details: [...sourceDetails(), { label: "Mailing address", value: mailingAddress.trim() }] }),
       });
       const result = await response.json();
       if (!response.ok || result?.ok !== true ||
@@ -440,11 +447,9 @@ function QuoteForm({ onBookMeeting }: { onBookMeeting: (prefill?: Prefill) => vo
             <span className="block text-xs font-semibold text-[#272A2D] mb-1">Type of business</span>
             <TradeSelect options={trades} value={businessType} onChange={setBusinessType} onRawChange={v => { rawTradeRef.current = v; }} />
           </div>
-          <label className="sm:w-36 text-left">
-            <span className="block text-xs font-semibold text-[#272A2D] mb-1">ZIP code</span>
-            <input type="text" inputMode="numeric" pattern="[0-9]{5}" maxLength={5} value={zip}
-              onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))} placeholder="00000"
-              className="w-full border border-slate-300 rounded-sm px-3 py-2.5 text-sm text-[#272A2D] focus:outline-none focus:ring-2 focus:ring-[#007395]/40" />
+          <label className="flex-1 text-left">
+            <span className="block text-xs font-semibold text-[#272A2D] mb-1">Mailing address <span className="text-[#2040E7]">*</span></span>
+            <AddressAutocomplete value={mailingAddress} onChange={setMailingAddress} placeholder="123 Main St, city, state, ZIP" ariaLabel="Mailing address" required />
           </label>
           <div className="flex items-end">
             <button type="submit" disabled={submitting} className="w-full sm:w-auto px-6 py-2.5 rounded-sm bg-[#2040E7] text-white text-sm font-bold hover:bg-[#1A33B9] transition-colors whitespace-nowrap">

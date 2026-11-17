@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 import { TRADES } from "@/lib/contractor-trades";
 import { filterTrades } from "@/lib/trade-search";
 import { REQUESTED_COVERAGE_LABELS, type RequestedCoverage } from "@/lib/requested-coverage";
@@ -74,7 +76,7 @@ export default function ContractorQuoteForm({
     name: "",
     email: "",
     phone: "",
-    zip: "",
+    mailingAddress: "",
     operations: "",
     trade: "",
     otherTrade: "",
@@ -105,7 +107,7 @@ export default function ContractorQuoteForm({
       name: f.name.trim() || undefined,
       email: validEmail,
       phone: phone || undefined,
-      zip: f.zip.trim() || undefined,
+      zip: zipFromMailingAddress(f.mailingAddress),
       ...(statedTrade(f.trade, f.otherTrade) ? { businessType: statedTrade(f.trade, f.otherTrade) } : {}),
       company: f.company.trim() || undefined,
       source: "contractors-landing",
@@ -114,6 +116,7 @@ export default function ContractorQuoteForm({
       final: true,
       details: [
         f.company.trim() && { label: "Business", value: f.company.trim() },
+        f.mailingAddress.trim() && { label: "Mailing address", value: f.mailingAddress.trim() },
         statedTrade(f.trade, f.otherTrade) && { label: "Trade", value: statedTrade(f.trade, f.otherTrade) },
         askRevenue && revenueDetail(f.revenue),
         { label: "Page trade", value: tradeLabel },
@@ -181,6 +184,10 @@ export default function ContractorQuoteForm({
       setErr("Please add a phone number so our team can reach you.");
       return;
     }
+    if (!hasMailableAddress(f.mailingAddress)) {
+      setErr("Please enter your full mailing address, including ZIP code.");
+      return;
+    }
     const stated = statedTrade(f.trade, f.otherTrade);
     if (!stated) {
       setErr(f.trade === SOMETHING_ELSE ? "Please tell us what work you do." : "Please choose the work you do.");
@@ -199,13 +206,14 @@ export default function ContractorQuoteForm({
           name: f.name.trim() || undefined,
           email,
           phone: f.phone.trim(),
-          zip: f.zip.trim() || undefined,
+          zip: zipFromMailingAddress(f.mailingAddress),
           businessType: stated,
           company: f.company.trim() || undefined,
           source: "contractors-landing",
           ...coverage.payload,
           details: [
             f.company.trim() && { label: "Business", value: f.company.trim() },
+            { label: "Mailing address", value: f.mailingAddress.trim() },
             { label: "Trade", value: stated },
             askRevenue && revenueDetail(f.revenue),
             { label: "Page trade", value: tradeLabel },
@@ -325,14 +333,6 @@ export default function ContractorQuoteForm({
           onChange={set("name")}
           autoComplete="name"
         />
-        <input
-          className={field}
-          placeholder="ZIP code"
-          value={f.zip}
-          onChange={set("zip")}
-          inputMode="numeric"
-          autoComplete="postal-code"
-        />
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
         <input
@@ -352,6 +352,13 @@ export default function ContractorQuoteForm({
           autoComplete="tel"
         />
       </div>
+      <AddressAutocomplete
+        placeholder="Mailing address, city, state, ZIP"
+        ariaLabel="Mailing address"
+        value={f.mailingAddress}
+        onChange={(value) => setF((current) => ({ ...current, mailingAddress: value }))}
+        required
+      />
       {operationsPrompt && <label className="block text-sm text-[#27455C]">Describe your services (optional)<span className="block text-xs text-[#6B6D71] my-1">{operationsPrompt}</span><textarea className={field} value={f.operations} onChange={set("operations")} maxLength={2000} rows={3} /></label>}
       {err && <p className="text-sm text-red-600">{err}</p>}
       <button

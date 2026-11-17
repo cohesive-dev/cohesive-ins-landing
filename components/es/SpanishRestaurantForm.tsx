@@ -21,6 +21,8 @@ import {
 } from "@/components/RestaurantQuickQuote";
 import { PREFERRED_LANGUAGE } from "@/lib/es/contractor-form-es";
 import { PHONE_DISPLAY, PHONE_E164 } from "@/lib/entity";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 
 const TYPE_ES: Record<string, string> = {
   "Coffee / café / bakery (little or no cooking)": "Cafetería / panadería (poca o nada de cocina)",
@@ -43,7 +45,7 @@ function fbq(...args: unknown[]) {
 }
 
 export default function SpanishRestaurantForm({ source, pageType }: { source: string; pageType?: RestaurantPageType }) {
-  const [f, setF] = useState({ company: "", name: "", email: "", phone: "", zip: "", type: pageTypeChoice(pageType), otherType: "", renewal: "" });
+  const [f, setF] = useState({ company: "", name: "", email: "", phone: "", mailingAddress: "", type: pageTypeChoice(pageType), otherType: "", renewal: "" });
   const [typeTouched, setTypeTouched] = useState(false);
   const [status, setStatus] = useState<"idle" | "sending" | "done" | "referred">("idle");
   const [err, setErr] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
       name: f.name.trim() || undefined,
       email: validEmail,
       phone: phone || undefined,
-      zip: f.zip.trim() || undefined,
+      zip: zipFromMailingAddress(f.mailingAddress),
       company: f.company.trim() || undefined,
       ...(stated ? { businessType: stated } : {}),
       source,
@@ -161,6 +163,7 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
     if (!f.name.trim()) return setErr("Escriba su nombre.");
     if (!emailOk(email)) return setErr("Escriba un correo electrónico válido para mandarle su cotización.");
     if (!phoneOk(f.phone)) return setErr("Escriba un número de teléfono válido para que podamos llamarle.");
+    if (!hasMailableAddress(f.mailingAddress)) return setErr("Escriba su dirección postal completa, incluido el código postal.");
     const capiEventName = capiEventFor(stated, "restaurant");
     const eventId = typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
     setErr(null);
@@ -173,7 +176,7 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
           name: f.name.trim(),
           email,
           phone: f.phone.trim(),
-          zip: f.zip.trim() || undefined,
+          zip: zipFromMailingAddress(f.mailingAddress),
           company: f.company.trim(),
           businessType: stated,
           source,
@@ -246,12 +249,12 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
       )}
       <div className="grid gap-3 sm:grid-cols-2">
         <input className={field} placeholder="Su nombre" aria-label="Su nombre" value={f.name} onChange={set("name")} autoComplete="name" />
-        <input className={field} placeholder="Código postal" aria-label="Código postal" value={f.zip} onChange={set("zip")} inputMode="numeric" autoComplete="postal-code" maxLength={10} />
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
         <input className={field} placeholder="Correo electrónico" aria-label="Correo electrónico" value={f.email} onChange={set("email")} type="email" autoComplete="email" />
         <input className={field} placeholder="Teléfono" aria-label="Teléfono" value={f.phone} onChange={set("phone")} type="tel" autoComplete="tel" />
       </div>
+      <AddressAutocomplete placeholder="Dirección postal, ciudad, estado y código postal" ariaLabel="Dirección postal" value={f.mailingAddress} onChange={(value) => setF((current) => ({ ...current, mailingAddress: value }))} required />
       <label className="block text-sm text-[#27455C]">
         ¿Cuándo se renueva su póliza actual? (opcional)
         <select className={`${field} mt-1`} value={f.renewal} onChange={set("renewal")}>

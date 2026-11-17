@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 
 export default function ReferralForm({ code }: { code: string }) {
-  const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", zip: "", needs: "" });
+  const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", mailingAddress: "", needs: "" });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -20,19 +22,21 @@ export default function ReferralForm({ code }: { code: string }) {
     if (!fields.name.trim() || !fields.company.trim() || !fields.businessType.trim() || !emailPattern.test(fields.email.trim()) || fields.phone.replace(/\D/g, "").length < 10) {
       setError("Please add your name, business, type of work, email and phone number."); return;
     }
+    if (!hasMailableAddress(fields.mailingAddress)) { setError("Please add your full mailing address, including ZIP code."); return; }
     setBusy(true); setError("");
     const attribution = captureAttribution();
     const details = [
       code && { label: "Referral code", value: code },
       { label: "Referral landing page", value: "/refer" },
       { label: "Business type", value: fields.businessType.trim() },
+      { label: "Mailing address", value: fields.mailingAddress.trim() },
       fields.needs.trim() && { label: "Coverage or project details", value: fields.needs.trim() },
       ...attributionDetails(attribution),
     ].filter(Boolean);
     try {
       const response = await fetch("/api/intake", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
         source: "customer-referral", name: fields.name.trim(), email: fields.email.trim().toLowerCase(), phone: fields.phone.trim(),
-        company: fields.company.trim(), businessType: fields.businessType.trim(), zip: fields.zip.trim(), details,
+        company: fields.company.trim(), businessType: fields.businessType.trim(), zip: zipFromMailingAddress(fields.mailingAddress), details,
       }) });
       const result = await response.json();
       if (!response.ok || result.ok !== true || (result.crm !== "sent" && result.notification !== "sent")) throw new Error("save_failed");
@@ -50,7 +54,7 @@ export default function ReferralForm({ code }: { code: string }) {
       <label className="block text-sm font-medium">Email <span aria-hidden="true">*</span><input className={inputClass} type="email" autoComplete="email" value={fields.email} onChange={(e) => set("email", e.target.value)} required /></label>
       <label className="block text-sm font-medium">Phone <span aria-hidden="true">*</span><input className={inputClass} type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => set("phone", e.target.value)} required /></label>
       <label className="block text-sm font-medium">What does your business do? <span aria-hidden="true">*</span><input className={inputClass} value={fields.businessType} onChange={(e) => set("businessType", e.target.value)} placeholder="e.g. Roofing contractor" required /></label>
-      <label className="block text-sm font-medium">Business ZIP code<input className={inputClass} autoComplete="postal-code" inputMode="numeric" value={fields.zip} onChange={(e) => set("zip", e.target.value)} /></label>
+      <label className="block text-sm font-medium">Mailing address <span aria-hidden="true">*</span><AddressAutocomplete value={fields.mailingAddress} onChange={(value) => set("mailingAddress", value)} placeholder="123 Main St, city, state, ZIP" ariaLabel="Mailing address" required /></label>
     </div>
     <label className="block text-sm font-medium">What coverage or project do you need help with?<textarea className={inputClass} rows={3} value={fields.needs} onChange={(e) => set("needs", e.target.value)} /></label>
     {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
