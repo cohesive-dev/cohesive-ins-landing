@@ -11,7 +11,7 @@ import CommercialPropertyForm from "@/components/CommercialPropertyForm";
 import { SERVICE_INDUSTRIES } from "@/lib/guides/services";
 import type { PageContent } from "@/lib/seo/data";
 import { licenseLineForArea, PRIMARY_NPN } from "@/lib/licenses";
-import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164, PRODUCER_PATH, ORG_NAME, PRODUCER_NAME } from "@/lib/entity";
+import { organizationJsonLd, PHONE_DISPLAY, PHONE_E164, PRODUCER_PATH, ORG_NAME, ORG_ADDRESS, PRODUCER_NAME } from "@/lib/entity";
 import { TRADE_PRICES_AS_OF, tradePrice, tradePriceRow } from "@/lib/seo/trade-prices";
 import { spanishLinkFor } from "@/lib/es/pages";
 
@@ -398,6 +398,9 @@ export default function SeoPage({
         ) : (
           <RestaurantQuickQuote source={source} mode={formMode} pageType={restaurantPageType} />
         )}
+        <p className="mx-auto mt-5 max-w-2xl text-center text-xs text-[#6B6D71]">
+          Cohesive Insurance Services · {ORG_ADDRESS} · (929) 594-5450
+        </p>
       </section>
 
       {showWcTeaser && wcTeaser && (
@@ -469,6 +472,7 @@ export default function SeoPage({
       <footer className="border-t border-slate-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 text-xs text-[#6B6D71] flex flex-wrap gap-x-4 gap-y-1">
           <span>Cohesive Insurance Services - licensed insurance agency</span>
+          <span>{ORG_ADDRESS}</span>
           {stateLicense && <span>{stateLicense}</span>}
           <Link href="/insurance" className="hover:underline">
             Insurance guides

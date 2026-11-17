@@ -10,6 +10,7 @@ export const SITE_URL = "https://www.cohesiveinsure.com";
 export const ORG_ID = "https://cohesiveinsure.com/#org";
 export const PERSON_ID = "https://cohesiveinsure.com/about/kevin-zhang#person";
 export const ORG_NAME = "Cohesive Insurance Services";
+export const ORG_ADDRESS = "240 West 40th Street, Suite 330, New York, NY 10018";
 export const PRODUCER_NAME = "Kevin Zhang";
 export const PRODUCER_PATH = "/about/kevin-zhang";
 // NY DFS license number (shown on the homepage as BR-1983645; the PC- prefix is the same number).
@@ -31,6 +32,14 @@ export function organizationJsonLd(areaServed?: string) {
     name: ORG_NAME,
     url: SITE_URL,
     telephone: PHONE_TEL,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "240 West 40th Street, Suite 330",
+      addressLocality: "New York",
+      addressRegion: "NY",
+      postalCode: "10018",
+      addressCountry: "US",
+    },
     ...(areaServed ? { areaServed } : {}),
     ...(ORG_SAME_AS.length ? { sameAs: ORG_SAME_AS } : {}),
   };
