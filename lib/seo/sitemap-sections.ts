@@ -93,7 +93,7 @@ const depth = (url: string) => url.slice(BASE.length).split("/").filter(Boolean)
 function buildSections(): Record<SitemapSection, Entry[]> {
   const core = [""].map((p) => ({
     url: `${BASE}${p}`,
-    lastModified: "2026-11-12",
+    lastModified: "2026-11-17",
     changeFrequency: "monthly" as const,
   }));
 
@@ -116,7 +116,7 @@ function buildSections(): Record<SitemapSection, Entry[]> {
     })),
   ];
 
-  const hub = [{ url: `${BASE}/insurance`, lastModified: "2026-11-12", changeFrequency: "monthly" as const }];
+  const hub = [{ url: `${BASE}/insurance`, lastModified: "2026-11-17", changeFrequency: "monthly" as const }];
 
   const verticals = [
     ...VERTICALS.filter((v) => v.slug !== "bar").map((v) => v.slug),
