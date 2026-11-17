@@ -167,7 +167,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
       send_to:'AW-18581087843/P5k2CJ2upLodEOPMk5xF',value:1,currency:'USD',
      });
     setStatus('done');
-   }catch(err){tracker.current?.emit('submit_error');setStatus('error');setError(err instanceof Error?err.message:'Something went wrong. Please try again.');}
+   }catch(err){tracker.current?.emit('submit_error');setStatus('error');const message=err instanceof Error?err.message:'Something went wrong. Please try again.';setError(googleSearch?message.replaceAll('(929) 594-5450','(857) 578-4979'):message);}
  }
  if(status==='done'&&!coldLayout&&!preview)return <ContractorFormSuccess googleSearch={googleSearch}/>;
  if(status==='done')return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">{preview?'Preview complete. Nothing sent.':'Thanks - we received your request.'}</h1><p>We’ll contact you about your business insurance{offer?' and the free lead gen offer':''}.</p></main>;

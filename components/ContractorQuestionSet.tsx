@@ -47,7 +47,7 @@ export default function ContractorQuestionSet({f,set,visible,contactFirst=false,
             </div>
             <div>
               <Field label="Phone" required>
-                <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="(929) 594-5450" autoComplete="tel" inputMode="tel" />
+                <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="Your phone number" autoComplete="tel" inputMode="tel" />
               </Field>
               {f.phone && !phoneValid && (
                 <p className="mt-1 text-xs text-red-600">
