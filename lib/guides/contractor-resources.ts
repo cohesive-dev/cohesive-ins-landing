@@ -131,9 +131,9 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     ],
   },
   {
-    ...common, slug: "tree-service-insurance-quote-checklist", title: "Tree-service insurance quote checklist: heights, cranes and subcontractors", category: "Tree-work preparation", industry: "Tree services", tradeLabel: "Tree service", insurancePath: "/insurance/tree-service",
-    description: "Prepare a tree-service quote with heights, removal methods, cranes, utilities, crew and subcontractor details. Download a working checklist.",
-    intro: "The details that make a tree job workable also matter to an insurer. Describe the work directly, including occasional removals, instead of relying only on the label landscaping or tree care.",
+    ...common, updatedAt: "2026-11-18", slug: "tree-service-insurance-quote-checklist", title: "Tree-service insurance quote checklist: heights, cranes and subcontractors", category: "Tree-work preparation", industry: "Tree services", tradeLabel: "Tree service", insurancePath: "/insurance/tree-service",
+    description: "Use two documented tree-service proposals to compare total charges, height terms, payroll and subcontractor rating bases, then prepare your own work checklist.",
+    intro: "A tree-service premium makes sense only beside the work and rating figures in its proposal. Two saved examples from different businesses show how fees, height terms and subcontractors change what must be checked.",
     sections: [
 {
   "id": "documented-height-example",
@@ -148,6 +148,24 @@ export const CONTRACTOR_RESOURCES: RestaurantGuide[] = [
     "Compare the wording against climbing, bucket work and the trees you remove."
   ]
 },
+      {
+        id: "documented-total-and-rating",
+        title: "Two tree proposals: total charges and subcontractor rating",
+        paragraphs: [
+          "A saved Virginia tree-business packet displayed a $1,500 premium, $35.99 in taxes and $75 in other fees. Its pay-in-full estimate was $1,610.99 plus transaction fees. The packet used $25,000 payroll and listed an exclusion for work above 60 feet along with a separate tree-felling height limitation. Those are document facts, not a promise about another tree company's premium or coverage.",
+          "A different Virginia tree-business proposal showed $20,000 payroll and $30,000 in subcontracted-work cost. Its schedule added a $1,500 minimum tree-class premium and $286 for subcontracted work, producing a $1,786 GL premium, with a $1,000 per-claim deductible including loss-adjustment expense and defense costs. Its gross revenue was not established by that schedule.",
+          "These businesses and terms differ, so subtracting their prices would not isolate the cost of subcontractors or height restrictions. For your own comparison, ask both reviewers to price the same receipts, payroll, subcontracted tasks, work heights and requested limits, then compare total charges and full endorsements."
+        ],
+        checklist: [
+          "Write down annual premium and the full payment estimate, including taxes, fees and transaction charges.",
+          "Match employee payroll and subcontractor cost separately across the proposals.",
+          "Read the complete height and deductible wording before comparing the prices."
+        ],
+        links: [
+          { label: "Anonymized tree quote document summaries", href: "/guides/contractor-insurance-real-quote-examples#tree-fees" },
+          { label: "Tree-service insurance cost and real prices", href: "/insurance/tree-service" }
+        ]
+      },
       {
   "id": "height-exclusions",
   "title": "A height exclusion can leave your normal tree work outside the policy",

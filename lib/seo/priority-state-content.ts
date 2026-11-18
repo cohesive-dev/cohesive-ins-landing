@@ -63,6 +63,68 @@ const profiles: Record<string, Profile> = {
       { q: "What should a New York roofer send to compare two insurance quotes?", a: "Send receipts, payroll, subcontractor spending and insurance evidence, roof types and heights, residential and commercial work, loss history and the customer's insurance requirements. For NYC residential work, check the city licensing requirement separately. Ask us to compare each quote's accepted operations, form and exclusions." },
     ],
   },
+  "roofer/mississippi": {
+    name: "Roofer", state: "Mississippi", reviewedOn: "2026-11-18",
+    intro: "For a Mississippi roofing quote, separate residential roof work from commercial jobs and describe roof systems, tear-offs, repair work, heights and subcontracted crews. Check the project's license classification alongside the insurance request; they answer different questions.",
+    pricing: "Send annual receipts, employee payroll, subcontractor costs, residential and commercial percentages, roof methods, claims and any GC insurance exhibit. The $1,359.42 claims-made and $1,795.09 occurrence examples are two unbound quotes for one roofer with about $377K revenue, not Mississippi premiums. Compare policy form and accepted roof work on the proposal you actually receive.",
+    facts: [
+      {
+        title: "Check the state license threshold and classification for the job",
+        body: "The Mississippi State Board of Contractors says residential roofing work over $10,000 needs a residential roofing or other qualifying residential license, and commercial contractor work over $50,000 needs a commercial license. Its residential roofer classification covers residential roofing only. Check the current job value, work and local permit rules with the Board; an insurance quote is not a license.",
+        source: { label: "MS Board of Contractors: licensing questions", href: "https://www.msboc.us/one-stop-shop/" },
+      },
+      {
+        title: "Review the residential contract's liability disclosure",
+        body: "The Board's residential rules describe a written general-liability insurance disclosure for licensed residential builders, remodelers and roofers when contracting with a customer. Confirm the current form and wording with the Board, and make sure the insurer and policy information come from coverage actually in force rather than an unbound quote.",
+        source: { label: "MS Board of Contractors: residential laws and rules", href: "https://www.msboc.us/wp-content/uploads/2022/07/RESIDENTIAL-LAWS-AND-RULES-REVISED-2022-Web-Version.pdf" },
+      },
+    ],
+    questions: [
+      "What percentage of jobs and receipts is residential versus commercial roofing?",
+      "Which roof systems, tear-offs, heights, hot-work methods and open-roof jobs do you take?",
+      "Which tasks do employees and subcontractors perform, and what are their separate costs?",
+      "What limits, occurrence form or endorsements does the customer contract require?",
+    ],
+    coverages: [
+      { name: "Roofing liability and completed work", desc: "Compare accepted roof systems, water-entry exposure, hot work, subcontracted operations and completed-operations terms against the proposed wording." },
+      { name: "Crew and customer contract", desc: "Check employee coverage and subcontractor insurance separately, then review the GC or homeowner's insurance requirements before relying on a certificate." },
+    ],
+    faqs: [
+      { q: "Does a Mississippi residential roofer license cover commercial roofs?", a: "The Board describes its residential roofer classification as residential roofing only. Check the classification and project value with MSBOC before bidding commercial work; insurance and licensing are separate reviews." },
+      { q: "Is $1,359.42 a Mississippi roofing insurance rate?", a: "No. That was one saved claims-made GL quote for a roofer with about $377K revenue, $133K subcontracted work and no W-2 employees. The same application also produced a $1,795.09 occurrence quote. Neither was bound or a Mississippi average." },
+    ],
+  },
+  "tree-service/illinois": {
+    name: "Tree Service", state: "Illinois", reviewedOn: "2026-11-18",
+    intro: "Illinois tree-service work can range from ground pruning to climbing, full removals and jobs near power lines. Tell the reviewer the tallest work, equipment, storm work and who performs each task so the proposal can be checked against real jobs.",
+    pricing: "Give receipts, employee payroll, subcontractor spending, pruning and removal percentages, working heights, crane or bucket use, claims and customer requirements. The $1,271.18 claims-made tree-service quote shown here came from a different business; it is not an Illinois rate. Compare the full terms and height wording of current proposals.",
+    facts: [
+      {
+        title: "Account for every employee in the workers' compensation review",
+        body: "The Illinois Workers' Compensation Commission says an employer with one employee, even part-time, generally must obtain workers' compensation insurance. It describes specific owner and officer opt-out provisions. Give the reviewer the actual entity structure and field crew rather than assuming a small tree business is exempt.",
+        source: { label: "Illinois Workers' Compensation Commission: insurance questions", href: "https://iwcc.illinois.gov/about/insurance.html" },
+      },
+      {
+        title: "Separate utility-line jobs from ordinary tree work",
+        body: "Illinois emergency guidance tells property owners to use a qualified contractor for trees near power lines and to contact the utility with questions. If your crews take utility-adjacent jobs, disclose the method, clearance responsibility and any subcontractor arrangement; ask whether the proposed policy accepts that operation.",
+        source: { label: "Illinois Ready: electric-line safety", href: "https://ready.illinois.gov/plan/electric.html" },
+      },
+    ],
+    questions: [
+      "What share of your jobs is pruning, full removal, stump work or storm cleanup?",
+      "What are the maximum tree and working heights, including occasional jobs?",
+      "Who operates lifts or cranes, and do crews work near power lines?",
+      "What are receipts, employee payroll, subcontractor costs and customer-requested limits?",
+    ],
+    coverages: [
+      { name: "Accepted tree operations", desc: "Review pruning, felling, rigging, removals, height and utility restrictions in the actual proposal and endorsements." },
+      { name: "People, vehicles and equipment", desc: "Review workers' compensation for the real staffing, commercial auto and equipment coverage separately from GL." },
+    ],
+    faqs: [
+      { q: "Does a tree-service quote automatically include full removals?", a: "No. Describe full removals, rigging, heights and equipment explicitly and ask the insurer to identify the accepted operations and any exclusions." },
+      { q: "Is $1,271.18 an Illinois tree-service average?", a: "No. It was one real claims-made GL quote for a different tree service at about $300K revenue with one W-2 employee. Ask for a current quote based on your own work and staff." },
+    ],
+  },
   "tree-service/new-jersey": {
     name: "Tree Service",
     state: "New Jersey",

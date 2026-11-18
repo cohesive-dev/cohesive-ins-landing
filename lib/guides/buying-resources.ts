@@ -260,6 +260,7 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
         ],
         "links": [
           { "label": "Roofing insurance cost: real quotes by business size", "href": "/insurance/roofer" },
+          { "label": "How to compare the same roofer's two GL quotes", "href": "/guides/compare-roofing-general-liability-quotes" },
           { "label": "Tree-service insurance cost: a real quote and paid policies", "href": "/insurance/tree-service" }
         ]
       },
@@ -273,6 +274,80 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
         "checklist": [
           "Separate document facts, client-confirmed facts and unresolved assumptions.",
           "Ask for current quotes; do not reuse these historical examples as offers."
+        ]
+      }
+    ]
+  },
+  {
+    "slug": "compare-roofing-general-liability-quotes",
+    "title": "How to compare roofing GL quotes: one roofer, two policy forms",
+    "metaTitle": "Compare Roofing GL Quotes: A Real Same-Risk Example",
+    "description": "See two saved roofing GL quotes on the same application: $1,359.42 claims-made and $1,795.09 occurrence. Compare the work, limits, forms and subcontractor inputs.",
+    "intro": "Two proposals for one roofing business make a useful comparison because the submitted business figures were the same. The policy forms were different. Here is how to read that difference before judging the premiums.",
+    "category": "Buying insurance",
+    "industry": "Roofing contractors",
+    "tradeLabel": "Roofer",
+    "insurancePath": "/insurance/roofer",
+    "quoteKind": "service",
+    "updatedAt": "2026-11-18",
+    "nationalSlug": "contractor-quote-checklists",
+    "sections": [
+      {
+        "id": "same-application",
+        "title": "What was the same in the two roofing quotes?",
+        "paragraphs": [
+          "The roofer supplied $377,054 in annual revenue, $133,183 in subcontracted labor and no W-2 employees. The submitted roofing mix was 99% residential and 1% commercial. Both saved general liability indications used that application and showed $1 million each occurrence and $2 million general aggregate limits. Neither indication was bound.",
+          "The claims-made indication showed $1,359.42 per year; the occurrence indication showed $1,795.09 per year. This is one business with two saved documents, not a survey of what roofers usually pay. Keeping the same exposure figures lets us focus on the policy-form difference without pretending the policies are otherwise identical."
+        ],
+        "checklist": [
+          "Match the named insured, work mix, policy period, receipts and loss history.",
+          "Keep subcontractor costs separate from W-2 payroll, even when payroll is zero.",
+          "Record the stated limits and policy form next to each quoted annual price."
+        ],
+        "links": [
+          { "label": "Roofing insurance cost: real quotes by business size", "href": "/insurance/roofer" },
+          { "label": "See the anonymized source-case summary", "href": "/guides/contractor-insurance-real-quote-examples#roofing-policy-form" }
+        ]
+      },
+      {
+        "id": "policy-form",
+        "title": "Why the lower annual price may not answer the contract",
+        "paragraphs": [
+          "Claims-made and occurrence liability forms respond using different timing rules. The customer's contract may ask for an occurrence policy, completed-operations terms, additional-insured wording or a specified duration of protection. A cheaper number cannot answer those terms by itself.",
+          "Give the broker the customer's insurance exhibit and ask them to compare the actual proposed forms and endorsements. If a quote does not match a requirement, ask whether a different proposal or change is available before using that price in a bid. A certificate is evidence of a policy; it does not amend the policy or create an endorsement."
+        ],
+        "checklist": [
+          "Ask whether the customer contract requires occurrence coverage.",
+          "Compare completed-operations and additional-insured wording in the proposed documents.",
+          "Resolve any gap with the reviewer before telling a GC the insurance requirement is met."
+        ],
+        "links": [
+          { "label": "Contractor certificate and endorsement checklist", "href": "/guides/contractor-certificate-of-insurance-before-starting-work" }
+        ]
+      },
+      {
+        "id": "roof-work",
+        "title": "Compare the roof work each proposal actually accepts",
+        "paragraphs": [
+          "The label roofing contractor is not enough to compare proposals. List residential and commercial shares, repairs versus replacements, steep and low-slope systems, maximum heights, tear-offs, hot work, open-roof exposure and the tasks subcontractors perform. Ask the reviewer to identify any restrictions that matter to those jobs.",
+          "If the next contract adds a roof system or method missing from the application, have both quotes reviewed on that same revised scope. Otherwise the price difference mixes policy terms with different work descriptions."
+        ],
+        "checklist": [
+          "Describe the largest and occasional jobs, not just routine shingle work.",
+          "Give each reviewer the same subcontracted tasks and costs.",
+          "Check proposed exclusions and endorsements against the actual bid."
+        ]
+      },
+      {
+        "id": "your-comparison",
+        "title": "A simple way to compare your own roofing proposals",
+        "paragraphs": [
+          "Put each proposal in one column: annual premium and total payment terms; policy period and form; limits; accepted roof operations; subcontractor rating basis; deductibles; and the customer's contract requirements. Mark missing information as unknown and request the document or correction. Do not fill a blank from another insurer's proposal.",
+          "The $1,359.42 and $1,795.09 figures are historical quotes for this roofer, not current offers or an average. Send your own work and business figures to request a current comparison."
+        ],
+        "links": [
+          { "label": "Download the blank contractor quote-comparison worksheet", "href": "/checklists/contractor-quote-comparison.csv" },
+          { "label": "Request a roofing insurance quote", "href": "/insurance/roofer#quote" }
         ]
       }
     ]
