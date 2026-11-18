@@ -165,22 +165,23 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
   },
   {
     "slug": "contractor-insurance-real-quote-examples",
-    "title": "Three real insurance quote examples: limits, fees and rating inputs",
-    "description": "Read three anonymized saved proposals to see why a headline premium or liability limit is only the beginning of a useful insurance comparison.",
-    "intro": "Read three anonymized saved proposals to see why a headline premium or liability limit is only the beginning of a useful insurance comparison.",
+    "title": "Four real contractor insurance quote examples: roofing, tree work and cleaning",
+    "metaTitle": "Real Contractor Insurance Quotes: Roofing & Tree",
+    "description": "Compare saved roofing, tree-service and cleaning proposals from Cohesive's book: actual prices, rating inputs, policy forms, fees and work restrictions.",
+    "intro": "These four real cases show what a premium alone leaves out: the work rated, policy form, fees and restrictions. The roofing case includes two quotes on the same application.",
     "category": "Buying insurance",
     "industry": "Contractors",
     "tradeLabel": "General contractor",
     "insurancePath": "/insurance/general-contractor",
     "quoteKind": "service",
-    "updatedAt": "2026-09-14",
+    "updatedAt": "2026-11-18",
     "nationalSlug": "contractor-quote-checklists",
     "sections": [
       {
         "id": "scope",
         "title": "What these examples establish",
         "paragraphs": [
-          "These are readings of three saved proposal documents for different businesses. They are historical examples, not current offers, matched quotes for the same risk, paid-claim examples or recommendations that one insurer is cheaper. Names, addresses, quote identifiers and purchase links are omitted.",
+          "These are four anonymized cases drawn from five saved proposal documents. The roofing pair was quoted for the same application; the other examples involve different businesses and are not matched rate comparisons. They are historical examples, not current offers, paid-claim examples or recommendations that one insurer is cheaper. Names, addresses, quote identifiers and purchase links are omitted.",
           "The figures show what the documents displayed. They do not establish that every rating input was independently confirmed or that the policy was purchased. Missing revenue or other inputs are left unknown rather than reconstructed from price."
         ]
       },
@@ -242,6 +243,24 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
             "label": "Blank quote-comparison worksheet",
             "href": "/guides/contractor-insurance-quote-comparison"
           }
+        ]
+      },
+      {
+        "id": "roofing-policy-form",
+        "title": "4. Roofing: $1,359.42 claims-made and $1,795.09 occurrence on one application",
+        "paragraphs": [
+          "A roofer reported about $377,000 in annual revenue, about $133,000 in subcontracted labor and no W-2 employees. Two saved general liability indications on that same application showed $1,359.42 per year on a claims-made form and $1,795.09 per year on an occurrence form, each with $1 million per occurrence and $2 million general aggregate limits. Neither quote was bound.",
+          "Because these two prices use the same stated business figures, the difference is a useful prompt to compare policy forms, not proof that one form is better for every roofing contract. A GC may specify an occurrence form or particular endorsements. Review the actual proposed terms and the jobs the roofer performs before choosing either option.",
+          "The customer's revenue, subcontractor cost and zero employee count were confirmed for this case. The two prices are not an average, a New York rate or a guaranteed price for another roofing company."
+        ],
+        "checklist": [
+          "Keep revenue, subcontractor costs and W-2 payroll separate when seeking a comparison.",
+          "Ask which policy form each proposal uses and whether the customer contract specifies one.",
+          "Check roofing operations and endorsements against the proposed policy before accepting it."
+        ],
+        "links": [
+          { "label": "Roofing insurance cost: real quotes by business size", "href": "/insurance/roofer" },
+          { "label": "Tree-service insurance cost: a real quote and paid policies", "href": "/insurance/tree-service" }
         ]
       },
       {

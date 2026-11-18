@@ -33,6 +33,7 @@ export const OUTCOME_PRIORITY_LINKS = [
 export const COST_GUIDE_LINKS = [
   { href: "/insurance/roofer", label: "What roofing insurance costs: real prices by revenue", short: "Roofing insurance cost" },
   { href: "/insurance/tree-service", label: "Tree service insurance: a real claims-made quote and work checklist", short: "Tree service insurance cost" },
+  { href: "/guides/contractor-insurance-real-quote-examples", label: "Real roofing, tree-service and cleaning quote documents", short: "Real contractor quote examples" },
   { href: "/insurance/fire-sprinkler", label: "Fire sprinkler installer insurance: a real installation quote", short: "Fire sprinkler insurance quote" },
   { href: "/insurance/pool", label: "Pool contractor insurance: a real bound price", short: "Pool contractor insurance cost" },
   { href: "/guides/restaurant-insurance-cost", label: "What restaurant insurance costs: real policies and quotes", short: "Restaurant insurance cost" },
