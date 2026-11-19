@@ -252,3 +252,8 @@ export async function sendNetworkSignupNotification(
 export async function sendRoofingLeadAlert(to: string[], subject: string, text: string): Promise<boolean> {
   return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: to.join(", "), subject, text }, "roofing-leads alert");
 }
+
+// Referral partner program (lib/referral-partners.ts): team alert + partner welcome, from quotes@ with an optional Reply-To.
+export async function sendReferralPartnerMail(opts: { to: string[]; subject: string; text: string; replyTo?: string }): Promise<boolean> {
+  return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: opts.to.join(", "), subject: opts.subject, text: opts.text, ...(opts.replyTo ? { replyTo: opts.replyTo } : {}) }, "referral-partner mail");
+}
