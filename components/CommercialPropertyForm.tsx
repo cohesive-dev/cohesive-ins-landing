@@ -499,8 +499,16 @@ export default function CommercialPropertyForm({
   // that bought them; and since the A/B runs two adsets, per-ad attribution is
   // what tells us whether a cell won on its layout or just on its creative.
   const [attr, setAttr] = useState<Attribution>({});
+  // Winter per-industry ads (Kevin 2026-11-19) tag ?industry=church|commercial_property&angle=&creative_variant=.
+  // A church ad pre-selects "Religious institution" so the form skips the tenant/rent questions a church never answers.
+  const [adUrl, setAdUrl] = useState<{ industry?: string; angle?: string; variant?: string }>({});
   useEffect(() => {
     setAttr(captureAttribution());
+    const q = new URLSearchParams(window.location.search);
+    const clean = (v: string | null) => (v && /^[a-z0-9_]{1,80}$/.test(v) ? v : undefined);
+    const ad = { industry: clean(q.get("industry")), angle: clean(q.get("angle")), variant: clean(q.get("creative_variant")) };
+    setAdUrl(ad);
+    if (ad.industry === "church") setF((p) => (p.propertyType ? p : { ...p, propertyType: "Religious institution" }));
   }, []);
 
   const details = useMemo(() => {
@@ -553,10 +561,13 @@ export default function CommercialPropertyForm({
     if (askRentalIncome) push("Annual rental income", f.rentalIncome);
     push("Claims (last 5 yrs)", f.claims);
     d.push(...attributionDetails(attr));
+    push("Ad URL industry key", adUrl.industry);
+    push("Ad URL angle", adUrl.angle);
+    push("Ad URL creative variant", adUrl.variant);
     return d;
     // visibleSteps.length, not the array: STEPS is rebuilt every render (fresh
     // ok() closures), so depending on the reference recomputed this on each one.
-  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr, askOccupancy, askTenantMix, askRentalIncome, askAlsoGl, wantsGl]);
+  }, [f, fireSec, layout, furthestStep, visibleSteps.length, attr, askOccupancy, askTenantMix, askRentalIncome, askAlsoGl, wantsGl, adUrl]);
 
   // Funnel milestone driven by state.
   useEffect(() => {

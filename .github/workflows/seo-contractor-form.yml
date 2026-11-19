@@ -44,5 +44,7 @@ jobs:
         run: node scripts/test-contractor-partial-capture.cjs http://localhost:3021
       - name: Browser - contractor short-first, trade-first and hero arms (intake requests are intercepted)
         run: node scripts/test-contractor-short-first.cjs http://localhost:3021
+      - name: Browser - winter 2026 ad URLs (all contractor/church/property links on a phone; intake intercepted)
+        run: node scripts/test-winter-landing-urls.cjs http://localhost:3021
       - name: Browser - bar contact first and abandoned capture (intake requests are intercepted)
         run: node scripts/test-bar-contact-first.cjs http://localhost:3021
