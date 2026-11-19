@@ -59,6 +59,7 @@ export const PRICING_STUDY_GUIDES: RestaurantGuide[] = [
         links: [
           { label: "Tree service insurance cost: 2026 data", href: "/guides/tree-service-insurance-cost-2026-data" },
           { label: "Compare two roofing GL quotes on the same business", href: "/guides/compare-roofing-general-liability-quotes" },
+          { label: "Contractor insurance cost by trade: 2026 data", href: "/guides/contractor-insurance-cost-by-trade-2026" },
         ],
       },
     ],
@@ -111,6 +112,113 @@ export const PRICING_STUDY_GUIDES: RestaurantGuide[] = [
         ],
         links: [
           { label: "Roofing insurance cost: 2026 data", href: "/guides/roofing-insurance-cost-2026-data" },
+          { label: "Contractor insurance cost by trade: 2026 data", href: "/guides/contractor-insurance-cost-by-trade-2026" },
+        ],
+      },
+    ],
+  },
+  {
+    ...common,
+    slug: "general-contractor-insurance-cost-2026-data",
+    title: "What general contractors pay for liability insurance in 2026: data from 263 quotes",
+    metaTitle: "General Contractor Insurance Cost 2026: 263 Quotes",
+    description: "Across 263 residential general contractors and remodelers quoted in fall 2026, the cheapest $1M/$2M GL was $894 a year occurrence or $638 claims-made. Other carriers' median was $1,150.",
+    intro: "We quoted general liability for 263 residential general contractors and remodelers between September 25 and November 19, 2026, all at $1 million per occurrence and $2 million aggregate. For a contractor under $500,000 in revenue, the cheapest market was $894 a year for an occurrence policy and $638 for claims-made. Other carriers' median quote for the same contractors was $1,150.",
+    industry: "General contractors",
+    tradeLabel: "General contractor",
+    insurancePath: "/insurance/general-contractor",
+    sections: [
+      {
+        id: "headline",
+        title: "What a typical general contractor pays",
+        paragraphs: [
+          "The median contractor we quoted had $200,000 in annual revenue. At the cheapest carrier, an occurrence policy was $894 a year and claims-made was $638, and that price held flat from under $100,000 all the way to $500,000 in revenue.",
+          "Other carriers quoted the same contractors a median of $1,150 a year for the same limits.",
+        ],
+      },
+      {
+        id: "by-revenue",
+        title: "General contractor GL price by revenue",
+        paragraphs: [
+          "Under $500,000 revenue: $894 occurrence, $638 claims-made (median, 102 businesses).",
+          "Over $1 million revenue: $13,827 occurrence, $8,591 claims-made (median, 11 businesses).",
+          "Most of the price jump comes after $500,000. Subcontracted work matters too: carriers want to see certificates from your subs, and uninsured subs raise the price.",
+        ],
+      },
+      {
+        id: "occurrence-vs-claims-made",
+        title: "Occurrence vs claims-made for contractors",
+        paragraphs: [
+          "Construction claims often come years after the job. Occurrence covers any claim from work done while the policy was active, even if the lawsuit comes after you retire. Claims-made costs about 30% less, but if you retire and a homeowner sues 10 years later, you'd need tail coverage.",
+          "Many GC contracts require occurrence coverage. Check yours before choosing the lower price.",
+        ],
+        checklist: [
+          "Get quotes from at least 3 different carriers.",
+          "Give every carrier the same revenue, subcontracted cost and type of work.",
+          "Ask for both an occurrence and a claims-made price.",
+        ],
+      },
+      {
+        id: "method",
+        title: "How we got these numbers",
+        paragraphs: [
+          "These are real quotes from Cohesive Insurance, September 25 to November 19, 2026. We counted only quotes where the carrier rated the business as a residential general contractor or remodeler, kept the cheapest quote per business, carrier and policy form, and used $1 million per occurrence / $2 million aggregate limits. Free to cite with a link to this page.",
+        ],
+        links: [
+          { label: "Contractor insurance cost by trade: 2026 data", href: "/guides/contractor-insurance-cost-by-trade-2026" },
+          { label: "Roofing insurance cost: 2026 data", href: "/guides/roofing-insurance-cost-2026-data" },
+        ],
+      },
+    ],
+  },
+  {
+    ...common,
+    slug: "contractor-insurance-cost-by-trade-2026",
+    title: "Contractor insurance cost by trade in 2026: real quotes for 8 trades",
+    metaTitle: "Contractor Insurance Cost by Trade (2026 Data)",
+    description: "What roofers, tree services, general contractors, landscapers, painters, handymen, cleaners and HVAC contractors paid for $1M/$2M general liability in fall 2026.",
+    intro: "We quoted general liability for more than 900 contracting and service businesses between September 25 and November 19, 2026. Here is the median price at the cheapest carrier for each trade, for $1 million per occurrence and $2 million aggregate limits.",
+    industry: "Contractors",
+    tradeLabel: "Contractor",
+    insurancePath: "/insurance/general-contractor",
+    sections: [
+      {
+        id: "by-trade",
+        title: "General liability price by trade",
+        paragraphs: [
+          "Roofing (271 businesses): $1,895 occurrence, $1,447 claims-made. Other carriers' median: $3,274.",
+          "Tree service (226 businesses): $1,707 occurrence, $1,271 claims-made. Other carriers' median: $1,742.",
+          "General contractor / remodeler (263 businesses): $894 occurrence, $638 claims-made. Other carriers' median: $1,150.",
+          "Landscaping (44 businesses): $1,228 occurrence, $935 claims-made.",
+          "Painting (34 businesses): $894 occurrence, $638 claims-made.",
+          "Handyman (38 businesses): $869 occurrence, $575 claims-made.",
+          "Cleaning / janitorial (28 businesses): $986 occurrence, $693 claims-made.",
+          "HVAC (15 businesses): $894 occurrence, $638 claims-made.",
+        ],
+      },
+      {
+        id: "what-drives-price",
+        title: "What drives the price",
+        paragraphs: [
+          "Trade comes first: roofing costs about twice what general remodeling does, because falls and water damage claims are expensive. Revenue comes next, and for most trades the price barely moves until about $500,000. Carrier choice is the third big lever; the same business often gets quotes 2-3x apart.",
+          "Claims-made ran about 25-35% below occurrence in every trade. Claims-made covers claims made while the policy is active; if you retire and a customer sues years later, you'd need tail coverage. Occurrence covers that automatically.",
+        ],
+        checklist: [
+          "Make sure your policy class matches the work you actually do.",
+          "Get quotes from at least 3 different carriers.",
+          "Ask for both an occurrence and a claims-made price.",
+        ],
+      },
+      {
+        id: "method",
+        title: "How we got these numbers",
+        paragraphs: [
+          "These are real quotes from Cohesive Insurance, September 25 to November 19, 2026. Each trade counts only quotes where the carrier rated the business in that trade. We kept the cheapest quote per business, carrier and policy form, and show the median for businesses under $500,000 in revenue where that differs. Free to cite with a link to this page.",
+        ],
+        links: [
+          { label: "Roofing insurance cost: 2026 data", href: "/guides/roofing-insurance-cost-2026-data" },
+          { label: "Tree service insurance cost: 2026 data", href: "/guides/tree-service-insurance-cost-2026-data" },
+          { label: "General contractor insurance cost: 2026 data", href: "/guides/general-contractor-insurance-cost-2026-data" },
         ],
       },
     ],

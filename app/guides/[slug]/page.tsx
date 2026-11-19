@@ -37,6 +37,7 @@ export default async function GuidePage({ params }: Props) {
   const url = `https://www.cohesiveinsure.com/guides/${guide.slug}`;
   const structuredData = { "@context": "https://schema.org", "@graph": [
     { "@type": "Article", headline: guide.title, description: guide.description, mainEntityOfPage: url, dateModified: guide.updatedAt ?? GUIDE_UPDATED, author: PERSON_REF, publisher: ORG_REF },
+    ...(guide.category === "Pricing data" ? [{ "@type": "Dataset", name: guide.title, description: guide.description, url, creator: ORG_REF, dateModified: guide.updatedAt ?? GUIDE_UPDATED, temporalCoverage: "2026-09-25/2026-11-19", spatialCoverage: "United States", license: "https://creativecommons.org/licenses/by/4.0/", isAccessibleForFree: true, variableMeasured: ["Annual general liability premium, $1M per occurrence / $2M aggregate"] }] : []),
     { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: guide.kind === "growth" ? "Business growth guides" : "Startup guides", item: "https://www.cohesiveinsure.com/guides" }, { "@type": "ListItem", position: 2, name: guide.title, item: url }] },
   ] };
   return <main className="guide-article">
