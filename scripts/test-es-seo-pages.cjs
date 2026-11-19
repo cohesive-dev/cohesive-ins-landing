@@ -131,7 +131,7 @@ const BASE='https://www.cohesiveinsure.com';
  const select=nodes(render()).find(n=>n.type==='select');assert.equal(select.props.value,'Mexican restaurant','page type pre-filled (editable)');
  assert.equal(text(nodes(select).find(n=>n.type==='option'&&n.props.value==='Mexican restaurant')),'Restaurante mexicano');
  await render().props.onSubmit({preventDefault(){}});assert.match(text(render()),/nombre de su negocio/);assert.equal(intakeBodies.length,0);
- for(const [ph,v] of Object.entries({'Nombre del negocio':'QA TEST ONLY Taquería','Su nombre':'QA TEST ONLY','Código postal':'78216','Correo electrónico':'es-test@example.invalid','Teléfono':'2025550184'}))input(ph).props.onChange({target:{value:v}});
+ for(const [ph,v] of Object.entries({'Nombre del negocio':'QA TEST ONLY Taquería','Su nombre':'QA TEST ONLY','Correo electrónico':'es-test@example.invalid','Teléfono':'2025550184'}))input(ph).props.onChange({target:{value:v}});{const a=nodes(render()).find(n=>String(n.props?.ariaLabel).startsWith('Direcci'));assert.ok(a,'mailing address rendered');a.props.onChange('100 Main St, San Antonio, TX 78216');}
  const renewal=nodes(render()).filter(n=>n.type==='select')[1];assert.equal(text(nodes(renewal).find(n=>n.props?.value==='March')),'marzo');renewal.props.onChange({target:{value:'March'}});
  await render().props.onSubmit({preventDefault(){}});
  assert.match(text(render()),/Ya estamos trabajando en su cotización/);
