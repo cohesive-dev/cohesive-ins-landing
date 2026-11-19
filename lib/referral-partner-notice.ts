@@ -1,11 +1,12 @@
-import { ALERT_SUBJECT_TAG, PAYOUT_BLOCK, PAYOUT_BLOCK_USD, REFERRAL_FEE_USD, type MailFn } from "@/lib/referral-partners";
+import { ALERT_SUBJECT_TAG, PAYOUT_BLOCK, type MailFn } from "@/lib/referral-partners";
 
 // Nam 2026-11-19: when a business requests a quote through a partner's /refer link, the partner gets a SEPARATE
 // notice naming the business only - never a CC/BCC on the sub's insurance mail (privacy; thread confusion).
 // The partner is looked up from the signup alert quotes@ sent ("PARTNER_CODE: <code>"); no new datastore.
 // Off switch: env REFERRAL_PARTNER_NOTICE=off.
 
-export interface PartnerRecord { code: string; name: string; email: string }
+export interface PartnerRecord { code: string; name: string; email: string; rate: number }
+export const LAUNCH_RATE_USD = 40; // partners whose alert predates the RATE_USD line
 export type FindText = (q: string) => Promise<string | null>;
 
 const line = (text: string, label: string) => text.match(new RegExp(`^${label}:\\s*(.*)$`, "m"))?.[1]?.trim() ?? "";
@@ -17,7 +18,8 @@ export async function lookupPartner(code: string, find: FindText): Promise<Partn
   if (!text || line(text, "PARTNER_CODE") !== code) return null;
   const email = line(text, "Email").toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return null;
-  return { code, name: line(text, "Name"), email };
+  const rate = Number(line(text, "RATE_USD"));
+  return { code, name: line(text, "Name"), email, rate: Number.isFinite(rate) && rate > 0 ? rate : LAUNCH_RATE_USD };
 }
 
 export function noticeText(partner: PartnerRecord, referred: string): string {
@@ -27,7 +29,7 @@ export function noticeText(partner: PartnerRecord, referred: string): string {
     "",
     `Good news: ${referred} just requested a quote through your referral link.`,
     "",
-    `Once we confirm it qualifies, it counts toward your next $${PAYOUT_BLOCK_USD} ($${REFERRAL_FEE_USD} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`,
+    `Once we confirm it qualifies, it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`,
     "",
     "Thanks,",
     "Kevin",

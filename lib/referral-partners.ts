@@ -2,6 +2,8 @@ import { randomBytes } from "node:crypto";
 
 // Referral partner program (Nam 2026-11-19): GCs and other contractors sign up, get a personal
 // /refer?ref=<code> link, and earn a FLAT $40 per qualified referral, paid in $120 blocks (every 3).
+// Each partner keeps the per-referral rate in effect when they signed up (Nam 11/19: future partners may get less);
+// the alert's RATE_USD line is the record (payout script + partner notice read it; missing = $40, the launch rate).
 // The fee is never contingent on the referred business buying insurance.
 // A partner signup is NOT an insurance lead: it never touches /api/intake, the CRM or quotes@ inbound.
 // The team alert below is the system of record for code -> partner (scripts/marketing/referral_partner_payouts.py
@@ -51,6 +53,7 @@ export function alertText(input: PartnerInput, code: string): string {
   return [
     "New referral partner signup (website /referral-program). Not an insurance lead.",
     `PARTNER_CODE: ${code}`,
+    `RATE_USD: ${REFERRAL_FEE_USD}`,
     `Link: ${partnerLink(code)}`,
     `Name: ${clean(input.fullName)}`,
     `Business: ${clean(input.businessName)}${clean(input.trade) ? ` (${clean(input.trade)})` : ""}`,

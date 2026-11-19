@@ -18,7 +18,13 @@ const mails = [];
 const mail = async (m) => { mails.push(m); return true; };
 
 // Lookup parses the real alert format.
-assert.deepEqual(await lookupPartner(code, find), { code, name: "Pat Builder", email: "pat@example.com" });
+assert.deepEqual(await lookupPartner(code, find), { code, name: "Pat Builder", email: "pat@example.com", rate: 40 });
+assert.match(alert, /^RATE_USD: 40$/m);
+// Rate is per partner: a $30 partner's notice says $30/$90; an old alert without RATE_USD = $40.
+assert.equal((await lookupPartner(code, async () => alert.replace("RATE_USD: 40", "RATE_USD: 30"))).rate, 30);
+assert.equal((await lookupPartner(code, async () => alert.replace(/^RATE_USD.*\n/m, ""))).rate, 40);
+{ const m2 = []; await notifyReferralPartner({ code, company: "Z Co" }, {}, async () => alert.replace("RATE_USD: 40", "RATE_USD: 30"), async (m) => { m2.push(m); return true; });
+  assert.match(m2[0].text, /next \$90 \(\$30 each/); }
 assert.equal(queries[0], `in:sent subject:"[referral-partner]" "${code}"`);
 
 // Sent: partner only, business name only, no contact details of the sub.
@@ -26,7 +32,7 @@ let r = await notifyReferralPartner({ code, company: "Acme Plumbing", name: "Al 
 assert.equal(r, "sent"); assert.equal(mails.length, 1);
 assert.deepEqual(mails[0].to, ["pat@example.com"]); assert.equal(mails[0].replyTo, "kevin@cohesiveinsure.com");
 assert.equal(mails[0].subject, "Acme Plumbing used your referral link");
-assert.match(mails[0].text, /^Hi Pat,/); assert.match(mails[0].text, /Acme Plumbing just requested a quote/);
+assert.match(mails[0].text, /^Hi Pat,/); assert.match(mails[0].text, /Acme Plumbing just requested a quote/); assert.match(mails[0].text, /next \$120 \(\$40 each/);
 assert.ok(!mails[0].text.includes("al@acme.com") && !mails[0].text.includes("Al Sub"));
 
 // Falls back to the person's name, strips header injection.
