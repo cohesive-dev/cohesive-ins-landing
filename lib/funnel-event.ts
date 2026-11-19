@@ -1,4 +1,5 @@
-import {CONTRACTOR_V2_VERSION} from '@/lib/contractor-arm';
+// Contractor form versions from 2026-11-19: arm and hero variant (lib/contractor-arm.ts contractorFormVersion).
+export const CONTRACTOR_V2_VERSION = /^2026-11-19-(current|short|tradefirst)-(ai|trust)-v2$/;
 /** Strict allowlist: no entered answers, contact values, URLs or error prose. */
 export const FUNNEL_EVENTS = ['page_view','variant_view','form_start','form_view','field_view','field_focus','field_complete','field_clear','field_error','submit_attempt','intake_accepted','submit_error','session_exit','contact_saved'] as const;
 export type FunnelEvent = {

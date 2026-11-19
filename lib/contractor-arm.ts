@@ -18,7 +18,7 @@ export function contractorHeroFromRandom(value: number): ContractorHero {
 }
 
 // Form versions from 2026-11-19 carry both the arm and the hero, e.g. 2026-11-19-tradefirst-trust-v2.
-export const CONTRACTOR_V2_VERSION = /^2026-11-19-(current|short|tradefirst)-(ai|trust)-v2$/;
+export { CONTRACTOR_V2_VERSION } from '@/lib/funnel-event';
 export function contractorFormVersion(arm: ContractorArm, hero: ContractorHero): string {
   return `2026-11-19-${arm === 'trade_first' ? 'tradefirst' : arm}-${hero}-v2`;
 }
