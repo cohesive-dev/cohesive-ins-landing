@@ -46,7 +46,7 @@ function reset(props,search=''){cleanup();formProps=props;states=[];store.clear(
 const input=placeholder=>nodes(render()).find(n=>n.type==='input'&&n.props.placeholder===placeholder);
 const selects=()=>nodes(render()).filter(n=>n.type==='select');
 function type(placeholder,value){const el=input(placeholder);assert.ok(el,`${placeholder} input rendered`);el.props.onChange({target:{value}});}
-function fillContact(){for(const [p,v] of Object.entries({'Business name':'QA TEST ONLY Cafe','Your name':'QA TEST ONLY',Email:'seo-rest-test@example.invalid',Phone:'2025550184'}))type(p,v);}
+function fillContact(){for(const [p,v] of Object.entries({'Business name':'QA TEST ONLY Cafe','Your name':'QA TEST ONLY',Email:'seo-rest-test@example.invalid',Phone:'2025550184'}))type(p,v);const a=nodes(render()).find(n=>n.props?.ariaLabel==='Mailing address');assert.ok(a,'mailing address rendered');a.props.onChange('100 N Tryon St, Charlotte, NC 28202');}
 const details=p=>Object.fromEntries(p.details.map(x=>[x.label,x.value]));
 const submit=async()=>render().props.onSubmit({preventDefault(){}});
 const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Alcohol as % of sales','Own or rent','When did you open','Coverage timeline','Building address','Claims','Building replacement value (owner-stated)'];
@@ -92,7 +92,7 @@ const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Al
  // ---- Completed submit, pre-filled type kept: reaches the CRM with the restaurant lane fields ---------------
  const coffeeProps={source:'seo-coffee-shop-north-carolina',mode:'restaurant',pageType:{slug:'coffee-shop',noun:'coffee shop'}};
  for(const search of ['','?utm_source=facebook&utm_medium=paid_social&ad_id=120251012015050660']){
-  reset(coffeeProps,search);fillContact();type('ZIP code','28202');
+  reset(coffeeProps,search);fillContact();
   selects()[1].props.onChange({target:{value:'March'}});
   await submit();
   assert.match(text(render()),/Got it/);
@@ -127,8 +127,8 @@ const FAKE_DEFAULT_LABELS=['Business structure','Approximate annual revenue','Al
  let d=details(payload);assert.equal(d['Business type'],'Fast food / counter service (grill or fryer)');assert.equal(d['Rainbow class'],'A');
  assert.equal(d['Page type'],'Coffee / café / bakery (little or no cooking)','page type stays attribution only');
  assert.ok(crmCalls[0].business_type.startsWith('Fast food / counter service'));assert.ok(!crmCalls[0].business_type.includes('Coffee'));
- // Optional answers left blank are omitted, never defaulted.
- assert.ok(!('zip' in payload));assert.equal(d['Current policy renews'],undefined);assert.ok(!('zip' in crmCalls[0]));
+ // Optional answers left blank are omitted, never defaulted (ZIP now comes from the required mailing address).
+ assert.equal(d['Current policy renews'],undefined);
  for(const label of FAKE_DEFAULT_LABELS)assert.equal(d[label],undefined);
 
  // Something else: the visitor's own words become the type; no Rainbow class is inferred.
