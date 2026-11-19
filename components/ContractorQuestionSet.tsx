@@ -11,6 +11,8 @@ const FIELD_KEYS:Record<string,string>={'Full name':'fullName','Your full name':
 const VisibleFields=createContext<{keys:string[];sections:string[];compact:boolean}|null>(null);
 // askWorkersComp: the staged WC question (/contractor-test?wc=1, i.e. WC ads), rendered first. Off (every other caller) renders nothing new.
 export default function ContractorQuestionSet({f,set,visible,contactFirst=false,askWorkersComp=false,compact=false}:{f:Record<string,string>;set:(k:string,v:string)=>void;visible?:string[];contactFirst?:boolean;askWorkersComp?:boolean;compact?:boolean}){
+ // Kevin 2026-11-19: say "invalid email/phone" only after the visitor leaves the field, never mid-typing.
+ const [touched,setTouched]=useState<{email?:boolean;phone?:boolean}>({});
  const qualified=true,hasW2Employees=!!f.employees&&!f.employees.startsWith('0'),usesSubcontractors=f.usesSubcontractors==='Yes';
  const exactWc=askWorkersComp&&wantsWc(f),wcHasEmployees=(Number(f.wcFullTime)||0)+(Number(f.wcPartTime)||0)>0;
  const emailValid=/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(f.email||''),phoneValid=acceptedPhoneShape(f.phone);
@@ -37,9 +39,9 @@ export default function ContractorQuestionSet({f,set,visible,contactFirst=false,
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Field label="Email" required>
-                <Input type="email" value={f.email} onChange={(v) => set("email", v)} placeholder="you@example.com" autoComplete="email" inputMode="email" />
+                <Input type="email" value={f.email} onChange={(v) => set("email", v)} onBlur={() => setTouched((t) => ({ ...t, email: true }))} placeholder="you@example.com" autoComplete="email" inputMode="email" />
               </Field>
-              {f.email && !emailValid && (
+              {touched.email && f.email && !emailValid && (
                 <p className="mt-1 text-xs text-red-600">
                   Please enter a valid email address.
                 </p>
@@ -47,9 +49,9 @@ export default function ContractorQuestionSet({f,set,visible,contactFirst=false,
             </div>
             <div>
               <Field label="Phone" required>
-                <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} placeholder="Your phone number" autoComplete="tel" inputMode="tel" />
+                <Input type="tel" value={f.phone} onChange={(v) => set("phone", v)} onBlur={() => setTouched((t) => ({ ...t, phone: true }))} placeholder="Your phone number" autoComplete="tel" inputMode="tel" />
               </Field>
-              {f.phone && !phoneValid && (
+              {touched.phone && f.phone && !phoneValid && (
                 <p className="mt-1 text-xs text-red-600">
                   Please enter a valid phone number.
                 </p>
@@ -200,7 +202,7 @@ function Field({
       })
     : children;
   return (
-    <div className="space-y-1.5" data-funnel-field={key}>
+    <div className="space-y-1.5 rounded-lg data-[missing=true]:outline-2 data-[missing=true]:outline-offset-4 data-[missing=true]:outline-red-500" data-funnel-field={key}>
       <div className={alignOnDesktop ? "sm:min-h-[3.25rem]" : undefined}>
         <span className="block text-sm font-medium text-[#131517]">
           {label}
@@ -226,9 +228,11 @@ function Input({
   autoComplete,
   ariaLabel,
   inputMode,
+  onBlur,
 }: {
   value?: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   placeholder?: string;
   type?: string;
   autoComplete?: string;
@@ -240,6 +244,7 @@ function Input({
       type={type}
       value={value ?? ""}
       onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
       placeholder={placeholder}
       autoComplete={autoComplete}
       aria-label={ariaLabel}

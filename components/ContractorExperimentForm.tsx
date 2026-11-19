@@ -71,7 +71,8 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return sentPartial.current;}
     partialInFlight.current=true;
     try{const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});
-      const result=await res.json();if(res.ok&&result.ok===true&&result.notification==='sent'){sentPartial.current=true;tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();return true;}
+      const result=await res.json();if(res.ok&&result.ok===true&&result.notification==='sent'){sentPartial.current=true;
+        if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')(window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();return true;}
     }catch{/* retain leave/idle retry; never block completion */}finally{partialInFlight.current=false;}
     return false;
    };
@@ -116,9 +117,15 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  const fieldValid=coldLayout?validField:validFullField;
  const offer=angle==='free_gen',label=industryLabel,preview=query.get('preview')==='1';
  const googleSearch=!coldLayout&&query.get('utm_source')==='google'&&query.get('utm_medium')==='cpc'&&(industry==='roof'||industry==='tree');
- function update(k:string,v:string){setError('');if(!k.endsWith('RawText')&&answers[k]!==v&&fieldValid(k,v)&&v)tracker.current?.emit('field_complete',k);setAnswers(a=>coldLayout?normalizeAnswers({...a,[k]:v}):normalizeFull(a,k,v));}
+ function update(k:string,v:string){setError('');form.current?.querySelector(`[data-funnel-field="${k}"]`)?.removeAttribute('data-missing');if(!k.endsWith('RawText')&&answers[k]!==v&&fieldValid(k,v)&&v)tracker.current?.emit('field_complete',k);setAnswers(a=>coldLayout?normalizeAnswers({...a,[k]:v}):normalizeFull(a,k,v));}
  function showFieldError(k:string){
-   setError(k in QUESTION_OPTIONS?'Please select an option to continue.':`Please enter a valid ${labels[k].toLowerCase()}.`);
+   // Kevin 2026-11-19: 14 of 101 visitors who reached the end of page 2 left at a greyed-out button because one
+   // question was skipped. The button now always submits; this names, outlines and scrolls to what is missing.
+   const wrapper=form.current?.querySelector<HTMLElement>(`[data-funnel-field="${k}"]`);
+   const question=wrapper?.querySelector('span')?.textContent?.replace(/\s*\*\s*$/,'').trim()||labels[k];
+   form.current?.querySelectorAll('[data-missing="true"]').forEach(el=>el.removeAttribute('data-missing'));
+   wrapper?.setAttribute('data-missing','true');
+   setError(answers[k]?`Please check: ${question}`:`Please answer: ${question}`);
    tracker.current?.emit('field_error',k);
    const control=document.getElementById(k)||form.current?.querySelector<HTMLElement>(`[data-funnel-field="${k}"] input, [data-funnel-field="${k}"] select, [data-funnel-field="${k}"] summary`);
    control?.scrollIntoView({block:'center',behavior:'smooth'});
@@ -181,7 +188,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  <div aria-hidden="true" style={{position:'absolute',left:'-10000px'}}><label>Leave this field empty<input ref={honeypot} name="website" tabIndex={-1} autoComplete="off" /></label></div>
  {layout==='step'&&<div>
    <>
-     <p>Step {step+1} of {screens.length}{coldLayout?'':step===0?' · Your details':' · Business details'}</p>
+     {!coldLayout&&step===0?<p><strong>Just 2 short steps.</strong> Step 1 of {screens.length} takes under a minute.</p>:<p>Step {step+1} of {screens.length}{coldLayout?'':step===0?' · Your details':' · Business details'}</p>}
      <div className="mt-2 h-1.5 rounded-full bg-[#EEF1FF]" role="progressbar" aria-label="Form progress" aria-valuemin={0} aria-valuemax={screens.length} aria-valuenow={step+1}>
        <div className="h-full rounded-full bg-[#2040E7] transition-all" style={{width:`${((step+1)/screens.length)*100}%`}}/>
      </div>
@@ -194,7 +201,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  {k==='trade'?<select id={k} name={k} required value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"><option value="" disabled>Select your primary trade</option>{TRADES.map(t=><option key={t.value} value={t.value}>{t.label}</option>)}</select>:k==='mailingAddress'?<AddressAutocomplete id={k} value={answers[k]} onChange={v=>update(k,v)} ariaLabel={LABELS[k]} placeholder="Street, city, state, ZIP"/>:k in QUESTION_OPTIONS?<div id={k} role="group" aria-label={LABELS[k]} className="flex flex-wrap gap-2">{QUESTION_OPTIONS[k as keyof typeof QUESTION_OPTIONS].map(v=><button type="button" key={v} aria-pressed={answers[k]===v} onClick={()=>update(k,v)} className={'min-h-[48px] touch-manipulation rounded-lg border px-4 py-3 text-[15px] font-medium transition '+(answers[k]===v?'border-[#2040E7] bg-[#EEF1FF] text-[#1A33B9]':'border-[#D8DEF5] bg-white text-[#131517] hover:border-[#2040E7]')}>{v}</button>)}</div>:
  <input id={k} name={k} required maxLength={200} type={k==='email'?'email':k==='phone'?'tel':'text'} autoComplete={k==='fullName'?'name':k==='email'?'email':k==='phone'?'tel':'organization'} value={answers[k]||''} onChange={e=>update(k,e.target.value)} className="border rounded-lg p-4 w-full"/>}</div>)}
  </>}
- {!coldLayout?<ContractorFormActions status={status} error={error} enabled={status!=='sending'&&status!=='saving'&&shown.every(k=>fieldValid(k,answers[k]))} next={layout==='step'&&step<lastStep} submitLabel={arm==='short'&&step===0?'Save my details and continue':undefined} disclosureFirst={arm==='short'&&step===0} onBack={layout==='step'&&step>0?()=>setStep(step-1):undefined}/>:<> {error&&<p role="alert">{error}</p>}
+ {!coldLayout?<ContractorFormActions status={status} error={error} enabled={status!=='sending'&&status!=='saving'} next={layout==='step'&&step<lastStep} submitLabel={arm==='short'&&step===0?'Save my details and continue':undefined} disclosureFirst={arm==='short'&&step===0} onBack={layout==='step'&&step>0?()=>setStep(step-1):undefined}/>:<> {error&&<p role="alert">{error}</p>}
  <div className="flex gap-4">{layout==='step'&&step>0&&<button type="button" onClick={()=>setStep(step-1)} className="border rounded p-4">Back</button>}<button disabled={status==='sending'} className={coldLayout?"bg-blue-700 text-white rounded p-4":contractorButtonClass} type="submit">{status==='sending'?'Sending…':layout==='step'&&step<lastStep?'Next':'Get my insurance quote'}</button></div>
  <PartialCaptureDisclosure>By submitting, you request contact about your business insurance quote. {offer?'The free lead gen offer is included when you bind your business insurance with us. ':''}</PartialCaptureDisclosure></>}
  </form>{googleSearch&&<p className="mx-auto max-w-2xl px-5 pb-8 text-center text-xs text-[#6B6D71]">Cohesive Insurance Services · {ORG_ADDRESS} · <a href="tel:+18575784979" className="font-semibold underline">(857) 578-4979</a></p>}</main>;

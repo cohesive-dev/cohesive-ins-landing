@@ -344,6 +344,10 @@ export async function POST(request: NextRequest) {
 
   const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d => d.label === 'Form version' && ['2026-09-18-contact-v3', '2026-09-18-theme-v4', '2026-09-18-trade-v5', '2026-10-22-es-v1', '2026-11-05-shortfirst-v1', '2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1'].includes(d.value));
 
+  // CAPI business_type: the trade the visitor picked. Contractor forms send a generic businessType
+  // ("Contractor enquiry - advertised X; actual work unconfirmed") and carry the pick as the "Primary trade" detail.
+  const capiTrade = details?.find(d => d.label === 'Primary trade')?.value ?? businessType;
+
   // Abandoned fill: quotes@ only. Nothing reaches the CRM, so nothing texts or emails the lead.
   if (isPartial) {
     if (isFinal && reachable) {
@@ -362,7 +366,16 @@ export async function POST(request: NextRequest) {
         // so the abandon path is precisely where it has any value.
         details,
       });
-      if (contactFirstExperiment) return NextResponse.json({ ok: partialSaved, crm: "skipped", notification: partialSaved ? "sent" : "failed", conversion: { eligible: false } }, { status: partialSaved ? 200 : 503 });
+      if (contactFirstExperiment) {
+        // Kevin 2026-11-19: a saved contact is a lead ("we'll have a way to reach them"), so the contact step
+        // sends Lead to Meta. Same email-keyed event ID as the later full submit, so Meta counts one person once;
+        // the browser pixel fires with this ID too. Honeypot/fake/test identities never count.
+        const leadSecret = process.env.INTAKE_CONVERSION_SECRET || process.env.META_CAPI_TOKEN;
+        const contactQuality = assessSubmission({ name, email, phone, company, honeypot: body.website }, (process.env.INTAKE_BLOCKED_IDENTITY_HASHES || '').split(',').map(v => v.trim()).filter(Boolean), { requireCompany: false });
+        const contactEventId = partialSaved && leadSecret && contactQuality.kind === 'accept' ? acquisitionEventId({ name, email, phone, company }, leadSecret) : undefined;
+        const contactCapi = contactEventId ? await sendCapiEvent(request, "Lead", contactEventId, email, phone, source, capiTrade) : "skipped";
+        return NextResponse.json({ ok: partialSaved, crm: "skipped", notification: partialSaved ? "sent" : "failed", capi: contactCapi, conversion: contactEventId ? { eligible: true, eventId: contactEventId } : { eligible: false, reason: contactQuality.reason } }, { status: partialSaved ? 200 : 503 });
+      }
     }
     return NextResponse.json({ ok: true, crm: "skipped" }, { status: 200 });
   }
@@ -569,7 +582,7 @@ export async function POST(request: NextRequest) {
     // A CRM duplicate may retry the SAME CAPI event ID after an earlier send failure.
     // Never mint another event ID for a same-day repeat; browser emission stays suppressed.
     eventId && reachable && (!contactFirstExperiment || forwarded) && (conversionEligible || (guardedLane && quality.kind === 'accept' && !!acceptedEventId))
-      ? await sendCapiEvent(request, eventName, eventId, email, phone, source, businessType)
+      ? await sendCapiEvent(request, eventName, eventId, email, phone, source, capiTrade)
       : "skipped";
   // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead
   // self-reports a current GL premium of $5K+ ("$5K - $20K" / "$20K+"). That is the
