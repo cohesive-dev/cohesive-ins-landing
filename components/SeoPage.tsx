@@ -488,6 +488,9 @@ export default function SeoPage({
           <Link href="/insurance" className="hover:underline">
             Insurance guides
           </Link>
+          <a href="/referral-program" className="hover:underline">
+            Referral program
+          </a>
           <a href="/privacy" className="hover:underline">
             Privacy
           </a>

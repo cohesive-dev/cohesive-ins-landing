@@ -72,6 +72,7 @@ function Navbar({ onOpenQuote }: { onOpenQuote: () => void }) {
                 {l}
               </a>
             ))}
+            <a href="/referral-program" className="text-[15px] font-semibold text-[#2040E7] hover:text-[#131517] transition-colors">Referral Program</a>
           </nav>
 
           {/* CTAs */}
@@ -114,6 +115,7 @@ function Navbar({ onOpenQuote }: { onOpenQuote: () => void }) {
                 {l}
               </a>
             ))}
+            <a href="/referral-program" className="py-2 px-3 text-sm font-semibold text-[#272A2D] hover:bg-slate-50">Referral Program: $40 per referral</a>
             <button onClick={() => { setOpen(false); onOpenQuote(); }}
               className="mt-2 py-2.5 px-3 rounded-sm bg-[#2040E7] text-white text-sm font-bold text-center hover:bg-[#1A33B9]">
               Get a Quote
@@ -1371,6 +1373,7 @@ function Footer() {
             <ul className="space-y-2 text-sm">
               {[
                 { label: "How It Works", href: "#how-it-works" },
+                { label: "Referral Program: $40 per referral", href: "/referral-program" },
                 { label: "Business Startup Guides", href: "/guides" },
                 { label: "Insurance Guides", href: "/insurance" },
                 { label: "En español: contratistas", href: "/es/seguro/contratistas" },

@@ -3,7 +3,7 @@ import { handlePartnerSignup, alertRecipients, partnerLink } from "../lib/referr
 import { referralCode } from "../lib/referral-code.ts";
 
 const good = { fullName: "Pat Builder", businessName: "Pat GC LLC", trade: "GC", email: "Pat@Example.com", phone: "(555) 123-4567",
-  payoutMethod: "Zelle", payoutHandle: "555-123-4567", agree: true, utm: { utm_source: "facebook", utm_campaign: "gc-referral" } };
+  payoutHandle: "@pat-builds", agree: true, utm: { utm_source: "facebook", utm_campaign: "gc-referral" } };
 const mails = [];
 const ok = async (m) => { mails.push(m); return true; };
 const code = "a1b2c3d4e5f60718293a";
@@ -16,10 +16,10 @@ assert.equal(mails.length, 2);
 assert.deepEqual(mails[0].to, ["kevin@cohesiveinsure.com", "nam@cohesiveinsure.com"]);
 assert.match(mails[0].subject, /^\[referral-partner\] Pat GC LLC - Pat Builder$/);
 assert.match(mails[0].text, new RegExp("PARTNER_CODE: " + code));
-assert.match(mails[0].text, /Payout: Zelle - 555-123-4567/);
+assert.match(mails[0].text, /Payout: Venmo - @pat-builds/);
 assert.match(mails[0].text, /Source: facebook \/ gc-referral/);
 assert.deepEqual(mails[1].to, ["pat@example.com"]); assert.equal(mails[1].replyTo, "kevin@cohesiveinsure.com");
-assert.ok(mails[1].text.includes(partnerLink(code))); assert.match(mails[1].text, /whether or not they buy/);
+assert.ok(mails[1].text.includes(partnerLink(code))); assert.match(mails[1].text, /whether or not they buy/); assert.match(mails[1].text, /by Venmo\./);
 
 // Never quotes@ (fleet ingests it as insurance leads).
 assert.deepEqual(alertRecipients({ REFERRAL_PARTNERS_EMAIL_TO: "x@example.com, quotes@cohesiveinsure.com" }), ["x@example.com"]);
@@ -29,8 +29,8 @@ mails.length = 0; r = await handlePartnerSignup({ ...good, website: "spam" }, {}
 assert.equal(r.body.ok, true); assert.equal(r.body.url, undefined); assert.equal(mails.length, 0);
 
 // Validation.
-r = await handlePartnerSignup({ ...good, agree: false, payoutMethod: "Bitcoin", phone: "12" }, {}, ok);
-assert.equal(r.status, 400); assert.ok(r.body.errors.agree && r.body.errors.payoutMethod && r.body.errors.phone); assert.equal(mails.length, 0);
+r = await handlePartnerSignup({ ...good, agree: false, payoutHandle: "", phone: "12" }, {}, ok);
+assert.equal(r.status, 400); assert.ok(r.body.errors.agree && r.body.errors.payoutHandle && r.body.errors.phone); assert.equal(mails.length, 0);
 
 // Header injection stripped from subject.
 await handlePartnerSignup({ ...good, businessName: "Evil\r\nBcc: x@y.z" }, {}, ok);

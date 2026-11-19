@@ -11,7 +11,7 @@ const { notifyReferralPartner, lookupPartner } = require("../lib/referral-partne
 (async () => {
 
 const code = "a1b2c3d4e5f60718293a";
-const alert = alertText({ fullName: "Pat Builder", businessName: "Pat GC LLC", email: "Pat@Example.com", phone: "5551234567", payoutMethod: "Zelle" }, code);
+const alert = alertText({ fullName: "Pat Builder", businessName: "Pat GC LLC", email: "Pat@Example.com", phone: "5551234567", payoutHandle: "pat" }, code);
 const queries = [];
 const find = async (q) => { queries.push(q); return alert; };
 const mails = [];

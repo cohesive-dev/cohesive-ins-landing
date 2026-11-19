@@ -26,7 +26,7 @@ export default function ReferralProgramPage() {
         {[
           ["1", "Sign up", "Takes a minute. You get your own referral link right away."],
           ["2", "Share your link", "Text it to subs, vendors or any business that needs insurance."],
-          ["3", "Get paid", `$${PAYOUT_BLOCK_USD} by Zelle, Venmo, PayPal or check every ${PAYOUT_BLOCK} referrals.`],
+          ["3", "Get paid", `$${PAYOUT_BLOCK_USD} by Venmo every ${PAYOUT_BLOCK} referrals.`],
         ].map(([n, h, p]) => <article key={n} className="rounded-2xl border border-[#DDE4FF] bg-white p-5"><span className="text-sm font-bold text-[#2040E7]">0{n}</span><h3 className="mt-1 text-lg font-bold">{h}</h3><p className="mt-1 text-[#405066]">{p}</p></article>)}
       </section>
       <section id="signup" className="mt-10 rounded-2xl border border-[#DDE4FF] bg-white p-6 shadow-sm sm:p-9"><ReferralPartnerForm /></section>
@@ -38,7 +38,7 @@ export default function ReferralProgramPage() {
       </section>
       <section id="terms" className="mt-10 text-xs leading-relaxed text-[#64748B]">
         <h2 className="font-semibold">Program terms</h2>
-        <p className="mt-2">Cohesive Insurance Services pays a flat ${REFERRAL_FEE_USD} for each qualified referral. A qualified referral is a different business, not already a Cohesive client or in an open quote with us, that submits a quote request through your link with real contact information. Payment does not depend on whether the referred business buys insurance. We pay ${PAYOUT_BLOCK_USD} for each {PAYOUT_BLOCK} qualified referrals, monthly, by the method you choose; we may ask for a W-9 before paying. You agree not to give insurance advice or discuss coverage or pricing on our behalf, and not to send spam. We may change or end the program at any time; referrals made before a change are paid under the terms in effect when they were made. Void where prohibited.</p>
+        <p className="mt-2">Cohesive Insurance Services pays a flat ${REFERRAL_FEE_USD} for each qualified referral. A qualified referral is a different business, not already a Cohesive client or in an open quote with us, that submits a quote request through your link with real contact information. Payment does not depend on whether the referred business buys insurance. We pay ${PAYOUT_BLOCK_USD} for each {PAYOUT_BLOCK} qualified referrals, monthly, by Venmo to the username you give us; we may ask for a W-9 before paying. You agree not to give insurance advice or discuss coverage or pricing on our behalf, and not to send spam. We may change or end the program at any time; referrals made before a change are paid under the terms in effect when they were made. Void where prohibited.</p>
       </section>
       <p className="mt-6 text-sm text-[#405066]">Questions? Call <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">(929) 594-5450</a> or email kevin@cohesiveinsure.com.</p>
     </div>

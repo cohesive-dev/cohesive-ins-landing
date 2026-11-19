@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { PAYOUT_METHODS } from "@/lib/referral-partners";
 
 type Fbq = (...a: unknown[]) => void;
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid"] as const;
@@ -9,14 +8,14 @@ const input = "mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2.5 text-b
 /** Referral partner signup -> /api/referral-partners (team email, never the insurance intake).
  *  Pixel event is CUSTOM on purpose (as /roofing-leads): a standard Lead here would train the insurance ads on partner signups. */
 export default function ReferralPartnerForm() {
-  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutMethod: "", payoutHandle: "", website: "" });
+  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutHandle: "", website: "" });
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [link, setLink] = useState("");
   const [copied, setCopied] = useState(false);
-  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setF({ ...f, [k]: e.target.value });
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) => setF({ ...f, [k]: e.target.value });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -57,8 +56,7 @@ export default function ReferralPartnerForm() {
     <label className="text-sm font-semibold">Your trade (optional)<input className={input} value={f.trade} onChange={set("trade")} placeholder="General contractor, roofing, ..." /></label>
     <label className="text-sm font-semibold">Email<input type="email" className={input} value={f.email} onChange={set("email")} autoComplete="email" />{err("email")}</label>
     <label className="text-sm font-semibold">Phone<input type="tel" className={input} value={f.phone} onChange={set("phone")} autoComplete="tel" />{err("phone")}</label>
-    <label className="text-sm font-semibold">How should we pay you?<select className={input} value={f.payoutMethod} onChange={set("payoutMethod")}><option value="" disabled>Choose one</option>{PAYOUT_METHODS.map((m) => <option key={m}>{m}</option>)}</select>{err("payoutMethod")}</label>
-    <label className="text-sm font-semibold">Zelle / Venmo / PayPal handle or mailing address (optional)<input className={input} value={f.payoutHandle} onChange={set("payoutHandle")} /></label>
+    <label className="text-sm font-semibold">Venmo username (we pay by Venmo)<input className={input} value={f.payoutHandle} onChange={set("payoutHandle")} placeholder="@your-name" autoCapitalize="none" />{err("payoutHandle")}</label>
     <input aria-hidden="true" tabIndex={-1} autoComplete="off" value={f.website} onChange={set("website")} style={{ position: "absolute", left: "-9999px" }} />
     <label className="flex items-start gap-2 text-sm"><input type="checkbox" className="mt-1" checked={agree} onChange={(e) => setAgree(e.target.checked)} /><span>I agree to the <a href="#terms" className="underline">program terms</a>.</span></label>{err("agree")}
     {message && <p role="alert" className="text-[#b42318]">{message}</p>}
