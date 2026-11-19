@@ -52,7 +52,7 @@ async function fillAll(){
  set('revenue','$250k - $500k');set('employees','1 - 5');set('payroll','$0 - $50k');await next();
  set('usesSubcontractors','Yes');set('subcontractorCosts','$100k - $250k');await next();
  set('structure','LLC');await next();
- set('currentGl','Yes - renews within 30 days');set('currentPremium','$2K - $5K');await next();
+ set('currentGl','Yes - renews within 30 days');await next();
 }
 (async()=>{
  // Visible text is Spanish; submitted values are the English option values.

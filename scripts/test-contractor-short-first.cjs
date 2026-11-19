@@ -7,13 +7,14 @@ new Function('require', 'module', 'exports', validatorJs)(require, compiled, com
 const { validateFunnelEvent } = compiled.exports;
 
 const base = process.argv[2] || 'http://localhost:3021';
-async function open(browser, arm, layout = 'step', failFirst = false, query = 'industry=tree&angle=savings&ad_id=120251397789610660', storedAttribution = null) {
-  const context = await browser.newContext();
-  await context.addInitScript(({ arm, layout, storedAttribution }) => {
+async function open(browser, arm, layout = 'step', failFirst = false, query = 'industry=tree&angle=savings&ad_id=120251397789610660', storedAttribution = null, hero = 'ai', viewport = null) {
+  const context = await browser.newContext(viewport ? { viewport, isMobile: true, hasTouch: true } : {});
+  await context.addInitScript(({ arm, layout, storedAttribution, hero }) => {
     localStorage.setItem('cohesive_contractor_short_first_ab_v1', arm);
+    localStorage.setItem('cohesive_contractor_hero_ab_v1', hero);
     localStorage.setItem('cohesive_experiment_tree_savings_v1', layout);
     if (storedAttribution) sessionStorage.setItem('cohesive_attr_v1', JSON.stringify(storedAttribution));
-  }, { arm, layout, storedAttribution });
+  }, { arm, layout, storedAttribution, hero });
   const attempts = [], finals = [];
   await context.route('**/*', async route => {
     const request = route.request(), url = new URL(request.url());
@@ -32,7 +33,7 @@ async function open(browser, arm, layout = 'step', failFirst = false, query = 'i
   });
   const page = await context.newPage();
   await page.goto(base + '/contractor-test?' + query, { waitUntil: 'networkidle', timeout: 120000 });
-  await page.getByRole('button', { name: arm === 'short' ? 'Save my details and continue' : 'Next', exact: true }).waitFor();
+  await page.getByRole('button', { name: arm === 'current' ? 'Next' : 'Save my details and continue', exact: true }).waitFor();
   return { context, page, attempts, finals };
 }
 const details = payload => Object.fromEntries((payload.details || []).map(item => [item.label, item.value]));
@@ -59,7 +60,7 @@ async function businessDetails(page) {
 
 (async () => {
   for (const cellId of ['tree__savings__step__v1', 'fire_sprinkler__project_coi__step__v1', 'home_builder__ground_up__step__v1']) {
-    for (const version of ['2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1'])
+    for (const version of ['2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1', '2026-11-19-current-ai-v2', '2026-11-19-short-trust-v2', '2026-11-19-tradefirst-ai-v2'])
       assert.ok(validateFunnelEvent({ eventId: '00000000-0000-4000-8000-000000000001', sessionId: '00000000-0000-4000-8000-000000000002', cellId, version, event: 'variant_view', elapsedMs: 0 }), `${cellId} ${version}`);
   }
   const browser = await chromium.launch({ executablePath: '/usr/bin/google-chrome', headless: true, args: ['--no-sandbox'] });
@@ -87,7 +88,9 @@ async function businessDetails(page) {
       await page.getByRole('button', { name: 'Get my quote', exact: true }).click();
       await page.getByText('Thanks - we').waitFor();
       assert.equal(finals.length, 1);
-      assert.equal(details(finals[0])['Form version'], '2026-11-07-two-page-current-v1');
+      assert.equal(details(finals[0])['Form version'], '2026-11-19-current-ai-v2');
+      assert.equal(details(finals[0])['Website hero'], 'ai');
+      assert.equal(await page.getByText('Current annual GL premium').count() + await page.getByText('What are you paying now').count(), 0, 'current-premium question removed (Kevin 11/19)');
       await context.close();
     }
     {
@@ -106,7 +109,7 @@ async function businessDetails(page) {
       assert.equal(finals.length, 0, 'stage one is not a completed application');
       const first = details(attempts[1]);
       assert.equal(first['Website form arm'], 'short-first-v1');
-      assert.equal(first['Form version'], '2026-11-07-two-page-short-v1');
+      assert.equal(first['Form version'], '2026-11-19-short-ai-v2');
       assert.equal(first['Primary trade'], 'Tree service');
       assert.equal(first['Current ad_id'], '120251397789610660');
       await page.getByRole('button', { name: 'Back', exact: true }).click();
@@ -151,6 +154,55 @@ async function businessDetails(page) {
       assert.equal(source['Campaign'], 'Earlier Campaign', 'first-touch history stays separate');
       assert.equal(source['Current ad_id'], undefined, 'click ID does not imply exact ad ID');
       assert.equal(source['Primary trade'], undefined, 'advertised industry is not customer-confirmed trade');
+      await context.close();
+    }
+    {
+      // Trade-first arm (Kevin 11/19, 10% of new visitors) on a phone: one-tap trade chips lead page 1,
+      // the advertised trade is the first chip and visible without scrolling, contact fields follow the tap.
+      const { context, page, attempts, finals } = await open(browser, 'trade_first', 'step', false,
+        'industry=tree&angle=savings&ad_id=120251397789610660', null, 'trust', { width: 390, height: 664 });
+      const chips = page.getByRole('group', { name: 'What work do you do?' });
+      const treeChip = chips.getByRole('button', { name: 'Tree service', exact: true });
+      await treeChip.waitFor();
+      assert.equal((await chips.getByRole('button').allTextContents())[0], 'Tree service', 'advertised trade is the first chip');
+      const box = await treeChip.boundingBox();
+      assert.ok(box && box.y + box.height <= 664, `first chip above the fold on a 390x664 phone (bottom ${box && box.y + box.height})`);
+      assert.equal(await page.getByLabel('Email', { exact: true }).count(), 0, 'contact fields wait for a trade');
+      assert.equal(await page.getByRole('link', { name: '(929) 594-5450' }).count(), 1, 'trust hero shows the phone');
+      assert.equal(await page.getByText('We use AI to automatically shop').count(), 0, 'trust hero replaces the AI line');
+      await treeChip.click();
+      assert.equal(await treeChip.getAttribute('aria-pressed'), 'true');
+      assert.equal(await page.getByRole('combobox', { name: "What's your primary trade?" }).count(), 0, 'trade not asked twice on page 1');
+      await contact(page);
+      await page.getByRole('button', { name: 'Save my details and continue' }).click();
+      await page.getByLabel("Company's legal name", { exact: true }).waitFor();
+      assert.equal(attempts.length, 1);
+      const first = details(attempts[0]);
+      assert.equal(first['Website form arm'], 'trade-first-v1');
+      assert.equal(first['Website hero'], 'trust');
+      assert.equal(first['Form version'], '2026-11-19-tradefirst-trust-v2');
+      assert.equal(first['Primary trade'], 'Tree service');
+      await businessDetails(page);
+      await page.getByRole('button', { name: 'Get my quote', exact: true }).click();
+      await page.getByText('Thanks - we').waitFor();
+      assert.equal(finals.length, 1);
+      assert.equal(details(finals[0])['Primary trade'], 'Tree service');
+      await context.close();
+    }
+    {
+      // "Something else" opens the trade search and reveals the contact fields.
+      const { context, page } = await open(browser, 'trade_first', 'step', false, 'industry=remodel&angle=trade_mix');
+      await page.getByRole('button', { name: 'Something else', exact: true }).click();
+      await page.getByRole('combobox', { name: 'Search for your trade' }).fill('Weld');
+      await page.getByRole('option', { name: 'Welding / metal fabrication' }).getByRole('button').click();
+      await page.getByLabel('Email', { exact: true }).waitFor();
+      await context.close();
+    }
+    {
+      // Short arm on a phone: the first field is reachable without scrolling.
+      const { context, page } = await open(browser, 'short', 'step', false, undefined, null, 'ai', { width: 390, height: 664 });
+      const box = await page.getByLabel('Email', { exact: true }).boundingBox();
+      assert.ok(box && box.y + box.height <= 664, `email above the fold on a 390x664 phone (bottom ${box && box.y + box.height})`);
       await context.close();
     }
     console.log('PASS: both paid arms have two pages and separate versions; short first screen saves with failure/retry, source/trade/arm, email-only ad-source partial, no premature final, no duplicate save, same-ID final application. All intake requests intercepted.');

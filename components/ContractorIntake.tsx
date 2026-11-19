@@ -574,7 +574,7 @@ export default function ContractorIntake({ adapter, offer }: { adapter?: Contrac
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {hasW2Employees && (
-                <Field label="Annual W2 payroll (roughly)" required hint="Wages to employees, not subcontractor payments." alignOnDesktop>
+                <Field label="Annual W2 payroll for your field crew (roughly)" required hint="Only people who do the work, like installers, technicians and laborers. Leave out office and sales staff, owners and subcontractors." alignOnDesktop>
                   <Select value={f.payroll} onChange={(v) => set("payroll", v)} options={PAYROLL} placeholder="Select one" />
                 </Field>
               )}
