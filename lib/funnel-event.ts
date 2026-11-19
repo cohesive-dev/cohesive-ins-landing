@@ -9,7 +9,7 @@ export type FunnelEvent = {
 };
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const FIELDS=new Set(['email','phone','fullName','legalName','revenue','employees','payroll','subcontractorCosts','currentGl','mailingAddress','trade','tradeRawText','address','otherTrades','otherTradesRawText','primaryPct','otherTradeDescription','usesSubcontractors','structure','yearStarted','currentPremium','wcRequested','wcFullTime','wcPartTime','wcPayroll']);
-const CELL=/^(pool|remodel|roof|tree|painting|hvac|electrical|plumbing|welding|fire_sprinkler|home_builder|contractor)__([a-z_]+)__(step|long)__v1$/;
+const CELL=/^(pool|remodel|roof|tree|painting|hvac|electrical|plumbing|welding|fire_sprinkler|home_builder|excavation|concrete_masonry|windows_siding|insulation|remodeling|contractor)__([a-z_]+)__(step|long)__v1$/;
 export function validateFunnelEvent(input:unknown):FunnelEvent|null {
   if (!input || typeof input!=='object') return null;
   const v=input as Record<string,unknown>;

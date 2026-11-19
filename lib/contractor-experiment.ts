@@ -5,6 +5,9 @@ export const INDUSTRIES = {
   tree:'Tree services', painting:'Painting', hvac:'HVAC',
   electrical:'Electrical', plumbing:'Plumbing', welding:'Welding',
   fire_sprinkler:'Fire sprinkler contractors', home_builder:'New home builders',
+  // Winter 2026 per-industry Meta cells (Kevin 11/19). Label = advertised trade only, never confirmed.
+  excavation:'Excavation', concrete_masonry:'Concrete / masonry', windows_siding:'Windows and siding',
+  insulation:'Insulation', remodeling:'Remodeling',
 } as const;
 export type Industry = keyof typeof INDUSTRIES;
 export type Answers = Record<string,string>;
@@ -12,9 +15,11 @@ export const ANGLES:Record<Industry,string[]> = {
   pool:['percent','dollars','installation','coi'],
   remodel:['percent','dollars','trade_mix','coi'], roof:['percent','coi','free_gen','claims_occurrence','quote'],
   tree:['coverage','savings','coi','job_coi','quote'],painting:['savings','coi','free_gen'],hvac:['installation','coi','free_gen','dollars'],
-  electrical:['dollars','coi'],plumbing:['dollars','coi'],welding:['dollars','coi'],
+  electrical:['dollars','coi'],plumbing:['dollars','coi','micro1','save30','save30_meme','save30_video'],welding:['dollars','coi','micro1','save30','save30_meme','save30_video'],
   fire_sprinkler:['quote','renewal','job','coi','project_coi'],
   home_builder:['quote','renewal','job','coi','ground_up'],
+  excavation:['micro1','save30','save30_meme','save30_video'], concrete_masonry:['micro1','save30','save30_meme','save30_video'], windows_siding:['micro1','save30','save30_meme','save30_video'],
+  insulation:['micro1','save30','save30_meme','save30_video'], remodeling:['micro1','save30','save30_meme','save30_video'],
 };
 export const QUESTION_OPTIONS = {
   revenue:['Under $250k','$250k-$500k','$500k-$1M','$1M-$2M','$2M-$4M','$4M-$8M','Over $8M'],
