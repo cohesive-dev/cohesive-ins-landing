@@ -166,6 +166,24 @@ async function forwardToCrm(
   }
 }
 
+function industrySlug(value?: string | null): string | undefined {
+  const slug = (value ?? "").toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40);
+  return slug.length >= 2 ? slug : undefined;
+}
+
+function capiIndustry(referer?: string | null, businessType?: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  try {
+    const industry = industrySlug(referer ? new URL(referer).searchParams.get("industry") : undefined);
+    if (industry) out.content_category = industry;
+  } catch {
+    // unparseable referer: no ad industry
+  }
+  const trade = industrySlug(businessType);
+  if (trade) out.business_type = trade;
+  return out;
+}
+
 // Fire a server-side conversion event to the Conversions API. event_id MUST
 // match the browser pixel's eventID so Meta dedupes the two into a single
 // conversion. `eventName` defaults to "Lead" (the only value the church /
@@ -180,6 +198,7 @@ async function sendCapiEvent(
   email?: string,
   phone?: string,
   source?: string,
+  businessType?: string,
 ): Promise<"sent" | "skipped" | "failed"> {
   const token = process.env.META_CAPI_TOKEN;
   if (!token) {
@@ -199,6 +218,12 @@ async function sendCapiEvent(
   const ua = request.headers.get("user-agent");
   if (ua) userData.client_user_agent = ua;
 
+  // Industry tag (Kevin 2026-11-19): lets one per-industry custom conversion
+  // ("content_category = plumbing") train every ad set in that industry.
+  // content_category = the ad cell's ?industry= slug from the landing URL;
+  // business_type = the trade the person picked on the form, as a slug.
+  const customData = capiIndustry(request.headers.get("referer"), businessType);
+
   const payload = {
     data: [
       {
@@ -212,6 +237,7 @@ async function sendCapiEvent(
             ? "https://www.cohesiveinsure.com/bar"
             : "https://cohesiveinsure.com/religious"),
         user_data: userData,
+        ...(Object.keys(customData).length ? { custom_data: customData } : {}),
       },
     ],
   };
@@ -543,7 +569,7 @@ export async function POST(request: NextRequest) {
     // A CRM duplicate may retry the SAME CAPI event ID after an earlier send failure.
     // Never mint another event ID for a same-day repeat; browser emission stays suppressed.
     eventId && reachable && (!contactFirstExperiment || forwarded) && (conversionEligible || (guardedLane && quality.kind === 'accept' && !!acceptedEventId))
-      ? await sendCapiEvent(request, eventName, eventId, email, phone, source)
+      ? await sendCapiEvent(request, eventName, eventId, email, phone, source, businessType)
       : "skipped";
   // ★ QualifiedLead (Kevin 2026-08-15): the /contractors form fires this ONLY when the lead
   // self-reports a current GL premium of $5K+ ("$5K - $20K" / "$20K+"). That is the
