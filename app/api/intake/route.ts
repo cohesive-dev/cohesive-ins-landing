@@ -1,7 +1,9 @@
 import { CONTRACTOR_V2_VERSION } from '@/lib/contractor-arm';
 import { createHash } from "crypto";
-import { NextResponse, type NextRequest } from "next/server";
-import { sendIntakeNotification } from "@/lib/notify";
+import { NextResponse, after, type NextRequest } from "next/server";
+import { sendIntakeNotification, sendReferralPartnerMail } from "@/lib/notify";
+import { findQuotesMessageText } from "@/lib/gmail";
+import { notifyReferralPartner } from "@/lib/referral-partner-notice";
 import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
@@ -569,6 +571,17 @@ export async function POST(request: NextRequest) {
       ok: false, crm: "failed", notification: "failed",
       error: "We could not save your request. Please try again, or call Cohesive at (929) 594-5450.",
     }, { status: 503 });
+  }
+
+  // Referral partner notice (Nam 2026-11-19): the partner who owns this /refer code gets a SEPARATE email naming the
+  // business only (never CC/BCC on the sub's mail). After the response; a failure here never touches the lead.
+  const partnerCode = source === "customer-referral" ? details?.find((item) => item.label === "Referral code")?.value : undefined;
+  if (partnerCode && quality.kind === "accept" && !crmResult.duplicate) {
+    const notice = async () => {
+      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email }, process.env, findQuotesMessageText, sendReferralPartnerMail);
+      console.info("referral_partner_notice", { outcome });
+    };
+    try { after(notice); } catch { void notice(); } // after() needs a request scope; direct callers (tests) run it inline.
   }
 
   // Server-side CAPI event, deduped with the browser pixel via the shared event

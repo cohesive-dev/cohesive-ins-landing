@@ -80,3 +80,33 @@ export async function sendRawFromQuotes(mime: Buffer, context: string): Promise<
   }
   return false;
 }
+
+/**
+ * Plain-text body of the newest quotes@ message matching a Gmail search, or null.
+ * Read-only; used to look up a referral partner from the signup alert quotes@ sent (lib/referral-partner-notice.ts).
+ */
+export async function findQuotesMessageText(q: string): Promise<string | null> {
+  const client = gmailClient();
+  if (!client) return null;
+  try {
+    const list = await client.request<{ messages?: Array<{ id: string }> }>({
+      url: "https://gmail.googleapis.com/gmail/v1/users/me/messages", params: { q, maxResults: 1 }, timeout: 10_000,
+    });
+    const id = list.data.messages?.[0]?.id;
+    if (!id) return null;
+    type Part = { mimeType?: string; body?: { data?: string }; parts?: Part[] };
+    const msg = await client.request<{ payload?: Part }>({
+      url: `https://gmail.googleapis.com/gmail/v1/users/me/messages/${id}`, params: { format: "full" }, timeout: 10_000,
+    });
+    const text = (p?: Part): string => {
+      if (!p) return "";
+      if (p.mimeType === "text/plain" && p.body?.data) return Buffer.from(p.body.data, "base64url").toString("utf8");
+      for (const c of p.parts ?? []) { const t = text(c); if (t) return t; }
+      return "";
+    };
+    return text(msg.data.payload) || null;
+  } catch (e) {
+    console.error("[gmail] search failed", (e as { response?: { status?: number } })?.response?.status ?? e);
+    return null;
+  }
+}
