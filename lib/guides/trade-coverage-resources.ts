@@ -215,6 +215,7 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
   {
     "slug": "roofing-insurance-open-roof-hot-work-subcontractors",
     "title": "Roofing insurance: open roofs, additional insured, hot work and subcontractors",
+    "metaTitle": "Roofing Insurance: Open Roofs, Additional Insured, Subs",
     "description": "Open-roof rain damage, additional insured for GCs, torch-down and subcontractors: the roofing coverage questions to check in a proposal, with plain examples.",
     "intro": "A roofing quote needs more than a trade label. Review open-roof water damage, additional insured requirements, heat application, height, roof systems and subcontractor conditions against the actual work.",
     "category": "Coverage questions",

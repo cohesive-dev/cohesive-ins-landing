@@ -976,12 +976,7 @@ export function buildContractorNational(t: Trade): PageContent {
       ...content,
       title: "Tree Service Insurance Cost: $1,271 Claims-Made Quote",
       priceExamples: {
-        heading: "Real tree-service GL prices: a quote and paid policies",
-        table: false,
-        items: [
-          { business: "Tree service, about $300K revenue, one W-2 employee", price: "$1,271.18/yr, claims-made quote", sentence: "One tree service at about $300K revenue with one W-2 employee received a $1,271.18/year claims-made general liability quote. It was not bound." },
-          { business: "Two separate tree-service businesses", price: `${TREE_BOUND_GL_COMPARABLE}/yr each, claims-made policies`, sentence: `Two other tree services each bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE}/year. These were customer-paid policies.` },
-        ],
+        ...treePriceExamples("trimming"),
         note: "The lower figure is a quote on a different application. These three cases are not an average or a rate for trimming, removal, or a particular state. Compare accepted work, limits and policy form alongside premium.",
       },
       stateFacts: [
@@ -1078,7 +1073,7 @@ function treePriceExamples(work: string): NonNullable<PageContent["priceExamples
       { business: "Tree service, about $300K revenue, one W-2 employee", price: "$1,271.18/yr, claims-made quote", sentence: "One tree service at about $300K revenue with one W-2 employee received a $1,271.18/year claims-made general liability quote. It was not bound." },
       { business: "Two separate tree-service businesses", price: `${TREE_BOUND_GL_COMPARABLE}/yr each, claims-made policies`, sentence: `Two other tree services each bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE}/year. These were customer-paid policies.` },
     ],
-    note: `These are tree-service cases, not an average or a ${work} rate. Your price depends on the work mix, heights, crew, equipment, state and claims. Compare accepted work, limits and policy form alongside premium.`,
+    note: `These are tree-service cases, not an average or a rate for ${work}. Your price depends on the work mix, heights, crew, equipment, state and claims. Compare accepted work, limits and policy form alongside premium.`,
   };
 }
 
@@ -1095,7 +1090,7 @@ type TreeVariant = {
 
 const TREE_VARIANTS: Record<string, TreeVariant> = {
   "tree-removal": {
-    work: "tree-removal",
+    work: "tree removal",
     title: "Tree Removal Insurance Cost: Real Tree Service Quotes",
     metaDescription: "Tree removal insurance: a real $1,271 claims-made tree-service GL quote, what removals, cranes and storm work change, and what to send for a quote.",
     heroH1: "Tree Removal Insurance: Cost and What Removals Change",
@@ -1135,7 +1130,7 @@ const TREE_VARIANTS: Record<string, TreeVariant> = {
     ],
   },
   "tree-trimming": {
-    work: "tree-trimming",
+    work: "tree trimming",
     title: "Tree Trimming Insurance Cost: Real Tree Service Quotes",
     metaDescription: "Tree trimming insurance: a real $1,271 claims-made tree-service GL quote, what trimming vs removals changes, and what to send for your own quote.",
     heroH1: "Tree Trimming Insurance: Cost and What Moves the Price",
@@ -1171,7 +1166,7 @@ const TREE_VARIANTS: Record<string, TreeVariant> = {
     ],
   },
   "stump-grinding": {
-    work: "stump-grinding",
+    work: "stump grinding",
     title: "Stump Grinding Insurance: Cost and Coverage Questions",
     metaDescription: "Stump grinding insurance: real tree-service GL prices, what stump-only work changes, and the underground-line and flying-debris questions to ask.",
     heroH1: "Stump Grinding Insurance",
@@ -1216,7 +1211,7 @@ function treeVariantPage(content: PageContent, v: TreeVariant): PageContent {
     metaDescription: v.metaDescription,
     heroH1: v.heroH1,
     heroSub: v.heroSub,
-    costNarrative: [`${TREE_PRICE_SENTENCE} These are tree-service cases, not a ${v.work} rate.`, v.lead],
+    costNarrative: [`${TREE_PRICE_SENTENCE} These are tree-service cases, not a rate for ${v.work}.`, v.lead],
     costDisclaimer: "The prices shown are real tree-service quotes and policies from our book, not a rate for your business. This is not a quote or an offer of insurance.",
     priceExamples: treePriceExamples(v.work),
     stateFacts: v.stateFacts,
@@ -1235,7 +1230,7 @@ function arboristPage(content: PageContent): PageContent {
       `We have no arborist-only price to publish. ${TREE_PRICE_SENTENCE} These are tree-service cases, not an arborist rate.`,
       ...content.costNarrative,
     ],
-    priceExamples: treePriceExamples("arborist"),
+    priceExamples: treePriceExamples("arborist work"),
     stateFacts: [
       {
         title: "Split advice from tree work",

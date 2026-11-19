@@ -407,7 +407,7 @@ const TRADE_STATE_FACTS: Record<string, Fact> = {
   },
   "roofer/pennsylvania": {
     title: "Pennsylvania home improvement registration for roofers",
-    body: "Pennsylvania's Attorney General lists roofs among home improvements. If you do $5,000 or more of home improvement work a year, including as a subcontractor, you register with the Attorney General and show liability insurance of at least $50,000 for personal injury and $50,000 for property damage. Most GCs ask for far higher limits, often $1M per occurrence. New home construction is not a home improvement under the law.",
+    body: "Pennsylvania's Attorney General lists roofs among home improvements. If you do $5,000 or more of home improvement work a year, including as a subcontractor, you register with the Attorney General and show liability insurance of at least $50,000 for personal injury and $50,000 for property damage. New home construction is not a home improvement under the law.",
     source: { label: "Pennsylvania Attorney General: home improvement contractor FAQ", href: "https://www.attorneygeneral.gov/businesses-and-organizations/home-improvement-contractor-registration/frequently-asked-questions/" },
   },
 };
