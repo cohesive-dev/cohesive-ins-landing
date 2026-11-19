@@ -9,7 +9,7 @@ import {
   getStateContent,
   getVertical,
 } from "@/lib/seo/data";
-import { TRADES, getTrade } from "@/lib/seo/contractors";
+import { TRADES, TREE_FAMILY_LINKS, getTrade } from "@/lib/seo/contractors";
 import {
   CONTRACTOR_STATE_SLUGS,
   getContractorState,
@@ -53,6 +53,13 @@ function hubBreadcrumbs(label: string, href: string) {
 // State pages: /insurance/{restaurant|bar}/{state} (food) and
 // /insurance/{trade}/{state} (trades x 50 jurisdictions; roofing NY/FL restored 2026-10-22).
 // Content is composed per-combo; unknown combos 404.
+
+// Roof/tree release 2026-11-19: state pages point to the national cost answer and the coverage guides.
+const ROOFER_RELATED_LINKS = [
+  { label: "Roofing insurance cost", href: "/insurance/roofer" },
+  { label: "Compare roofing insurance quotes", href: "/guides/compare-roofing-general-liability-quotes" },
+  { label: "Open roofs, additional insured and subcontractors", href: "/guides/roofing-insurance-open-roof-hot-work-subcontractors" },
+];
 
 export const dynamicParams = false;
 
@@ -211,6 +218,8 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           label: s.name,
           href: `/insurance/${trade.slug}/${s.slug}`,
         }))}
+        relatedLinksHeading={trade.slug === "tree-service" ? "Tree service insurance by type of work" : trade.slug === "roofer" ? "Roofing insurance cost and coverage" : undefined}
+        relatedLinks={trade.slug === "tree-service" ? TREE_FAMILY_LINKS.map((l) => ({ label: l.label, href: `/insurance/${l.slug}` })) : trade.slug === "roofer" ? ROOFER_RELATED_LINKS : undefined}
         breadcrumbs={hubBreadcrumbs(`${trade.name} insurance`, `/insurance/${trade.slug}`)}
       />
     );

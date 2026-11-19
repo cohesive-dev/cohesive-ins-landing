@@ -214,15 +214,15 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
   },
   {
     "slug": "roofing-insurance-open-roof-hot-work-subcontractors",
-    "title": "Roofing insurance: open roofs, hot work and subcontractors",
-    "description": "A roofing quote needs more than a trade label. Review open-roof water damage, heat application, height, roof systems and subcontractor conditions against the actual work.",
-    "intro": "A roofing quote needs more than a trade label. Review open-roof water damage, heat application, height, roof systems and subcontractor conditions against the actual work.",
+    "title": "Roofing insurance: open roofs, additional insured, hot work and subcontractors",
+    "description": "Open-roof rain damage, additional insured for GCs, torch-down and subcontractors: the roofing coverage questions to check in a proposal, with plain examples.",
+    "intro": "A roofing quote needs more than a trade label. Review open-roof water damage, additional insured requirements, heat application, height, roof systems and subcontractor conditions against the actual work.",
     "category": "Coverage questions",
     "industry": "Roofing",
     "tradeLabel": "Roofer",
     "insurancePath": "/insurance/roofer",
     "quoteKind": "service",
-    "updatedAt": "2026-09-14",
+    "updatedAt": "2026-11-19",
     "nationalSlug": "contractor-quote-checklists",
     "sections": [
       {
@@ -242,6 +242,51 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
             "label": "Texas Department of Insurance: reviewing general liability insurance",
             "href": "https://www.tdi.texas.gov/pubs/pc/pcgenliab.html"
           }
+        ]
+      },
+      {
+        "id": "rainstorm-example",
+        "title": "Example: a storm hits while the roof is open",
+        "paragraphs": [
+          "Your crew tears off half a roof on a Tuesday and tarps it at the end of the day. Overnight a storm pulls the tarp loose, and by morning water has ruined the ceilings, flooring and a sofa below. The homeowner, or their insurer, will look to you for the damage.",
+          "Whether your policy pays depends on its wording. Some roofing policies cover that claim like any other property damage. Others exclude or limit open-roof water damage, cap it at a lower amount, or require specific steps such as approved tarping, crew on site or weather checks. Ask for that wording before you buy, and follow any conditions it sets on every job."
+        ],
+        "checklist": [
+          "Ask whether open-roof or water-intrusion damage is excluded, limited or sublimited.",
+          "Write down any tarping, weather-check or crew-on-site conditions.",
+          "Keep photos of temporary protection at the end of each day."
+        ]
+      },
+      {
+        "id": "additional-insured",
+        "title": "Additional insured for GCs: ongoing and completed work",
+        "paragraphs": [
+          "Most general contractors and many property managers ask to be added to your policy as an additional insured. Ongoing operations status covers them for claims that arise while you are working. Completed operations status covers claims that come up after the job is finished, such as a leak that damages the building months later. Roofing contracts often ask for both.",
+          "Contracts also commonly ask for primary and non-contributory wording and a waiver of subrogation. Which of these a policy can provide, and whether it uses a blanket endorsement or one for each named party, varies by carrier. Send the contract's insurance section with your quote request so each proposal can be checked against it."
+        ],
+        "checklist": [
+          "Send the insurance section of the GC or property-manager contract.",
+          "Confirm ongoing and completed operations additional insured endorsements.",
+          "Ask about primary and non-contributory wording and a waiver of subrogation."
+        ],
+        "links": [
+          {
+            "label": "Get a certificate of insurance before starting work",
+            "href": "/guides/contractor-certificate-of-insurance-before-starting-work"
+          }
+        ]
+      },
+      {
+        "id": "certificate",
+        "title": "What the certificate of insurance can and cannot do",
+        "paragraphs": [
+          "A certificate of insurance (COI) shows the policies you have in force and their limits. It does not add coverage by itself. If a GC needs to be an additional insured, the policy needs the endorsement, and the certificate should point to it.",
+          "Certificates can only be issued once a policy is bound, so request the endorsements you need when you buy rather than after the GC rejects the first certificate."
+        ],
+        "checklist": [
+          "Bind the policy before the certificate is requested.",
+          "Match the certificate holder name and address to the contract.",
+          "Make sure the endorsements behind the certificate are on the policy."
         ]
       },
       {
@@ -268,7 +313,8 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
         "title": "What about height and all-subcontractor roofing?",
         "paragraphs": [
           "State maximum building/work height, roof access and slope. Explain whether your business performs roofing, supervises subcontractors or does both. An all-subcontractor arrangement still needs the correct contracting role, receipts and subcontractor costs.",
-          "Ask about subcontractor conditions, residential versus commercial scope, new construction versus replacement and any geographic restrictions. Do not rename roofing as general contracting solely to obtain a lower price."
+          "Ask about subcontractor conditions, residential versus commercial scope, new construction versus replacement and any geographic restrictions. Do not rename roofing as general contracting solely to obtain a lower price.",
+          "Collect each subcontractor's certificates for general liability and workers' comp before they start. At audit, an insurer may add premium for subcontractors who could not show their own coverage, and workers' comp rules for uninsured subcontractors vary by state."
         ],
         "checklist": [
           "Record crew, subcontractor and supervision responsibilities.",
@@ -279,6 +325,10 @@ export const TRADE_COVERAGE_RESOURCES: RestaurantGuide[] = [
           {
             "label": "Prepare an all-subcontractor GC insurance request",
             "href": "/guides/general-contractor-subcontractor-insurance-checklist"
+          },
+          {
+            "label": "Workers' comp certificates for GC jobs",
+            "href": "/guides/workers-comp-certificate-for-gc-jobs"
           }
         ]
       },

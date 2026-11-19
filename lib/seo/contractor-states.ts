@@ -399,6 +399,17 @@ const TRADE_STATE_FACTS: Record<string, Fact> = {
     body: "Florida licenses roofing contractors through the DBPR. A certified roofing contractor can work anywhere in the state; a registered contractor can work only in the local areas where they qualified. Check which one you hold before you bid outside your area.",
     source: { label: "Florida Statutes 489.105 (roofing contractor, certified and registered)", href: "https://www.flsenate.gov/Laws/Statutes/2025/489.105" },
   },
+  // Roof/tree release 2026-11-19, checked against the regulators' own documents that day.
+  "roofer/alabama": {
+    title: "Alabama residential roofer license and $10,000 bond",
+    body: "Alabama's Home Builders Licensure Board requires a residential roofer license when you contract directly with a homeowner and the job costs more than $2,500. The application needs a $10,000 license bond naming the Board. The Board says its law does not address insurance, so the policy you need is set by your GCs, customers and other state rules such as workers' comp.",
+    source: { label: "Alabama HBLB: residential roofer license application", href: "https://hblb.alabama.gov/wp-content/uploads/2026/03/NEW-ROOFERS-IND-APP-PACKET-23-08-30.pdf" },
+  },
+  "roofer/pennsylvania": {
+    title: "Pennsylvania home improvement registration for roofers",
+    body: "Pennsylvania's Attorney General lists roofs among home improvements. If you do $5,000 or more of home improvement work a year, including as a subcontractor, you register with the Attorney General and show liability insurance of at least $50,000 for personal injury and $50,000 for property damage. Most GCs ask for far higher limits, often $1M per occurrence. New home construction is not a home improvement under the law.",
+    source: { label: "Pennsylvania Attorney General: home improvement contractor FAQ", href: "https://www.attorneygeneral.gov/businesses-and-organizations/home-improvement-contractor-registration/frequently-asked-questions/" },
+  },
 };
 
 function stateFacts(cs: ContractorState, t: Trade): Fact[] {

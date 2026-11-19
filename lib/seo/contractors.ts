@@ -714,6 +714,45 @@ export const TRADES: Trade[] = [
     driversExtra: ["Tree height, climbing, rigging, crane use, and work near utilities", "Whether you provide tree-health opinions or pesticide applications"],
     cobs: [{ label: "Arborist / tree service", id: "Tree service" }],
   },
+  // Roof/tree release 2026-11-19 (Kevin): tree-service variants searchers name directly. Search Console
+  // showed tree trimming (434 impressions) and tree removal (226) queries landing on a Georgia state page;
+  // stump grinding was requested by Kevin. National-only: the tree-service state pages already cover states.
+  {
+    slug: "tree-removal",
+    name: "Tree Removal",
+    intakeLabel: "Tree service",
+    noun: "tree removal business",
+    nationalOnly: true,
+    glFrom: 148,
+    esRoute: true,
+    alsoCovers: "For take-downs, hazardous and storm-damaged trees, crane-assisted removals and the cleanup that follows.",
+    driversExtra: ["Tree height, climbing, rigging and crane-assisted removals", "Storm work and removals near buildings or power lines"],
+    cobs: [{ label: "Tree service", id: "Tree service" }],
+  },
+  {
+    slug: "tree-trimming",
+    name: "Tree Trimming",
+    intakeLabel: "Tree service",
+    noun: "tree trimming business",
+    nationalOnly: true,
+    glFrom: 148,
+    esRoute: true,
+    alsoCovers: "For pruning, trimming, limb removal and hedge or shrub work, including crews that occasionally take a tree down.",
+    driversExtra: ["The share of trimming versus removals", "Working heights, climbing and bucket-truck work"],
+    cobs: [{ label: "Tree service", id: "Tree service" }],
+  },
+  {
+    slug: "stump-grinding",
+    name: "Stump Grinding",
+    intakeLabel: "Tree service",
+    noun: "stump grinding business",
+    nationalOnly: true,
+    glFrom: 148,
+    esRoute: true,
+    alsoCovers: "For stump grinding and stump removal, alone or alongside tree work.",
+    driversExtra: ["Whether you only grind stumps or also trim and remove trees", "Underground utility and flying-debris exposure"],
+    cobs: [{ label: "Tree service", id: "Tree service" }],
+  },
   {
     slug: "cabinet-maker",
     name: "Cabinet Maker",
@@ -889,6 +928,7 @@ export function buildContractorNational(t: Trade): PageContent {
           body: "Ask how the proposal treats open-roof water damage, completed work, height limits, subcontractor conditions and any roof-system restrictions. If a general contractor requires occurrence coverage, additional insured status or a waiver, send the contract before choosing a policy. A certificate alone cannot remove an exclusion.",
         },
       ],
+      faqs: [...content.faqs, ...ROOFER_COVERAGE_FAQS],
     };
   }
   if (t.slug === "fire-sprinkler") {
@@ -976,10 +1016,252 @@ export function buildContractorNational(t: Trade): PageContent {
           q: "Are storm cleanup, crane work and tall trees covered?",
           a: "A tree-service label does not establish coverage for those jobs. Before taking them, tell us your maximum working height, whether the tree is storm damaged, how the crane is hired, who operates it and whether you work near utilities. We will check the proposed policy's accepted operations and exclusions. Send any customer or general contractor insurance requirements too; a certificate cannot override an exclusion.",
         },
+        {
+          q: "Do tree services need workers' comp?",
+          a: "Most states require workers' comp once you have employees, and tree work is a high-hazard class, so it is often the largest line for a crew. Rules for owners, family members and subcontractors vary by state. Send payroll by role, such as climbers, ground crew and office staff, so the quote uses the right class.",
+        },
+        {
+          q: "Is stump grinding or land clearing included in a tree-service policy?",
+          a: "Stump grinding is often written with tree work, but list it with its share of receipts and ask whether the proposed policy accepts it. Land clearing with excavators or forestry mulchers is closer to site work and may need a different class. Describe it separately instead of assuming the tree-service label covers it.",
+        },
       ],
     };
   }
+  if (t.slug === "arborist") return arboristPage(content);
+  const variant = TREE_VARIANTS[t.slug];
+  if (variant) return treeVariantPage(content, variant);
   return content;
+}
+
+// Roof/tree release 2026-11-19 (Kevin asked for open roofs and additional insured). Coverage structure only;
+// forms vary by carrier, so every answer points to the proposed wording rather than promising coverage.
+const ROOFER_COVERAGE_FAQS: { q: string; a: string }[] = [
+  {
+    q: "Does roofing insurance cover rain damage from an open roof?",
+    a: "It depends on the policy. Example: your crew tears off a roof, a storm arrives overnight and water ruins the ceilings and furniture below. The homeowner's claim against you would go to your general liability, but some roofing policies exclude or limit open-roof water damage or require tarping and other steps. Ask for the open-roof or water-intrusion wording in each proposal before you choose.",
+  },
+  {
+    q: "Can a general contractor be added as additional insured on a roofing policy?",
+    a: "Usually, by endorsement. Many GC contracts ask for additional insured status for ongoing work and for completed work, often with primary and non-contributory wording and a waiver of subrogation. Send the contract's insurance section with your quote request so we can check which endorsements each proposal includes; a certificate alone does not add them.",
+  },
+  {
+    q: "What is the difference between ongoing and completed operations additional insured?",
+    a: "Ongoing operations covers the GC for claims arising while you are working on the job. Completed operations covers claims that arise after you finish, such as a leak that damages the building months later. Roofing contracts often require both, so check that the proposed endorsements match the contract.",
+  },
+  {
+    q: "Do roofers need workers' comp if they only use subcontractors?",
+    a: "Rules vary by state, but a GC or insurer may charge you for uninsured subcontractors at audit or treat them as your employees. Collect each subcontractor's certificates for general liability and workers' comp before they start, and tell us your subcontractor costs separately from payroll.",
+  },
+];
+
+// ---- tree-service family (roof/tree release 2026-11-19) ----------------------
+// The only sourced tree prices are tree-service general liability cases (trade-prices.ts). Variant and
+// arborist pages repeat them as tree-service examples, never as a removal-, trimming-, stump- or
+// arborist-specific rate.
+
+export const TREE_FAMILY_LINKS: { slug: string; label: string }[] = [
+  { slug: "tree-service", label: "Tree service insurance cost" },
+  { slug: "tree-removal", label: "Tree removal insurance" },
+  { slug: "tree-trimming", label: "Tree trimming insurance" },
+  { slug: "stump-grinding", label: "Stump grinding insurance" },
+  { slug: "arborist", label: "Arborist insurance cost" },
+];
+export const TREE_FAMILY_SLUGS = TREE_FAMILY_LINKS.map((l) => l.slug);
+
+const TREE_PRICE_SENTENCE = `A tree service at about $300K revenue with one W-2 employee received a $1,271.18/yr claims-made general liability quote; it was not bound. Two other tree services each bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE}/yr.`;
+
+function treePriceExamples(work: string): NonNullable<PageContent["priceExamples"]> {
+  return {
+    heading: "Real tree-service GL prices: a quote and paid policies",
+    table: false,
+    items: [
+      { business: "Tree service, about $300K revenue, one W-2 employee", price: "$1,271.18/yr, claims-made quote", sentence: "One tree service at about $300K revenue with one W-2 employee received a $1,271.18/year claims-made general liability quote. It was not bound." },
+      { business: "Two separate tree-service businesses", price: `${TREE_BOUND_GL_COMPARABLE}/yr each, claims-made policies`, sentence: `Two other tree services each bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE}/year. These were customer-paid policies.` },
+    ],
+    note: `These are tree-service cases, not an average or a ${work} rate. Your price depends on the work mix, heights, crew, equipment, state and claims. Compare accepted work, limits and policy form alongside premium.`,
+  };
+}
+
+type TreeVariant = {
+  work: string; // "tree removal", used in sentences
+  title: string;
+  metaDescription: string;
+  heroH1: string;
+  heroSub: string;
+  lead: string; // what the work changes, after the sourced prices
+  stateFacts: PageContent["stateFacts"];
+  faqs: { q: string; a: string }[];
+};
+
+const TREE_VARIANTS: Record<string, TreeVariant> = {
+  "tree-removal": {
+    work: "tree-removal",
+    title: "Tree Removal Insurance Cost: Real Tree Service Quotes",
+    metaDescription: "Tree removal insurance: a real $1,271 claims-made tree-service GL quote, what removals, cranes and storm work change, and what to send for a quote.",
+    heroH1: "Tree Removal Insurance: Cost and What Removals Change",
+    heroSub: "See real tree-service general liability prices, then tell us about your removals, heights and equipment so we can compare policies that accept the work.",
+    lead: "Removals are where tree-service policies differ most. A carrier may price or restrict take-downs, climbing removals, crane-assisted jobs, storm-damaged trees and work near power lines differently from trimming, so describe them before comparing prices.",
+    stateFacts: [
+      {
+        title: "Describe each kind of removal",
+        body: "Separate routine take-downs from climbing removals, bucket-truck work, crane-assisted removals and storm-damaged or hazardous trees. Give the share of receipts from each and the tallest tree you remove, including occasional jobs. A policy priced for trimming should not be assumed to accept every removal.",
+      },
+      {
+        title: "Explain who runs the crane",
+        body: "Tell us whether you own the crane, rent it with an operator or hire a crane company, and who rigs the load. Send the rental or subcontract agreement. Ask how the proposed policy treats crane work and damage to the property under the lift; a certificate cannot add coverage the policy excludes.",
+      },
+      {
+        title: "Plan the drop zone before the job",
+        body: "Example: a 70-foot oak leans over a homeowner's garage. If a section is dropped onto the roof, the homeowner's claim against you is a general liability question. Tell us about removals near buildings, cars, fences, roads and utility lines so the quote reflects the jobs you actually take.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How much does tree removal insurance cost?",
+        a: `We have no removal-only price to publish. ${TREE_PRICE_SENTENCE} Those are tree-service cases, not a removal rate. Your quote depends on the share of removals, heights, crane and climbing work, storm jobs, crew, state and claims.`,
+      },
+      {
+        q: "Is tree removal covered by a tree service policy?",
+        a: "Do not assume it is. Describe climbing, rigging, crane use, storm-damaged trees and work near utilities, then check the accepted operations, height terms and exclusions in the proposed policy before taking the job.",
+      },
+      {
+        q: "Does tree removal insurance cover a tree falling on a house?",
+        a: "If your crew drops a tree or limb onto a customer's or neighbor's property, that claim is the kind general liability is meant to answer, subject to the policy's terms, limits and exclusions. Damage to the tree itself, your own equipment and injuries to your workers are separate questions for property and workers' comp coverage.",
+      },
+      {
+        q: "Do I need workers' comp for a tree removal crew?",
+        a: "Most states require workers' comp once you have employees, and tree work is a high-hazard class, so it is often the largest line for a crew. Rules for owners, family members and subcontractors vary by state. Send payroll by role so the quote uses the right class.",
+      },
+    ],
+  },
+  "tree-trimming": {
+    work: "tree-trimming",
+    title: "Tree Trimming Insurance Cost: Real Tree Service Quotes",
+    metaDescription: "Tree trimming insurance: a real $1,271 claims-made tree-service GL quote, what trimming vs removals changes, and what to send for your own quote.",
+    heroH1: "Tree Trimming Insurance: Cost and What Moves the Price",
+    heroSub: "See real tree-service general liability prices, then tell us how much of your work is trimming versus removals to get quotes that match it.",
+    lead: "If most of your receipts come from pruning and trimming, say so with numbers. The split between trimming, removals and stump grinding, your working heights and whether you climb or use a bucket truck are the facts a carrier needs to rate the work correctly.",
+    stateFacts: [
+      {
+        title: "Give the trimming share in dollars",
+        body: "Split last year's receipts among trimming and pruning, removals, stump grinding, hedge and shrub work and any other services. A crew that trims most of the year but takes down a few trees should list those removals too; leaving them out is how a quote ends up wrong.",
+      },
+      {
+        title: "State heights and access",
+        body: "Tell us the highest you work, including occasional jobs, and whether you climb, use a bucket truck or work from the ground with pole saws. Mention work near power lines. Ask how each proposed policy defines any height limit before you take a tall job.",
+      },
+      {
+        title: "Plan for the falling-limb claim",
+        body: "Example: a cut limb swings into a customer's window or lands on a parked car. That is the kind of third-party damage general liability is meant to answer, subject to the policy's terms. Your own equipment and injuries to your workers are covered under separate lines.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How much does tree trimming insurance cost?",
+        a: `We have no trimming-only price to publish. ${TREE_PRICE_SENTENCE} Those are tree-service cases, not a trimming rate. Your quote depends on the trimming share of receipts, heights, crew, equipment, state and claims.`,
+      },
+      {
+        q: "Is tree trimming insurance cheaper than tree removal insurance?",
+        a: "The work mix can change a quote, but we have not published separate trimming and removal prices. Give the share of receipts from each so carriers rate the work you actually do, and do not understate removals to get a lower number.",
+      },
+      {
+        q: "Do I need insurance to trim trees for customers?",
+        a: "Some states and cities require proof of insurance, a license or a registration for tree work, and most property managers and contractors ask for a certificate before you start. Once you have employees, workers' comp is required in almost every state.",
+      },
+    ],
+  },
+  "stump-grinding": {
+    work: "stump-grinding",
+    title: "Stump Grinding Insurance: Cost and Coverage Questions",
+    metaDescription: "Stump grinding insurance: real tree-service GL prices, what stump-only work changes, and the underground-line and flying-debris questions to ask.",
+    heroH1: "Stump Grinding Insurance",
+    heroSub: "Grind stumps on their own or alongside tree work? Tell us the work mix and equipment so we can compare policies that accept it.",
+    lead: "Stump grinding is usually written as part of a tree-service policy. Say whether you only grind stumps or also trim and remove trees, and give the receipts for each, so the carrier rates the work correctly.",
+    stateFacts: [
+      {
+        title: "Call before you grind",
+        body: "Grinding can reach buried lines. Federal pipeline-safety guidance tells anyone digging to contact 811 first so lines are marked; state rules on who must call and when vary. Keep your locate tickets; ask how the proposed policy treats underground utility damage.",
+        source: { label: "PHMSA: contact 811 before you dig", href: "https://www.phmsa.dot.gov/safety-awareness/april-national-safe-digging-month" },
+      },
+      {
+        title: "Plan for flying debris",
+        body: "Example: a chip from the grinder cracks a neighbor's sliding door or a car windshield. That third-party damage is the kind of claim general liability is meant to answer, subject to the policy's terms. Tell us whether you work near roads, parked cars and occupied buildings.",
+      },
+      {
+        title: "List the grinder and how you move it",
+        body: "Tell us whether the grinder is owned, financed or rented, its value, and whether you tow it. Theft or damage to the grinder needs equipment coverage, and the truck towing it needs commercial auto. General liability does not cover your own equipment.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How much does stump grinding insurance cost?",
+        a: `We have no stump-grinding price to publish. ${TREE_PRICE_SENTENCE} Those are tree-service cases, not a stump-grinding rate. Your quote depends on whether you only grind stumps, your receipts, crew, equipment, state and claims.`,
+      },
+      {
+        q: "Does stump grinding insurance cover hitting an underground line?",
+        a: "Do not assume it does. Ask how the proposed policy treats underground utility damage, and keep proof that you called 811 for locates before grinding. Requirements vary by state.",
+      },
+      {
+        q: "Is my stump grinder covered by general liability?",
+        a: "No. General liability answers claims from other people. To cover theft of or damage to the grinder itself, ask for inland marine or contractor's equipment coverage with a limit that matches its value.",
+      },
+    ],
+  },
+};
+
+function treeVariantPage(content: PageContent, v: TreeVariant): PageContent {
+  return {
+    ...content,
+    title: v.title,
+    metaDescription: v.metaDescription,
+    heroH1: v.heroH1,
+    heroSub: v.heroSub,
+    costNarrative: [`${TREE_PRICE_SENTENCE} These are tree-service cases, not a ${v.work} rate.`, v.lead],
+    costDisclaimer: "The prices shown are real tree-service quotes and policies from our book, not a rate for your business. This is not a quote or an offer of insurance.",
+    priceExamples: treePriceExamples(v.work),
+    stateFacts: v.stateFacts,
+    faqs: [...v.faqs, ...content.faqs.filter((f) => !/cost|how much/i.test(f.q))],
+  };
+}
+
+function arboristPage(content: PageContent): PageContent {
+  return {
+    ...content,
+    title: "Arborist Insurance Cost: Real Tree Service Quotes",
+    metaDescription: "Arborist insurance cost: a real $1,271 claims-made tree-service GL quote, plus what pruning, climbing, crane and tree-health work change in a quote.",
+    heroH1: "Arborist Insurance Cost",
+    heroSub: "See real tree-service general liability prices, then prepare the pruning, climbing, crane and tree-health details a licensed agent needs to quote you.",
+    costNarrative: [
+      `We have no arborist-only price to publish. ${TREE_PRICE_SENTENCE} These are tree-service cases, not an arborist rate.`,
+      ...content.costNarrative,
+    ],
+    priceExamples: treePriceExamples("arborist"),
+    stateFacts: [
+      {
+        title: "Split advice from tree work",
+        body: "Give the share of receipts from pruning, removals, cabling and bracing, plant-health care and written assessments or consulting. A policy priced for tree work may treat paid opinions differently, so list them even if they are a small part of the business.",
+      },
+      {
+        title: "Name any pesticide or fertilizer applications",
+        body: "Tell us whether you apply pesticides, fungicides or injections, and which licenses your applicators hold. Ask whether the proposed policy limits pollution or chemical-application claims before you add plant-health services.",
+      },
+      {
+        title: "Describe climbing, crane and utility work",
+        body: "State the tallest trees you work on, whether you climb or use bucket trucks, how cranes are hired and whether you work near power lines. Check the proposed policy for height, crane and utility conditions; the arborist label alone does not answer them.",
+      },
+    ],
+    faqs: [
+      {
+        q: "How much does arborist insurance cost?",
+        a: `We have no arborist-only price to publish. ${TREE_PRICE_SENTENCE} Those are tree-service cases. Your quote depends on pruning versus removals, climbing, crane and utility work, tree-health opinions or pesticide applications, crew, state and claims.`,
+      },
+      {
+        q: "Do arborists need professional liability as well as general liability?",
+        a: "General liability answers injury or property damage from the work. If you sell written tree-risk assessments, health opinions or consulting, ask whether the proposed policy excludes professional advice and whether you need a separate professional liability policy.",
+      },
+      ...content.faqs.filter((f) => !/cost|how much/i.test(f.q)),
+    ],
+  };
 }
 
 // The page before the real-price layer; state pages build on this so the price is applied once.
