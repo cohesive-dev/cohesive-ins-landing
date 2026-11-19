@@ -142,7 +142,7 @@ const BASE='https://www.cohesiveinsure.com';
  assert.equal(crmCalls.length,1);assert.ok(crmCalls[0].details.some(x=>x.label==='Preferred language'&&x.value==='Spanish'),'CRM forward carries Preferred language');
  assert.equal(emails.length,1);
  // A bar picked on the restaurant page keeps the English short form's routing (quotes@ + Hedge, no CRM fan-out).
- reset();for(const [ph,v] of Object.entries({'Nombre del negocio':'QA TEST ONLY Cantina','Su nombre':'QA TEST ONLY','Correo electrónico':'es-test@example.invalid','Teléfono':'2025550184'}))input(ph).props.onChange({target:{value:v}});
+ reset();for(const [ph,v] of Object.entries({'Nombre del negocio':'QA TEST ONLY Cantina','Su nombre':'QA TEST ONLY','Correo electrónico':'es-test@example.invalid','Teléfono':'2025550184'}))input(ph).props.onChange({target:{value:v}});{const a=nodes(render()).find(n=>String(n.props?.ariaLabel).startsWith('Direcci'));assert.ok(a,'mailing address rendered');a.props.onChange('100 Main St, San Antonio, TX 78216');}
  nodes(render()).find(n=>n.type==='select').props.onChange({target:{value:'Bar / tavern / brewery'}});
  await render().props.onSubmit({preventDefault(){}});assert.equal(payload.capiEventName,'RestaurantDisqualified');assert.equal(crmCalls.length,0);assert.equal(emails.length,1);
  assert.ok(emails[0].details.some(x=>x.label==='Preferred language'&&x.value==='Spanish'));assert.match(text(render()),/Gracias por escribirnos/);
