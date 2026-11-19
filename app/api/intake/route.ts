@@ -1,3 +1,4 @@
+import { CONTRACTOR_V2_VERSION } from '@/lib/contractor-arm';
 import { createHash } from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { sendIntakeNotification } from "@/lib/notify";
@@ -342,7 +343,7 @@ export async function POST(request: NextRequest) {
     ];
   }
 
-  const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d => d.label === 'Form version' && ['2026-09-18-contact-v3', '2026-09-18-theme-v4', '2026-09-18-trade-v5', '2026-10-22-es-v1', '2026-11-05-shortfirst-v1', '2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1'].includes(d.value));
+  const contactFirstExperiment = source === 'contractors-landing' && !!details?.some(d => d.label === 'Form version' && (['2026-09-18-contact-v3', '2026-09-18-theme-v4', '2026-09-18-trade-v5', '2026-10-22-es-v1', '2026-11-05-shortfirst-v1', '2026-11-07-two-page-current-v1', '2026-11-07-two-page-short-v1'].includes(d.value) || CONTRACTOR_V2_VERSION.test(d.value)));
 
   // CAPI business_type: the trade the visitor picked. Contractor forms send a generic businessType
   // ("Contractor enquiry - advertised X; actual work unconfirmed") and carry the pick as the "Primary trade" detail.
