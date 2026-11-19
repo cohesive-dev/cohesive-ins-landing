@@ -80,7 +80,9 @@ async function property(browser, path) {
   assert.equal(res.status(), 200, path);
   await page.getByRole('heading', { name: 'Commercial property insurance for your building' }).waitFor();
   const own = page.getByRole('button', { name: 'Yes, I own it' });
-  const box = await own.boundingBox();
+  // Step form opens on the ownership question; the long form opens on contact info.
+  const first = steps ? own : page.getByLabel('Full name', { exact: true });
+  const box = await first.boundingBox();
   assert.ok(box && box.y + box.height <= 664, `${path}: first question above the fold (bottom ${box && box.y + box.height})`);
   await own.click();
   if (steps) await page.getByRole('button', { name: 'Next', exact: true }).click();
