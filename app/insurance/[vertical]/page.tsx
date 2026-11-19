@@ -13,6 +13,8 @@ import {
   TRADES,
   getTrade,
   getContractorNationalContent,
+  TREE_FAMILY_LINKS,
+  TREE_FAMILY_SLUGS,
 } from "@/lib/seo/contractors";
 import {
   CONTRACTOR_STATE_SLUGS,
@@ -137,7 +139,9 @@ export default async function Page({ params }: { params: Promise<Params> }) {
         tradeSlug={trade.slug}
         costHeading={`What ${trade.noun} insurance costs`}
         coverageHeading={`The coverage ${withArticle(trade.noun)} needs`}
-        stateFactsHeading={trade.slug === "fire-sprinkler" ? "What fire sprinkler installers should prepare for a quote" : trade.slug === "roofer" || trade.slug === "tree-service" ? `What to check before buying ${trade.name.toLowerCase()} insurance` : undefined}
+        stateFactsHeading={trade.slug === "fire-sprinkler" ? "What fire sprinkler installers should prepare for a quote" : trade.slug === "roofer" || TREE_FAMILY_SLUGS.includes(trade.slug) ? `What to check before buying ${trade.name.toLowerCase()} insurance` : undefined}
+        relatedLinksHeading={TREE_FAMILY_SLUGS.includes(trade.slug) ? "Tree service insurance by type of work" : undefined}
+        relatedLinks={TREE_FAMILY_SLUGS.includes(trade.slug) ? TREE_FAMILY_LINKS.filter((l) => l.slug !== trade.slug).map((l) => ({ label: l.label, href: `/insurance/${l.slug}` })) : undefined}
         stateLinksHeading={`${trade.name} insurance by state`}
         stateLinks={states.map((s) => ({
           label: s.name,
