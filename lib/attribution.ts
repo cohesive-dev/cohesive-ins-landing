@@ -83,7 +83,38 @@ export function captureAttribution(): Attribution {
   return fresh;
 }
 
-/** Attribution as `details` rows for /api/intake (empty array when there is nothing to report). */
+const OWN_HOSTS = ["cohesiveinsure.com", "www.cohesiveinsure.com"];
+const SEARCH: Array<[RegExp, string]> = [
+  [/(^|\.)google\./, "Google organic search"],
+  [/(^|\.)bing\.com$/, "Bing organic search"],
+  [/(^|\.)duckduckgo\.com$/, "DuckDuckGo organic search"],
+  [/(^|\.)yahoo\./, "Yahoo organic search"],
+  [/(^|\.)(chatgpt\.com|openai\.com)$/, "ChatGPT (organic link)"],
+  [/(^|\.)perplexity\.ai$/, "Perplexity (organic link)"],
+  [/(^|\.)(facebook\.com|fb\.com|instagram\.com)$/, "Facebook/Instagram (organic link)"],
+];
+
+/**
+ * One plain-English row that always says where the visitor came from (Nam 2026-11-19: an
+ * abandoned-form alert from an SEO page showed no source at all because a no-referrer visit
+ * was never classified). Paid click ids win over the referrer; an empty or own-site referrer
+ * is "Direct / no referrer".
+ */
+export function visitorSource(a: Attribution): string {
+  const src = (a.utm_source || "").toLowerCase();
+  const med = (a.utm_medium || "").toLowerCase();
+  if (a.ad_id || a.fbclid || /^(facebook|fb|ig|instagram|meta)$/.test(src)) return "Meta ad";
+  if (a.gclid || (src === "google" && /cpc|ppc|paid/.test(med))) return "Google Ads";
+  if (a.msclkid || (src === "bing" && /cpc|ppc|paid/.test(med))) return "Microsoft Ads";
+  if (src) return `Tagged link (${a.utm_source}${a.utm_medium ? ` / ${a.utm_medium}` : ""})`;
+  let host = "";
+  try { host = new URL(a.referrer || "").hostname.toLowerCase(); } catch { host = ""; }
+  if (!host || OWN_HOSTS.includes(host)) return "Direct / no referrer";
+  for (const [re, label] of SEARCH) if (re.test(host)) return label;
+  return `Referral from ${host.replace(/^www\./, "")}`;
+}
+
+/** Attribution as `details` rows for /api/intake (always includes the Visitor source row). */
 export function attributionDetails(a: Attribution): Array<{ label: string; value: string }> {
   const out: Array<{ label: string; value: string }> = [];
   const push = (label: string, value?: string) => {
@@ -97,5 +128,6 @@ export function attributionDetails(a: Attribution): Array<{ label: string; value
   push("Traffic source", [a.utm_source, a.utm_medium].filter(Boolean).join(" / ") || undefined);
   push("Click id", a.fbclid || a.gclid || a.msclkid);
   push("Landing page", a.landing_page);
+  push("Visitor source", visitorSource(a));
   return out;
 }
