@@ -61,7 +61,7 @@ async function fillAll(){
  // Required field refused in Spanish, nothing sent.
  await next();assert.match(text(render()),/correo electrónico válido/);assert.equal(payload,undefined);
  // Trade select: Roofing listed first, nothing pre-selected, Spanish labels, English values.
- set('email','es-test@example.invalid');set('phone','2025550184');set('fullName','QA');await next();set('legalName','QA');set('address','123 Main St');await next();
+ set('email','es-test@example.invalid');set('phone','2025550184');set('fullName','QA');await next();set('legalName','QA');set('address','123 Main St');await next();assert.match(text(render()),/código postal/,'address without a ZIP is held on page 2');set('address','123 Main St, San Antonio, TX 78216');await next();
  const select=byId('trade');assert.equal(select.props.value,'');const opts=nodes(select).filter(n=>n.type==='option');
  assert.equal(opts[1].props.value,'Roofing');assert.equal(text(opts[1]),'Techos (roofing)');assert.equal(opts.length,1+ES.ES_TRADES.length);
 
@@ -71,7 +71,7 @@ async function fillAll(){
   assert.equal(intakeBodies.length,1,'one final submission');
   assert.equal(payload.source,'contractors-landing');assert.equal(payload.partial,undefined);assert.equal(payload.final,undefined);
   assert.equal(payload.businessType,'Contractor enquiry - advertised Roofing; actual work unconfirmed');
-  assert.equal(payload.company,'QA TEST ONLY Techos LLC');assert.ok(payload.eventId);
+  assert.equal(payload.company,'QA TEST ONLY Techos LLC');assert.equal(payload.zip,'78216');assert.ok(payload.eventId);
   const d=Object.fromEntries(payload.details.map(x=>[x.label,x.value]));
   assert.equal(d['Preferred language'],'Spanish','formAnswers Preferred language: Spanish');
   assert.equal(d['Experiment cell'],'roof__es__step__v1');assert.equal(d['Form version'],'2026-10-22-es-v1');

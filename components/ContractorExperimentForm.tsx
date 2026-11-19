@@ -9,6 +9,7 @@ import {ContractorFormActions,ContractorFormSuccess} from '@/components/Contract
 import ContractorQuestionSet from '@/components/ContractorQuestionSet';
 import ContractorPageHero,{contractorMainClass,contractorFormClass,contractorButtonClass} from '@/components/ContractorPageTheme';
 import {FULL_LABELS,fullScreens,validFullField,normalizeFull,wcCoverage} from '@/lib/contractor-full-form';
+import {extractZip} from '@/lib/zip';
 import {TRADES} from '@/lib/contractor-trades';
 import AddressAutocomplete from '@/components/AddressAutocomplete';
 import PartialCaptureDisclosure from '@/components/PartialCaptureDisclosure';
@@ -74,7 +75,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
       ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
       ...(!coldLayout?(sourceAtEntry.current??contractorSourceDetails(new URLSearchParams(query.toString()))):[])];
     const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
-    const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||'',...(coverage?{coverage}:{})});
+    const body=JSON.stringify({name:answers.fullName,email,phone,company:answers.legalName,zip:extractZip(answers.address||answers.mailingAddress),businessType:'Contractor enquiry - work unconfirmed',source:'contractors-landing',partial:true,final:true,details,website:honeypot.current?.value||'',...(coverage?{coverage}:{})});
     if(coldLayout){sentPartial.current=navigator.sendBeacon('/api/intake',new Blob([body],{type:'application/json'}));return sentPartial.current;}
     partialInFlight.current=true;
     try{const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});
@@ -134,7 +135,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const question=wrapper?.querySelector('span')?.textContent?.replace(/\s*\*\s*$/,'').trim()||labels[k];
    form.current?.querySelectorAll('[data-missing="true"]').forEach(el=>el.removeAttribute('data-missing'));
    wrapper?.setAttribute('data-missing','true');
-   setError(answers[k]?`Please check: ${question}`:`Please answer: ${question}`);
+   setError(k==='address'&&answers[k]?.trim()&&!extractZip(answers[k])?'Please add your ZIP code to the business address.':answers[k]?`Please check: ${question}`:`Please answer: ${question}`);
    tracker.current?.emit('field_error',k);
    const control=document.getElementById(k)||form.current?.querySelector<HTMLElement>(`[data-funnel-field="${k}"] input, [data-funnel-field="${k}"] select, [data-funnel-field="${k}"] summary`);
    control?.scrollIntoView({block:'center',behavior:'smooth'});
@@ -172,7 +173,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    ];
    const coverage=askWc?wcCoverage(answers.wcRequested):undefined;
    try{
-    const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||'',...(coverage?{coverage}:{})})});
+    const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:answers.fullName,email:answers.email,phone:answers.phone,company:answers.legalName,zip:extractZip(answers.address||answers.mailingAddress),businessType:`Contractor enquiry - advertised ${label}; actual work unconfirmed`,source:'contractors-landing',details,eventId:submission.current,website:honeypot.current?.value||'',...(coverage?{coverage}:{})})});
     const result=await res.json();
     if(!res.ok||result.ok!==true)throw new Error(typeof result.error==='string' ? result.error : 'We could not save your request. Please try again.');
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();

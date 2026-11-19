@@ -85,9 +85,16 @@ async function businessDetails(page) {
       assert.equal(await page.getByText(/Step 2 of 2/).count(), 1);
       assert.equal(attempts.length, 0, 'control Next does not save a partial');
       await businessDetails(page);
+      // Kevin 11/19: the business address must carry a ZIP; without one the form names the fix and sends nothing.
+      await page.getByLabel('Business address', { exact: true }).fill('123 Main St, Austin, TX');
+      await page.getByRole('button', { name: 'Get my quote', exact: true }).click();
+      await page.getByText('Please add your ZIP code to the business address.').waitFor();
+      assert.equal(finals.length, 0, 'no ZIP = not submitted');
+      await page.getByLabel('Business address', { exact: true }).fill('12345 Main St, Austin, TX 78701-1234, USA');
       await page.getByRole('button', { name: 'Get my quote', exact: true }).click();
       await page.getByText('Thanks - we').waitFor();
       assert.equal(finals.length, 1);
+      assert.equal(finals[0].zip, '78701', 'ZIP sent to intake (last 5-digit token, not the street number)');
       assert.equal(details(finals[0])['Form version'], '2026-11-19-current-ai-v2');
       assert.equal(details(finals[0])['Website hero'], 'ai');
       assert.equal(await page.getByText('Current annual GL premium').count() + await page.getByText('What are you paying now').count(), 0, 'current-premium question removed (Kevin 11/19)');

@@ -1,4 +1,5 @@
 "use client";
+import { extractZip } from "@/lib/zip";
 
 import TradeSearch from '@/components/TradeSearch';
 import {filterTrades} from '@/lib/trade-search';
@@ -1025,8 +1026,3 @@ function MultiSelect({
   );
 }
 
-function extractZip(address?: string): string | undefined {
-  if (!address) return undefined;
-  const m = address.match(/\b(\d{5})(?:-\d{4})?\b/);
-  return m ? m[1] : undefined;
-}

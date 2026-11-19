@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import { trafficSession } from "@/lib/traffic-session";
 import { FULL_LABELS, fullScreens, normalizeFull, validFullField } from "@/lib/contractor-full-form";
+import { extractZip } from "@/lib/zip";
 import { acceptedPhoneShape } from "@/lib/phone-shape";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { contractorButtonClass } from "@/components/ContractorPageTheme";
@@ -34,6 +35,7 @@ const fieldClass =
 function fieldError(k: string): string {
   if (k === "email") return "Escriba un correo electrónico válido.";
   if (k === "phone") return "Escriba un número de teléfono válido.";
+  if (k === "address") return "Escriba la dirección completa con el código postal (ZIP).";
   if (ES_OPTIONS[k] || k === "otherTrades") return "Por favor elija una opción para continuar.";
   return "Por favor complete este dato para continuar.";
 }
@@ -111,6 +113,7 @@ export default function SpanishContractorForm({
         email,
         phone,
         company: answers.legalName,
+        zip: extractZip(answers.address),
         businessType: "Contractor enquiry - work unconfirmed",
         source: "contractors-landing",
         partial: true,
@@ -201,6 +204,7 @@ export default function SpanishContractorForm({
           email: answers.email?.trim(),
           phone: answers.phone,
           company: answers.legalName,
+        zip: extractZip(answers.address),
           businessType: `Contractor enquiry - advertised ${advertisedIndustry}; actual work unconfirmed`,
           source: "contractors-landing",
           details,
