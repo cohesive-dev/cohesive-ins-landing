@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { PAYROLL, SUBCONTRACTOR_COSTS } from "@/lib/contractor-full-options";
@@ -29,6 +29,54 @@ export default function ReferralForm({ code }: { code: string }) {
   useEffect(() => {
     captureAttribution();
   }, []);
+  // Nam 11/20: capture abandoned referral fills like every other form (a partial is a real lead),
+  // but the partner gets no credit for it. The code rides under its own label, never "Referral code",
+  // so referral_partner_payouts (keys on formAnswers."Referral code") and the partner notice
+  // (completed submits only) never see it. A later completed submit carries the code as usual.
+  const sentPartial = useRef(false);
+  const partialInFlight = useRef(false);
+  const capturePartial = useCallback(() => {
+    if (sentPartial.current || partialInFlight.current || done || busy || fields.hp) return;
+    const email = fields.email.trim().toLowerCase();
+    const phone = fields.phone.trim();
+    const validEmail = emailPattern.test(email) ? email : undefined;
+    if (!validEmail && phone.replace(/\D/g, "").length < 10) return;
+    const attribution = captureAttribution();
+    const details = [
+      { label: "Referral form", value: "Partial (abandoned) - no referral credit" },
+      code && { label: "Referral link code (partial, no credit)", value: code },
+      { label: "Referral landing page", value: "/refer" },
+      fields.industry && { label: "Industry", value: fields.industry },
+      fields.businessType.trim() && { label: "Business type", value: fields.businessType.trim() },
+      fields.mailingAddress.trim() && { label: "Mailing address", value: fields.mailingAddress.trim() },
+      fields.entity && { label: "Legal entity type", value: fields.entity },
+      fields.revenue && { label: "Annual revenue", value: fields.revenue },
+      fields.needs.trim() && { label: "Coverage or project details", value: fields.needs.trim() },
+      ...attributionDetails(attribution),
+    ].filter(Boolean);
+    const body = JSON.stringify({
+      source: "customer-referral", partial: true, final: true,
+      name: fields.name.trim() || undefined, email: validEmail, phone: phone || undefined,
+      company: fields.company.trim() || undefined, businessType: fields.businessType.trim() || undefined,
+      zip: zipFromMailingAddress(fields.mailingAddress) || undefined, details,
+    });
+    try {
+      if (!navigator.sendBeacon("/api/intake", new Blob([body], { type: "application/json" }))) throw new Error("beacon refused");
+      sentPartial.current = true;
+    } catch {
+      partialInFlight.current = true;
+      fetch("/api/intake", { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true })
+        .then((response) => { if (response.ok) sentPartial.current = true; })
+        .catch(() => {}).finally(() => { partialInFlight.current = false; });
+    }
+  }, [busy, code, done, fields]);
+  useEffect(() => {
+    const onHide = () => capturePartial();
+    const onVisibility = () => { if (document.visibilityState === "hidden") capturePartial(); };
+    window.addEventListener("pagehide", onHide);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => { window.removeEventListener("pagehide", onHide); document.removeEventListener("visibilitychange", onVisibility); };
+  }, [capturePartial]);
   const addressState = stateFromMailingAddress(fields.mailingAddress)
     ?? Object.entries(US_STATES).find(([, n]) => new RegExp(`\\b${n}\\b,?\\s*\\d{5}`, "i").test(fields.mailingAddress))?.[0];
   const outOfArea = CONTRACTOR_INDUSTRIES.has(fields.industry) && !!addressState && ENCORE_CLOSED_STATES.has(addressState);
