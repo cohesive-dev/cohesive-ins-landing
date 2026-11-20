@@ -3,14 +3,13 @@
 import { useEffect, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
+import { PAYROLL, SUBCONTRACTOR_COSTS } from "@/lib/contractor-full-options";
 import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 const ENTITY = ["Sole proprietor", "LLC", "Corporation (Inc. / Corp.)", "Partnership", "Nonprofit", "Other"];
 const ROLES = ["Owner", "Partner / co-owner", "Manager", "Office / admin staff", "Other"];
 const REVENUE = ["Not started yet", "Under $100,000", "$100,000 - $250,000", "$250,000 - $500,000", "$500,000 - $1 million", "$1 million - $5 million", "Over $5 million"];
-const EMPLOYEES = ["None (just the owners)", "1", "2 - 5", "6 - 10", "11 - 25", "Over 25"];
-const SUBS = ["None, we do all the work ourselves", "1 - 2", "3 - 5", "6 - 10", "Over 10"];
 const RELATIONSHIP = ["We've worked together on jobs", "I'm their customer / they're my customer", "Friend or family", "Same trade or business group", "Saw an online ad or post", "Other"];
 const CUSTOMERS = ["Mostly homeowners (residential)", "Mostly businesses or GCs (commercial)", "Both about equally"];
 const linkPattern = /[a-z0-9-]\.[a-z]{2,}|facebook|instagram|google|yelp|nextdoor|angi|houzz|thumbtack/i;
@@ -18,7 +17,7 @@ const thisYear = new Date().getFullYear();
 
 export default function ReferralForm({ code }: { code: string }) {
   const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", mailingAddress: "", needs: "",
-    role: "", yearStarted: "", revenue: "", employees: "", subs: "", entity: "", dba: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
+    role: "", yearStarted: "", revenue: "", hasW2: "", payroll: "", usesSubs: "", subCosts: "", entity: "", dba: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
   const [noSite, setNoSite] = useState(false);
   const [attest, setAttest] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -36,7 +35,7 @@ export default function ReferralForm({ code }: { code: string }) {
     }
     if (!hasMailableAddress(fields.mailingAddress)) { setError("Please add your full mailing address, including ZIP code."); return; }
     const year = Number(fields.yearStarted.trim());
-    if (!fields.entity || !fields.role || !fields.revenue || !fields.employees || !fields.subs || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
+    if (!fields.entity || !fields.role || !fields.revenue || !fields.hasW2 || !fields.usesSubs || (fields.hasW2 === "Yes" && !fields.payroll) || (fields.usesSubs === "Yes" && !fields.subCosts) || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
     if (!/^\d{4}$/.test(fields.yearStarted.trim()) || year < 1900 || year > thisYear) { setError("Please add the year your business started (for example 2015)."); return; }
     if (!noSite && !linkPattern.test(fields.site.trim())) { setError("Please add your website, Facebook page or Google listing, or check that your business doesn't have one."); return; }
     if (!attest) { setError("Please confirm you own or manage this business and want a quote."); return; }
@@ -52,8 +51,10 @@ export default function ReferralForm({ code }: { code: string }) {
       { label: "Role at business", value: fields.role },
       { label: "Year business started", value: fields.yearStarted.trim() },
       { label: "Annual revenue", value: fields.revenue },
-      { label: "Employees on payroll (W-2, not counting owners)", value: fields.employees },
-      { label: "Subcontractors hired in a typical year", value: fields.subs },
+      { label: "Has W2 employees (not counting owners)", value: fields.hasW2 },
+      { label: "Annual W2 payroll for your field crew (roughly)", value: fields.hasW2 === "Yes" ? fields.payroll : "$0 (no W2 employees)" },
+      { label: "Do you hire subcontractors?", value: fields.usesSubs },
+      fields.usesSubs === "Yes" && { label: "Annual subcontractor costs (roughly)", value: fields.subCosts },
       { label: "How they know the referrer", value: fields.relationship },
       { label: "Customers", value: fields.customers },
       { label: "Website or online page", value: noSite ? "None (checked: business has no website or online page)" : fields.site.trim() },
@@ -93,8 +94,10 @@ export default function ReferralForm({ code }: { code: string }) {
       <label className="block text-sm font-medium">Your role <span aria-hidden="true">*</span><select className={inputClass} value={fields.role} onChange={(e) => set("role", e.target.value)} required><option value="">Choose one</option>{ROLES.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium">Year the business started <span aria-hidden="true">*</span><input className={inputClass} inputMode="numeric" maxLength={4} value={fields.yearStarted} onChange={(e) => set("yearStarted", e.target.value.replace(/\D/g, ""))} placeholder="e.g. 2015" required /></label>
       <label className="block text-sm font-medium">Annual revenue <span aria-hidden="true">*</span><select className={inputClass} value={fields.revenue} onChange={(e) => set("revenue", e.target.value)} required><option value="">Choose one</option>{REVENUE.map((o) => <option key={o}>{o}</option>)}</select></label>
-      <label className="block text-sm font-medium">Employees on payroll (not counting owners) <span aria-hidden="true">*</span><select className={inputClass} value={fields.employees} onChange={(e) => set("employees", e.target.value)} required><option value="">Choose one</option>{EMPLOYEES.map((o) => <option key={o}>{o}</option>)}</select></label>
-      <label className="block text-sm font-medium">Subcontractors you hire in a typical year <span aria-hidden="true">*</span><select className={inputClass} value={fields.subs} onChange={(e) => set("subs", e.target.value)} required><option value="">Choose one</option>{SUBS.map((o) => <option key={o}>{o}</option>)}</select></label>
+      <label className="block text-sm font-medium">Do you have W2 employees? <span aria-hidden="true">*</span><span className="block text-xs font-normal text-[#64748B]">Not counting owners or subcontractors.</span><select className={inputClass} value={fields.hasW2} onChange={(e) => set("hasW2", e.target.value)} required><option value="">Choose one</option><option>Yes</option><option>No</option></select></label>
+      {fields.hasW2 === "Yes" ? <label className="block text-sm font-medium">Annual W2 payroll for your field crew (roughly) <span aria-hidden="true">*</span><span className="block text-xs font-normal text-[#64748B]">People who do the work. Leave out office staff, owners and subs.</span><select className={inputClass} value={fields.payroll} onChange={(e) => set("payroll", e.target.value)} required><option value="">Choose one</option>{PAYROLL.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label> : <div className="hidden sm:block" />}
+      <label className="block text-sm font-medium">Do you hire subcontractors? <span aria-hidden="true">*</span><select className={inputClass} value={fields.usesSubs} onChange={(e) => set("usesSubs", e.target.value)} required><option value="">Choose one</option><option>Yes</option><option>No</option></select></label>
+      {fields.usesSubs === "Yes" ? <label className="block text-sm font-medium">Annual subcontractor costs (roughly) <span aria-hidden="true">*</span><span className="block text-xs font-normal text-[#64748B]">Total paid to subcontractors each year.</span><select className={inputClass} value={fields.subCosts} onChange={(e) => set("subCosts", e.target.value)} required><option value="">Choose one</option>{SUBCONTRACTOR_COSTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label> : <div className="hidden sm:block" />}
       <label className="block text-sm font-medium sm:col-span-2">How do you know the person who referred you? <span aria-hidden="true">*</span><select className={inputClass} value={fields.relationship} onChange={(e) => set("relationship", e.target.value)} required><option value="">Choose one</option>{RELATIONSHIP.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium sm:col-span-2">Who are most of your customers? <span aria-hidden="true">*</span><select className={inputClass} value={fields.customers} onChange={(e) => set("customers", e.target.value)} required><option value="">Choose one</option>{CUSTOMERS.map((o) => <option key={o}>{o}</option>)}</select></label>
       <div className="sm:col-span-2"><label className="block text-sm font-medium">Website, Facebook page or Google listing <span aria-hidden="true">*</span><input className={inputClass} inputMode="url" autoCapitalize="none" value={fields.site} onChange={(e) => set("site", e.target.value)} placeholder="yourbusiness.com or facebook.com/yourbusiness" disabled={noSite} /></label>
