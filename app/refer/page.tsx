@@ -26,7 +26,7 @@ export default async function ReferPage({ searchParams }: { searchParams: Promis
       <section className="mt-8 space-y-3">
         <h2 className="text-xl font-bold">Questions</h2>
         <details open className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">Which businesses can use this form?</summary><div className="mt-2 text-[#405066]"><p>Contractors and service businesses in these industries:</p><ul className="mt-2 list-disc space-y-1 pl-5">{CONTRACTOR_INDUSTRIES.map((i) => <li key={i}>{i}</li>)}</ul><p className="mt-2">We also insure commercial property (churches, commercial buildings and facilities) and restaurants (general liability). We can&apos;t quote other kinds of businesses, for example retail stores, trucking, salons or accounting.</p></div></details>
-        <details className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">What happens after I submit?</summary><p className="mt-2 text-[#405066]">A licensed agent reviews your business and follows up with general liability quote options. There&apos;s no obligation to buy.</p></details>
+        <details className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">What happens after I submit?</summary><p className="mt-2 text-[#405066]">A licensed agent reviews your business and follows up with quote options. There&apos;s no obligation to buy.</p></details>
       </section>
     </div>
   </main>;
