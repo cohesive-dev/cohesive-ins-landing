@@ -9,7 +9,10 @@ const input = "mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2.5 text-b
 
 /** Referral partner signup -> /api/referral-partners (team email, never the insurance intake).
  *  Pixel event is CUSTOM on purpose (as /roofing-leads): a standard Lead here would train the insurance ads on partner signups. */
-export default function ReferralPartnerForm() {
+const CLIENT_TAGS = [...REFERRAL_TRADE_TAGS, "Churches", "Commercial property", "Restaurants"];
+
+export default function ReferralPartnerForm({ program = "partner" }: { program?: "partner" | "client" }) {
+  const client = program === "client";
   const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutHandle: "", website: "" });
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -25,7 +28,7 @@ export default function ReferralPartnerForm() {
     const q = new URLSearchParams(location.search);
     const utm = Object.fromEntries(UTM_KEYS.map((k) => [k, q.get(k) ?? ""]).filter(([, v]) => v));
     try {
-      const r = await fetch("/api/referral-partners", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...f, agree, utm }) });
+      const r = await fetch("/api/referral-partners", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...f, agree, utm, program }) });
       const data = (await r.json().catch(() => ({}))) as { ok?: boolean; url?: string; errors?: Record<string, string>; message?: string };
       if (r.ok && data.ok && data.url) {
         (window as unknown as { fbq?: Fbq }).fbq?.("trackCustom", "ReferralPartnerSignup");
@@ -44,19 +47,19 @@ export default function ReferralPartnerForm() {
       <p className="mt-4 break-all rounded-lg bg-[#F1F5FF] px-4 py-3 font-mono text-sm text-[#294067]">{link}</p>
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <button type="button" className="rounded-lg bg-[#2040E7] px-5 py-3 font-semibold text-white" onClick={() => { navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => {}); }}>{copied ? "Copied" : "Copy link"}</button>
-        <a href={sms} className="rounded-lg border border-[#2040E7] px-5 py-3 font-semibold text-[#2040E7]">Text it to a sub</a>
+        <a href={sms} className="rounded-lg border border-[#2040E7] px-5 py-3 font-semibold text-[#2040E7]">{client ? "Text it to someone" : "Text it to a sub"}</a>
       </div>
-      <p className="mt-4 text-sm text-[#405066]">We also emailed it to you. Every contractor that requests a quote through your link earns you $40.</p>
+      <p className="mt-4 text-sm text-[#405066]">We also emailed it to you. Every {client ? "business" : "contractor"} that requests a quote through your link earns you $40.</p>
     </div>;
   }
 
   const err = (k: string) => errors[k] ? <small role="alert" className="mt-1 block text-[#b42318]">{errors[k]}</small> : null;
   return <form onSubmit={submit} noValidate className="grid gap-4">
     <h2 className="text-2xl font-bold">Get your referral link</h2>
-    <div><p className="text-sm font-semibold text-[#405066]">We pay for referrals of contractors:</p><div className="mt-2 flex flex-wrap gap-2">{REFERRAL_TRADE_TAGS.map((t) => <span key={t} className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-medium text-[#1B2B6B]">{t}</span>)}</div></div>
+    <div><p className="text-sm font-semibold text-[#405066]">{client ? "We pay for referrals of:" : "We pay for referrals of contractors:"}</p><div className="mt-2 flex flex-wrap gap-2">{(client ? CLIENT_TAGS : REFERRAL_TRADE_TAGS).map((t) => <span key={t} className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-medium text-[#1B2B6B]">{t}</span>)}</div></div>
     <label className="text-sm font-semibold">Your name<input className={input} value={f.fullName} onChange={set("fullName")} autoComplete="name" />{err("fullName")}</label>
     <label className="text-sm font-semibold">Business name<input className={input} value={f.businessName} onChange={set("businessName")} autoComplete="organization" />{err("businessName")}</label>
-    <label className="text-sm font-semibold">Your trade (optional)<input className={input} value={f.trade} onChange={set("trade")} placeholder="General contractor, roofing, ..." /></label>
+    <label className="text-sm font-semibold">{client ? "Your industry (optional)" : "Your trade (optional)"}<input className={input} value={f.trade} onChange={set("trade")} placeholder={client ? "Roofing, church, restaurant, ..." : "General contractor, roofing, ..."} /></label>
     <label className="text-sm font-semibold">Email<input type="email" className={input} value={f.email} onChange={set("email")} autoComplete="email" />{err("email")}</label>
     <label className="text-sm font-semibold">Phone<input type="tel" className={input} value={f.phone} onChange={set("phone")} autoComplete="tel" />{err("phone")}</label>
     <label className="text-sm font-semibold">Venmo username (we pay by Venmo)<input className={input} value={f.payoutHandle} onChange={set("payoutHandle")} placeholder="@your-name" autoCapitalize="none" />{err("payoutHandle")}</label>

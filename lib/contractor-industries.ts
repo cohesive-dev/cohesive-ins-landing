@@ -22,4 +22,4 @@ export const CONTRACTOR_INDUSTRIES: string[] = [
   "Solar panel and fire sprinkler installation",
 ];
 
-export const NOT_ELIGIBLE_EXAMPLES = "retail stores, trucking, salons, accounting and other office businesses";
+export const NOT_ELIGIBLE_EXAMPLES = "retail stores, trucking, salons, restaurants, accounting and other office businesses";
