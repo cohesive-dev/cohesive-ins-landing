@@ -1,3 +1,4 @@
+import { CONTRACTOR_INDUSTRIES, NOT_ELIGIBLE_EXAMPLES } from "@/lib/contractor-industries";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,7 +35,7 @@ export default function ReferralProgramPage() {
         <h2 className="text-xl font-bold">Quick answers</h2>
         <details open className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">Do they have to buy for me to get paid?</summary><p className="mt-2 text-[#405066]">No. You earn ${REFERRAL_FEE_USD} when a business requests a quote through your link. What they decide after that doesn&apos;t change your payment.</p></details>
         <details className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">Do I have to explain insurance to them?</summary><p className="mt-2 text-[#405066]">No. Just share the link. Our licensed agents handle every question about coverage and price.</p></details>
-        <details className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">Who can I refer?</summary><p className="mt-2 text-[#405066]">Contractors and service businesses only: subs, other contractors and trade businesses. Trades we quote every day include roofing, remodeling, painting, plumbing, electrical, HVAC, landscaping, tree work and cleaning. Referrals from other industries (for example retail, trucking, salons or accounting) do not count toward payouts.</p></details>
+        <details className="rounded-xl border border-[#DDE4FF] bg-white p-4"><summary className="font-semibold">Who can I refer?</summary><div className="mt-2 text-[#405066]"><p>Contractors and service businesses only: subs, other contractors and trade businesses in the industries we insure:</p><ul className="mt-2 list-disc space-y-1 pl-5">{CONTRACTOR_INDUSTRIES.map((i) => <li key={i}>{i}</li>)}</ul><p className="mt-2">Referrals from other industries (for example {NOT_ELIGIBLE_EXAMPLES}) do not count toward payouts.</p></div></details>
       </section>
       <section id="terms" className="mt-10 text-xs leading-relaxed text-[#64748B]">
         <h2 className="font-semibold">Program terms</h2>
