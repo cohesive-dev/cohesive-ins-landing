@@ -20,7 +20,7 @@ export default async function ReferPage({ searchParams }: { searchParams: Promis
         <p className="text-xs font-bold uppercase tracking-wider text-[#2040E7]">Customer referral</p>
         <h1 className="mt-2 text-3xl font-bold">A better way to shop business insurance</h1>
         <p className="mt-3 text-[#405066]">Someone you know shared Cohesive with you. Tell us a little about your business and our team will follow up about coverage and quotes.</p>
-        <p className="mt-3 rounded-lg bg-[#EEF2FF] px-4 py-3 text-sm font-medium text-[#1B2B6B]">This form is for contractors and service businesses only. See the list of industries we insure below.</p>
+        <p className="mt-3 rounded-lg bg-[#EEF2FF] px-4 py-3 text-sm font-medium text-[#1B2B6B]">We specialize in contractor insurance only and can&apos;t insure other businesses. This specialization lets us get the most competitive rates for contractors.</p>
         <ReferralForm code={code} />
       </div>
       <section className="mt-8 space-y-3">
