@@ -4,6 +4,8 @@ import { ALERT_SUBJECT_TAG, PAYOUT_BLOCK, type MailFn } from "@/lib/referral-par
 // notice naming the business only - never a CC/BCC on the sub's insurance mail (privacy; thread confusion).
 // The partner is looked up from the signup alert quotes@ sent ("PARTNER_CODE: <code>"); no new datastore.
 // Off switch: env REFERRAL_PARTNER_NOTICE=off.
+// Desk 11/20 23:40Z copy QA 5 (Charmaine; Nam 11/20 "$40 for every referral we quote"): env REFERRAL_NOTICE_PER_QUOTE=on
+// (default OFF) replaces the "$120 ($40 each, paid every 3 referrals)" sentence with "That's another $40 once we quote it."
 
 export interface PartnerRecord { code: string; name: string; email: string; rate: number }
 export const LAUNCH_RATE_USD = 40; // partners whose alert predates the RATE_USD line
@@ -22,14 +24,20 @@ export async function lookupPartner(code: string, find: FindText): Promise<Partn
   return { code, name: line(text, "Name"), email, rate: Number.isFinite(rate) && rate > 0 ? rate : LAUNCH_RATE_USD };
 }
 
-export function noticeText(partner: PartnerRecord, referred: string): string {
+export const perQuoteCopyOn = (env: Record<string, string | undefined>) =>
+  (env.REFERRAL_NOTICE_PER_QUOTE ?? "").trim().toLowerCase() === "on";
+
+export function noticeText(partner: PartnerRecord, referred: string, perQuote = false): string {
   const first = partner.name.split(" ")[0] || "there";
+  const earn = perQuote
+    ? `That's another $${partner.rate} once we quote it. Keep sharing your link!`
+    : `Once we confirm it qualifies (a contractor or service business we insure), it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`;
   return [
     `Hi ${first},`,
     "",
     `Good news: ${referred} just requested a quote through your referral link.`,
     "",
-    `Once we confirm it qualifies (a contractor or service business we insure), it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`,
+    earn,
     "",
     "Thanks,",
     "Kevin",
@@ -48,7 +56,7 @@ export async function notifyReferralPartner(
     if (!partner) return "no-partner";
     if (opts.email && opts.email.trim().toLowerCase() === partner.email) return "self";
     const referred = oneLine(opts.company || "") || oneLine(opts.name || "") || "A business";
-    const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: noticeText(partner, referred), replyTo: "kevin@cohesiveinsure.com" });
+    const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: noticeText(partner, referred, perQuoteCopyOn(env)), replyTo: "kevin@cohesiveinsure.com" });
     return ok ? "sent" : "failed";
   } catch { return "failed"; }
 }

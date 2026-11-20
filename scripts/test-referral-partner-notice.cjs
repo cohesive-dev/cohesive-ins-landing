@@ -49,5 +49,13 @@ assert.equal(await notifyReferralPartner({ code: "bad", company: "X" }, {}, find
 assert.equal(await notifyReferralPartner({ code, company: "X" }, {}, async () => { throw new Error("x"); }, mail), "failed");
 assert.equal(mails.length, 0);
 assert.equal(await notifyReferralPartner({ code, company: "X" }, {}, find, async () => false), "failed");
+// Desk 11/20 copy QA 5: REFERRAL_NOTICE_PER_QUOTE=on -> "That's another $40 once we quote it." (default OFF = old sentence).
+{ const m3 = []; await notifyReferralPartner({ code, company: "Q Co" }, { REFERRAL_NOTICE_PER_QUOTE: "on" }, find, async (m) => { m3.push(m); return true; });
+  assert.match(m3[0].text, /That's another \$40 once we quote it\. Keep sharing your link!/);
+  assert.ok(!m3[0].text.includes("$120") && !m3[0].text.includes("every 3"));
+  const m4 = []; await notifyReferralPartner({ code, company: "Q Co" }, { REFERRAL_NOTICE_PER_QUOTE: "yes" }, find, async (m) => { m4.push(m); return true; });
+  assert.match(m4[0].text, /next \$120 \(\$40 each/);
+  const m5 = []; await notifyReferralPartner({ code, company: "Q Co" }, { REFERRAL_NOTICE_PER_QUOTE: "on" }, async () => alert.replace("RATE_USD: 40", "RATE_USD: 30"), async (m) => { m5.push(m); return true; });
+  assert.match(m5[0].text, /That's another \$30 once we quote it/); }
 console.log("referral-partner-notice: all assertions passed");
 })().catch((e) => { console.error(e); process.exit(1); });
