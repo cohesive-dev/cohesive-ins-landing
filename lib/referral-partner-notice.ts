@@ -29,7 +29,7 @@ export function noticeText(partner: PartnerRecord, referred: string): string {
     "",
     `Good news: ${referred} just requested a quote through your referral link.`,
     "",
-    `Once we confirm it qualifies, it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`,
+    `Once we confirm it qualifies (a contractor or service business we insure), it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`,
     "",
     "Thanks,",
     "Kevin",
