@@ -41,7 +41,7 @@ export default function ReferralForm({ code }: { code: string }) {
       const result = await response.json();
       if (!response.ok || result.ok !== true || (result.crm !== "sent" && result.notification !== "sent")) throw new Error("save_failed");
       setDone(true);
-    } catch { setError("We couldn't save your request. Please try again or call (929) 594-5450."); }
+    } catch { setError("We couldn't save your request. Please try again."); }
     finally { setBusy(false); }
   }
   if (done) return <div role="status" className="mt-7 rounded-xl bg-green-50 p-5 text-green-900"><h2 className="text-xl font-semibold">Thanks. We got your request.</h2><p className="mt-2">A Cohesive team member will review it and get in touch.</p></div>;

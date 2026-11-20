@@ -21,7 +21,6 @@ export default async function ReferPage({ searchParams }: { searchParams: Promis
         <p className="mt-3 text-[#405066]">Someone you know shared Cohesive with you. Tell us a little about your business and our team will follow up about coverage and quotes.</p>
         <ReferralForm code={code} />
       </div>
-      <p className="mt-6 text-sm text-[#405066]">Prefer to talk? Call <a href="tel:+19295945450" className="font-semibold text-[#2040E7]">(929) 594-5450</a>.</p>
     </div>
   </main>;
 }
