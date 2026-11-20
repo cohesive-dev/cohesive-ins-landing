@@ -395,6 +395,22 @@ export async function POST(request: NextRequest) {
   // Customer referrals are a separate acquisition source, never an ad conversion.
   const acceptedEventId = guardedLane && source !== "customer-referral" && conversionSecret ? acquisitionEventId({ name, email, phone, company }, conversionSecret) : undefined;
   if (guardedLane) details = [...(details ?? []), { label: 'Submission validation', value: quality.reason }, ...(acceptedEventId ? [{ label: 'Acquisition event id', value: acceptedEventId }] : [])];
+  // Nam 11/20: record where the form fill came from (Vercel edge geolocation of the submitter's IP) so fake/offshore
+  // fills (e.g. referral-payout farming) are visible on the lead. Non-US IPs get an explicit flag row.
+  {
+    const ipAddr = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim();
+    const ipCountry = request.headers.get("x-vercel-ip-country") || "";
+    const ipRegion = request.headers.get("x-vercel-ip-country-region") || "";
+    let ipCity = request.headers.get("x-vercel-ip-city") || "";
+    try { ipCity = decodeURIComponent(ipCity); } catch { /* keep raw */ }
+    const where = [ipCity, ipRegion, ipCountry].filter(Boolean).join(", ");
+    details = [...(details ?? []),
+      ...(ipAddr ? [{ label: "Submitter IP", value: ipAddr }] : []),
+      ...(ipCountry ? [{ label: "Submitter IP country", value: ipCountry }] : []),
+      ...(where ? [{ label: "Submitter IP location", value: where }] : []),
+      ...(ipCountry && ipCountry !== "US" ? [{ label: "IP check", value: `Submitted from outside the US (${where}) - verify before quoting or paying a referral` }] : []),
+    ];
+  }
 
   // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
   // and every other caller are untouched).
