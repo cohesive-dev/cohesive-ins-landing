@@ -8,7 +8,7 @@ const input = "mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2.5 text-b
 /** Referral partner signup -> /api/referral-partners (team email, never the insurance intake).
  *  Pixel event is CUSTOM on purpose (as /roofing-leads): a standard Lead here would train the insurance ads on partner signups. */
 export default function ReferralPartnerForm() {
-  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutHandle: "", website: "" });
+  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", refersTo: "", email: "", phone: "", payoutHandle: "", website: "" });
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
@@ -44,7 +44,7 @@ export default function ReferralPartnerForm() {
         <button type="button" className="rounded-lg bg-[#2040E7] px-5 py-3 font-semibold text-white" onClick={() => { navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => {}); }}>{copied ? "Copied" : "Copy link"}</button>
         <a href={sms} className="rounded-lg border border-[#2040E7] px-5 py-3 font-semibold text-[#2040E7]">Text it to a sub</a>
       </div>
-      <p className="mt-4 text-sm text-[#405066]">We also emailed it to you. Every business that requests a quote through your link earns you $40.</p>
+      <p className="mt-4 text-sm text-[#405066]">We also emailed it to you. Every contractor that requests a quote through your link earns you $40.</p>
     </div>;
   }
 
@@ -54,6 +54,7 @@ export default function ReferralPartnerForm() {
     <label className="text-sm font-semibold">Your name<input className={input} value={f.fullName} onChange={set("fullName")} autoComplete="name" />{err("fullName")}</label>
     <label className="text-sm font-semibold">Business name<input className={input} value={f.businessName} onChange={set("businessName")} autoComplete="organization" />{err("businessName")}</label>
     <label className="text-sm font-semibold">Your trade (optional)<input className={input} value={f.trade} onChange={set("trade")} placeholder="General contractor, roofing, ..." /></label>
+    <label className="text-sm font-semibold">What kinds of contractors will you refer?<input className={input} value={f.refersTo} onChange={set("refersTo")} placeholder="e.g. my roofing and plumbing subs" /><small className="mt-1 block font-normal text-[#405066]">Only contractor referrals count toward payouts.</small>{err("refersTo")}</label>
     <label className="text-sm font-semibold">Email<input type="email" className={input} value={f.email} onChange={set("email")} autoComplete="email" />{err("email")}</label>
     <label className="text-sm font-semibold">Phone<input type="tel" className={input} value={f.phone} onChange={set("phone")} autoComplete="tel" />{err("phone")}</label>
     <label className="text-sm font-semibold">Venmo username (we pay by Venmo)<input className={input} value={f.payoutHandle} onChange={set("payoutHandle")} placeholder="@your-name" autoCapitalize="none" />{err("payoutHandle")}</label>

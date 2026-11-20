@@ -18,7 +18,7 @@ export const DEFAULT_ALERT_TO = ["kevin@cohesiveinsure.com", "nam@cohesiveinsure
 export const PAYOUT_METHODS = ["Venmo"] as const; // Nam 2026-11-19: Venmo only
 
 export interface PartnerInput {
-  fullName?: string; businessName?: string; email?: string; phone?: string; trade?: string;
+  fullName?: string; businessName?: string; email?: string; phone?: string; trade?: string; refersTo?: string;
   payoutMethod?: string; payoutHandle?: string; agree?: boolean; website?: string;
   utm?: Partial<Record<"utm_source" | "utm_medium" | "utm_campaign" | "utm_content" | "utm_term" | "fbclid", string>>;
 }
@@ -31,6 +31,7 @@ export function validatePartner(input: PartnerInput): Record<string, string> {
   const e: Record<string, string> = {};
   if (!clean(input.fullName)) e.fullName = "Please enter your name.";
   if (!clean(input.businessName)) e.businessName = "Please enter your business name.";
+  if (clean(input.refersTo).length < 3) e.refersTo = "Please tell us what kinds of contractors you'll refer.";
   if (!okEmail(clean(input.email))) e.email = "Please enter a valid email.";
   if (!okPhone(clean(input.phone))) e.phone = "Please enter a 10-digit phone number.";
   if (clean(input.payoutHandle).replace(/^@/, "").length < 2) e.payoutHandle = "Please enter your Venmo username.";
@@ -57,6 +58,7 @@ export function alertText(input: PartnerInput, code: string): string {
     `Link: ${partnerLink(code)}`,
     `Name: ${clean(input.fullName)}`,
     `Business: ${clean(input.businessName)}${clean(input.trade) ? ` (${clean(input.trade)})` : ""}`,
+    `Will refer: ${clean(input.refersTo)}`,
     `Email: ${clean(input.email).toLowerCase()}`,
     `Phone: ${clean(input.phone)}`,
     `Payout: Venmo - @${clean(input.payoutHandle).replace(/^@/, "")}`,
@@ -74,7 +76,7 @@ export function welcomeText(input: PartnerInput, code: string): string {
     "Thanks for joining the Cohesive referral program. Here is your personal link:",
     partnerLink(code),
     "",
-    `Send it to subs and other businesses that need insurance. You get $${REFERRAL_FEE_USD} for every business that requests a quote through your link, whether or not they buy. We pay $${PAYOUT_BLOCK_USD} each time you reach ${PAYOUT_BLOCK} referrals, by Venmo.`,
+    `Send it to contractors that need insurance (roofers, remodelers, plumbers, tree services and other trades). Only contractor referrals count. You get $${REFERRAL_FEE_USD} for every contractor that requests a quote through your link, whether or not they buy. We pay $${PAYOUT_BLOCK_USD} each time you reach ${PAYOUT_BLOCK} referrals, by Venmo.`,
     "",
     "Just share the link. You don't need to explain coverage; our licensed agents handle that.",
     "",
