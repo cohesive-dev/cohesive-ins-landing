@@ -18,7 +18,7 @@ export const DEFAULT_ALERT_TO = ["kevin@cohesiveinsure.com", "nam@cohesiveinsure
 export const PAYOUT_METHODS = ["Venmo"] as const; // Nam 2026-11-19: Venmo only
 
 export interface PartnerInput {
-  fullName?: string; businessName?: string; email?: string; phone?: string; trade?: string; refersTo?: string;
+  fullName?: string; businessName?: string; email?: string; phone?: string; trade?: string;
   payoutMethod?: string; payoutHandle?: string; agree?: boolean; website?: string;
   utm?: Partial<Record<"utm_source" | "utm_medium" | "utm_campaign" | "utm_content" | "utm_term" | "fbclid", string>>;
 }
@@ -31,7 +31,6 @@ export function validatePartner(input: PartnerInput): Record<string, string> {
   const e: Record<string, string> = {};
   if (!clean(input.fullName)) e.fullName = "Please enter your name.";
   if (!clean(input.businessName)) e.businessName = "Please enter your business name.";
-  if (clean(input.refersTo).length < 3) e.refersTo = "Please tell us what kinds of contractors you'll refer.";
   if (!okEmail(clean(input.email))) e.email = "Please enter a valid email.";
   if (!okPhone(clean(input.phone))) e.phone = "Please enter a 10-digit phone number.";
   if (clean(input.payoutHandle).replace(/^@/, "").length < 2) e.payoutHandle = "Please enter your Venmo username.";
@@ -58,7 +57,6 @@ export function alertText(input: PartnerInput, code: string): string {
     `Link: ${partnerLink(code)}`,
     `Name: ${clean(input.fullName)}`,
     `Business: ${clean(input.businessName)}${clean(input.trade) ? ` (${clean(input.trade)})` : ""}`,
-    `Will refer: ${clean(input.refersTo)}`,
     `Email: ${clean(input.email).toLowerCase()}`,
     `Phone: ${clean(input.phone)}`,
     `Payout: Venmo - @${clean(input.payoutHandle).replace(/^@/, "")}`,

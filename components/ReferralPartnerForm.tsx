@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 
+const REFERRAL_TRADE_TAGS = ["Roofing", "General contractors", "Remodeling", "Carpentry", "Painting", "Plumbing", "Electrical", "HVAC", "Drywall", "Flooring", "Masonry & concrete", "Siding & fencing", "Welding", "Excavation", "Landscaping", "Tree service", "Handyman", "Solar install"];
+
 type Fbq = (...a: unknown[]) => void;
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid"] as const;
 const input = "mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2.5 text-base focus:border-[#2040E7] focus:outline-none";
@@ -8,7 +10,7 @@ const input = "mt-1 w-full rounded-lg border border-[#CBD5E1] px-3 py-2.5 text-b
 /** Referral partner signup -> /api/referral-partners (team email, never the insurance intake).
  *  Pixel event is CUSTOM on purpose (as /roofing-leads): a standard Lead here would train the insurance ads on partner signups. */
 export default function ReferralPartnerForm() {
-  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", refersTo: "", email: "", phone: "", payoutHandle: "", website: "" });
+  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutHandle: "", website: "" });
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
@@ -51,10 +53,10 @@ export default function ReferralPartnerForm() {
   const err = (k: string) => errors[k] ? <small role="alert" className="mt-1 block text-[#b42318]">{errors[k]}</small> : null;
   return <form onSubmit={submit} noValidate className="grid gap-4">
     <h2 className="text-2xl font-bold">Get your referral link</h2>
+    <div><p className="text-sm font-semibold text-[#405066]">We pay for referrals of contractors:</p><div className="mt-2 flex flex-wrap gap-2">{REFERRAL_TRADE_TAGS.map((t) => <span key={t} className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-medium text-[#1B2B6B]">{t}</span>)}</div></div>
     <label className="text-sm font-semibold">Your name<input className={input} value={f.fullName} onChange={set("fullName")} autoComplete="name" />{err("fullName")}</label>
     <label className="text-sm font-semibold">Business name<input className={input} value={f.businessName} onChange={set("businessName")} autoComplete="organization" />{err("businessName")}</label>
     <label className="text-sm font-semibold">Your trade (optional)<input className={input} value={f.trade} onChange={set("trade")} placeholder="General contractor, roofing, ..." /></label>
-    <label className="text-sm font-semibold">What kinds of contractors will you refer?<input className={input} value={f.refersTo} onChange={set("refersTo")} placeholder="e.g. my roofing and plumbing subs" /><small className="mt-1 block font-normal text-[#405066]">Only contractor referrals count toward payouts.</small>{err("refersTo")}</label>
     <label className="text-sm font-semibold">Email<input type="email" className={input} value={f.email} onChange={set("email")} autoComplete="email" />{err("email")}</label>
     <label className="text-sm font-semibold">Phone<input type="tel" className={input} value={f.phone} onChange={set("phone")} autoComplete="tel" />{err("phone")}</label>
     <label className="text-sm font-semibold">Venmo username (we pay by Venmo)<input className={input} value={f.payoutHandle} onChange={set("payoutHandle")} placeholder="@your-name" autoCapitalize="none" />{err("payoutHandle")}</label>
