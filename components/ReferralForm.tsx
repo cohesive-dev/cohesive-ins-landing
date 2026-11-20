@@ -4,9 +4,12 @@ import { useEffect, useState } from "react";
 import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { PAYROLL, SUBCONTRACTOR_COSTS } from "@/lib/contractor-full-options";
-import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
+import { hasMailableAddress, stateFromMailingAddress, zipFromMailingAddress } from "@/lib/mailing-address";
+import { ENCORE_CLOSED_STATES, ENCORE_OPEN_STATE_NAMES, US_STATES } from "@/lib/encore-states";
 
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+const INDUSTRIES = ["Contractor or trade business", "Cleaning business", "Church or house of worship", "Commercial property owner", "Restaurant or bar", "Other"];
+const CONTRACTOR_INDUSTRIES = new Set(["Contractor or trade business", "Cleaning business"]);
 const ENTITY = ["Sole proprietor", "LLC", "Corporation (Inc. / Corp.)", "Partnership", "Nonprofit", "Other"];
 const ROLES = ["Owner", "Partner / co-owner", "Manager", "Office / admin staff", "Other"];
 const REVENUE = ["Not started yet", "Under $100,000", "$100,000 - $250,000", "$250,000 - $500,000", "$500,000 - $1 million", "$1 million - $5 million", "Over $5 million"];
@@ -17,7 +20,7 @@ const thisYear = new Date().getFullYear();
 
 export default function ReferralForm({ code }: { code: string }) {
   const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", mailingAddress: "", needs: "",
-    role: "", yearStarted: "", revenue: "", hasW2: "", payroll: "", usesSubs: "", subCosts: "", entity: "", dba: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
+    role: "", yearStarted: "", revenue: "", hasW2: "", payroll: "", usesSubs: "", subCosts: "", entity: "", dba: "", industry: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
   const [noSite, setNoSite] = useState(false);
   const [attest, setAttest] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -26,6 +29,9 @@ export default function ReferralForm({ code }: { code: string }) {
   useEffect(() => {
     captureAttribution();
   }, []);
+  const addressState = stateFromMailingAddress(fields.mailingAddress)
+    ?? Object.entries(US_STATES).find(([, n]) => new RegExp(`\\b${n}\\b,?\\s*\\d{5}`, "i").test(fields.mailingAddress))?.[0];
+  const outOfArea = CONTRACTOR_INDUSTRIES.has(fields.industry) && !!addressState && ENCORE_CLOSED_STATES.has(addressState);
   function set(key: keyof typeof fields, value: string) { setFields((current) => ({ ...current, [key]: value })); }
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -33,7 +39,9 @@ export default function ReferralForm({ code }: { code: string }) {
     if (!fields.name.trim() || !fields.company.trim() || !fields.businessType.trim() || !emailPattern.test(fields.email.trim()) || fields.phone.replace(/\D/g, "").length < 10) {
       setError("Please add your name, business, type of work, email and phone number."); return;
     }
+    if (!fields.industry) { setError("Please choose your industry."); return; }
     if (!hasMailableAddress(fields.mailingAddress)) { setError("Please add your full mailing address, including ZIP code."); return; }
+    if (outOfArea) return;
     const year = Number(fields.yearStarted.trim());
     if (!fields.entity || !fields.role || !fields.revenue || !fields.hasW2 || !fields.usesSubs || (fields.hasW2 === "Yes" && !fields.payroll) || (fields.usesSubs === "Yes" && !fields.subCosts) || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
     if (!/^\d{4}$/.test(fields.yearStarted.trim()) || year < 1900 || year > thisYear) { setError("Please add the year your business started (for example 2015)."); return; }
@@ -44,6 +52,7 @@ export default function ReferralForm({ code }: { code: string }) {
     const details = [
       code && { label: "Referral code", value: code },
       { label: "Referral landing page", value: "/refer" },
+      { label: "Industry", value: fields.industry },
       { label: "Business type", value: fields.businessType.trim() },
       { label: "Mailing address", value: fields.mailingAddress.trim() },
       fields.dba.trim() && { label: "DBA", value: fields.dba.trim() },
@@ -86,6 +95,7 @@ export default function ReferralForm({ code }: { code: string }) {
       <label className="block text-sm font-medium">Business legal type <span aria-hidden="true">*</span><select className={inputClass} value={fields.entity} onChange={(e) => set("entity", e.target.value)} required><option value="">Choose one</option>{ENTITY.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium">Email <span aria-hidden="true">*</span><input className={inputClass} type="email" autoComplete="email" value={fields.email} onChange={(e) => set("email", e.target.value)} required /></label>
       <label className="block text-sm font-medium">Phone <span aria-hidden="true">*</span><input className={inputClass} type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => set("phone", e.target.value)} required /></label>
+      <label className="block text-sm font-medium">Industry <span aria-hidden="true">*</span><select className={inputClass} value={fields.industry} onChange={(e) => set("industry", e.target.value)} required><option value="">Choose one</option>{INDUSTRIES.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium">What does your business do? <span aria-hidden="true">*</span><input className={inputClass} value={fields.businessType} onChange={(e) => set("businessType", e.target.value)} placeholder="e.g. Roofing contractor" required /></label>
       <label className="block text-sm font-medium">Mailing address <span aria-hidden="true">*</span><AddressAutocomplete value={fields.mailingAddress} onChange={(value) => set("mailingAddress", value)} placeholder="123 Main St, city, state, ZIP" ariaLabel="Mailing address" required /></label>
     </div>
@@ -108,8 +118,9 @@ export default function ReferralForm({ code }: { code: string }) {
     <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden"><label>Leave this empty<input tabIndex={-1} autoComplete="off" value={fields.hp} onChange={(e) => set("hp", e.target.value)} /></label></div>
     <label className="block text-sm font-medium">What coverage or project do you need help with?<textarea className={inputClass} rows={3} value={fields.needs} onChange={(e) => set("needs", e.target.value)} /></label>
     <label className="flex items-start gap-3 text-sm"><input type="checkbox" className="mt-1 h-4 w-4" checked={attest} onChange={(e) => setAttest(e.target.checked)} required /><span>I own or manage this business and I want an insurance quote for it. <span aria-hidden="true">*</span></span></label>
+    {outOfArea && <div role="alert" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900"><p className="font-semibold">Sorry, we don&apos;t insure contractors in {US_STATES[addressState!] || addressState} yet.</p><p className="mt-1">Right now we only serve contractors in these states: {ENCORE_OPEN_STATE_NAMES.join(", ")}.</p></div>}
     {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
-    <button disabled={busy} type="submit" className="w-full rounded-xl bg-[#2040E7] px-5 py-4 font-semibold text-white hover:bg-[#1835C9] disabled:opacity-50">{busy ? "Sending…" : "Request a quote"}</button>
+    <button disabled={busy || outOfArea} type="submit" className="w-full rounded-xl bg-[#2040E7] disabled:cursor-not-allowed disabled:bg-[#94A3B8] px-5 py-4 font-semibold text-white hover:bg-[#1835C9] disabled:hover:bg-[#94A3B8] disabled:opacity-60">{busy ? "Sending…" : "Request a quote"}</button>
     <p className="text-xs leading-relaxed text-[#64748B]">By sending this form, you ask Cohesive to contact you about business insurance. See our <a href="/privacy" className="underline">privacy policy</a>.</p>
   </form>;
 }

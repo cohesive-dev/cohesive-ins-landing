@@ -14,3 +14,8 @@ export function hasMailableAddress(address: string): boolean {
     value.length >= 18
   );
 }
+
+// Two-letter state from a mailing address ("123 Main St, Sulphur, LA 70663, USA" -> "LA"); undefined if none.
+export function stateFromMailingAddress(address: string): string | undefined {
+  return address.match(/\b([A-Za-z]{2})\s+\d{5}(?:-\d{4})?\b/)?.[1]?.toUpperCase();
+}

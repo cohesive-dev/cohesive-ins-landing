@@ -1,3 +1,4 @@
+import { ENCORE_CLOSED_STATES } from "@/lib/encore-states";
 // Real contractor premiums from our own book (Kevin 2026-10-02: "Do all the SEO recommendations.
 // general contractor, restaurant are great"). The lowest real price per trade, refreshed from the
 // CRM on 2026-10-02. Same two rules as restaurant-prices.ts:
@@ -61,7 +62,6 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
 
 // States where a trade's price does not apply because the market behind it does not write there (state abbreviations).
 // Those pages keep the price-free title, cost block and FAQ.
-const ENCORE_CLOSED_STATES = new Set(["AK", "DC", "IA", "LA", "ME", "ND", "NH", "OK", "RI", "SD", "VT", "WA", "WV", "WY"]);
 export const TRADE_PRICE_CLOSED_STATES: Record<string, ReadonlySet<string>> = {
   roofer: ENCORE_CLOSED_STATES,
   "tree-service": ENCORE_CLOSED_STATES,
