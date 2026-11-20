@@ -6,6 +6,7 @@ import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+const ENTITY = ["Sole proprietor", "LLC", "Corporation (Inc. / Corp.)", "Partnership", "Nonprofit", "Other"];
 const ROLES = ["Owner", "Partner / co-owner", "Manager", "Office / admin staff", "Other"];
 const REVENUE = ["Not started yet", "Under $100,000", "$100,000 - $250,000", "$250,000 - $500,000", "$500,000 - $1 million", "$1 million - $5 million", "Over $5 million"];
 const EMPLOYEES = ["None (just the owners)", "1", "2 - 5", "6 - 10", "11 - 25", "Over 25"];
@@ -17,7 +18,7 @@ const thisYear = new Date().getFullYear();
 
 export default function ReferralForm({ code }: { code: string }) {
   const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", mailingAddress: "", needs: "",
-    role: "", yearStarted: "", revenue: "", employees: "", subs: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
+    role: "", yearStarted: "", revenue: "", employees: "", subs: "", entity: "", dba: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
   const [noSite, setNoSite] = useState(false);
   const [attest, setAttest] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -35,7 +36,7 @@ export default function ReferralForm({ code }: { code: string }) {
     }
     if (!hasMailableAddress(fields.mailingAddress)) { setError("Please add your full mailing address, including ZIP code."); return; }
     const year = Number(fields.yearStarted.trim());
-    if (!fields.role || !fields.revenue || !fields.employees || !fields.subs || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
+    if (!fields.entity || !fields.role || !fields.revenue || !fields.employees || !fields.subs || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
     if (!/^\d{4}$/.test(fields.yearStarted.trim()) || year < 1900 || year > thisYear) { setError("Please add the year your business started (for example 2015)."); return; }
     if (!noSite && !linkPattern.test(fields.site.trim())) { setError("Please add your website, Facebook page or Google listing, or check that your business doesn't have one."); return; }
     if (!attest) { setError("Please confirm you own or manage this business and want a quote."); return; }
@@ -46,6 +47,8 @@ export default function ReferralForm({ code }: { code: string }) {
       { label: "Referral landing page", value: "/refer" },
       { label: "Business type", value: fields.businessType.trim() },
       { label: "Mailing address", value: fields.mailingAddress.trim() },
+      fields.dba.trim() && { label: "DBA", value: fields.dba.trim() },
+      { label: "Legal entity type", value: fields.entity },
       { label: "Role at business", value: fields.role },
       { label: "Year business started", value: fields.yearStarted.trim() },
       { label: "Annual revenue", value: fields.revenue },
@@ -77,7 +80,9 @@ export default function ReferralForm({ code }: { code: string }) {
     {code && <div className="rounded-lg bg-[#F1F5FF] px-4 py-3 text-sm text-[#294067]">Referral code <strong className="ml-1 font-mono">{code}</strong> is attached to your request.</div>}
     <div className="grid gap-4 sm:grid-cols-2">
       <label className="block text-sm font-medium">Your name <span aria-hidden="true">*</span><input className={inputClass} autoComplete="name" value={fields.name} onChange={(e) => set("name", e.target.value)} required /></label>
-      <label className="block text-sm font-medium">Business name <span aria-hidden="true">*</span><input className={inputClass} autoComplete="organization" value={fields.company} onChange={(e) => set("company", e.target.value)} required /></label>
+      <label className="block text-sm font-medium">Legal business name <span aria-hidden="true">*</span><input className={inputClass} autoComplete="organization" value={fields.company} onChange={(e) => set("company", e.target.value)} placeholder="As registered, e.g. Smith Roofing LLC" required /></label>
+      <label className="block text-sm font-medium">DBA / trade name (if different)<input className={inputClass} value={fields.dba} onChange={(e) => set("dba", e.target.value)} /></label>
+      <label className="block text-sm font-medium">Business legal type <span aria-hidden="true">*</span><select className={inputClass} value={fields.entity} onChange={(e) => set("entity", e.target.value)} required><option value="">Choose one</option>{ENTITY.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium">Email <span aria-hidden="true">*</span><input className={inputClass} type="email" autoComplete="email" value={fields.email} onChange={(e) => set("email", e.target.value)} required /></label>
       <label className="block text-sm font-medium">Phone <span aria-hidden="true">*</span><input className={inputClass} type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => set("phone", e.target.value)} required /></label>
       <label className="block text-sm font-medium">What does your business do? <span aria-hidden="true">*</span><input className={inputClass} value={fields.businessType} onChange={(e) => set("businessType", e.target.value)} placeholder="e.g. Roofing contractor" required /></label>
