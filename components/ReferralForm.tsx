@@ -10,11 +10,14 @@ const ROLES = ["Owner", "Partner / co-owner", "Manager", "Office / admin staff",
 const REVENUE = ["Not started yet", "Under $100,000", "$100,000 - $250,000", "$250,000 - $500,000", "$500,000 - $1 million", "$1 million - $5 million", "Over $5 million"];
 const EMPLOYEES = ["Just me", "2 - 5", "6 - 10", "11 - 25", "26 - 50", "Over 50"];
 const RELATIONSHIP = ["We've worked together on jobs", "I'm their customer / they're my customer", "Friend or family", "Same trade or business group", "Saw an online ad or post", "Other"];
+const CUSTOMERS = ["Mostly homeowners (residential)", "Mostly businesses or GCs (commercial)", "Both about equally"];
+const linkPattern = /[a-z0-9-]\.[a-z]{2,}|facebook|instagram|google|yelp|nextdoor|angi|houzz|thumbtack/i;
 const thisYear = new Date().getFullYear();
 
 export default function ReferralForm({ code }: { code: string }) {
   const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", mailingAddress: "", needs: "",
-    role: "", yearStarted: "", revenue: "", employees: "", relationship: "", site: "", license: "", currentInsurance: "", hp: "" });
+    role: "", yearStarted: "", revenue: "", employees: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
+  const [noSite, setNoSite] = useState(false);
   const [attest, setAttest] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -31,8 +34,9 @@ export default function ReferralForm({ code }: { code: string }) {
     }
     if (!hasMailableAddress(fields.mailingAddress)) { setError("Please add your full mailing address, including ZIP code."); return; }
     const year = Number(fields.yearStarted.trim());
-    if (!fields.role || !fields.revenue || !fields.employees || !fields.relationship) { setError("Please answer each of the business questions."); return; }
+    if (!fields.role || !fields.revenue || !fields.employees || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
     if (!/^\d{4}$/.test(fields.yearStarted.trim()) || year < 1900 || year > thisYear) { setError("Please add the year your business started (for example 2015)."); return; }
+    if (!noSite && !linkPattern.test(fields.site.trim())) { setError("Please add your website, Facebook page or Google listing, or check that your business doesn't have one."); return; }
     if (!attest) { setError("Please confirm you own or manage this business and want a quote."); return; }
     setBusy(true); setError("");
     const attribution = captureAttribution();
@@ -46,7 +50,8 @@ export default function ReferralForm({ code }: { code: string }) {
       { label: "Annual revenue", value: fields.revenue },
       { label: "Employees", value: fields.employees },
       { label: "How they know the referrer", value: fields.relationship },
-      fields.site.trim() && { label: "Website or Google listing", value: fields.site.trim() },
+      { label: "Customers", value: fields.customers },
+      { label: "Website or online page", value: noSite ? "None (checked: business has no website or online page)" : fields.site.trim() },
       fields.license.trim() && { label: "Contractor license #", value: fields.license.trim() },
       fields.currentInsurance.trim() && { label: "Current insurance / renewal", value: fields.currentInsurance.trim() },
       { label: "Owner/manager attestation", value: "Confirmed: owns or manages this business and wants a quote" },
@@ -83,7 +88,9 @@ export default function ReferralForm({ code }: { code: string }) {
       <label className="block text-sm font-medium">Annual revenue <span aria-hidden="true">*</span><select className={inputClass} value={fields.revenue} onChange={(e) => set("revenue", e.target.value)} required><option value="">Choose one</option>{REVENUE.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium">Number of people working in the business <span aria-hidden="true">*</span><select className={inputClass} value={fields.employees} onChange={(e) => set("employees", e.target.value)} required><option value="">Choose one</option>{EMPLOYEES.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium sm:col-span-2">How do you know the person who referred you? <span aria-hidden="true">*</span><select className={inputClass} value={fields.relationship} onChange={(e) => set("relationship", e.target.value)} required><option value="">Choose one</option>{RELATIONSHIP.map((o) => <option key={o}>{o}</option>)}</select></label>
-      <label className="block text-sm font-medium">Website or Google listing<input className={inputClass} type="url" inputMode="url" value={fields.site} onChange={(e) => set("site", e.target.value)} placeholder="yourbusiness.com" /></label>
+      <label className="block text-sm font-medium sm:col-span-2">Who are most of your customers? <span aria-hidden="true">*</span><select className={inputClass} value={fields.customers} onChange={(e) => set("customers", e.target.value)} required><option value="">Choose one</option>{CUSTOMERS.map((o) => <option key={o}>{o}</option>)}</select></label>
+      <div className="sm:col-span-2"><label className="block text-sm font-medium">Website, Facebook page or Google listing <span aria-hidden="true">*</span><input className={inputClass} inputMode="url" autoCapitalize="none" value={fields.site} onChange={(e) => set("site", e.target.value)} placeholder="yourbusiness.com or facebook.com/yourbusiness" disabled={noSite} /></label>
+        <label className="mt-2 flex items-center gap-2 text-sm text-[#405066]"><input type="checkbox" className="h-4 w-4" checked={noSite} onChange={(e) => { setNoSite(e.target.checked); if (e.target.checked) set("site", ""); }} />My business doesn&apos;t have a website or any online page</label></div>
       <label className="block text-sm font-medium">Contractor license # (if you have one)<input className={inputClass} value={fields.license} onChange={(e) => set("license", e.target.value)} /></label>
       <label className="block text-sm font-medium sm:col-span-2">Current insurance company and renewal month<input className={inputClass} value={fields.currentInsurance} onChange={(e) => set("currentInsurance", e.target.value)} placeholder="e.g. renews in March, or none yet" /></label>
     </div>
