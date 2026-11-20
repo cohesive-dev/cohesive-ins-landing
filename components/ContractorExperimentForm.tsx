@@ -181,7 +181,8 @@ export default function ContractorExperimentForm({coldLayout,promo}:{coldLayout?
     if(!res.ok||result.ok!==true)throw new Error(typeof result.error==='string' ? result.error : 'We could not save your request. Please try again.');
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
     if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
-     (window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
+    {(window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
+     (window as unknown as {oaiq?:(...args:unknown[])=>void}).oaiq?.('measure','lead_created',{type:'customer_action'},{event_id:result.conversion.eventId});}
     if(googleSearch&&result.crm==='sent'&&result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
      (window as unknown as {gtag?:(...args:unknown[])=>void}).gtag?.('event','conversion',{
       send_to:'AW-18581087843/P5k2CJ2upLodEOPMk5xF',value:1,currency:'USD',

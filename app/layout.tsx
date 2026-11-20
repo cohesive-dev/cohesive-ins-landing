@@ -8,6 +8,7 @@ import { WebsiteTraffic } from '@/components/WebsiteTraffic';
 import "./globals.css";
 
 const META_PIXEL_ID = "831179966599677";
+const OPENAI_PIXEL_ID = "SKHn7sfbd6r9B9vB51uM1d";
 const GTM_ID = "GTM-PGN427T9";
 const GOOGLE_ADS_ID = "AW-18581087843";
 const ENABLE_GTM = process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview";
@@ -83,6 +84,20 @@ fbq('track', 'PageView');`}
         ) : (
         <Script id="meta-pixel-noop" strategy="afterInteractive">
           {`window.fbq = window.fbq || function(){ if (window.__FBQ_DEBUG) console.debug('[fbq noop]', arguments); };`}
+        </Script>
+        )}
+        {/* OpenAI (ChatGPT ads) measurement pixel, production only like Meta. Forms call
+            oaiq("measure","lead_created",...) with the same event id they give Meta. */}
+        {process.env.NODE_ENV === "production" ? (
+        <Script id="openai-pixel" strategy="afterInteractive">
+          {`!function(w,d,t,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;
+var s=d.createElement(t);s.async=true;s.src=u;var f=d.getElementsByTagName(t)[0];f.parentNode.insertBefore(s,f)}
+(window,document,'script','https://bzrcdn.openai.com/sdk/oaiq.min.js');
+oaiq('init',{pixelId:'${OPENAI_PIXEL_ID}'});`}
+        </Script>
+        ) : (
+        <Script id="openai-pixel-noop" strategy="afterInteractive">
+          {`window.oaiq = window.oaiq || function(){};`}
         </Script>
         )}
         {process.env.NODE_ENV === "production" && (
