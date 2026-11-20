@@ -19,8 +19,12 @@ import TradeSearch from '@/components/TradeSearch';
 import {PHONE_DISPLAY,PHONE_E164} from '@/lib/entity';
 import {ORG_ADDRESS} from '@/lib/entity';
 
-export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdLayout}={}){
+// promo='software100': the /contractor-software landing for the field-service-software ads (Nam 11/20).
+// Adds the offer + named software to the lead's details so quoting re-rates Encore with a $0 broker fee.
+export default function ContractorExperimentForm({coldLayout,promo}:{coldLayout?:ColdLayout;promo?:'software100'}={}){
  const query=useSearchParams();
+ const promoDetails=useMemo(()=>promo==='software100'?[{label:'Promo',value:'software100: $100 off first year (Encore states, re-rate with $0 broker fee)'},
+   ...(/^[a-z0-9_]{2,30}$/.test(query.get('sw')||'')?[{label:'Software named in ad',value:query.get('sw')!}]:[])]:[],[promo,query]);
  const cold=useMemo(()=>coldLayout?coldEmailContext(query,coldLayout):null,[query,coldLayout]);
  const fallbackReason=coldLayout?null:contractorFallbackReason(query);
  // Staged (Kevin 2026-10-14): the workers' comp question exists only on the paid form with ?wc=1.
@@ -68,7 +72,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     const details=[{label:'Experiment cell',value:cellId},{label:'Form version',value:formVersion},
       ...(armUsed==='short'?[{label:'Website form arm',value:'short-first-v1'}]:armUsed==='trade_first'?[{label:'Website form arm',value:'trade-first-v1'}]:armUsed==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'?[{label:'Website form arm',value:'current-v1'}]:[]),...(!coldLayout?[{label:'Website hero',value:hero}]:[]),
       {label:'Submission id',value:submission.current},{label:'Session id',value:tracker.current?.sessionId||'unavailable'},
-      {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,
+      {label:'Advertised industry (not confirmed trade)',value:industryLabel},...sourceDetails,...promoDetails,
       ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,value])=>({label:labels[k],value})),
       ...attributionDetails(captureAttribution()),
       ...(!captureAttribution().landing_page?[{label:'Landing page',value:window.location.pathname}]:[]),
@@ -91,7 +95,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
    const timer=setTimeout(capture,120000);
    window.addEventListener('pagehide',capture);document.addEventListener('visibilitychange',hidden);
    return()=>{clearTimeout(timer);window.removeEventListener('pagehide',capture);document.removeEventListener('visibilitychange',hidden);};
- },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,formVersion,coldLayout,labels,askWc,armUsed,hero]);
+ },[answers,status,layout,industry,industryLabel,query,cellId,valid,sourceDetails,promoDetails,formVersion,coldLayout,labels,askWc,armUsed,hero]);
  useEffect(()=>{
    if(!valid)return;
    if(coldLayout)return;
@@ -162,7 +166,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
     ...(armUsed==='short'?[{label:'Website form arm',value:'short-first-v1'}]:armUsed==='trade_first'?[{label:'Website form arm',value:'trade-first-v1'}]:armUsed==='current'&&process.env.NEXT_PUBLIC_CONTRACTOR_SHORT_FIRST_AB!=='false'?[{label:'Website form arm',value:'current-v1'}]:[]),...(!coldLayout?[{label:'Website hero',value:hero}]:[]),
     {label:'Session id',value:tracker.current?.sessionId||'unavailable'},
     {label:'Submission id',value:submission.current},
-    {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,
+    {label:'Advertised industry (not confirmed trade)',value:label},...sourceDetails,...promoDetails,
     {label:'Marketing offer',value:offer?'free lead gen - outreach after insurance bind':'insurance quote'},
     {label:'Actual work and business state',value:'Confirm during follow-up before quoting'},
     ...Object.entries(answers).filter(([k])=>!['email','phone','fullName'].includes(k)&&(askWc||k!=='wcRequested')).map(([k,v])=>({label:labels[k],value:v})),
@@ -187,7 +191,7 @@ export default function ContractorExperimentForm({coldLayout}:{coldLayout?:ColdL
  }
  if(status==='done'&&!coldLayout&&!preview)return <ContractorFormSuccess googleSearch={googleSearch}/>;
  if(status==='done')return <main className="max-w-xl mx-auto p-8"><h1 className="text-3xl font-bold">{preview?'Preview complete. Nothing sent.':'Thanks - we received your request.'}</h1><p>We’ll contact you about your business insurance{offer?' and the free lead gen offer':''}.</p></main>;
- return <main className={coldLayout?'mx-auto max-w-2xl p-6 text-slate-900':contractorMainClass}>{coldLayout?<><p>Cohesive Insurance Services</p><h1 className="my-6 text-3xl font-bold">{offer?`${label}: free lead gen. Up to 6 leads.`:`Get a ${label.toLowerCase()} insurance quote.`}</h1></>:<ContractorPageHero title={askWc?'Insurance built for contractors':googleSearch?(industry==='roof'?'Roofing general liability quotes':'Tree service general liability quotes'):industry==='fire_sprinkler'?'Insurance quotes for fire sprinkler contractors':industry==='home_builder'?'Insurance quotes for new home builders':undefined}>{googleSearch?industry==='roof'?'A real roofer received a $1,359.42/year GL quote. Tell us about your work to compare options for your business.':'Real tree service examples include a $1,271.18/year GL quote and a $1,457.48/year bound GL policy. Tell us about your work to compare options.':hero==='trust'&&!askWc?<>Licensed insurance agency. A real agent reviews every quote. <a href={`tel:${PHONE_E164}`} className="whitespace-nowrap font-semibold underline">{PHONE_DISPLAY}</a></>:undefined}</ContractorPageHero>}
+ return <main className={coldLayout?'mx-auto max-w-2xl p-6 text-slate-900':contractorMainClass}>{coldLayout?<><p>Cohesive Insurance Services</p><h1 className="my-6 text-3xl font-bold">{offer?`${label}: free lead gen. Up to 6 leads.`:`Get a ${label.toLowerCase()} insurance quote.`}</h1></>:<ContractorPageHero title={promo==='software100'?`${industry&&!fallbackReason?industryLabel:'Contractor'} general liability: $100 off your first year`:askWc?'Insurance built for contractors':googleSearch?(industry==='roof'?'Roofing general liability quotes':'Tree service general liability quotes'):industry==='fire_sprinkler'?'Insurance quotes for fire sprinkler contractors':industry==='home_builder'?'Insurance quotes for new home builders':undefined}>{googleSearch?industry==='roof'?'A real roofer received a $1,359.42/year GL quote. Tell us about your work to compare options for your business.':'Real tree service examples include a $1,271.18/year GL quote and a $1,457.48/year bound GL policy. Tell us about your work to compare options.':hero==='trust'&&!askWc?<>Licensed insurance agency. A real agent reviews every quote. <a href={`tel:${PHONE_E164}`} className="whitespace-nowrap font-semibold underline">{PHONE_DISPLAY}</a></>:undefined}</ContractorPageHero>}
  <div className={coldLayout?undefined:'mx-auto max-w-2xl px-5 sm:px-6'}>
  {offer&&coldLayout&&<p className="mb-6">Bind your business insurance with us and we’ll run an email outreach campaign to property and facility managers in your service area at no extra charge.</p>}
  {offer&&coldLayout&&<figure className="mb-6"><img src={`/contractor-proof/${industry}-reply.png`} alt={`Actual ${label.toLowerCase()} outreach reply excerpt`} className="w-full rounded-lg border"/><figcaption className="text-xs mt-2 text-slate-600">Actual outreach reply - excerpt. An interested reply is not a booked job.</figcaption></figure>}
