@@ -31,7 +31,7 @@ export function noticeText(partner: PartnerRecord, referred: string, perQuote = 
   const first = partner.name.split(" ")[0] || "there";
   const earn = perQuote
     ? `That's another $${partner.rate} once we quote it. Keep sharing your link!`
-    : `Once we confirm it qualifies (a contractor or service business we insure), it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`;
+    : `Once we confirm it qualifies (a contractor, trade, home services or facility maintenance business we insure), it counts toward your next $${partner.rate * PAYOUT_BLOCK} ($${partner.rate} each, paid every ${PAYOUT_BLOCK} referrals). Keep sharing your link!`;
   return [
     `Hi ${first},`,
     "",
@@ -54,11 +54,7 @@ export function ineligibleNoticeText(partner: PartnerRecord, referred: string): 
   return [
     `Hi ${first},`,
     "",
-    `${referred} just requested a quote through your referral link. Thanks for sharing it.`,
-    "",
-    "This one doesn't count as a qualifying referral, because the business isn't in one of the industries the referral program covers. We'll still reach out to them about a quote.",
-    "",
-    "Referrals of contractors and trade businesses do count, so keep sharing your link with them!",
+    `${referred} just requested a quote through your referral link, but it doesn't count as a qualifying referral because the business isn't in one of the industries the referral program covers.`,
     "",
     "Thanks,",
     "Kevin",
@@ -66,9 +62,16 @@ export function ineligibleNoticeText(partner: PartnerRecord, referred: string): 
   ].join("\n");
 }
 
+// Nam 11/21: submitter IP state differs from the mailing-address state (or the IP is outside the US) -> the partner
+// gets this instead of "Good news". It never says WHY (so it can't be gamed).
+export function suspiciousNoticeText(partner: PartnerRecord): string {
+  const first = partner.name.split(" ")[0] || "there";
+  return [`Hi ${first},`, "", "Where did this lead come from? It does not seem like a real lead unfortunately based on submission data.", "", "Thanks,", "Kevin", "Cohesive Insurance"].join("\n");
+}
+
 /** Best effort; never throws. Returns what happened, for logs/tests only. */
 export async function notifyReferralPartner(
-  opts: { code: string; company?: string; name?: string; email?: string; industry?: string },
+  opts: { code: string; company?: string; name?: string; email?: string; industry?: string; suspicious?: boolean },
   env: Record<string, string | undefined>, find: FindText, mail: MailFn,
 ): Promise<"off" | "no-partner" | "self" | "sent" | "failed"> {
   try {
@@ -77,7 +80,7 @@ export async function notifyReferralPartner(
     if (!partner) return "no-partner";
     if (opts.email && opts.email.trim().toLowerCase() === partner.email) return "self";
     const referred = oneLine(opts.company || "") || oneLine(opts.name || "") || "A business";
-    const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: INELIGIBLE_INDUSTRIES.has((opts.industry || "").trim()) ? ineligibleNoticeText(partner, referred) : noticeText(partner, referred, perQuoteCopyOn(env)), replyTo: "kevin@cohesiveinsure.com" });
+    const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: opts.suspicious ? suspiciousNoticeText(partner) : INELIGIBLE_INDUSTRIES.has((opts.industry || "").trim()) ? ineligibleNoticeText(partner, referred) : noticeText(partner, referred, perQuoteCopyOn(env)), replyTo: "kevin@cohesiveinsure.com" });
     return ok ? "sent" : "failed";
   } catch { return "failed"; }
 }

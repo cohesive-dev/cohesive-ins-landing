@@ -9,6 +9,8 @@ import { ENCORE_CLOSED_STATES, ENCORE_OPEN_STATE_NAMES, US_STATES } from "@/lib/
 
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
 const INDUSTRIES = ["Contractor or trade business", "Church or house of worship", "Commercial property owner", "Restaurant or bar", "Other"];
+// Nam 11/21: make clear home services + facility maintenance are "contractor/trade" (a painter picked "Other").
+const INDUSTRY_LABELS: Record<string, string> = { "Contractor or trade business": "Contractor or trade business (incl. home services, facility maintenance)" };
 const CONTRACTOR_INDUSTRIES = new Set(["Contractor or trade business", "Cleaning business"]);
 const ENTITY = ["Sole proprietor", "LLC", "Corporation (Inc. / Corp.)", "Partnership", "Nonprofit", "Other"];
 const ROLES = ["Owner", "Partner / co-owner", "Manager", "Office / admin staff", "Other"];
@@ -184,7 +186,7 @@ export default function ReferralForm({ code }: { code: string }) {
       <label className="block text-sm font-medium">Business legal type <span aria-hidden="true">*</span><select className={inputClass} value={fields.entity} onChange={(e) => set("entity", e.target.value)} required><option value="">Choose one</option>{ENTITY.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium">Email <span aria-hidden="true">*</span><input className={inputClass} type="email" autoComplete="email" value={fields.email} onChange={(e) => set("email", e.target.value)} required /></label>
       <label className="block text-sm font-medium">Phone <span aria-hidden="true">*</span><input className={inputClass} type="tel" autoComplete="tel" value={fields.phone} onChange={(e) => set("phone", e.target.value)} required /></label>
-      <label className="block text-sm font-medium">Industry <span aria-hidden="true">*</span><select className={inputClass} value={fields.industry} onChange={(e) => set("industry", e.target.value)} required><option value="">Choose one</option>{INDUSTRIES.map((o) => <option key={o}>{o}</option>)}</select></label>
+      <label className="block text-sm font-medium">Industry <span aria-hidden="true">*</span><select className={inputClass} value={fields.industry} onChange={(e) => set("industry", e.target.value)} required><option value="">Choose one</option>{INDUSTRIES.map((o) => <option key={o} value={o}>{INDUSTRY_LABELS[o] ?? o}</option>)}</select></label>
       <label className="block text-sm font-medium">What does your business do? <span aria-hidden="true">*</span><input className={inputClass} value={fields.businessType} onChange={(e) => set("businessType", e.target.value)} placeholder="e.g. Roofing contractor" required /></label>
       <label className="block text-sm font-medium">Mailing address <span aria-hidden="true">*</span><AddressAutocomplete value={fields.mailingAddress} onChange={(value) => set("mailingAddress", value)} placeholder="123 Main St, city, state, ZIP" ariaLabel="Mailing address" required /></label>
     </div>

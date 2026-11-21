@@ -1,3 +1,4 @@
+import { stateFromMailingAddress } from "@/lib/mailing-address";
 import { CONTRACTOR_V2_VERSION } from '@/lib/contractor-arm';
 import { createHash } from "crypto";
 import { NextResponse, after, type NextRequest } from "next/server";
@@ -327,6 +328,7 @@ export async function POST(request: NextRequest) {
   // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
   // Declared here rather than further down because the abandoned-fill branch below needs it too.
   let details = sanitizeDetails(body.details);
+  let referralIpMismatch = false;
   if (source === "customer-referral") {
     const supplied = details?.find((item) => item.label === "Referral code")?.value;
     if (supplied && !referralCode(supplied)) {
@@ -410,6 +412,14 @@ export async function POST(request: NextRequest) {
       ...(where ? [{ label: "Submitter IP location", value: where }] : []),
       ...(ipCountry && ipCountry !== "US" ? [{ label: "IP check", value: `Submitted from outside the US (${where}) - verify before quoting or paying a referral` }] : []),
     ];
+    // Nam 11/21: referral whose submitter IP state != mailing-address state = suspicious (partner told "not a real lead").
+    if (source === "customer-referral") {
+      const mailState = stateFromMailingAddress(details.find((d) => d.label === "Mailing address")?.value || "");
+      if ((ipCountry && ipCountry !== "US") || (ipCountry === "US" && ipRegion && mailState && ipRegion.toUpperCase() !== mailState)) {
+        referralIpMismatch = true;
+        if (ipCountry === "US") details = [...details, { label: "IP check", value: `Submitted from ${ipRegion.toUpperCase()}, mailing address in ${mailState} - referral partner told it does not look real; verify before paying` }];
+      }
+    }
   }
 
   // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
@@ -594,7 +604,7 @@ export async function POST(request: NextRequest) {
   const partnerCode = source === "customer-referral" ? details?.find((item) => item.label === "Referral code")?.value : undefined;
   if (partnerCode && quality.kind === "accept" && !crmResult.duplicate) {
     const notice = async () => {
-      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email, industry: details?.find((item) => item.label === "Industry")?.value }, process.env, findQuotesMessageText, sendReferralPartnerMail);
+      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email, suspicious: referralIpMismatch, industry: details?.find((item) => item.label === "Industry")?.value }, process.env, findQuotesMessageText, sendReferralPartnerMail);
       console.info("referral_partner_notice", { outcome });
     };
     try { after(notice); } catch { void notice(); } // after() needs a request scope; direct callers (tests) run it inline.

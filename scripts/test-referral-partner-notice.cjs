@@ -63,5 +63,11 @@ assert.equal(await notifyReferralPartner({ code, company: "X" }, {}, find, async
   assert.match(m6[0].text, /doesn't count as a qualifying referral/); assert.ok(!m6[0].text.includes("$"));
   const m7 = []; await notifyReferralPartner({ code, company: "Roof Co", industry: "Contractor or trade business" }, {}, find, async (m) => { m7.push(m); return true; });
   assert.match(m7[0].text, /next \$120/); }
+// Nam 11/21: IP/mailing-state mismatch -> "Where did this lead come from?" with no reason given; ineligible copy is short.
+{ const m8 = []; await notifyReferralPartner({ code, company: "Hurd Co", industry: "Contractor or trade business", suspicious: true }, {}, find, async (m) => { m8.push(m); return true; });
+  assert.match(m8[0].text, /Where did this lead come from\? It does not seem like a real lead unfortunately based on submission data\./);
+  assert.ok(!/IP|address|state|\$/.test(m8[0].text.replace("Hi Pat,", "")));
+  const m9 = []; await notifyReferralPartner({ code, company: "Smoke Co", industry: "Other" }, {}, find, async (m) => { m9.push(m); return true; });
+  assert.ok(!m9[0].text.includes("reach out") && !m9[0].text.includes("keep sharing")); }
 console.log("referral-partner-notice: all assertions passed");
 })().catch((e) => { console.error(e); process.exit(1); });
