@@ -7,7 +7,9 @@ import { ALERT_SUBJECT_TAG, PAYOUT_BLOCK, type MailFn } from "@/lib/referral-par
 // Desk 11/20 23:40Z copy QA 5 (Charmaine; Nam 11/20 "$40 for every referral we quote"): env REFERRAL_NOTICE_PER_QUOTE=on
 // (default OFF) replaces the "$120 ($40 each, paid every 3 referrals)" sentence with "That's another $40 once we quote it."
 
-export interface PartnerRecord { code: string; name: string; email: string; rate: number }
+// facebook = the partner signed up from a FB/IG ad (alert line SIGNUP_CHANNEL: facebook, or a Source: facebook... line);
+// their no-website referrals must carry proof (lib/referral-proof.ts).
+export interface PartnerRecord { code: string; name: string; email: string; rate: number; facebook?: boolean }
 export const LAUNCH_RATE_USD = 40; // partners whose alert predates the RATE_USD line
 export type FindText = (q: string) => Promise<string | null>;
 
@@ -21,7 +23,8 @@ export async function lookupPartner(code: string, find: FindText): Promise<Partn
   const email = line(text, "Email").toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return null;
   const rate = Number(line(text, "RATE_USD"));
-  return { code, name: line(text, "Name"), email, rate: Number.isFinite(rate) && rate > 0 ? rate : LAUNCH_RATE_USD };
+  const facebook = line(text, "SIGNUP_CHANNEL").toLowerCase() === "facebook" || /^(facebook|fb|meta|ig|instagram)\b/i.test(line(text, "Source"));
+  return { code, name: line(text, "Name"), email, rate: Number.isFinite(rate) && rate > 0 ? rate : LAUNCH_RATE_USD, ...(facebook ? { facebook: true } : {}) };
 }
 
 export const perQuoteCopyOn = (env: Record<string, string | undefined>) =>
@@ -71,13 +74,14 @@ export function suspiciousNoticeText(partner: PartnerRecord): string {
 
 /** Best effort; never throws. Returns what happened, for logs/tests only. */
 export async function notifyReferralPartner(
-  opts: { code: string; company?: string; name?: string; email?: string; industry?: string; suspicious?: boolean },
+  opts: { code: string; company?: string; name?: string; email?: string; industry?: string; suspicious?: boolean; hold?: boolean },
   env: Record<string, string | undefined>, find: FindText, mail: MailFn,
-): Promise<"off" | "no-partner" | "self" | "sent" | "failed"> {
+): Promise<"off" | "no-partner" | "self" | "held" | "sent" | "failed"> {
   try {
     if ((env.REFERRAL_PARTNER_NOTICE ?? "").trim().toLowerCase() === "off") return "off";
     const partner = await lookupPartner(opts.code, find);
     if (!partner) return "no-partner";
+    if (opts.hold) return "held"; // proof review unclear: the team decides, then tells the partner by hand
     if (opts.email && opts.email.trim().toLowerCase() === partner.email) return "self";
     const referred = oneLine(opts.company || "") || oneLine(opts.name || "") || "A business";
     const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: opts.suspicious ? suspiciousNoticeText(partner) : INELIGIBLE_INDUSTRIES.has((opts.industry || "").trim()) ? ineligibleNoticeText(partner, referred) : noticeText(partner, referred, perQuoteCopyOn(env)), replyTo: "kevin@cohesiveinsure.com" });

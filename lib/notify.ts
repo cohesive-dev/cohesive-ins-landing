@@ -257,3 +257,10 @@ export async function sendRoofingLeadAlert(to: string[], subject: string, text: 
 export async function sendReferralPartnerMail(opts: { to: string[]; subject: string; text: string; replyTo?: string }): Promise<boolean> {
   return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: opts.to.join(", "), subject: opts.subject, text: opts.text, ...(opts.replyTo ? { replyTo: opts.replyTo } : {}) }, "referral-partner mail");
 }
+
+// Nam 11/21: /refer proof-of-business review (lib/referral-proof.ts) -> team inboxes (alertRecipients; never quotes@),
+// with the uploaded file attached, the verdict and what the partner was (or was not) told.
+export async function sendReferralProofMail(opts: { to: string[]; subject: string; text: string; attachment?: PolicyUploadAttachment }): Promise<boolean> {
+  if (opts.to.length === 0) return false;
+  return composeAndSend({ from: `Cohesive Insurance <${QUOTES_ADDRESS}>`, to: opts.to.join(", "), subject: opts.subject, text: opts.text, ...(opts.attachment ? { attachments: [opts.attachment] } : {}) }, "referral proof review");
+}

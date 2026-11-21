@@ -25,7 +25,7 @@ export interface PartnerInput {
 }
 
 // Same list/test as lib/referral-partner-sourcing.ts (client-safe copy for the form; the test asserts they match).
-export const SOURCING_OPTIONS = ["My subcontractors / crews", "Other contractors I know", "Suppliers / vendors", "My customers", "Social media / Facebook groups", "Trade groups / associations", "Real estate / property contacts", "Other"] as const;
+export const SOURCING_OPTIONS = ["My subcontractors / crews", "Other contractors I know", "Suppliers / vendors", "My customers", "Social media / Facebook groups", "Trade groups / associations", "Real estate / property contacts", "Friends / family", "Other"] as const;
 export const isFacebookUtm = (utm?: { utm_source?: string | null; fbclid?: string | null }) =>
   /^(facebook|fb|meta|ig|instagram)$/i.test((utm?.utm_source ?? "").trim()) || Boolean((utm?.fbclid ?? "").trim());
 const sourcingList = (input: PartnerInput) =>
@@ -70,6 +70,7 @@ export function alertText(input: PartnerInput, code: string): string {
     `PROGRAM: ${client ? "client" : "partner"}`,
     `PARTNER_CODE: ${code}`,
     `RATE_USD: ${REFERRAL_FEE_USD}`,
+    isFacebookUtm(input.utm) && "SIGNUP_CHANNEL: facebook",
     `Link: ${partnerLink(code)}`,
     `Name: ${clean(input.fullName)}`,
     `Business: ${clean(input.businessName)}${clean(input.trade) ? ` (${clean(input.trade)})` : ""}`,

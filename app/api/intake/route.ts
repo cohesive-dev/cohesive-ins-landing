@@ -2,9 +2,11 @@ import { stateFromMailingAddress } from "@/lib/mailing-address";
 import { CONTRACTOR_V2_VERSION } from '@/lib/contractor-arm';
 import { createHash } from "crypto";
 import { NextResponse, after, type NextRequest } from "next/server";
-import { sendIntakeNotification, sendReferralPartnerMail } from "@/lib/notify";
+import { sendIntakeNotification, sendReferralPartnerMail, sendReferralProofMail } from "@/lib/notify";
 import { findQuotesMessageText } from "@/lib/gmail";
-import { notifyReferralPartner } from "@/lib/referral-partner-notice";
+import { lookupPartner, notifyReferralPartner } from "@/lib/referral-partner-notice";
+import { alertRecipients } from "@/lib/referral-partners";
+import { checkFein, parseProof, reviewProof, type ProofFile, type ProofReview } from "@/lib/referral-proof";
 import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
@@ -80,6 +82,8 @@ type IntakePayload = {
   // Optional requested coverage (CRM line names), e.g. ["Workers Comp"] from the workers' comp
   // guides. Forwarded ONLY when every value is in REQUESTED_COVERAGE_ALLOWLIST; see requestedCoverage().
   coverage?: unknown;
+  // /refer only: proof-of-business upload {name, type, data(base64)} for FB-partner referrals with no website (lib/referral-proof.ts).
+  proof?: unknown;
 };
 
 // The allowlist lives in lib/requested-coverage.ts. Anything else is dropped so a crafted body
@@ -422,6 +426,39 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Nam 11/21: a referral through a FACEBOOK-ad partner's link whose business has no website must carry an FEIN or a
+  // business document. FEIN = format + IRS prefix check; a document = LLM review (Bedrock). Bad FEIN / FAIL = partner
+  // gets the "does not look real" notice; UNCLEAR = partner notice held and the team decides. The verdict rides on the
+  // lead as "Referral proof check" so referral_partner_payouts counts only PASS.
+  let proofFile: ProofFile | null = null;
+  let proofReview: ProofReview | null = null;
+  let proofRequired = false, proofSuspicious = false, proofHold = false;
+  if (source === "customer-referral" && !isPartial) {
+    const code = details?.find((item) => item.label === "Referral code")?.value;
+    const noSite = /^None\b/.test(details?.find((item) => item.label === "Website or online page")?.value || "");
+    const partner = code && noSite ? await lookupPartner(code, findQuotesMessageText).catch(() => null) : null;
+    if (partner?.facebook) {
+      proofRequired = true;
+      const feinRaw = details?.find((item) => item.label === "FEIN")?.value || "";
+      proofFile = parseProof(body.proof);
+      if (!feinRaw && !proofFile) {
+        return NextResponse.json({ ok: false, error: "Please add the business's FEIN or upload a business document." }, { status: 400 });
+      }
+      const fein = feinRaw ? checkFein(feinRaw) : null;
+      if (proofFile) proofReview = await reviewProof(proofFile, { company, dba: details?.find((item) => item.label === "DBA")?.value, address: details?.find((item) => item.label === "Mailing address")?.value, name }, process.env);
+      const badFein = Boolean(feinRaw) && !fein;
+      proofSuspicious = badFein || proofReview?.verdict === "fail";
+      proofHold = !proofSuspicious && !fein && proofReview?.verdict !== "pass";
+      const check = proofSuspicious
+        ? `FAIL - ${badFein ? "FEIN is not a valid EIN" : `document: ${proofReview?.reason || "not a business document"}`}; partner told it does not look real; do not pay`
+        : proofHold ? `UNCLEAR - ${proofReview?.reason || "document not readable"}; partner notice held for team review (see team email)`
+        : `PASS - ${fein ? "valid FEIN format" : ""}${fein && proofReview ? "; " : ""}${proofReview ? `document ${proofReview.verdict}: ${proofReview.reason}` : ""}`;
+      details = [...(details ?? []).filter((item) => item.label !== "FEIN"), ...(feinRaw ? [{ label: "FEIN", value: fein || feinRaw.slice(0, 20) }] : []),
+        ...(proofFile ? [{ label: "Proof document", value: `${proofFile.name} (${proofFile.type}; emailed to the team)` }] : []),
+        { label: "Referral proof check", value: check }];
+    }
+  }
+
   // Optional CAPI event name. Absent => "Lead" (today's behavior; /religious
   // and every other caller are untouched).
   const capiEventName = asTrimmedString(body.capiEventName);
@@ -604,8 +641,23 @@ export async function POST(request: NextRequest) {
   const partnerCode = source === "customer-referral" ? details?.find((item) => item.label === "Referral code")?.value : undefined;
   if (partnerCode && quality.kind === "accept" && !crmResult.duplicate) {
     const notice = async () => {
-      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email, suspicious: referralIpMismatch, industry: details?.find((item) => item.label === "Industry")?.value }, process.env, findQuotesMessageText, sendReferralPartnerMail);
+      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email, suspicious: referralIpMismatch || proofSuspicious, hold: proofHold, industry: details?.find((item) => item.label === "Industry")?.value }, process.env, findQuotesMessageText, sendReferralPartnerMail);
       console.info("referral_partner_notice", { outcome });
+      if (proofRequired) {
+        const check = details?.find((item) => item.label === "Referral proof check")?.value || "";
+        const told = outcome === "held" ? "NOTHING yet (held) - reply to the partner yourself once you decide" : outcome === "sent" ? (proofSuspicious || referralIpMismatch ? "\"does not seem like a real lead\"" : "the normal \"good news\" notice") : `no notice (${outcome})`;
+        const ok = await sendReferralProofMail({
+          to: alertRecipients(process.env),
+          subject: `[referral-proof] ${check.split(" ")[0]} - ${company || name || "unknown business"}`.replace(/[\r\n]+/g, " ").slice(0, 180),
+          text: [`A /refer lead from a Facebook-ad partner (code ${partnerCode}) said the business has no website, so it had to prove the business exists.`, "",
+            `Business: ${company || "(none)"}`, `Contact: ${name || ""} <${email || ""}>`, `FEIN: ${details?.find((item) => item.label === "FEIN")?.value || "(not given)"}`,
+            `Mailing address: ${details?.find((item) => item.label === "Mailing address")?.value || ""}`, "",
+            `Check: ${check}`, proofReview?.model ? `Reviewer model: ${proofReview.model}` : null, `Partner was told: ${told}`, "",
+            "Payouts count this referral only when the lead's \"Referral proof check\" starts with PASS."].filter((x) => x !== null).join("\n"),
+          ...(proofFile ? { attachment: { filename: proofFile.name, content: Buffer.from(proofFile.data, "base64"), contentType: proofFile.type } } : {}),
+        });
+        console.info("referral_proof_mail", { ok });
+      }
     };
     try { after(notice); } catch { void notice(); } // after() needs a request scope; direct callers (tests) run it inline.
   }
