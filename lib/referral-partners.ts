@@ -20,8 +20,16 @@ export const PAYOUT_METHODS = ["Venmo"] as const; // Nam 2026-11-19: Venmo only
 export interface PartnerInput {
   fullName?: string; businessName?: string; email?: string; phone?: string; trade?: string; program?: string;
   payoutMethod?: string; payoutHandle?: string; agree?: boolean; website?: string;
+  currentBusiness?: string; sourcing?: string[];
   utm?: Partial<Record<"utm_source" | "utm_medium" | "utm_campaign" | "utm_content" | "utm_term" | "fbclid", string>>;
 }
+
+// Same list/test as lib/referral-partner-sourcing.ts (client-safe copy for the form; the test asserts they match).
+export const SOURCING_OPTIONS = ["My subcontractors / crews", "Other contractors I know", "Suppliers / vendors", "My customers", "Social media / Facebook groups", "Trade groups / associations", "Real estate / property contacts", "Other"] as const;
+export const isFacebookUtm = (utm?: { utm_source?: string | null; fbclid?: string | null }) =>
+  /^(facebook|fb|meta|ig|instagram)$/i.test((utm?.utm_source ?? "").trim()) || Boolean((utm?.fbclid ?? "").trim());
+const sourcingList = (input: PartnerInput) =>
+  (Array.isArray(input.sourcing) ? input.sourcing : []).filter((x): x is string => typeof x === "string" && (SOURCING_OPTIONS as readonly string[]).includes(x));
 
 const clean = (v: unknown, max = 200) => (typeof v === "string" ? v.replace(/[\r\n\u2028\u2029]+/g, " ").trim().slice(0, max) : "");
 const okEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
@@ -34,6 +42,10 @@ export function validatePartner(input: PartnerInput): Record<string, string> {
   if (!okEmail(clean(input.email))) e.email = "Please enter a valid email.";
   if (!okPhone(clean(input.phone))) e.phone = "Please enter a 10-digit phone number.";
   if (clean(input.payoutHandle).replace(/^@/, "").length < 2) e.payoutHandle = "Please enter your Venmo username.";
+  if (isFacebookUtm(input.utm)) {
+    if (clean(input.currentBusiness).length < 3) e.currentBusiness = "Please tell us what your current business is.";
+    if (!sourcingList(input).length) e.sourcing = "Please pick at least one.";
+  }
   if (input.agree !== true) e.agree = "Please agree to the program terms.";
   return e;
 }
@@ -63,6 +75,8 @@ export function alertText(input: PartnerInput, code: string): string {
     `Business: ${clean(input.businessName)}${clean(input.trade) ? ` (${clean(input.trade)})` : ""}`,
     `Email: ${clean(input.email).toLowerCase()}`,
     `Phone: ${clean(input.phone)}`,
+    clean(input.currentBusiness) && `Current business: ${clean(input.currentBusiness, 300)}`,
+    sourcingList(input).length > 0 && `Sourcing referrals from: ${sourcingList(input).join(", ")}`,
     `Payout: Venmo - @${clean(input.payoutHandle).replace(/^@/, "")}`,
     clean(utm.utm_source) && `Source: ${clean(utm.utm_source)}${clean(utm.utm_campaign) ? ` / ${clean(utm.utm_campaign)}` : ""}${clean(utm.utm_content) ? ` / ${clean(utm.utm_content)}` : ""}`,
     `Terms: flat $${REFERRAL_FEE_USD} per qualified referral, paid $${PAYOUT_BLOCK_USD} per ${PAYOUT_BLOCK}; not contingent on purchase.`,

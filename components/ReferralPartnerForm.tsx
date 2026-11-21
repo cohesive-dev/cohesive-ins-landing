@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { SOURCING_OPTIONS, isFacebookUtm } from "@/lib/referral-partner-sourcing";
 
 const REFERRAL_TRADE_TAGS = ["Roofing", "General contractors", "Remodeling", "Carpentry", "Painting", "Plumbing", "Electrical", "HVAC", "Drywall", "Flooring", "Masonry & concrete", "Siding & fencing", "Welding", "Excavation", "Landscaping", "Tree service", "Handyman", "Solar install"];
 
@@ -13,7 +14,12 @@ const CLIENT_TAGS = [...REFERRAL_TRADE_TAGS, "Churches", "Commercial property", 
 
 export default function ReferralPartnerForm({ program = "partner" }: { program?: "partner" | "client" }) {
   const client = program === "client";
-  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutHandle: "", website: "" });
+  const [f, setF] = useState({ fullName: "", businessName: "", trade: "", email: "", phone: "", payoutHandle: "", website: "", currentBusiness: "" });
+  const [sourcing, setSourcing] = useState<string[]>([]);
+  // Nam 11/21: only FB-ad visitors get the business/sourcing questions (cold-email partners do not).
+  const [fromFb, setFromFb] = useState(false);
+  useEffect(() => { const q = new URLSearchParams(location.search); setFromFb(isFacebookUtm({ utm_source: q.get("utm_source"), fbclid: q.get("fbclid") })); }, []);
+  const toggle = (o: string) => setSourcing((s) => s.includes(o) ? s.filter((x) => x !== o) : [...s, o]);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [message, setMessage] = useState("");
@@ -28,7 +34,7 @@ export default function ReferralPartnerForm({ program = "partner" }: { program?:
     const q = new URLSearchParams(location.search);
     const utm = Object.fromEntries(UTM_KEYS.map((k) => [k, q.get(k) ?? ""]).filter(([, v]) => v));
     try {
-      const r = await fetch("/api/referral-partners", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...f, agree, utm, program }) });
+      const r = await fetch("/api/referral-partners", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...f, sourcing, agree, utm, program }) });
       const data = (await r.json().catch(() => ({}))) as { ok?: boolean; url?: string; errors?: Record<string, string>; message?: string };
       if (r.ok && data.ok && data.url) {
         (window as unknown as { fbq?: Fbq }).fbq?.("trackCustom", "ReferralPartnerSignup");
@@ -60,6 +66,9 @@ export default function ReferralPartnerForm({ program = "partner" }: { program?:
     <label className="text-sm font-semibold">Your name<input className={input} value={f.fullName} onChange={set("fullName")} autoComplete="name" />{err("fullName")}</label>
     <label className="text-sm font-semibold">Business name<input className={input} value={f.businessName} onChange={set("businessName")} autoComplete="organization" />{err("businessName")}</label>
     <label className="text-sm font-semibold">{client ? "Your industry (optional)" : "Your trade (optional)"}<input className={input} value={f.trade} onChange={set("trade")} placeholder={client ? "Roofing, church, restaurant, ..." : "General contractor, roofing, ..."} /></label>
+    {fromFb && <label className="text-sm font-semibold">What&apos;s your current business?<input className={input} value={f.currentBusiness} onChange={set("currentBusiness")} placeholder="e.g. roofing company, supply store, real estate agent" />{err("currentBusiness")}</label>}
+    {fromFb && <fieldset><legend className="text-sm font-semibold">Where do you plan on sourcing referrals? <span className="font-normal text-[#405066]">(pick all that apply)</span></legend>
+      <div className="mt-2 grid gap-2 sm:grid-cols-2">{SOURCING_OPTIONS.map((o) => <label key={o} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={sourcing.includes(o)} onChange={() => toggle(o)} />{o}</label>)}</div>{err("sourcing")}</fieldset>}
     <label className="text-sm font-semibold">Email<input type="email" className={input} value={f.email} onChange={set("email")} autoComplete="email" />{err("email")}</label>
     <label className="text-sm font-semibold">Phone<input type="tel" className={input} value={f.phone} onChange={set("phone")} autoComplete="tel" />{err("phone")}</label>
     <label className="text-sm font-semibold">Venmo username (we pay by Venmo)<input className={input} value={f.payoutHandle} onChange={set("payoutHandle")} placeholder="@your-name" autoCapitalize="none" />{err("payoutHandle")}</label>
