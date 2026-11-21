@@ -45,9 +45,30 @@ export function noticeText(partner: PartnerRecord, referred: string, perQuote = 
   ].join("\n");
 }
 
+// Nam 11/21: a referral whose business picked Industry = "Other" is still taken in as a lead, but the partner is
+// told it is not a qualifying referral (outside the industries the program covers). It never earns credit.
+export const INELIGIBLE_INDUSTRIES = new Set(["Other"]);
+
+export function ineligibleNoticeText(partner: PartnerRecord, referred: string): string {
+  const first = partner.name.split(" ")[0] || "there";
+  return [
+    `Hi ${first},`,
+    "",
+    `${referred} just requested a quote through your referral link. Thanks for sharing it.`,
+    "",
+    "This one doesn't count as a qualifying referral, because the business isn't in one of the industries the referral program covers. We'll still reach out to them about a quote.",
+    "",
+    "Referrals of contractors and trade businesses do count, so keep sharing your link with them!",
+    "",
+    "Thanks,",
+    "Kevin",
+    "Cohesive Insurance",
+  ].join("\n");
+}
+
 /** Best effort; never throws. Returns what happened, for logs/tests only. */
 export async function notifyReferralPartner(
-  opts: { code: string; company?: string; name?: string; email?: string },
+  opts: { code: string; company?: string; name?: string; email?: string; industry?: string },
   env: Record<string, string | undefined>, find: FindText, mail: MailFn,
 ): Promise<"off" | "no-partner" | "self" | "sent" | "failed"> {
   try {
@@ -56,7 +77,7 @@ export async function notifyReferralPartner(
     if (!partner) return "no-partner";
     if (opts.email && opts.email.trim().toLowerCase() === partner.email) return "self";
     const referred = oneLine(opts.company || "") || oneLine(opts.name || "") || "A business";
-    const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: noticeText(partner, referred, perQuoteCopyOn(env)), replyTo: "kevin@cohesiveinsure.com" });
+    const ok = await mail({ to: [partner.email], subject: `${referred} used your referral link`.slice(0, 150), text: INELIGIBLE_INDUSTRIES.has((opts.industry || "").trim()) ? ineligibleNoticeText(partner, referred) : noticeText(partner, referred, perQuoteCopyOn(env)), replyTo: "kevin@cohesiveinsure.com" });
     return ok ? "sent" : "failed";
   } catch { return "failed"; }
 }

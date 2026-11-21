@@ -57,5 +57,11 @@ assert.equal(await notifyReferralPartner({ code, company: "X" }, {}, find, async
   assert.match(m4[0].text, /next \$120 \(\$40 each/);
   const m5 = []; await notifyReferralPartner({ code, company: "Q Co" }, { REFERRAL_NOTICE_PER_QUOTE: "on" }, async () => alert.replace("RATE_USD: 40", "RATE_USD: 30"), async (m) => { m5.push(m); return true; });
   assert.match(m5[0].text, /That's another \$30 once we quote it/); }
+// Nam 11/21: Industry "Other" -> partner told it is not a qualifying referral; no earnings line.
+{ const m6 = []; assert.equal(await notifyReferralPartner({ code, company: "Smoke Co", industry: "Other" }, {}, find, async (m) => { m6.push(m); return true; }), "sent");
+  assert.equal(m6[0].subject, "Smoke Co used your referral link");
+  assert.match(m6[0].text, /doesn't count as a qualifying referral/); assert.ok(!m6[0].text.includes("$"));
+  const m7 = []; await notifyReferralPartner({ code, company: "Roof Co", industry: "Contractor or trade business" }, {}, find, async (m) => { m7.push(m); return true; });
+  assert.match(m7[0].text, /next \$120/); }
 console.log("referral-partner-notice: all assertions passed");
 })().catch((e) => { console.error(e); process.exit(1); });

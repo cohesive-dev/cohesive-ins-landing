@@ -594,7 +594,7 @@ export async function POST(request: NextRequest) {
   const partnerCode = source === "customer-referral" ? details?.find((item) => item.label === "Referral code")?.value : undefined;
   if (partnerCode && quality.kind === "accept" && !crmResult.duplicate) {
     const notice = async () => {
-      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email }, process.env, findQuotesMessageText, sendReferralPartnerMail);
+      const outcome = await notifyReferralPartner({ code: partnerCode, company, name, email, industry: details?.find((item) => item.label === "Industry")?.value }, process.env, findQuotesMessageText, sendReferralPartnerMail);
       console.info("referral_partner_notice", { outcome });
     };
     try { after(notice); } catch { void notice(); } // after() needs a request scope; direct callers (tests) run it inline.
