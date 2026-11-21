@@ -8,14 +8,27 @@ import { hasMailableAddress, stateFromMailingAddress, zipFromMailingAddress } fr
 import { ENCORE_CLOSED_STATES, ENCORE_OPEN_STATE_NAMES, US_STATES } from "@/lib/encore-states";
 
 const emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
-const INDUSTRIES = ["Contractor or trade business", "Cleaning business", "Church or house of worship", "Commercial property owner", "Restaurant or bar", "Other"];
+const INDUSTRIES = ["Contractor or trade business", "Church or house of worship", "Commercial property owner", "Restaurant or bar", "Other"];
 const CONTRACTOR_INDUSTRIES = new Set(["Contractor or trade business", "Cleaning business"]);
 const ENTITY = ["Sole proprietor", "LLC", "Corporation (Inc. / Corp.)", "Partnership", "Nonprofit", "Other"];
 const ROLES = ["Owner", "Partner / co-owner", "Manager", "Office / admin staff", "Other"];
 const REVENUE = ["Not started yet", "Under $100,000", "$100,000 - $250,000", "$250,000 - $500,000", "$500,000 - $1 million", "$1 million - $5 million", "Over $5 million"];
 const RELATIONSHIP = ["We've worked together on jobs", "I'm their customer / they're my customer", "Friend or family", "Same trade or business group", "Saw an online ad or post", "Other"];
 const CUSTOMERS = ["Mostly homeowners (residential)", "Mostly businesses or GCs (commercial)", "Both about equally"];
-const linkPattern = /[a-z0-9-]\.[a-z]{2,}|facebook|instagram|google|yelp|nextdoor|angi|houzz|thumbtack/i;
+// Nam 11/21: a website / online page is required (no "none" checkbox) and must be a real URL.
+// Social/listing hosts need the business's own page path (facebook.com alone is not a business).
+const SOCIAL_HOSTS = /(^|\.)(facebook|fb|instagram|google|goo|yelp|nextdoor|angi|angieslist|houzz|thumbtack|linkedin|tiktok|x|twitter|bbb|homeadvisor|youtube)\.[a-z.]+$/i;
+function normalizeSiteUrl(raw: string): string | null {
+  const text = raw.trim();
+  if (!text || /\s/.test(text)) return null;
+  let url: URL;
+  try { url = new URL(/^https?:\/\//i.test(text) ? text : `https://${text}`); } catch { return null; }
+  if (!/^https?:$/.test(url.protocol)) return null;
+  const host = url.hostname.toLowerCase();
+  if (!/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,24}$/.test(host)) return null;
+  if (SOCIAL_HOSTS.test(host) && url.pathname.replace(/\/+$/, "").length < 2) return null;
+  return url.toString();
+}
 const thisYear = new Date().getFullYear();
 // Nam 11/21: qualify referrals on renewal timing + current insurance; payroll only (no employee yes/no).
 const NO_PAYROLL = "$0 - no W2 employees";
@@ -27,7 +40,6 @@ const PAYING = ["Under $2,000", "$2,000 - $5,000", "$5,000 - $20,000", "Over $20
 export default function ReferralForm({ code }: { code: string }) {
   const [fields, setFields] = useState({ name: "", email: "", phone: "", company: "", businessType: "", mailingAddress: "", needs: "",
     role: "", yearStarted: "", revenue: "", payroll: "", insured: "", renews: "", paying: "", needBy: "", usesSubs: "", subCosts: "", entity: "", dba: "", industry: "", relationship: "", site: "", license: "", currentInsurance: "", customers: "", hp: "" });
-  const [noSite, setNoSite] = useState(false);
   const [attest, setAttest] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -100,8 +112,14 @@ export default function ReferralForm({ code }: { code: string }) {
     if (!fields.entity || !fields.role || !fields.revenue || !fields.payroll || !fields.usesSubs || (fields.usesSubs === "Yes" && !fields.subCosts) || !fields.relationship || !fields.customers) { setError("Please answer each of the business questions."); return; }
     if (!fields.insured || (fields.insured === "Yes" && (!fields.renews || !fields.paying)) || (fields.insured === "No" && !fields.needBy)) { setError("Please tell us about your current insurance and when it renews."); return; }
     if (!/^\d{4}$/.test(fields.yearStarted.trim()) || year < 1900 || year > thisYear) { setError("Please add the year your business started (for example 2015)."); return; }
-    if (!noSite && !linkPattern.test(fields.site.trim())) { setError("Please add your website, Facebook page or Google listing, or check that your business doesn't have one."); return; }
     if (!attest) { setError("Please confirm you own or manage this business and want a quote."); return; }
+    const siteUrl = normalizeSiteUrl(fields.site);
+    if (!siteUrl) { setError("Please add your business's website or online page as a full link, e.g. smithroofing.com or facebook.com/smithroofing."); return; }
+    setBusy(true);
+    try {
+      const check = await fetch(`/api/site-check?url=${encodeURIComponent(siteUrl)}`).then((r) => r.json()).catch(() => ({ ok: true }));
+      if (check.ok === false) { setBusy(false); setError("We couldn't find that website. Please check the link to your business's website or online page."); return; }
+    } catch { /* network trouble: don't block the submit */ }
     setBusy(true); setError("");
     const attribution = captureAttribution();
     const details = [
@@ -125,7 +143,7 @@ export default function ReferralForm({ code }: { code: string }) {
       fields.usesSubs === "Yes" && { label: "Annual subcontractor costs (roughly)", value: fields.subCosts },
       { label: "How they know the referrer", value: fields.relationship },
       { label: "Customers", value: fields.customers },
-      { label: "Website or online page", value: noSite ? "None (checked: business has no website or online page)" : fields.site.trim() },
+      { label: "Website or online page", value: siteUrl },
       fields.license.trim() && { label: "Contractor license #", value: fields.license.trim() },
       { label: "Current insurance / renewal", value: [fields.insured === "Yes" ? `Insured; renews: ${fields.renews}; pays ${fields.paying}/yr` : `Not insured; needs coverage: ${fields.needBy}`, fields.currentInsurance.trim() && `carrier: ${fields.currentInsurance.trim()}`].filter(Boolean).join("; ") },
       { label: "Owner/manager attestation", value: "Confirmed: owns or manages this business and wants a quote" },
@@ -168,8 +186,7 @@ export default function ReferralForm({ code }: { code: string }) {
       {fields.usesSubs === "Yes" ? <label className="block text-sm font-medium">Annual subcontractor costs (roughly) <span aria-hidden="true">*</span><span className="block text-xs font-normal text-[#64748B]">Total paid to subcontractors each year.</span><select className={inputClass} value={fields.subCosts} onChange={(e) => set("subCosts", e.target.value)} required><option value="">Choose one</option>{SUBCONTRACTOR_COSTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select></label> : <div className="hidden sm:block" />}
       <label className="block text-sm font-medium sm:col-span-2">How do you know the person who referred you? <span aria-hidden="true">*</span><select className={inputClass} value={fields.relationship} onChange={(e) => set("relationship", e.target.value)} required><option value="">Choose one</option>{RELATIONSHIP.map((o) => <option key={o}>{o}</option>)}</select></label>
       <label className="block text-sm font-medium sm:col-span-2">Who are most of your customers? <span aria-hidden="true">*</span><select className={inputClass} value={fields.customers} onChange={(e) => set("customers", e.target.value)} required><option value="">Choose one</option>{CUSTOMERS.map((o) => <option key={o}>{o}</option>)}</select></label>
-      <div className="sm:col-span-2"><label className="block text-sm font-medium">Website, Facebook page or Google listing <span aria-hidden="true">*</span><input className={inputClass} inputMode="url" autoCapitalize="none" value={fields.site} onChange={(e) => set("site", e.target.value)} placeholder="yourbusiness.com or facebook.com/yourbusiness" disabled={noSite} /></label>
-        <label className="mt-2 flex items-center gap-2 text-sm text-[#405066]"><input type="checkbox" className="h-4 w-4" checked={noSite} onChange={(e) => { setNoSite(e.target.checked); if (e.target.checked) set("site", ""); }} />My business doesn&apos;t have a website or any online page</label></div>
+      <div className="sm:col-span-2"><label className="block text-sm font-medium">Website, Facebook page or Google listing <span aria-hidden="true">*</span><input className={inputClass} inputMode="url" autoCapitalize="none" value={fields.site} onChange={(e) => set("site", e.target.value)} placeholder="yourbusiness.com or facebook.com/yourbusiness" required /></label></div>
       <label className="block text-sm font-medium">Contractor license # (if you have one)<input className={inputClass} value={fields.license} onChange={(e) => set("license", e.target.value)} /></label>
     </div>
     <h3 className="pt-2 text-base font-semibold text-[#0F172A]">Your current insurance</h3>
