@@ -1,5 +1,6 @@
 import { validateFunnelEvent, type FunnelEvent } from './funnel-event';
 import {trafficSession} from './traffic-session';
+import {captureAttribution,trafficChannel} from './attribution';
 
 /** Only attach to a consent-aware experiment form with data-funnel-field wrappers.
  * Never sends answers. Missing/rejected endpoint retains queued events for retry.
@@ -8,6 +9,7 @@ import {trafficSession} from './traffic-session';
 export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string;adId?:string;adsetId?:string;campaignId?:string;version?:string}) {
   const sessionId=trafficSession();
   if(process.env.NEXT_PUBLIC_FB_FUNNEL_ENABLED!=='true')return {sessionId,emit(_event:FunnelEvent['event'],_field?:string,_submissionId?:string){},async flush(){},dispose(){}};
+  let channel:string|undefined;try{channel=trafficChannel(captureAttribution());}catch{/* tag is optional */}
   const start=performance.now();
   const queueKey='cohesive_funnel_queue_v1';
   const queue:FunnelEvent[]=[];
@@ -17,7 +19,7 @@ export function attachFunnelTracker(form:HTMLFormElement, context:{cellId:string
   const seen=new Set<string>();
   let inflight=false, disposed=false;
   function emit(event:FunnelEvent['event'],field?:string,submissionId?:string) {
-    const item=validateFunnelEvent({...context,eventId:crypto.randomUUID(),sessionId,version:context.version||'2026-09-12-v1',event,
+    const item=validateFunnelEvent({...context,...(channel?{channel}:{}),eventId:crypto.randomUUID(),sessionId,version:context.version||'2026-09-12-v1',event,
       elapsedMs:Math.min(86400000,Math.round(performance.now()-start)),...(field?{field}:{}),...(submissionId?{submissionId}:{})});
     if(item&&queue.length<250){queue.push(item);saveQueue();}
   }

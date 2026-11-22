@@ -131,3 +131,28 @@ export function attributionDetails(a: Attribution): Array<{ label: string; value
   push("Visitor source", visitorSource(a));
   return out;
 }
+
+/** Compact channel tag for funnel telemetry (Kevin 2026-11-22: step data must split FB / Google / SEO / AI / email).
+ * Mirrors visitorSource precedence; keep in sync with the CRM fb-funnel `channel` enum. */
+export const TRAFFIC_CHANNELS = ["meta", "google_ads", "microsoft_ads", "chatgpt_ads", "ai_referral", "email", "organic_search", "social_organic", "tagged_other", "referral", "direct"] as const;
+export type TrafficChannel = (typeof TRAFFIC_CHANNELS)[number];
+const AI_HOST = /(^|\.)(chatgpt\.com|openai\.com|perplexity\.ai|claude\.ai|gemini\.google\.com|copilot\.microsoft\.com)$/;
+export function trafficChannel(a: Attribution): TrafficChannel {
+  const src = (a.utm_source || "").toLowerCase();
+  const med = (a.utm_medium || "").toLowerCase();
+  const paid = /cpc|ppc|paid/.test(med);
+  if (a.ad_id || a.fbclid || /^(facebook|fb|ig|instagram|meta)$/.test(src)) return "meta";
+  if (a.gclid || (src === "google" && paid)) return "google_ads";
+  if (a.msclkid || (src === "bing" && paid)) return "microsoft_ads";
+  if (/^(chatgpt|openai)$/.test(src) && paid) return "chatgpt_ads";
+  if (/^(chatgpt\.com|chatgpt|openai|perplexity(\.ai)?|claude(\.ai)?|gemini|copilot)$/.test(src)) return "ai_referral";
+  if (src === "smartlead" || med === "email") return "email";
+  if (src) return "tagged_other";
+  let host = "";
+  try { host = new URL(a.referrer || "").hostname.toLowerCase(); } catch { host = ""; }
+  if (!host || OWN_HOSTS.includes(host)) return "direct";
+  if (AI_HOST.test(host)) return "ai_referral";
+  if (/(^|\.)(google\.|bing\.com$|duckduckgo\.com$|yahoo\.|ecosia\.org$)/.test(host)) return "organic_search";
+  if (/(^|\.)(facebook\.com|fb\.com|instagram\.com|l\.facebook\.com|lm\.facebook\.com)$/.test(host)) return "social_organic";
+  return "referral";
+}

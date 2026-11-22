@@ -5,15 +5,17 @@ export const FUNNEL_EVENTS = ['page_view','variant_view','form_start','form_view
 export type FunnelEvent = {
   eventId:string; sessionId:string; cellId:string; version:string;
   event:typeof FUNNEL_EVENTS[number]; field?:string; elapsedMs:number;
-  adId?:string; adsetId?:string; campaignId?:string; submissionId?:string;
+  adId?:string; adsetId?:string; campaignId?:string; submissionId?:string; channel?:string;
 };
+import {TRAFFIC_CHANNELS} from './attribution';
+const CHANNELS=new Set<string>(TRAFFIC_CHANNELS);
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const FIELDS=new Set(['email','phone','fullName','legalName','revenue','employees','payroll','subcontractorCosts','currentGl','mailingAddress','trade','tradeRawText','address','otherTrades','otherTradesRawText','primaryPct','otherTradeDescription','usesSubcontractors','structure','yearStarted','currentPremium','wcRequested','wcFullTime','wcPartTime','wcPayroll']);
 const CELL=/^(pool|remodel|roof|tree|painting|hvac|electrical|plumbing|welding|fire_sprinkler|home_builder|excavation|concrete_masonry|windows_siding|insulation|remodeling|contractor)__([a-z_]+)__(step|long)__v1$/;
 export function validateFunnelEvent(input:unknown):FunnelEvent|null {
   if (!input || typeof input!=='object') return null;
   const v=input as Record<string,unknown>;
-  const allowed=new Set(['eventId','sessionId','cellId','version','event','field','elapsedMs','adId','adsetId','campaignId','submissionId']);
+  const allowed=new Set(['eventId','sessionId','cellId','version','event','field','elapsedMs','adId','adsetId','campaignId','submissionId','channel']);
   if(Object.keys(v).some(k=>!allowed.has(k)))return null;
   if(typeof v.eventId!=='string'||!UUID.test(v.eventId)||typeof v.sessionId!=='string'||!UUID.test(v.sessionId))return null;
   if(typeof v.cellId!=='string'||!CELL.test(v.cellId)||!['2026-09-12-v1','2026-09-18-params-v2','2026-09-18-contact-v3','2026-09-18-theme-v4','2026-09-18-trade-v5','2026-11-05-shortfirst-v1','2026-11-07-two-page-current-v1','2026-11-07-two-page-short-v1'].includes(String(v.version))&&!CONTRACTOR_V2_VERSION.test(String(v.version)))return null;
@@ -22,6 +24,7 @@ export function validateFunnelEvent(input:unknown):FunnelEvent|null {
   if(v.field!==undefined&&(typeof v.field!=='string'||!FIELDS.has(v.field)))return null;
   if(String(v.event).startsWith('field_')&&!v.field)return null;
   for(const key of ['adId','adsetId','campaignId'])if(v[key]!==undefined&&(typeof v[key]!=='string'||!/^\d{5,30}$/.test(v[key] as string)))return null;
+  if(v.channel!==undefined&&(typeof v.channel!=='string'||!CHANNELS.has(v.channel)))return null;
   if(v.submissionId!==undefined&&(typeof v.submissionId!=='string'||!UUID.test(v.submissionId)))return null;
   return v as FunnelEvent;
 }
