@@ -426,7 +426,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Nam 11/21: a referral through a FACEBOOK-ad partner's link whose business has no website must carry an FEIN or a
+  // Nam 11/21 (all partners since Kevin 11/22): a referral through a partner's link whose business has no website must carry an FEIN or a
   // business document. FEIN = format + IRS prefix check; a document = LLM review (Bedrock). Bad FEIN / FAIL = partner
   // gets the "does not look real" notice; UNCLEAR = partner notice held and the team decides. The verdict rides on the
   // lead as "Referral proof check" so referral_partner_payouts counts only PASS.
@@ -437,7 +437,8 @@ export async function POST(request: NextRequest) {
     const code = details?.find((item) => item.label === "Referral code")?.value;
     const noSite = /^None\b/.test(details?.find((item) => item.label === "Website or online page")?.value || "");
     const partner = code && noSite ? await lookupPartner(code, findQuotesMessageText).catch(() => null) : null;
-    if (partner?.facebook) {
+    // Kevin 11/22: every partner, not only FB-ad partners (a cold-signup partner sent 7 no-website leads in 36h).
+    if (partner) {
       proofRequired = true;
       const feinRaw = details?.find((item) => item.label === "FEIN")?.value || "";
       proofFile = parseProof(body.proof);
