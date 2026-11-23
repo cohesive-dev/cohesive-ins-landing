@@ -17,6 +17,7 @@ import {
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import {TRADES} from "@/lib/contractor-trades";
 import { acceptedPhoneShape } from "@/lib/phone-shape";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 /**
  * /contractors - deep intake landing page for the high-value contractor GL
@@ -428,6 +429,7 @@ export default function ContractorsLandingPage() {
       if (result.conversion?.eligible !== true || typeof conversionId !== 'string') {setStatus('done');return;}
       // Server acceptance and shared ID gate all acquisition signals.
       fbq("track", "Lead", {}, { eventID: conversionId });
+      trackRedditLead(result);
       fbq("trackCustom", "ContractorSubmit");
       if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: conversionId+'-q' });
       if (uninsuredEventId) fbq("trackCustom", "UninsuredLead", {}, { eventID: conversionId+'-u' });

@@ -8,6 +8,7 @@ import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address
 import { TRADES } from "@/lib/contractor-trades";
 import { filterTrades } from "@/lib/trade-search";
 import { REQUESTED_COVERAGE_LABELS, type RequestedCoverage } from "@/lib/requested-coverage";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 // Minimal contractor intake for the /insurance/<trade> SEO pages. Posts to the
 // same /api/intake webhook under the contractor lane, with automated first touch
@@ -232,6 +233,9 @@ export default function ContractorQuoteForm({
         throw new Error("intake_not_accepted");
       }
       setDone(true);
+      // Reddit Lead: same crm === "sent" + conversion.eligible gate as Google below
+      // (not limited to the Google-campaign paths); id = the shared conversion id.
+      trackRedditLead(result);
       // Train Google only on a new CRM-accepted person that passed the same
       // intake quality/dedupe gate as the site's other acquisition events.
       // Quotes@ fallback, review holds, duplicates and abandoned partials do

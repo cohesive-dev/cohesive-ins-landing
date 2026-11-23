@@ -34,6 +34,8 @@ jobs:
         run: node scripts/test-seo-restaurant-snippets.cjs
       - name: Unit - homepage roofer discovery links are built, priced (open-state) pages
         run: node scripts/test-seo-discovery-links.cjs
+      - name: Unit - Reddit pixel (Lead only for crm=sent + eligible conversion; production-only base code)
+        run: node scripts/test-reddit-pixel.cjs
       - run: npm run build
       - name: Start the built site on :3021
         run: |

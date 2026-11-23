@@ -23,6 +23,7 @@ import { PREFERRED_LANGUAGE } from "@/lib/es/contractor-form-es";
 import { PHONE_DISPLAY, PHONE_E164 } from "@/lib/entity";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 const TYPE_ES: Record<string, string> = {
   "Coffee / café / bakery (little or no cooking)": "Cafetería / panadería (poca o nada de cocina)",
@@ -190,6 +191,7 @@ export default function SpanishRestaurantForm({ source, pageType }: { source: st
       if (!response.ok || result.ok !== true || (result.crm !== "sent" && result.notification !== "sent")) throw new Error("intake_not_accepted");
       if (capiEventName === "Lead") {
         fbq("track", "Lead", {}, { eventID: eventId });
+        trackRedditLead(result); // no-op unless the server marks the conversion eligible
         fbq("trackCustom", "RestaurantQuoteSubmit");
       } else {
         fbq("trackCustom", capiEventName, {}, { eventID: eventId });

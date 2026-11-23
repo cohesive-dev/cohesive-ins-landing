@@ -4,6 +4,7 @@ import {useSearchParams} from 'next/navigation';
 import {INDUSTRIES,QUESTION_OPTIONS,LABELS,fieldsFor,validField,normalizeAnswers,validExperiment,type Answers} from '@/lib/contractor-experiment';
 import {captureAttribution,attributionDetails} from '@/lib/attribution';
 import {attachFunnelTracker} from '@/lib/funnel-tracker';
+import {trackRedditLead} from '@/lib/reddit-pixel';
 import {coldEmailContext,isColdIndustry,type ColdLayout} from '@/lib/cold-email-landing';
 import {ContractorFormActions,ContractorFormSuccess} from '@/components/ContractorFormPresentation';
 import ContractorQuestionSet from '@/components/ContractorQuestionSet';
@@ -182,7 +183,8 @@ export default function ContractorExperimentForm({coldLayout,promo}:{coldLayout?
     tracker.current?.emit('intake_accepted',undefined,submission.current);void tracker.current?.flush();
     if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
     {(window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
-     (window as unknown as {oaiq?:(...args:unknown[])=>void}).oaiq?.('measure','lead_created',{type:'customer_action'},{event_id:result.conversion.eventId});}
+     (window as unknown as {oaiq?:(...args:unknown[])=>void}).oaiq?.('measure','lead_created',{type:'customer_action'},{event_id:result.conversion.eventId});
+     trackRedditLead(result);}
     if(googleSearch&&result.crm==='sent'&&result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')
      (window as unknown as {gtag?:(...args:unknown[])=>void}).gtag?.('event','conversion',{
       send_to:'AW-18581087843/P5k2CJ2upLodEOPMk5xF',value:1,currency:'USD',

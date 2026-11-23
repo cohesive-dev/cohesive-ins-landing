@@ -16,6 +16,7 @@ import isEmail from "validator/lib/isEmail";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { track as vaTrack } from "@vercel/analytics";
 import type { BarRequestedCoverage } from "@/lib/requested-coverage";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 /**
  * The restaurant deep-intake form — shared by /restaurant (full-page lane,
@@ -569,6 +570,8 @@ export default function RestaurantIntakeForm({
       if (qualification === "qualified") {
         if (trackLead) {
           fbq("track", "Lead", {}, { eventID: eventId });
+          // Reddit counts only a CRM-accepted, server-eligible conversion (today: /bar).
+          trackRedditLead(result);
           fbq("trackCustom", "RestaurantQuoteSubmit");
           if (urgentEventId) fbq("trackCustom", "LeadUrgentQuoted", {}, { eventID: urgentEventId });
         }
