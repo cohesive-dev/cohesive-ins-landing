@@ -16,6 +16,7 @@ import {
 import { contractorCanSubmit, contractorDetails, normalizeContractor, needsDevelopmentQuestion, WORK_MARKETS, PROJECT_TYPES, POOL_WORK, hasPoolWork, needsGeneralWorkQuestions } from "@/lib/contractor-intake";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { trackRooferOffer } from "@/lib/roofer-offer-tracking";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 /**
  * /contractors - deep intake landing page for the high-value contractor GL
@@ -430,6 +431,7 @@ export default function ContractorIntake({ adapter, offer }: { adapter?: Contrac
       const conversionId=result.conversion.eventId;
       // Fire the pixel ONLY after the intake POST succeeds.
       fbq("track", "Lead", {}, { eventID: conversionId });
+      trackRedditLead(result);
       fbq("trackCustom", "ContractorSubmit");
       if (offer) trackRooferOffer("SubmitSuccess", { event_id: eventId });
       if (qualifiedEventId) fbq("trackCustom", "QualifiedLead", {}, { eventID: conversionId+'-q' });

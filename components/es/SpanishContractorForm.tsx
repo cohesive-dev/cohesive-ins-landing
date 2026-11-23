@@ -11,6 +11,7 @@ import { captureAttribution, attributionDetails } from "@/lib/attribution";
 import { trafficSession } from "@/lib/traffic-session";
 import { FULL_LABELS, fullScreens, normalizeFull, validFullField } from "@/lib/contractor-full-form";
 import { acceptedPhoneShape } from "@/lib/phone-shape";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { contractorButtonClass } from "@/components/ContractorPageTheme";
 import { PHONE_DISPLAY, PHONE_E164 } from "@/lib/entity";
@@ -212,6 +213,7 @@ export default function SpanishContractorForm({
       if (!res.ok || result.ok !== true) throw new Error("intake_not_accepted");
       if (result.conversion?.eligible === true && typeof result.conversion.eventId === "string")
         (window as unknown as { fbq?: (...args: unknown[]) => void }).fbq?.("track", "Lead", {}, { eventID: result.conversion.eventId });
+      trackRedditLead(result);
       setStatus("done");
     } catch {
       setStatus("error");

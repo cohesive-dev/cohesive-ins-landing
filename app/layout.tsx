@@ -1,4 +1,6 @@
 import AcquisitionAttribution from "@/components/AcquisitionAttribution";
+import RedditPageVisit from "@/components/RedditPageVisit";
+import { REDDIT_PIXEL_ID } from "@/lib/reddit-pixel";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
@@ -12,6 +14,8 @@ const OPENAI_PIXEL_ID = "SKHn7sfbd6r9B9vB51uM1d";
 const GTM_ID = "GTM-PGN427T9";
 const GOOGLE_ADS_ID = "AW-18581087843";
 const ENABLE_GTM = process.env.NODE_ENV === "production" && process.env.VERCEL_ENV !== "preview";
+// Reddit pixel: production deploy only (never localhost or Vercel preview/QA builds).
+const ENABLE_REDDIT = ENABLE_GTM;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -61,6 +65,18 @@ export default function RootLayout({
             />
           </>
         )}
+        {/* Reddit Ads pixel (Kevin 11/23). Inline in <head> so window.rdt (queue stub) exists
+            before hydration: <RedditPageVisit/> fires PageVisit on every route view and forms
+            call trackRedditLead(result) with the Meta/OpenAI conversion id. Production deploy
+            only; localhost and Vercel preview get a no-op rdt. */}
+        <script
+          id="reddit-pixel"
+          dangerouslySetInnerHTML={{
+            __html: ENABLE_REDDIT
+              ? `!function(w,d){if(!w.rdt){var p=w.rdt=function(){p.sendEvent?p.sendEvent.apply(p,arguments):p.callQueue.push(arguments)};p.callQueue=[];var t=d.createElement("script");t.src="https://www.redditstatic.com/ads/pixel.js",t.async=!0;var s=d.getElementsByTagName("script")[0];s.parentNode.insertBefore(t,s)}}(window,document);rdt('init','${REDDIT_PIXEL_ID}');`
+              : `window.rdt=window.rdt||function(){};`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col font-[var(--font-sans)]">
         {/* Meta Pixel Code */}
@@ -113,6 +129,7 @@ oaiq('init',{pixelId:'${OPENAI_PIXEL_ID}'});`}
         )}
         {/* End Meta Pixel Code */}
         <AcquisitionAttribution />
+        <RedditPageVisit />
         {children}
         <Analytics />
         <Suspense fallback={null}><WebsiteTraffic /></Suspense>

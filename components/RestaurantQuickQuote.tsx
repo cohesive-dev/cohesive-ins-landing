@@ -9,6 +9,7 @@ import PartialCaptureDisclosure from "@/components/PartialCaptureDisclosure";
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { hasMailableAddress, zipFromMailingAddress } from "@/lib/mailing-address";
 import { REQUESTED_COVERAGE_LABELS, type RequestedCoverage } from "@/lib/requested-coverage";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 // Short quote form for the restaurant SEO pages (/insurance/<restaurant type>[/<state>[/<city>]]) and
 // the restaurant cost guide (Kevin 2026-10-12). Restaurant SEO pages had 10,777 impressions and 25 clicks
@@ -268,6 +269,7 @@ export default function RestaurantQuickQuote({
       // Browser events only after the server accepted the lead, with the shared id for CAPI dedupe.
       if (capiEventName === "Lead") {
         fbq("track", "Lead", {}, { eventID: eventId });
+        trackRedditLead(result); // no-op unless the server marks the conversion eligible
         fbq("trackCustom", "RestaurantQuoteSubmit");
       } else {
         fbq("trackCustom", capiEventName, {}, { eventID: eventId });

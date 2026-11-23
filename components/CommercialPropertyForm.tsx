@@ -16,6 +16,7 @@ import {
 import AddressAutocomplete from "@/components/AddressAutocomplete";
 import { captureAttribution, attributionDetails, type Attribution } from "@/lib/attribution";
 import { createPropertyFunnel } from "@/lib/property-funnel";
+import { trackRedditLead } from "@/lib/reddit-pixel";
 
 /**
  * /commercial-property — deep intake landing page for commercial building
@@ -696,6 +697,7 @@ export default function CommercialPropertyForm({
       // abandoned submits never count. Lead carries the shared eventID so the
       // browser + server CAPI Lead dedupe to a single conversion.
       fbq("track", "Lead", {}, { eventID: conversionId });
+      trackRedditLead(result);
       fbq("trackCustom", "CommercialPropertySubmit");
       if (qualifiedEventId)
         fbq("trackCustom", "QualifiedLead", {}, { eventID: conversionId+'-q' });
