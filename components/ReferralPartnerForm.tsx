@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SOURCING_OPTIONS, isFacebookUtm } from "@/lib/referral-partner-sourcing";
+import { SOURCING_OPTIONS, isFacebookUtm, isColdUtm, INVITE_ONLY_MESSAGE } from "@/lib/referral-partner-sourcing";
 
 const REFERRAL_TRADE_TAGS = ["Roofing", "General contractors", "Remodeling", "Carpentry", "Painting", "Plumbing", "Electrical", "HVAC", "Drywall", "Flooring", "Masonry & concrete", "Siding & fencing", "Welding", "Excavation", "Landscaping", "Tree service", "Handyman", "Solar install"];
 
@@ -18,7 +18,9 @@ export default function ReferralPartnerForm({ program = "partner" }: { program?:
   const [sourcing, setSourcing] = useState<string[]>([]);
   // Nam 11/21: only FB-ad visitors get the business/sourcing questions (cold-email partners do not).
   const [fromFb, setFromFb] = useState(false);
-  useEffect(() => { const q = new URLSearchParams(location.search); setFromFb(isFacebookUtm({ utm_source: q.get("utm_source"), fbclid: q.get("fbclid") })); }, []);
+  // Kevin 11/23: partner signups only from cold-email links (the server enforces it too; /client-referrals stays open).
+  const [fromCold, setFromCold] = useState<boolean | null>(null);
+  useEffect(() => { const q = new URLSearchParams(location.search); setFromFb(isFacebookUtm({ utm_source: q.get("utm_source"), fbclid: q.get("fbclid") })); setFromCold(isColdUtm({ utm_source: q.get("utm_source") })); }, []);
   const toggle = (o: string) => setSourcing((s) => s.includes(o) ? s.filter((x) => x !== o) : [...s, o]);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -59,6 +61,7 @@ export default function ReferralPartnerForm({ program = "partner" }: { program?:
     </div>;
   }
 
+  if (!client && fromCold === false) return <div className="text-center"><h2 className="text-2xl font-bold">Invite-only for now</h2><p className="mt-3 text-[#405066]">{INVITE_ONLY_MESSAGE}</p></div>;
   const err = (k: string) => errors[k] ? <small role="alert" className="mt-1 block text-[#b42318]">{errors[k]}</small> : null;
   return <form onSubmit={submit} noValidate className="grid gap-4">
     <h2 className="text-2xl font-bold">Get your referral link</h2>

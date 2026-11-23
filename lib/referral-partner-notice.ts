@@ -9,7 +9,10 @@ import { ALERT_SUBJECT_TAG, PAYOUT_BLOCK, type MailFn } from "@/lib/referral-par
 
 // facebook = the partner signed up from a FB/IG ad (alert line SIGNUP_CHANNEL: facebook, or a Source: facebook... line);
 // their no-website referrals must carry proof (lib/referral-proof.ts).
-export interface PartnerRecord { code: string; name: string; email: string; rate: number; facebook?: boolean }
+// cold = the partner signed up from a cold-email (Smartlead) link (SIGNUP_CHANNEL: cold_email, or a Source: smartlead... line).
+// Kevin 11/23: only cold partners keep the lighter proof rule (no-website referrals only); every other partner's
+// referrals always need proof.
+export interface PartnerRecord { code: string; name: string; email: string; rate: number; facebook?: boolean; cold?: boolean }
 export const LAUNCH_RATE_USD = 40; // partners whose alert predates the RATE_USD line
 export type FindText = (q: string) => Promise<string | null>;
 
@@ -24,7 +27,8 @@ export async function lookupPartner(code: string, find: FindText): Promise<Partn
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return null;
   const rate = Number(line(text, "RATE_USD"));
   const facebook = line(text, "SIGNUP_CHANNEL").toLowerCase() === "facebook" || /^(facebook|fb|meta|ig|instagram)\b/i.test(line(text, "Source"));
-  return { code, name: line(text, "Name"), email, rate: Number.isFinite(rate) && rate > 0 ? rate : LAUNCH_RATE_USD, ...(facebook ? { facebook: true } : {}) };
+  const cold = line(text, "SIGNUP_CHANNEL").toLowerCase() === "cold_email" || /^smartlead\b/i.test(line(text, "Source"));
+  return { code, name: line(text, "Name"), email, rate: Number.isFinite(rate) && rate > 0 ? rate : LAUNCH_RATE_USD, ...(facebook ? { facebook: true } : {}), ...(cold ? { cold: true } : {}) };
 }
 
 export const perQuoteCopyOn = (env: Record<string, string | undefined>) =>

@@ -23,6 +23,11 @@ assert.match(alert, /^RATE_USD: 40$/m);
 // Rate is per partner: a $30 partner's notice says $30/$90; an old alert without RATE_USD = $40.
 assert.equal((await lookupPartner(code, async () => alert.replace("RATE_USD: 40", "RATE_USD: 30"))).rate, 30);
 assert.equal((await lookupPartner(code, async () => alert.replace(/^RATE_USD.*\n/m, ""))).rate, 40);
+// Kevin 11/23: cold = cold-email (smartlead) signup; only those partners keep the no-website-only proof rule.
+assert.equal((await lookupPartner(code, async () => alert + "\nSource: smartlead / 4660664 Cohesive Insurance | Referral Program")).cold, true);
+assert.equal((await lookupPartner(code, async () => alert + "\nSIGNUP_CHANNEL: cold_email")).cold, true);
+assert.equal((await lookupPartner(code, async () => alert + "\nSource: facebook / gc")).cold, undefined);
+assert.equal((await lookupPartner(code, find)).cold, undefined);
 { const m2 = []; await notifyReferralPartner({ code, company: "Z Co" }, {}, async () => alert.replace("RATE_USD: 40", "RATE_USD: 30"), async (m) => { m2.push(m); return true; });
   assert.match(m2[0].text, /next \$90 \(\$30 each/); }
 assert.equal(queries[0], `in:sent subject:"[referral-partner]" "${code}"`);

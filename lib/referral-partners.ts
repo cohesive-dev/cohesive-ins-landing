@@ -26,6 +26,9 @@ export interface PartnerInput {
 
 // Same list/test as lib/referral-partner-sourcing.ts (client-safe copy for the form; the test asserts they match).
 export const SOURCING_OPTIONS = ["My subcontractors / crews", "Other contractors I know", "Suppliers / vendors", "My customers", "Social media / Facebook groups", "Trade groups / associations", "Real estate / property contacts", "Friends / family", "Other"] as const;
+// Kevin 11/23: same as lib/referral-partner-sourcing.ts (the test asserts they match).
+export const isColdUtm = (utm?: { utm_source?: string | null }) => /^smartlead$/i.test((utm?.utm_source ?? "").trim());
+export const INVITE_ONLY_MESSAGE = "Our referral partner program is invite-only right now. If we emailed you about it, please sign up with the link in that email, or email kevin@cohesiveinsure.com.";
 export const isFacebookUtm = (utm?: { utm_source?: string | null; fbclid?: string | null }) =>
   /^(facebook|fb|meta|ig|instagram)$/i.test((utm?.utm_source ?? "").trim()) || Boolean((utm?.fbclid ?? "").trim());
 const sourcingList = (input: PartnerInput) =>
@@ -61,6 +64,10 @@ export function alertRecipients(env: Record<string, string | undefined>): string
 }
 
 export const isClientProgram = (input: PartnerInput) => clean(input.program) === "client";
+// Kevin 11/23 ("only get referral partners from the cold email campaigns... too many scammers from FB"): the partner
+// program accepts a signup only from a cold-email link. /client-referrals (existing clients) is unchanged.
+// Off switch: env REFERRAL_PARTNER_COLD_ONLY=off.
+export const coldOnlyOn = (env: Record<string, string | undefined>) => (env.REFERRAL_PARTNER_COLD_ONLY ?? "").trim().toLowerCase() !== "off";
 
 export function alertText(input: PartnerInput, code: string): string {
   const utm = input.utm ?? {};
@@ -71,6 +78,7 @@ export function alertText(input: PartnerInput, code: string): string {
     `PARTNER_CODE: ${code}`,
     `RATE_USD: ${REFERRAL_FEE_USD}`,
     isFacebookUtm(input.utm) && "SIGNUP_CHANNEL: facebook",
+    isColdUtm(input.utm) && "SIGNUP_CHANNEL: cold_email",
     `Link: ${partnerLink(code)}`,
     `Name: ${clean(input.fullName)}`,
     `Business: ${clean(input.businessName)}${clean(input.trade) ? ` (${clean(input.trade)})` : ""}`,
@@ -114,6 +122,7 @@ export interface PartnerResult { status: number; body: { ok: boolean; code?: str
 export async function handlePartnerSignup(raw: unknown, env: Record<string, string | undefined>, mail: MailFn, makeCode = newPartnerCode): Promise<PartnerResult> {
   const input = (raw && typeof raw === "object" ? raw : {}) as PartnerInput;
   if (clean(input.website)) return { status: 200, body: { ok: true } };
+  if (!isClientProgram(input) && coldOnlyOn(env) && !isColdUtm(input.utm)) return { status: 403, body: { ok: false, message: INVITE_ONLY_MESSAGE } };
   const errors = validatePartner(input);
   if (Object.keys(errors).length) return { status: 400, body: { ok: false, errors } };
   const code = makeCode();
