@@ -32,6 +32,15 @@ assert.equal((await lookupPartner(code, find)).cold, undefined);
   assert.match(m2[0].text, /next \$90 \(\$30 each/); }
 assert.equal(queries[0], `in:sent subject:"[referral-partner]" "${code}"`);
 
+// Kevin 11/23: a shut-down partner code is no partner (no lookup, no notice); env adds more codes.
+{ const blocked = "267047b09879e8e16c95"; const q = []; const m3 = [];
+  assert.equal(await lookupPartner(blocked, async (x) => { q.push(x); return alert.replace(code, blocked); }), null);
+  assert.equal(q.length, 0);
+  assert.equal(await notifyReferralPartner({ code: blocked, company: "X" }, {}, async () => alert.replace(code, blocked), async (m) => { m3.push(m); return true; }), "no-partner");
+  assert.equal(m3.length, 0);
+  process.env.REFERRAL_BLOCKED_CODES = ` ${code} `; assert.equal(await lookupPartner(code, find), null); delete process.env.REFERRAL_BLOCKED_CODES;
+  assert.ok(await lookupPartner(code, find)); }
+
 // Sent: partner only, business name only, no contact details of the sub.
 let r = await notifyReferralPartner({ code, company: "Acme Plumbing", name: "Al Sub", email: "al@acme.com" }, {}, find, mail);
 assert.equal(r, "sent"); assert.equal(mails.length, 1);
