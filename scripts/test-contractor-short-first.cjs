@@ -3,7 +3,10 @@ const { chromium } = require('playwright');
 const fs = require('node:fs'), ts = require('typescript');
 const compiled = { exports: {} };
 const validatorJs = ts.transpileModule(fs.readFileSync('lib/funnel-event.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText;
-new Function('require', 'module', 'exports', validatorJs)(require, compiled, compiled.exports);
+// funnel-event.ts imports ./attribution (a5d3d70); compile it too so this suite runs off-box.
+const attribution = { exports: {} };
+new Function('require', 'module', 'exports', ts.transpileModule(fs.readFileSync('lib/attribution.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(require, attribution, attribution.exports);
+new Function('require', 'module', 'exports', validatorJs)((id) => id === './attribution' ? attribution.exports : require(id), compiled, compiled.exports);
 const { validateFunnelEvent } = compiled.exports;
 
 const base = process.argv[2] || 'http://localhost:3021';
