@@ -277,6 +277,20 @@ async function sendCapiEvent(
   }
 }
 
+function visitorGeoDetails(request: NextRequest): { label: string; value: string }[] {
+  const h = (name: string) => {
+    const raw = (request.headers.get(name) || "").trim();
+    try { return decodeURIComponent(raw).slice(0, 80); } catch { return raw.slice(0, 80); }
+  };
+  const rows: [string, string][] = [
+    ["Visitor country (IP, not confirmed)", h("x-vercel-ip-country")],
+    ["Visitor region (IP, not confirmed)", h("x-vercel-ip-country-region")],
+    ["Visitor city (IP, not confirmed)", h("x-vercel-ip-city")],
+    ["Visitor ZIP (IP, not confirmed)", h("x-vercel-ip-postal-code")],
+  ];
+  return rows.filter(([, value]) => value).map(([label, value]) => ({ label, value }));
+}
+
 export async function POST(request: NextRequest) {
   let body: IntakePayload;
   try {
@@ -332,6 +346,14 @@ export async function POST(request: NextRequest) {
   // (it takes flat contact fields only), so these ride to quotes@ as a quote-ready detail block.
   // Declared here rather than further down because the abandoned-fill branch below needs it too.
   let details = sanitizeDetails(body.details);
+  // Kevin 11/24 (via Desk): every submit AND partial/abandoned save carries the visitor's approximate location from
+  // Vercel's IP geolocation, so a lead that left before giving a state/ZIP can still be quoted on a disclosed
+  // assumption. Labeled "(IP, not confirmed)" like "(not confirmed trade)"; never the raw IP.
+  {
+    const geo = visitorGeoDetails(request);
+    const kept = (details ?? []).filter((item) => !/\(IP, not confirmed\)$/.test(item.label)); // server-set only
+    details = kept.length || geo.length ? [...kept, ...geo] : undefined;
+  }
   let referralIpMismatch = false;
   if (source === "customer-referral") {
     const supplied = details?.find((item) => item.label === "Referral code")?.value;
