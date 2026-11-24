@@ -58,6 +58,16 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   // Kevin 2026-10-29 asked for the lowest roofing quote to lead. This claims-made indication
   // has the same application and client-reported basis as the $1,795 occurrence option below.
   roofer: { usd: 1359, kind: "quote", line: "Claims-made general liability", business: "a roofer at about $377K revenue with $133K subcontracted", asOf: "2026-11-08" },
+  // Kevin 2026-11-24 (more demolition/restoration leads; SEO quick wins approved). Read from the CRM 2026-11-24.
+  // Demolition: QC-verified claims-made quote q_ext_3ce56f708292a90c5ecd (2026-10-23), carrier class printed
+  // "Demo - Nonstructural 100%" on a $150K receipts / no employees / no subs basis we disclosed. Structural demolition
+  // is not proven at this price, so the description says interior (nonstructural). Same application's occurrence
+  // option was $986.50 (q_ext_d4a90514e1c6c5dd0eca). Encore market, so closed states stay price-free (below).
+  demolition: { usd: 693, kind: "quote", line: "Claims-made general liability", business: "an interior (nonstructural) demolition contractor at about $150K revenue", asOf: "2026-11-24" },
+  // Restoration: bound occurrence GL, CRM policy cmwoknjnq00050tlce2rnwep8 ($1,798.86, bound 2026-11-23), class printed
+  // "Water/ Fire Damage restoration" (no mold remediation). Runner-up: $1,803 QC-verified quote, same class (Texas).
+  restoration: { usd: 1799, kind: "bound", line: GL, business: "a water and fire damage restoration company in Arkansas", asOf: "2026-11-24" },
+  // Insulation stays price-free: no GL quote in the book was rated in an insulation class (checked 2026-11-24).
 };
 
 // States where a trade's price does not apply because the market behind it does not write there (state abbreviations).
@@ -65,6 +75,7 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
 export const TRADE_PRICE_CLOSED_STATES: Record<string, ReadonlySet<string>> = {
   roofer: ENCORE_CLOSED_STATES,
   "tree-service": ENCORE_CLOSED_STATES,
+  demolition: ENCORE_CLOSED_STATES,
 };
 
 export function tradePrice(slug: string, stateAbbr?: string): TradePrice | undefined {
