@@ -6,12 +6,13 @@ export const runtime = "nodejs";
 
 // Nam 11/21: does this /refer code belong to a partner (any partner since Kevin 11/22; was FB-ad only) (so a no-website referral must add an FEIN or a document)?
 // Kevin 11/23: always = the partner did not come from cold email, so EVERY referral needs proof (website or not).
+// Kevin 11/24: docOnly = FB-ad partner: a website is enough; no website = document upload only (no FEIN/license #).
 // Returns only booleans - never the partner's identity. Lookup trouble = proof:false (the intake route re-checks).
 export async function GET(request: Request) {
   const code = (new URL(request.url).searchParams.get("code") || "").trim().toLowerCase();
   if (!/^[a-f0-9]{20}$/.test(code)) return NextResponse.json({ proof: false, always: false });
   try {
     const partner = await lookupPartner(code, findQuotesMessageText);
-    return NextResponse.json({ proof: Boolean(partner), always: Boolean(partner && !partner.cold) }, { headers: { "Cache-Control": "private, max-age=300" } });
+    return NextResponse.json({ proof: Boolean(partner), always: Boolean(partner && !partner.cold && !partner.facebook), docOnly: Boolean(partner?.facebook) }, { headers: { "Cache-Control": "private, max-age=300" } });
   } catch { return NextResponse.json({ proof: false, always: false }); }
 }
