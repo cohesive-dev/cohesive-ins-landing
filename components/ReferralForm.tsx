@@ -39,8 +39,8 @@ const NO_PAYROLL = "$0 - no W2 employees";
 const PAYROLL_CHOICES = [{ label: "$0 - no W2 employees (just owners / subs)", value: NO_PAYROLL }, ...PAYROLL];
 const RENEWS = ["Within 30 days", "In 1 - 3 months", "In 3 - 6 months", "In 6+ months", "Not sure"];
 const NEED_BY = ["Within 30 days", "In 1 - 3 months", "Just comparing for now"];
-// Nam 11/21 / Kevin 11/23: referrals must prove the business (FEIN, license/registration # or a document): cold-email
-// partners only when there is no website; every other partner always. Images are shrunk in the
+// Nam 11/21 / Kevin 11/24: a referral needs a website OR an uploaded business document (no FEIN/license # alone,
+// both can be faked). Images are shrunk in the
 // browser (~1600px JPEG) so phone photos fit the request; the server re-checks everything (app/api/intake).
 const PROOF_MAX = 2_400_000;
 async function readProof(file: File): Promise<{ name: string; type: string; data: string }> {
@@ -68,13 +68,10 @@ export default function ReferralForm({ code }: { code: string }) {
     role: "", yearStarted: "", revenue: "", payroll: "", insured: "", renews: "", paying: "", needBy: "", usesSubs: "", subCosts: "", entity: "", dba: "", industry: "", relationship: "", site: "", alcohol: "", premises: "", currentInsurance: "", customers: "", hp: "" });
   const [noSite, setNoSite] = useState(false);
   const [proofNeeded, setProofNeeded] = useState(false);
-  const [proofAlways, setProofAlways] = useState(false); // Kevin 11/23: non-cold partner = proof even with a website
-  const [fein, setFein] = useState("");
-  const [license, setLicense] = useState("");
   const [proofFile, setProofFile] = useState<File | null>(null);
   useEffect(() => {
     if (!code) return;
-    fetch(`/api/referral-check?code=${encodeURIComponent(code)}`).then((r) => r.json()).then((j) => { setProofNeeded(j?.proof === true); setProofAlways(j?.always === true); }).catch(() => {});
+    fetch(`/api/referral-check?code=${encodeURIComponent(code)}`).then((r) => r.json()).then((j) => { setProofNeeded(j?.proof === true); }).catch(() => {});
   }, [code]);
   const [attest, setAttest] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -164,8 +161,8 @@ export default function ReferralForm({ code }: { code: string }) {
       const check = await fetch(`/api/site-check?url=${encodeURIComponent(siteUrl)}`).then((r) => r.json()).catch(() => ({ ok: true }));
       if (check.ok === false) { setBusy(false); setError("We couldn't find that website. Please check the link to your business's website or online page."); return; }
     } catch { /* network trouble: don't block the submit */ }
-    const needProof = proofNeeded && (noSite || proofAlways);
-    if (needProof && !fein.trim() && !license.trim() && !proofFile) { setError(noSite ? "Since the business has no website, please add its FEIN (federal tax ID), its state license or registration number, or upload a photo or PDF of a business document." : "To confirm the business, please add its FEIN (federal tax ID), its state license or registration number, or upload a photo or PDF of a business document."); return; }
+    const needProof = proofNeeded && noSite;
+    if (needProof && !proofFile) { setError("Since the business has no website, please upload a photo or PDF of a business document (license, state registration, invoice or insurance page)."); return; }
     let proof: Awaited<ReturnType<typeof readProof>> | undefined;
     if (needProof && proofFile) {
       try { proof = await readProof(proofFile); } catch { setError("That file is too large. Please upload a photo or a PDF under 2.5 MB."); return; }
@@ -196,8 +193,6 @@ export default function ReferralForm({ code }: { code: string }) {
       { label: "How they know the referrer", value: fields.relationship },
       isContractor && { label: "Customers", value: fields.customers },
       { label: "Website or online page", value: siteUrl || "None (checked: business has no website or online page)" },
-      needProof && fein.trim() && { label: "FEIN", value: fein.trim() },
-      needProof && license.trim() && { label: "State license or registration number", value: license.trim().slice(0, 60) },
       { label: "Current insurance / renewal", value: [fields.insured === "Yes" ? `Insured; renews: ${fields.renews}; pays ${fields.paying}/yr` : `Not insured; needs coverage: ${fields.needBy}`, fields.currentInsurance.trim() && `carrier: ${fields.currentInsurance.trim()}`].filter(Boolean).join("; ") },
       { label: "Owner/manager attestation", value: "Confirmed: owns or manages this business and wants a quote" },
       fields.needs.trim() && { label: "Coverage or project details", value: fields.needs.trim() },
@@ -209,7 +204,7 @@ export default function ReferralForm({ code }: { code: string }) {
         company: fields.company.trim(), businessType: fields.businessType.trim(), zip: zipFromMailingAddress(fields.mailingAddress), details, website: fields.hp, ...(proof ? { proof } : {}),
       }) });
       const result = await response.json();
-      if (response.status === 400 && typeof result.error === "string" && /FEIN/.test(result.error)) { setProofNeeded(true); setError(result.error); return; }
+      if (response.status === 400 && typeof result.error === "string" && /business document/.test(result.error)) { setProofNeeded(true); setError(result.error); return; }
       if (!response.ok || result.ok !== true || (result.crm !== "sent" && result.notification !== "sent")) throw new Error("save_failed");
       setDone(true);
     } catch { setError("We couldn't save your request. Please try again."); }
@@ -244,11 +239,9 @@ export default function ReferralForm({ code }: { code: string }) {
       {isChurch && <label className="block text-sm font-medium">Do you own or rent your building? <span aria-hidden="true">*</span><select className={inputClass} value={fields.premises} onChange={(e) => set("premises", e.target.value)} required><option value="">Choose one</option>{PREMISES.map((o) => <option key={o}>{o}</option>)}</select></label>}
       <div className="sm:col-span-2"><label className="block text-sm font-medium">Website, Facebook page or Google listing<input className={inputClass} inputMode="url" autoCapitalize="none" value={fields.site} onChange={(e) => set("site", e.target.value)} placeholder="yourbusiness.com or facebook.com/yourbusiness" disabled={noSite} /></label>
         <label className="mt-2 flex items-center gap-2 text-sm text-[#405066]"><input type="checkbox" className="h-4 w-4" checked={noSite} onChange={(e) => { setNoSite(e.target.checked); if (e.target.checked) set("site", ""); }} />My business doesn&apos;t have a website or any online page</label>
-        {(noSite || proofAlways) && proofNeeded && <div className="mt-3 rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] p-3 text-sm">
-          <p className="text-[#405066]">{noSite ? "No website is fine. " : ""}To confirm the business, add its FEIN, <em>or</em> its state license or registration number, <em>or</em> upload a photo/PDF of a business document (license, EIN letter, invoice, insurance page).</p>
-          <label className="mt-2 block font-medium">FEIN (federal tax ID)<input className={inputClass} inputMode="numeric" value={fein} onChange={(e) => setFein(e.target.value)} placeholder="12-3456789" /></label>
-          <label className="mt-2 block font-medium">Or state license / registration number<input className={inputClass} value={license} onChange={(e) => setLicense(e.target.value)} placeholder="e.g. contractor license # or state business ID" /></label>
-          <label className="mt-2 block font-medium">Or upload a business document<input className="mt-1 block w-full text-sm" type="file" accept="image/*,application/pdf" onChange={(e) => setProofFile(e.target.files?.[0] ?? null)} /></label>
+        {noSite && proofNeeded && <div className="mt-3 rounded-lg border border-[#CBD5E1] bg-[#F8FAFC] p-3 text-sm">
+          <p className="text-[#405066]">No website is fine. To confirm the business, upload a photo or PDF of a business document (license, state registration, invoice or insurance page).</p>
+          <label className="mt-2 block font-medium">Upload a business document<input className="mt-1 block w-full text-sm" type="file" accept="image/*,application/pdf" onChange={(e) => setProofFile(e.target.files?.[0] ?? null)} /></label>
         </div>}</div>
     </div>
     <h3 className="pt-2 text-base font-semibold text-[#0F172A]">Your current insurance</h3>

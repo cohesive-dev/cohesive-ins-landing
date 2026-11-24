@@ -6,7 +6,7 @@ import { sendIntakeNotification, sendReferralPartnerMail, sendReferralProofMail 
 import { findQuotesMessageText } from "@/lib/gmail";
 import { lookupPartner, notifyReferralPartner } from "@/lib/referral-partner-notice";
 import { alertRecipients } from "@/lib/referral-partners";
-import { checkFein, parseProof, reviewProof, type ProofFile, type ProofReview } from "@/lib/referral-proof";
+import { parseProof, reviewProof, type ProofFile, type ProofReview } from "@/lib/referral-proof";
 import { getStartupGuide } from "@/lib/guides/catalog";
 import { STARTUP_STATES } from "@/lib/guides/states";
 import { startupPlacementRestriction } from "@/lib/guides/eligibility";
@@ -426,8 +426,8 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Nam 11/21 (all partners since Kevin 11/22): a referral through a partner's link whose business has no website must carry an FEIN or a
-  // business document. FEIN = format + IRS prefix check; a document = LLM review (Bedrock). Bad FEIN / FAIL = partner
+  // Nam 11/21 / Kevin 11/24: a referral through a partner's link whose business has no website must carry a
+  // business document (no FEIN/license # alone). The document = LLM review (Bedrock). FAIL = partner
   // gets the "does not look real" notice; UNCLEAR = partner notice held and the team decides. The verdict rides on the
   // lead as "Referral proof check" so referral_partner_payouts counts only PASS.
   let proofFile: ProofFile | null = null;
@@ -437,28 +437,28 @@ export async function POST(request: NextRequest) {
     const code = details?.find((item) => item.label === "Referral code")?.value;
     const noSite = /^None\b/.test(details?.find((item) => item.label === "Website or online page")?.value || "");
     const partner = code ? await lookupPartner(code, findQuotesMessageText).catch(() => null) : null;
-    // Kevin 11/22: every partner, not only FB-ad partners (a cold-signup partner sent 7 no-website leads in 36h).
-    // Kevin 11/23: a partner who did not come from cold email needs proof on EVERY referral, website or not.
-    if (partner && (noSite || !partner.cold)) {
+    // Kevin 11/24: a referral must have a website OR an uploaded business document; an FEIN or license number alone
+    // no longer counts (both can be faked). Cold-email partners: no website = document required, as before.
+    // Every other partner: a website now passes on its own (it was proof-on-every-referral since 11/23).
+    const site = details?.find((item) => item.label === "Website or online page")?.value || "";
+    if (partner && !noSite && !partner.cold) {
+      details = [...(details ?? []), { label: "Referral proof check", value: `PASS - website given: ${site.slice(0, 120)}` }];
+    }
+    if (partner && noSite) {
       proofRequired = true;
-      const feinRaw = details?.find((item) => item.label === "FEIN")?.value || "";
-      const licenseRaw = (details?.find((item) => item.label === "State license or registration number")?.value || "").trim();
       proofFile = parseProof(body.proof);
-      if (!feinRaw && !licenseRaw && !proofFile) {
-        return NextResponse.json({ ok: false, error: "Please add the business's FEIN, its state license or registration number, or upload a business document." }, { status: 400 });
+      if (!proofFile) {
+        return NextResponse.json({ ok: false, error: "Since the business has no website, please upload a photo or PDF of a business document (license, state registration, invoice or insurance page)." }, { status: 400 });
       }
-      const fein = feinRaw ? checkFein(feinRaw) : null;
-      if (proofFile) proofReview = await reviewProof(proofFile, { company, dba: details?.find((item) => item.label === "DBA")?.value, address: details?.find((item) => item.label === "Mailing address")?.value, name }, process.env);
-      const badFein = Boolean(feinRaw) && !fein;
-      proofSuspicious = badFein || proofReview?.verdict === "fail";
-      proofHold = !proofSuspicious && !fein && proofReview?.verdict !== "pass";
-      // A license/registration number alone can't be checked here: UNCLEAR until the team looks it up on the state site.
+      proofReview = await reviewProof(proofFile, { company, dba: details?.find((item) => item.label === "DBA")?.value, address: details?.find((item) => item.label === "Mailing address")?.value, name }, process.env);
+      proofSuspicious = proofReview.verdict === "fail";
+      proofHold = proofReview.verdict === "unclear";
       const check = proofSuspicious
-        ? `FAIL - ${badFein ? "FEIN is not a valid EIN" : `document: ${proofReview?.reason || "not a business document"}`}; partner told it does not look real; do not pay`
-        : proofHold ? `UNCLEAR - ${proofReview?.reason || (licenseRaw ? `license/registration # ${licenseRaw.slice(0, 40)} given; verify on the state lookup` : "document not readable")}; partner notice held for team review (see team email)`
-        : `PASS - ${fein ? "valid FEIN format" : ""}${fein && proofReview ? "; " : ""}${proofReview ? `document ${proofReview.verdict}: ${proofReview.reason}` : ""}`;
-      details = [...(details ?? []).filter((item) => item.label !== "FEIN"), ...(feinRaw ? [{ label: "FEIN", value: fein || feinRaw.slice(0, 20) }] : []),
-        ...(proofFile ? [{ label: "Proof document", value: `${proofFile.name} (${proofFile.type}; emailed to the team)` }] : []),
+        ? `FAIL - document: ${proofReview.reason || "not a business document"}; partner told it does not look real; do not pay`
+        : proofHold ? `UNCLEAR - ${proofReview.reason || "document not readable"}; partner notice held for team review (see team email)`
+        : `PASS - document pass: ${proofReview.reason}`;
+      details = [...(details ?? []).filter((item) => item.label !== "FEIN" && item.label !== "State license or registration number"),
+        { label: "Proof document", value: `${proofFile.name} (${proofFile.type}; emailed to the team)` },
         { label: "Referral proof check", value: check }];
     }
   }
@@ -653,9 +653,8 @@ export async function POST(request: NextRequest) {
         const ok = await sendReferralProofMail({
           to: alertRecipients(process.env),
           subject: `[referral-proof] ${check.split(" ")[0]} - ${company || name || "unknown business"}`.replace(/[\r\n]+/g, " ").slice(0, 180),
-          text: [`A /refer lead from partner code ${partnerCode} had to prove the business exists (no website, or a partner who did not join from cold email).`, "",
-            `Business: ${company || "(none)"}`, `Contact: ${name || ""} <${email || ""}>`, `FEIN: ${details?.find((item) => item.label === "FEIN")?.value || "(not given)"}`,
-            `State license / registration #: ${details?.find((item) => item.label === "State license or registration number")?.value || "(not given)"}`,
+          text: [`A /refer lead from partner code ${partnerCode} had to prove the business exists (no website, so a business document was required).`, "",
+            `Business: ${company || "(none)"}`, `Contact: ${name || ""} <${email || ""}>`,
             `Mailing address: ${details?.find((item) => item.label === "Mailing address")?.value || ""}`, "",
             `Check: ${check}`, proofReview?.model ? `Reviewer model: ${proofReview.model}` : null, `Partner was told: ${told}`, "",
             "Payouts count this referral only when the lead's \"Referral proof check\" starts with PASS."].filter((x) => x !== null).join("\n"),
