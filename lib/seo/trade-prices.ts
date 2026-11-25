@@ -145,6 +145,23 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
           "A claims-made policy generally requires a claim to be made and reported under its timing terms, so continuity and any extended reporting period matter. " +
           "Roof leaks can show up long after the job. Compare the full terms and check your contracts: some GCs require occurrence coverage.",
       },
+      // Question research 2026-11-25 (GSC, Ads search terms, autocomplete).
+      {
+        q: "How much is roofing insurance per month?",
+        a: "Our $1,359 per year claims-made general liability quote for a roofer at about $377K revenue is the equivalent of about $113 a month; the same roofer's $1,795 occurrence option is about $150 a month. A $1.3M-revenue roofer bound $1M general liability at $5,273 per year in premium before fees, about $439 a month. These are annual figures divided by 12, not installment amounts. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full.",
+      },
+      {
+        q: "Why is roofing insurance so expensive?",
+        a: "Roofing combines falls from height, water damage when a roof is open or leaks after the job, and fire risk from torch work. Revenue and subcontracted work drive most of the price: in our own book a roofer at about $377K revenue was quoted $1,359 per year, a $1.3M roofer bound at $5,273 in premium before fees, and a roofer at about $4M bound at $20,241 after paying about $50K a year elsewhere. Comparing several roofing carriers on accurate figures is the main way to lower it.",
+      },
+      {
+        q: "Who has the cheapest roofing insurance?",
+        a: "No single carrier is cheapest for every roofer, because each prices residential versus commercial work, heights, torch work and subcontractors differently. We compare several carriers that write roofing. The lowest real roofing general liability price we have is a $1,359 per year claims-made quote for a roofer at about $377K revenue with $133K subcontracted. Compare the occurrence option and the open-roof and completed-operations terms alongside the premium.",
+      },
+      {
+        q: "What is on a roofing insurance supplemental application?",
+        a: "Most roofing supplements ask for your split of residential and commercial work, new construction versus re-roofing and repair, the roof types and maximum height or stories you work on, any torch-down or other hot work, how much you subcontract and whether you collect subcontractors' certificates, your safety and fall-protection practices, and your claims history. Having those figures ready speeds up the quote.",
+      },
       {
         q: "What do you need from me to quote roofing insurance?",
         a: "Your business name and address, annual revenue, what you pay subcontractors, payroll and number of employees, your split of residential and commercial work, " +
