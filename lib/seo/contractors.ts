@@ -1016,6 +1016,24 @@ export function buildContractorNational(t: Trade): PageContent {
           q: "Do tree services need workers' comp?",
           a: "Most states require workers' comp once you have employees, and tree work is a high-hazard class, so it is often the largest line for a crew. Rules for owners, family members and subcontractors vary by state. Send payroll by role, such as climbers, ground crew and office staff, so the quote uses the right class.",
         },
+        // Question research 2026-11-25 (GSC, Ads search terms, autocomplete): per-month, limits,
+        // "why so expensive" and "who is cheapest" are the uncovered buyer questions.
+        {
+          q: "How much is tree service insurance per month?",
+          a: `Our $1,271.18 per year claims-made general liability quote for a tree service at about $300K revenue works out to about $106 a month. The two tree services that bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year pay about $121 a month. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full. Workers' comp, auto and equipment coverage are priced separately.`,
+        },
+        {
+          q: "How much liability insurance should a tree service have?",
+          a: "Many homeowners' associations, property managers and general contractors ask for $1 million per occurrence and $2 million aggregate general liability. Commercial, municipal and utility contracts can ask for higher limits or an umbrella policy. Read the insurance section of your contracts before choosing limits, and send it with your quote request so each proposal is checked against it.",
+        },
+        {
+          q: "Why is tree service insurance so expensive?",
+          a: "Tree work combines falls from height, heavy limbs and trees dropping onto houses, cars and power lines, and chainsaw and chipper injuries. Fewer carriers write it, so there is less price competition. Your own price moves with revenue, the share of removals versus trimming, working heights, crane and utility work, crew size and claims. Comparing several carriers on an accurate description of the work is the main way to lower it.",
+        },
+        {
+          q: "Who offers the lowest insurance rates for a small tree trimming business?",
+          a: "No single carrier is cheapest for every crew, because each one prices removals, heights, payroll and claims differently. We compare several carriers that write tree work. The lowest real tree-service general liability price we have is a $1,271.18 per year claims-made quote for a tree service at about $300K revenue. Ask for both claims-made and occurrence options and compare the accepted work and height terms, not just the premium.",
+        },
         {
           q: "Is stump grinding or land clearing included in a tree-service policy?",
           a: "Stump grinding is often written with tree work, but list it with its share of receipts and ask whether the proposed policy accepts it. Land clearing with excavators or forestry mulchers is closer to site work and may need a different class. Describe it separately instead of assuming the tree-service label covers it.",
