@@ -94,6 +94,9 @@ export function tradePriceUpdated(slug: string, stateAbbr?: string): string | un
 // subcontracted work). `revenue` is shown beside the price; an example without one is listed under the table.
 export type PriceExample = { business: string; revenue?: string; price: string; sentence: string };
 export type TradePriceExtras = {
+  // true = the examples table, answer and FAQs show on the national page only (state pages keep the plain starting price),
+  // used where some examples come from a market that does not write every state.
+  nationalOnly?: boolean;
   answer: string;
   heroSub: string;
   disclaimer: string;
@@ -118,10 +121,16 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
         { business: "The same roofer and filed work", revenue: "About $377K", price: "$1,795/yr, occurrence quote", sentence: "The same roofer also received a $1,795/yr occurrence general liability quote on the same filed business figures." },
         { business: "A Colorado residential contractor whose work includes roofing", price: "$1,795/yr, bound", sentence: "A Colorado residential contractor whose work includes roofing bound general liability with us at $1,795/yr, $1M/$2M occurrence." },
         { business: "A roofing company, $800K subcontracted", revenue: "About $1.3M", price: "$7,497/yr, quoted", sentence: "A roofing company at about $1.3M revenue, $800K subcontracted, came in at $7,497/yr." },
+        // Kevin 2026-11-25 (big-account examples). CRM policy for this account, bound 2026-11-24, $5,273 premium
+        // ($5,904.71 with fees), $1M per occurrence; rated on $1.3M revenue, mostly residential roofing.
+        { business: "A residential roofing company, $125K subcontracted", revenue: "About $1.3M", price: "$5,273/yr, bound", sentence: "A residential roofing company at about $1.3M revenue bound general liability with us at $5,273/yr." },
         { business: "A roofing and remodeling company", revenue: "About $2.5M", price: "$14,904/yr, quoted", sentence: "A roofing and remodeling company at about $2.5M revenue came in at $14,904/yr." },
+        // Kevin 2026-11-25: CRM policy bound 2026-11-13 at $20,241, rated on $4M revenue (the client's own figure) and
+        // $1.2M subcontracted. It replaced a mid-term policy with another carrier that Kevin reports at about $50K/yr.
+        { business: "A roofing company that was paying about $50K/yr elsewhere, $1.2M subcontracted", revenue: "About $4M", price: "$20,241/yr, bound", sentence: "A roofing company at about $4M revenue was paying about $50,000 a year for general liability with another carrier. It bound with us at $20,241/yr." },
         { business: "A roofing company", revenue: "About $4.5M", price: "$20,830/yr, quoted", sentence: "A roofing company at about $4.5M revenue came in at $20,830/yr." },
       ],
-      note: "Real prices from our own book, not averages. The $1,359 claims-made and $1,795 occurrence quotes for the $377K roofer came from the same application, but the policy forms differ. Your price moves with revenue, subcontracted work, payroll and the share of commercial work.",
+      note: "Real prices from our own book, not averages. Rows marked bound are policies we wrote; the others are quotes. The $1,359 claims-made and $1,795 occurrence quotes for the $377K roofer came from the same application, but the policy forms differ. Your price moves with revenue, subcontracted work, payroll and the share of commercial work.",
     },
     nationalH1: "Roofer Insurance: What Roofers Actually Pay",
     nationalFaqs: [
@@ -152,6 +161,45 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
       {
         q: "What should I send to meet a general contractor's roofing insurance requirements?",
         a: "Send the contract's insurance section before choosing a quote. We will compare its required limits, occurrence form, additional insured wording, waiver requests and completed-operations terms with the proposed policy. A certificate shows policy information; it does not add coverage or additional insured status by itself.",
+      },
+    ],
+  },
+  // Kevin 2026-11-25 ("add those numbers to SEO"). Read from the CRM 2026-11-25; each passed qc_auto_check.
+  // New-home builder: q_ext_cf0409f632d0dbf211db, claims-made, class "General Contractor - New Residential 100%",
+  //   $325K receipts / $125K subs / $0 W-2 (TX). Remodel GC: q_ext_2734eadd9466b5f30287, occurrence, "General Contractor -
+  //   Remodel Residential 100%", $1M receipts / $200K subs (KS). Large contractor: q_ext_71d2bb1aaa0d31a6b2ee, occurrence,
+  //   $2.5M sales / $500K subs, no deductible (NJ, sent 2026-11-23). Three of these come from a market that does not
+  //   write every state, so the examples stay on the national page only.
+  "general-contractor": {
+    nationalOnly: true,
+    answer: "Our lowest bound general liability policy for general contractors is $1,177/yr, a policy we wrote for a general contractor in New York. " +
+      "Larger operations pay more, but not always in a straight line: a residential remodeling GC at about $1M revenue with $200K subcontracted received a $3,645/yr occurrence quote, " +
+      "while a contractor at about $2.5M revenue with $500K subcontracted received a $3,098/yr occurrence quote with no deductible from a different market. " +
+      "These are real prices from our own book, not averages or state rates.",
+    heroSub: "Our lowest bound general contractor liability policy is $1,177/yr. See real quotes for $1M and $2.5M contractors, then tell us about your work.",
+    disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book, each labelled. Claims-made and occurrence forms differ and are not interchangeable. " +
+      "Your premium depends on your work, revenue, subcontracting, payroll, location, limits and claims. These examples are not a quote or an offer of insurance.",
+    examples: {
+      heading: "Real general contractor insurance prices by business size",
+      items: [
+        { business: "A general contractor in New York", price: "$1,177/yr, bound", sentence: "A general contractor in New York bound general liability with us at $1,177/yr." },
+        { business: "A new-home builder, $125K subcontracted, no W-2 employees", revenue: "About $325K", price: "$1,459/yr, claims-made quote", sentence: "A residential new-home builder at about $325K revenue with $125K subcontracted received a $1,459/yr claims-made general liability quote, $1M/$2M." },
+        { business: "A residential remodeling GC, $200K subcontracted", revenue: "About $1M", price: "$3,645/yr, occurrence quote", sentence: "A residential remodeling general contractor at about $1M revenue with $200K subcontracted received a $3,645/yr occurrence general liability quote, $1M/$2M." },
+        { business: "A contractor, $500K subcontracted", revenue: "About $2.5M", price: "$3,098/yr, occurrence quote", sentence: "A contractor at about $2.5M revenue with $500K subcontracted received a $3,098/yr occurrence general liability quote, $1M/$2M with no deductible." },
+      ],
+      note: "Real prices from our own book, not averages. Only the first row is a bound policy; the others are quotes. The $2.5M contractor came in below the $1M GC because a different market rated it: carrier, class and subcontracting move the price as much as revenue does.",
+    },
+    nationalH1: "General Contractor Insurance: What GCs Actually Pay",
+    nationalFaqs: [
+      {
+        q: "Why can a bigger contractor pay less for general liability?",
+        a: "Revenue is only one input. The carrier, the class it rates your work in, how much you subcontract and your claims all move the price. " +
+          "In our book a contractor at about $2.5M revenue received a $3,098/yr occurrence quote while a $1M residential remodeling GC received $3,645/yr from a different market. Quoting several carriers is how you find that gap.",
+      },
+      {
+        q: "Does building new homes change a general contractor's insurance?",
+        a: "Yes. Many contractor policies exclude or restrict new residential construction, so tell us if you build new homes. " +
+          "A residential new-home builder at about $325K revenue with $125K subcontracted received a $1,459/yr claims-made quote rated in a new-residential class. That is one real quote, not a rate for other builders.",
       },
     ],
   },
@@ -258,7 +306,8 @@ export function withTradePrice(
 ): PageContent {
   const p = tradePrice(slug, opts.place?.abbr);
   if (!p) return c;
-  const x = TRADE_PRICE_EXTRAS[slug];
+  const ex = TRADE_PRICE_EXTRAS[slug];
+  const x = ex && (!ex.nationalOnly || !opts.place) ? ex : undefined;
   const where = placeLabel(opts.place);
   const lead = where ? `${where} ${opts.noun} insurance` : `${opts.noun[0].toUpperCase()}${opts.noun.slice(1)} insurance`;
   const answer = x?.answer ?? tradeCostAnswer(opts.noun, p, where);
