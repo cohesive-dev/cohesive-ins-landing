@@ -1020,7 +1020,7 @@ export function buildContractorNational(t: Trade): PageContent {
         // "why so expensive" and "who is cheapest" are the uncovered buyer questions.
         {
           q: "How much is tree service insurance per month?",
-          a: `Our $1,271.18 per year claims-made general liability quote for a tree service at about $300K revenue works out to about $106 a month. The two tree services that bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year pay about $121 a month. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full. Workers' comp, auto and equipment coverage are priced separately.`,
+          a: `Our $1,271.18 per year claims-made general liability quote for a tree service at about $300K revenue is the equivalent of about $106 a month. The two tree services that bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year are the equivalent of about $121 a month. These are annual premiums divided by 12, not installment amounts. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full. Workers' comp, auto and equipment coverage are priced separately.`,
         },
         {
           q: "How much liability insurance should a tree service have?",
@@ -1028,11 +1028,11 @@ export function buildContractorNational(t: Trade): PageContent {
         },
         {
           q: "Why is tree service insurance so expensive?",
-          a: "Tree work combines falls from height, heavy limbs and trees dropping onto houses, cars and power lines, and chainsaw and chipper injuries. Fewer carriers write it, so there is less price competition. Your own price moves with revenue, the share of removals versus trimming, working heights, crane and utility work, crew size and claims. Comparing several carriers on an accurate description of the work is the main way to lower it.",
+          a: "Tree work combines falls from height, heavy limbs and trees dropping onto houses, cars and power lines, and chainsaw and chipper injuries. Your own price moves with revenue, the share of removals versus trimming, working heights, crane and utility work, crew size and claims. Comparing several carriers on an accurate description of the work is the main way to lower it.",
         },
         {
           q: "Who offers the lowest insurance rates for a small tree trimming business?",
-          a: "No single carrier is cheapest for every crew, because each one prices removals, heights, payroll and claims differently. We compare several carriers that write tree work. The lowest real tree-service general liability price we have is a $1,271.18 per year claims-made quote for a tree service at about $300K revenue. Ask for both claims-made and occurrence options and compare the accepted work and height terms, not just the premium.",
+          a: "No single carrier is cheapest for every crew, because each one prices removals, heights, payroll and claims differently. We compare several carriers that write tree work. The lowest real tree-service general liability price we have is a $1,271.18 per year claims-made quote on one tree-service application at about $300K revenue with one W-2 employee. It was not bound, and it is not a trimming-only rate or a benchmark for your crew. Ask for both claims-made and occurrence options and compare the accepted work and height terms, not just the premium.",
         },
         {
           q: "Is stump grinding or land clearing included in a tree-service policy?",

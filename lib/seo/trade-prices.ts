@@ -148,11 +148,11 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
       // Question research 2026-11-25 (GSC, Ads search terms, autocomplete).
       {
         q: "How much is roofing insurance per month?",
-        a: "Our $1,359 per year claims-made general liability quote for a roofer at about $377K revenue works out to about $113 a month; the same roofer's $1,795 occurrence option is about $150 a month. A $1.3M-revenue roofer bound $1M general liability at $5,273 per year, about $439 a month. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full.",
+        a: "Our $1,359 per year claims-made general liability quote for a roofer at about $377K revenue is the equivalent of about $113 a month; the same roofer's $1,795 occurrence option is about $150 a month. A $1.3M-revenue roofer bound $1M general liability at $5,273 per year in premium before fees, about $439 a month. These are annual figures divided by 12, not installment amounts. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full.",
       },
       {
         q: "Why is roofing insurance so expensive?",
-        a: "Roofing combines falls from height, water damage when a roof is open or leaks after the job, and fire risk from torch work, and many carriers do not write it at all. Revenue and subcontracted work drive most of the price: in our own book a roofer at about $377K revenue was quoted $1,359 per year, a $1.3M roofer bound at $5,273, and a roofer at about $4M bound at $20,241 after paying about $50K a year elsewhere. Comparing several roofing carriers on accurate figures is the main way to lower it.",
+        a: "Roofing combines falls from height, water damage when a roof is open or leaks after the job, and fire risk from torch work. Revenue and subcontracted work drive most of the price: in our own book a roofer at about $377K revenue was quoted $1,359 per year, a $1.3M roofer bound at $5,273 in premium before fees, and a roofer at about $4M bound at $20,241 after paying about $50K a year elsewhere. Comparing several roofing carriers on accurate figures is the main way to lower it.",
       },
       {
         q: "Who has the cheapest roofing insurance?",
