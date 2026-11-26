@@ -84,7 +84,10 @@ export default function ContractorExperimentForm({coldLayout,promo}:{coldLayout?
     partialInFlight.current=true;
     try{const res=await fetch('/api/intake',{method:'POST',headers:{'Content-Type':'application/json'},body,keepalive:true});
       const result=await res.json();if(res.ok&&result.ok===true&&result.notification==='sent'){sentPartial.current=true;
-        if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string')(window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();return true;}
+        // ChatGPT ads get the same saved-contact Lead as Meta; the event id is the per-contact acquisition id, so a later full submit dedupes.
+        if(result.conversion?.eligible===true&&typeof result.conversion.eventId==='string'){(window as unknown as {fbq?:(...args:unknown[])=>void}).fbq?.('track','Lead',{}, {eventID:result.conversion.eventId});
+         (window as unknown as {oaiq?:(...args:unknown[])=>void}).oaiq?.('measure','lead_created',{type:'customer_action'},{event_id:result.conversion.eventId});}
+        tracker.current?.emit('contact_saved',undefined,submission.current);void tracker.current?.flush();return true;}
     }catch{/* retain leave/idle retry; never block completion */}finally{partialInFlight.current=false;}
     return false;
    };
