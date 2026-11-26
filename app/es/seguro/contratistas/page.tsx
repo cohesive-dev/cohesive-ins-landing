@@ -18,7 +18,7 @@ export const metadata = esMetadata(
 
 // Card copy per registry page; href and name come from ES_CONTRACTOR_PAGES (lib/es/pages.ts).
 const CARD_TEXT: Record<string, string> = {
-  "/es/seguro/techadores": "Un techador con unos $377,000 de ingresos recibió cotizaciones de responsabilidad general de $1,359 al año claims-made y $1,795 al año por ocurrencia.",
+  "/es/seguro/techadores": "Un techador con unos $377,000 de ingresos recibió cotizaciones de responsabilidad general de $1,795 al año por ocurrencia y $1,359 al año claims-made.",
   "/es/seguro/contratistas-generales": "Subcontratistas, certificados de seguro y asegurado adicional: lo que cuenta en su póliza.",
   "/es/seguro/remodelacion": "Cocinas, baños y renovaciones, también en casas habitadas.",
 };

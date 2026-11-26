@@ -50,7 +50,7 @@ const BASE='https://www.cohesiveinsure.com';
  const APPROVED=new Set(['$1,359','$1,795','$7,497','$377,000','$133,000','$1.3','$800,000','$1M','$2M']);
  for(const amt of contractorCopy.match(/\$\s?\d[\d,.]*[MKk]?/g)||[])assert.ok(APPROVED.has(amt.replace(/\s/g,'').replace(/[.,]$/,'')),`unapproved contractor amount ${amt}`);
  for(const p of C.ES_ROOFER.prices)assert.match(p.who,/ingresos/,'revenue beside every roofer price');
- assert.match(visible('app/es/seguro/contratistas/page.tsx'),/\$377,000 de ingresos.*\$1,359 al año claims-made.*\$1,795 al año por ocurrencia/,'hub ties both quotes to one revenue basis');
+ assert.match(visible('app/es/seguro/contratistas/page.tsx'),/\$377,000 de ingresos.*\$1,795 al año por ocurrencia.*\$1,359 al año claims-made/,'hub ties both quotes to one revenue basis');
  assert.doesNotMatch(contractorCopy,/\$475,000|\$150,000/,'Spanish roofer copy excludes the unsupported basis');
  assert.equal(C.ES_GENERAL_CONTRACTOR.prices,undefined);assert.equal(C.ES_REMODELER.prices,undefined);
  assert.match(JSON.stringify(C.ES_ROOFER),/Hablamos español/);assert.match(JSON.stringify(C.ES_ROOFER),/en inglés/,'documents-in-English note');

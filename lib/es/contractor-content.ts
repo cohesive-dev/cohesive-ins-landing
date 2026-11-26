@@ -92,7 +92,7 @@ export const ES_ROOFER: EsTradeContent = {
   path: "/es/seguro/techadores",
   metaTitle: "Seguro para techadores en español: cotizaciones reales | Cohesive",
   metaDescription:
-    "Techador con unos $377,000 de ingresos: cotización de responsabilidad general claims-made de $1,359 al año; opción por ocurrencia de $1,795. Hablamos español.",
+    "Techador con unos $377,000 de ingresos: cotización de responsabilidad general por ocurrencia de $1,795 al año; opción claims-made de $1,359. Hablamos español.",
   ogTitle: "Seguro para techadores: cotizaciones reales, en español",
   ogDescription: "Responsabilidad general para techadores. Cotizamos con varias aseguradoras y le contestamos en español.",
   h1: "Seguro para techadores: cotizaciones reales, en español",
@@ -101,14 +101,14 @@ export const ES_ROOFER: EsTradeContent = {
   priceHeading: "Cuánto les salió a otros techadores",
   prices: [
     {
-      price: "$1,359 al año, cotización claims-made",
+      price: "$1,795 al año, cotización por ocurrencia",
       who: "Techador con unos $377,000 de ingresos al año",
-      detail: "$133,000 pagados a subcontratistas y sin empleados W2. Cotización de responsabilidad general, no póliza contratada.",
+      detail: "$133,000 pagados a subcontratistas y sin empleados W2. Techos residenciales y comerciales, más canaletas, revestimiento y terrazas. Cotización de responsabilidad general, no póliza contratada.",
     },
     {
-      price: "$1,795 al año, cotización por ocurrencia",
+      price: "$1,359 al año, cotización claims-made",
       who: "El mismo techador, con los mismos ingresos de unos $377,000 al año",
-      detail: "La cobertura tiene condiciones distintas a la opción claims-made. Compare ambas pólizas y lo que exige su contrato.",
+      detail: "La cobertura tiene condiciones distintas a la opción por ocurrencia. Compare ambas pólizas y lo que exige su contrato.",
     },
     {
       price: "$7,497 al año",
@@ -135,7 +135,7 @@ export const ES_ROOFER: EsTradeContent = {
   faqs: [
     {
       q: "¿Cuánto cuesta el seguro para techadores?",
-      a: "Un techador con unos $377,000 de ingresos al año, $133,000 pagados a subcontratistas y sin empleados W2 recibió dos cotizaciones de responsabilidad general con los mismos datos: $1,359 al año claims-made y $1,795 al año por ocurrencia. Son cotizaciones, no pólizas contratadas ni tarifas para todos. Compare las condiciones de cobertura y los requisitos de su contrato.",
+      a: "Un techador con unos $377,000 de ingresos al año, $133,000 pagados a subcontratistas y sin empleados W2 recibió dos cotizaciones de responsabilidad general con los mismos datos: $1,795 al año por ocurrencia y $1,359 al año claims-made. Son cotizaciones, no pólizas contratadas ni tarifas para todos. Compare las condiciones de cobertura y los requisitos de su contrato.",
     },
     faqGc,
     faqLaw("techador"),

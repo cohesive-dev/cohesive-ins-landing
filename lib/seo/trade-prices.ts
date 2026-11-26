@@ -110,7 +110,7 @@ export type TradePriceExtras = {
 // no client names, and no state attached to a quote.
 export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
   roofer: {
-    answer: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,795/yr occurrence general liability quote, about $150 a month, covering residential and commercial roofing. The same application also produced a $1,359/yr claims-made option. " +
+    answer: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,795/yr occurrence general liability quote, about $150 a month, covering residential and commercial roofing plus gutter, siding and decking work. The same application also produced a $1,359/yr claims-made option. " +
       "These are real quotes, not bound policies, averages or state-specific rates. Claims-made and occurrence terms differ, so compare the policy forms and your contract requirements before choosing.",
     heroSub: "A roofer at about $377K revenue received a $1,795/yr occurrence general liability quote (about $150/mo), residential and commercial roofing included. Compare other real quotes, then tell us about your work.",
     disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book, each labelled. The $1,795 quote is occurrence and includes commercial roofing; the paired $1,359 quote is claims-made. " +
