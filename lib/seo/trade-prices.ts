@@ -57,7 +57,8 @@ export const TRADE_PRICES: Record<string, TradePrice> = {
   welding: { usd: 1330, kind: "quote", line: GL, business: "a metal fabrication and welding shop" },
   // Kevin 2026-10-29 asked for the lowest roofing quote to lead. This claims-made indication
   // has the same application and client-reported basis as the $1,795 occurrence option below.
-  roofer: { usd: 1359, kind: "quote", line: "Claims-made general liability", business: "a roofer at about $377K revenue with $133K subcontracted", asOf: "2026-11-08" },
+  // Kevin 2026-11-26: lead with the $1,795 occurrence quote (about $150/mo) and say it includes commercial roofing.
+  roofer: { usd: 1795, kind: "quote", line: "Occurrence general liability (residential and commercial roofing)", business: "a roofer at about $377K revenue with $133K subcontracted", asOf: "2026-11-26" },
   // Kevin 2026-11-24 (more demolition/restoration leads; SEO quick wins approved). Read from the CRM 2026-11-24.
   // Demolition: QC-verified claims-made quote q_ext_3ce56f708292a90c5ecd (2026-10-23), carrier class printed
   // "Demo - Nonstructural 100%" on a $150K receipts / no employees / no subs basis we disclosed. Structural demolition
@@ -109,16 +110,16 @@ export type TradePriceExtras = {
 // no client names, and no state attached to a quote.
 export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
   roofer: {
-    answer: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359/yr claims-made general liability quote. The same application also produced a $1,795/yr occurrence quote. " +
+    answer: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,795/yr occurrence general liability quote, about $150 a month, covering residential and commercial roofing. The same application also produced a $1,359/yr claims-made option. " +
       "These are real quotes, not bound policies, averages or state-specific rates. Claims-made and occurrence terms differ, so compare the policy forms and your contract requirements before choosing.",
-    heroSub: "A roofer at about $377K revenue received a $1,359/yr claims-made general liability quote. Compare the occurrence option and other real quotes, then tell us about your work.",
-    disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book, each labelled. The $1,359 quote is claims-made; the paired $1,795 quote is occurrence. " +
+    heroSub: "A roofer at about $377K revenue received a $1,795/yr occurrence general liability quote (about $150/mo), residential and commercial roofing included. Compare other real quotes, then tell us about your work.",
+    disclaimer: "Prices shown are real general liability quotes and one bound policy from our own book, each labelled. The $1,795 quote is occurrence and includes commercial roofing; the paired $1,359 quote is claims-made. " +
       "They are not interchangeable or averages. Your premium depends on your work, revenue, subcontracting, payroll, location, limits and claims. These examples are not a quote or an offer of insurance.",
     examples: {
       heading: "Real roofing insurance quotes by business size",
       items: [
-        { business: "A roofer, $133K subcontracted, no W-2 employees", revenue: "About $377K", price: "$1,359/yr, claims-made quote", sentence: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359/yr claims-made general liability quote." },
-        { business: "The same roofer and filed work", revenue: "About $377K", price: "$1,795/yr, occurrence quote", sentence: "The same roofer also received a $1,795/yr occurrence general liability quote on the same filed business figures." },
+        { business: "A roofer, residential and commercial roofing, $133K subcontracted, no W-2 employees", revenue: "About $377K", price: "$1,795/yr, occurrence quote", sentence: "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,795/yr (about $150/mo) occurrence general liability quote covering residential and commercial roofing." },
+        { business: "The same roofer and filed work", revenue: "About $377K", price: "$1,359/yr, claims-made quote", sentence: "The same roofer also received a $1,359/yr claims-made general liability quote on the same filed business figures." },
         { business: "A Colorado residential contractor whose work includes roofing", price: "$1,795/yr, bound", sentence: "A Colorado residential contractor whose work includes roofing bound general liability with us at $1,795/yr, $1M/$2M occurrence." },
         { business: "A roofing company, $800K subcontracted", revenue: "About $1.3M", price: "$7,497/yr, quoted", sentence: "A roofing company at about $1.3M revenue, $800K subcontracted, came in at $7,497/yr." },
         // Kevin 2026-11-25 (big-account examples). CRM policy for this account, bound 2026-11-24, $5,273 premium
@@ -148,7 +149,7 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
       // Question research 2026-11-25 (GSC, Ads search terms, autocomplete).
       {
         q: "How much is roofing insurance per month?",
-        a: "Our $1,359 per year claims-made general liability quote for a roofer at about $377K revenue is the equivalent of about $113 a month; the same roofer's $1,795 occurrence option is about $150 a month. A $1.3M-revenue roofer bound $1M general liability at $5,273 per year in premium before fees, about $439 a month. These are annual figures divided by 12, not installment amounts. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full.",
+        a: "Our $1,795 per year occurrence general liability quote for a roofer at about $377K revenue, residential and commercial roofing included, is about $150 a month; the same roofer's $1,359 claims-made option is about $113 a month. A $1.3M-revenue roofer bound $1M general liability at $5,273 per year in premium before fees, about $439 a month. These are annual figures divided by 12, not installment amounts. Many carriers let you pay in installments; a financed plan can cost more in total than paying in full.",
       },
       {
         q: "Why is roofing insurance so expensive?",
@@ -156,7 +157,7 @@ export const TRADE_PRICE_EXTRAS: Record<string, TradePriceExtras> = {
       },
       {
         q: "Who has the cheapest roofing insurance?",
-        a: "No single carrier is cheapest for every roofer, because each prices residential versus commercial work, heights, torch work and subcontractors differently. We compare several carriers that write roofing. The lowest real roofing general liability price we have is a $1,359 per year claims-made quote for a roofer at about $377K revenue with $133K subcontracted. Compare the occurrence option and the open-roof and completed-operations terms alongside the premium.",
+        a: "No single carrier is cheapest for every roofer, because each prices residential versus commercial work, heights, torch work and subcontractors differently. We compare several carriers that write roofing. Our best real roofing general liability price is a $1,795 per year occurrence quote (about $150 a month) covering residential and commercial roofing, for a roofer at about $377K revenue with $133K subcontracted. A $1,359 claims-made option was also offered. Compare and the open-roof and completed-operations terms alongside the premium.",
       },
       {
         q: "What is on a roofing insurance supplemental application?",
