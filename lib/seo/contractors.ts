@@ -892,11 +892,11 @@ export function buildContractorNational(t: Trade): PageContent {
     const examples = content.priceExamples;
     return {
       ...content,
-      title: "Roofing Insurance Cost: Real Quotes from $1,359/yr",
+      title: "Roofing Insurance Cost: $1,795/yr (~$150/mo) Real Quote",
       heroH1: "Roofing Insurance Cost: Real Quotes by Business Size",
-      heroSub: "A roofer at about $377K revenue received a real $1,359.42/yr claims-made general liability quote. Compare its $1,795.09/yr occurrence option and other quotes by business size.",
+      heroSub: "A roofer at about $377K revenue received a real $1,795.09/yr occurrence general liability quote, about $150 a month, covering residential and commercial roofing. Compare it with other quotes by business size.",
       costNarrative: [
-        "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,359.42/yr claims-made general liability quote and a $1,795.09/yr occurrence quote on the same application. A roofer at about $800K revenue received a $4,280/yr occurrence quote, and one at about $1.8M revenue received a $12,220/yr occurrence quote. These are real quotes, not averages or state-specific rates. The policy forms have different terms, so compare the work and coverage as well as the price.",
+        "A roofer at about $377K revenue, $133K subcontracted and no W-2 employees received a $1,795.09/yr occurrence general liability quote (about $150 a month) covering residential and commercial roofing. The same application also got a $1,359.42/yr claims-made option. A roofer at about $800K revenue received a $4,280/yr occurrence quote, and one at about $1.8M revenue received a $12,220/yr occurrence quote. These are real quotes, not averages or state-specific rates. The policy forms have different terms, so compare the work and coverage as well as the price.",
         "Larger roofers we have bound: a residential roofing company at about $1.3M revenue pays $5,273/yr for general liability, and a roofing company at about $4M revenue that was paying about $50,000 a year with another carrier bound with us at $20,241/yr. Re-shopping a large roofing account is often worth it, because carriers rate the same revenue and subcontracting very differently.",
         ...content.costNarrative.slice(1),
       ],
@@ -975,7 +975,7 @@ export function buildContractorNational(t: Trade): PageContent {
   if (t.slug === "tree-service") {
     return {
       ...content,
-      title: "Tree Service Insurance Cost: $1,271 Claims-Made Quote",
+      title: "Tree Service Insurance Cost: $1,271, No Height Limit",
       priceExamples: {
         ...treePriceExamples("trimming"),
         note: "The lower figure is a quote on a different application. These three cases are not an average or a rate for trimming, removal, or a particular state. Compare accepted work, limits and policy form alongside premium.",
@@ -998,11 +998,11 @@ export function buildContractorNational(t: Trade): PageContent {
         ...content.faqs,
         {
           q: "How much does tree trimming insurance cost?",
-          a: `A tree service at about $300K revenue with one W-2 employee received a $1,271.18 per year claims-made general liability quote. That is a verified quote, not a bound policy, an average or a trimming-only rate. Two other tree services bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.`,
+          a: `A tree service at about $300K revenue with one W-2 employee received a $1,271.18 per year claims-made general liability quote. That quote has no height limit, and cranes and bucket trucks are fine. That is a verified quote, not a bound policy, an average or a trimming-only rate. Two other tree services bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE} per year. Your quote depends on the share of trimming versus removal, working heights, crew, equipment, location and claims.`,
         },
         {
           q: "Does tree-service insurance cover tree removal?",
-          a: "Do not assume every tree-service policy accepts every removal. Describe climbing, rigging, crane use, storm-damaged trees and work near utilities. Compare the accepted operations, height terms and exclusions in the proposed policy before taking a job.",
+          a: "Yes, if the policy accepts removals. Our $1,271 per year claims-made quote covers removals with no height limit, and cranes and bucket trucks are fine. Describe climbing, rigging, crane use, storm-damaged trees and work near utilities. Compare the accepted operations, height terms and exclusions in the proposed policy before taking a job.",
         },
         {
           q: "Does tree removal insurance cost more than tree trimming insurance?",
@@ -1082,14 +1082,14 @@ export const TREE_FAMILY_LINKS: { slug: string; label: string }[] = [
 ];
 export const TREE_FAMILY_SLUGS = TREE_FAMILY_LINKS.map((l) => l.slug);
 
-const TREE_PRICE_SENTENCE = `A tree service at about $300K revenue with one W-2 employee received a $1,271.18/yr claims-made general liability quote; it was not bound. Two other tree services each bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE}/yr.`;
+const TREE_PRICE_SENTENCE = `A tree service at about $300K revenue with one W-2 employee received a $1,271.18/yr claims-made general liability quote with no height limit; cranes and bucket trucks are fine. It was not bound. Two other tree services each bound claims-made general liability at ${TREE_BOUND_GL_COMPARABLE}/yr.`;
 
 function treePriceExamples(work: string): NonNullable<PageContent["priceExamples"]> {
   return {
     heading: "Real tree-service GL prices: a quote and paid policies",
     table: false,
     items: [
-      { business: "Tree service, about $300K revenue, one W-2 employee", price: "$1,271.18/yr, claims-made quote", sentence: "One tree service at about $300K revenue with one W-2 employee received a $1,271.18/year claims-made general liability quote. It was not bound." },
+      { business: "Tree service, about $300K revenue, one W-2 employee", price: "$1,271.18/yr, claims-made quote", sentence: "One tree service at about $300K revenue with one W-2 employee received a $1,271.18/year claims-made general liability quote. No height limit; cranes and bucket trucks are fine. It was not bound." },
       { business: "Two separate tree-service businesses", price: `${TREE_BOUND_GL_COMPARABLE}/yr each, claims-made policies`, sentence: `Two other tree services each bound claims-made general liability with us at ${TREE_BOUND_GL_COMPARABLE}/year. These were customer-paid policies.` },
     ],
     note: `These are tree-service cases, not an average or a rate for ${work}. Your price depends on the work mix, heights, crew, equipment, state and claims. Compare accepted work, limits and policy form alongside premium.`,
@@ -1111,7 +1111,7 @@ const TREE_VARIANTS: Record<string, TreeVariant> = {
   "tree-removal": {
     work: "tree removal",
     title: "Tree Removal Insurance Cost: Real Tree Service Quotes",
-    metaDescription: "Tree removal insurance: a real $1,271 claims-made tree-service GL quote, what removals, cranes and storm work change, and what to send for a quote.",
+    metaDescription: "Tree removal insurance: a real $1,271 claims-made GL quote, no height limit, cranes and bucket trucks fine. What removals, cranes and storm work change, and what to send for a quote.",
     heroH1: "Tree Removal Insurance: Cost and What Removals Change",
     heroSub: "See real tree-service general liability prices, then tell us about your removals, heights and equipment so we can compare policies that accept the work.",
     lead: "Removals are where tree-service policies differ most. A carrier may price or restrict take-downs, climbing removals, crane-assisted jobs, storm-damaged trees and work near power lines differently from trimming, so describe them before comparing prices.",
@@ -1151,7 +1151,7 @@ const TREE_VARIANTS: Record<string, TreeVariant> = {
   "tree-trimming": {
     work: "tree trimming",
     title: "Tree Trimming Insurance Cost: Real Tree Service Quotes",
-    metaDescription: "Tree trimming insurance: a real $1,271 claims-made tree-service GL quote, what trimming vs removals changes, and what to send for your own quote.",
+    metaDescription: "Tree trimming insurance: a real $1,271 claims-made GL quote, no height limit, cranes and bucket trucks fine. What trimming vs removals changes, and what to send for your own quote.",
     heroH1: "Tree Trimming Insurance: Cost and What Moves the Price",
     heroSub: "See real tree-service general liability prices, then tell us how much of your work is trimming versus removals to get quotes that match it.",
     lead: "If most of your receipts come from pruning and trimming, say so with numbers. The split between trimming, removals and stump grinding, your working heights and whether you climb or use a bucket truck are the facts a carrier needs to rate the work correctly.",
@@ -1242,7 +1242,7 @@ function arboristPage(content: PageContent): PageContent {
   return {
     ...content,
     title: "Arborist Insurance Cost: Real Tree Service Quotes",
-    metaDescription: "Arborist insurance cost: a real $1,271 claims-made tree-service GL quote, plus what pruning, climbing, crane and tree-health work change in a quote.",
+    metaDescription: "Arborist insurance cost: a real $1,271 claims-made GL quote, no height limit, cranes and bucket trucks fine. Plus what pruning, climbing, crane and tree-health work change in a quote.",
     heroH1: "Arborist Insurance Cost",
     heroSub: "See real tree-service general liability prices, then prepare the pruning, climbing, crane and tree-health details a licensed agent needs to quote you.",
     costNarrative: [
