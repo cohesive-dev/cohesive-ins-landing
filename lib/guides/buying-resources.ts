@@ -247,9 +247,9 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
       },
       {
         "id": "roofing-policy-form",
-        "title": "4. Roofing: $1,359.42 claims-made and $1,795.09 occurrence on one application",
+        "title": "4. Roofing: $1,795.09 occurrence and $1,359.42 claims-made on one application",
         "paragraphs": [
-          "A roofer reported about $377,000 in annual revenue, about $133,000 in subcontracted labor and no W-2 employees. Two saved general liability indications on that same application showed $1,359.42 per year on a claims-made form and $1,795.09 per year on an occurrence form, each with $1 million per occurrence and $2 million general aggregate limits. Neither quote was bound.",
+          "A roofer reported about $377,000 in annual revenue, about $133,000 in subcontracted labor and no W-2 employees. Two saved general liability indications on that same application showed $1,795.09 per year on an occurrence form and $1,359.42 per year on a claims-made form, each with $1 million per occurrence and $2 million general aggregate limits. Neither quote was bound.",
           "Because these two prices use the same stated business figures, the difference is a useful prompt to compare policy forms, not proof that one form is better for every roofing contract. A GC may specify an occurrence form or particular endorsements. Review the actual proposed terms and the jobs the roofer performs before choosing either option.",
           "The customer's revenue, subcontractor cost and zero employee count were confirmed for this case. The two prices are not an average, a New York rate or a guaranteed price for another roofing company."
         ],
@@ -282,7 +282,7 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
     "slug": "compare-roofing-general-liability-quotes",
     "title": "How to compare roofing GL quotes: one roofer, two policy forms",
     "metaTitle": "Compare Roofing GL Quotes: A Real Same-Risk Example",
-    "description": "See two saved roofing GL quotes on the same application: $1,359.42 claims-made and $1,795.09 occurrence. Compare the work, limits, forms and subcontractor inputs.",
+    "description": "See two saved roofing GL quotes on the same application: $1,795.09 occurrence and $1,359.42 claims-made. Compare the work, limits, forms and subcontractor inputs.",
     "intro": "Two proposals for one roofing business make a useful comparison because the submitted business figures were the same. The policy forms were different. Here is how to read that difference before judging the premiums.",
     "category": "Buying insurance",
     "industry": "Roofing contractors",
@@ -297,7 +297,7 @@ export const BUYING_RESOURCES: RestaurantGuide[] = [
         "title": "What was the same in the two roofing quotes?",
         "paragraphs": [
           "The roofer supplied $377,054 in annual revenue, $133,183 in subcontracted labor and no W-2 employees. The submitted roofing mix was 99% residential and 1% commercial. Both saved general liability indications used that application and showed $1 million each occurrence and $2 million general aggregate limits. Neither indication was bound.",
-          "The claims-made indication showed $1,359.42 per year; the occurrence indication showed $1,795.09 per year. This is one business with two saved documents, not a survey of what roofers usually pay. Keeping the same exposure figures lets us focus on the policy-form difference without pretending the policies are otherwise identical."
+          "The occurrence indication showed $1,795.09 per year; the claims-made indication showed $1,359.42 per year. This is one business with two saved documents, not a survey of what roofers usually pay. Keeping the same exposure figures lets us focus on the policy-form difference without pretending the policies are otherwise identical."
         ],
         "checklist": [
           "Match the named insured, work mix, policy period, receipts and loss history.",

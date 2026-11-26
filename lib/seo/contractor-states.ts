@@ -462,7 +462,7 @@ export function buildContractorState(cs: ContractorState, t: Trade): PageContent
       ...content.faqs,
       {
         q: "How do claims-made and occurrence roofing quotes compare when I subcontract work in Texas?",
-        a: "One Texas roofer reported about $377K in annual revenue, $133K paid to subcontractors and no W-2 employees. On the same application, that roofer received a $1,359/year claims-made general liability quote and a $1,795/year occurrence quote, each with $1M/$2M limits. These are quotes, not bound policies or rates for every Texas roofer. Claims-made reporting terms and coverage continuity matter when roof damage is discovered later; an occurrence policy uses when the damage happened, subject to its terms. Compare the full forms and any general contractor requirements before choosing. Tell us your sales, subcontractor costs, roof work and contract terms so we can quote your own business.",
+        a: "One Texas roofer reported about $377K in annual revenue, $133K paid to subcontractors and no W-2 employees. On the same application, that roofer received a $1,795/year occurrence general liability quote (about $150 a month, residential and commercial roofing plus gutter, siding and decking work) and a $1,359/year claims-made option, each with $1M/$2M limits. These are quotes, not bound policies or rates for every Texas roofer. Claims-made reporting terms and coverage continuity matter when roof damage is discovered later; an occurrence policy uses when the damage happened, subject to its terms. Compare the full forms and any general contractor requirements before choosing. Tell us your sales, subcontractor costs, roof work and contract terms so we can quote your own business.",
       },
     ],
   };

@@ -35,7 +35,7 @@ const profiles: Record<string, Profile> = {
   "roofer/new-york": {
     name: "Roofer", state: "New York", reviewedOn: "2026-11-12",
     intro: "Describe your roof systems, working heights, residential and commercial jobs, and who performs each part of the work. In New York City, residential roof work can also require a home improvement contractor license; the insurance review and the licensing check are separate.",
-    pricing: "The $1,359.42 claims-made and $1,795.09 occurrence general liability quotes came from one roofer at about $377K revenue, $133K subcontracted and no W-2 employees. They are two policy forms on the same application, not New York rates or bound policies. Send your own receipts, payroll, subcontractor costs, roof types, loss history and customer insurance terms for a New York quote.",
+    pricing: "The $1,795.09 occurrence (about $150 a month) and $1,359.42 claims-made general liability quotes came from one roofer at about $377K revenue, $133K subcontracted and no W-2 employees. They are two policy forms on the same application, not New York rates or bound policies. Send your own receipts, payroll, subcontractor costs, roof types, loss history and customer insurance terms for a New York quote.",
     facts: [
       {
         title: "Check New York City residential licensing before bidding",
@@ -59,14 +59,14 @@ const profiles: Record<string, Profile> = {
       { name: "Crew, subcontractors and customer contracts", desc: "Review workers' compensation, subcontractor evidence and the customer's insurance exhibit separately. A certificate does not create coverage or additional insured status." },
     ],
     faqs: [
-      { q: "Does the $1,359.42 roofing quote set a New York rate?", a: "No. It was one real claims-made general liability quote for a roofer at about $377K revenue with $133K subcontracted and no W-2 employees. The same application also received a $1,795.09 occurrence quote. Neither was a bound New York rate; compare the policy forms and submit your own work, crew and contract details for review." },
+      { q: "Does the $1,795.09 roofing quote set a New York rate?", a: "No. It was one real occurrence general liability quote for a roofer at about $377K revenue with $133K subcontracted and no W-2 employees. The same application also received a $1,359.42 claims-made option. Neither was a bound New York rate; compare the policy forms and submit your own work, crew and contract details for review." },
       { q: "What should a New York roofer send to compare two insurance quotes?", a: "Send receipts, payroll, subcontractor spending and insurance evidence, roof types and heights, residential and commercial work, loss history and the customer's insurance requirements. For NYC residential work, check the city licensing requirement separately. Ask us to compare each quote's accepted operations, form and exclusions." },
     ],
   },
   "roofer/mississippi": {
     name: "Roofer", state: "Mississippi", reviewedOn: "2026-11-18",
     intro: "For a Mississippi roofing quote, separate residential roof work from commercial jobs and describe roof systems, tear-offs, repair work, heights and subcontracted crews. Check the project's license classification alongside the insurance request; they answer different questions.",
-    pricing: "Send annual receipts, employee payroll, subcontractor costs, residential and commercial percentages, roof methods, claims and any GC insurance exhibit. The $1,359.42 claims-made and $1,795.09 occurrence examples are two unbound quotes for one roofer with about $377K revenue, not Mississippi premiums. Compare policy form and accepted roof work on the proposal you actually receive.",
+    pricing: "Send annual receipts, employee payroll, subcontractor costs, residential and commercial percentages, roof methods, claims and any GC insurance exhibit. The $1,795.09 occurrence and $1,359.42 claims-made examples are two unbound quotes for one roofer with about $377K revenue, not Mississippi premiums. Compare policy form and accepted roof work on the proposal you actually receive.",
     facts: [
       {
         title: "Check the state license threshold and classification for the job",
@@ -91,7 +91,7 @@ const profiles: Record<string, Profile> = {
     ],
     faqs: [
       { q: "Does a Mississippi residential roofer license cover commercial roofs?", a: "The Board describes its residential roofer classification as residential roofing only. Check the classification and project value with MSBOC before bidding commercial work; insurance and licensing are separate reviews." },
-      { q: "Is $1,359.42 a Mississippi roofing insurance rate?", a: "No. That was one saved claims-made GL quote for a roofer with about $377K revenue, $133K subcontracted work and no W-2 employees. The same application also produced a $1,795.09 occurrence quote. Neither was bound or a Mississippi average." },
+      { q: "Is $1,795.09 a Mississippi roofing insurance rate?", a: "No. That was one saved occurrence GL quote for a roofer with about $377K revenue, $133K subcontracted work and no W-2 employees. The same application also produced a $1,359.42 claims-made option. Neither was bound or a Mississippi average." },
     ],
   },
   "tree-service/illinois": {
