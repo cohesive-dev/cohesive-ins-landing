@@ -22,7 +22,7 @@ const oneLine = (v: string, max = 120) => v.replace(/[\r\n\u2028\u2029]+/g, " ")
 // Kevin 11/23: partners shut down for sending fake referrals (Pamela Hayman: forged EIN letter + Articles for Pelko LLC).
 // A shut-down code is no partner at all: no partner notice, no proof gate, no credit; the referred business is still a lead.
 // More codes without a deploy: env REFERRAL_BLOCKED_CODES (comma-separated).
-export const SHUT_DOWN_PARTNER_CODES = new Set(["267047b09879e8e16c95"]);
+export const SHUT_DOWN_PARTNER_CODES = new Set(["267047b09879e8e16c95", "1cab0d58e95d5eacf246"]);
 export const partnerShutDown = (code: string, env: Record<string, string | undefined> = process.env) =>
   SHUT_DOWN_PARTNER_CODES.has(code) || (env.REFERRAL_BLOCKED_CODES ?? "").toLowerCase().split(",").map((c) => c.trim()).includes(code);
 
