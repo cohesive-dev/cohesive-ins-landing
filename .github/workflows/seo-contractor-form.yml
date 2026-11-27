@@ -37,6 +37,8 @@ jobs:
       - name: Unit - Reddit pixel (Lead only for crm=sent + eligible conversion; production-only base code)
         run: node scripts/test-reddit-pixel.cjs
       - run: npm run build
+      - name: Sitemap lastmod - every changed page has its content date recorded (lib/seo/content-dates.json)
+        run: node scripts/content-dates.cjs
       - name: Start the built site on :3021
         run: |
           npm run start -- -p 3021 > /tmp/next.log 2>&1 &
