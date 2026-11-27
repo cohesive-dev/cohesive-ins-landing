@@ -57,6 +57,7 @@ export const PRICING_STUDY_GUIDES: RestaurantGuide[] = [
           "These are real quotes from Cohesive Insurance, September 25 to November 19, 2026. We counted only quotes where the carrier rated the business as roofing, kept the cheapest quote per business, carrier and policy form, and used $1 million per occurrence / $2 million aggregate limits. Free to cite with a link to this page.",
         ],
         links: [
+          { label: "Roofing and tree service prices by state and bound policy: 2026", href: "/guides/roofing-and-tree-service-insurance-prices-2026" },
           { label: "Tree service insurance cost: 2026 data", href: "/guides/tree-service-insurance-cost-2026-data" },
           { label: "Compare two roofing GL quotes on the same business", href: "/guides/compare-roofing-general-liability-quotes" },
           { label: "Contractor insurance cost by trade: 2026 data", href: "/guides/contractor-insurance-cost-by-trade-2026" },
@@ -111,6 +112,7 @@ export const PRICING_STUDY_GUIDES: RestaurantGuide[] = [
           "These are real quotes from Cohesive Insurance, September 25 to November 19, 2026. We counted only quotes where the carrier rated the business as tree work, kept the cheapest quote per business, carrier and policy form, and used $1 million per occurrence / $2 million aggregate limits. Free to cite with a link to this page.",
         ],
         links: [
+          { label: "Roofing and tree service prices by state and bound policy: 2026", href: "/guides/roofing-and-tree-service-insurance-prices-2026" },
           { label: "Roofing insurance cost: 2026 data", href: "/guides/roofing-insurance-cost-2026-data" },
           { label: "Contractor insurance cost by trade: 2026 data", href: "/guides/contractor-insurance-cost-by-trade-2026" },
         ],
