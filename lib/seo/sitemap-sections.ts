@@ -29,6 +29,7 @@ import {
   RESTAURANT_CITIES,
 } from "@/lib/seo/restaurant-types";
 import { ES_PAGES, spanishFor } from "@/lib/es/pages";
+import contentDates from "@/lib/seo/content-dates.json";
 
 // Restaurant type x state pages left OUT of the sitemap (Kevin 2026-10-15): every /insurance/<type>/<state> URL with
 // 0 Search Console impressions in the 60 days 2026-08-16..2026-10-14 (1,122 of 1,900). The pages stay live,
@@ -88,6 +89,14 @@ const CONTRACTOR_HUB_UPDATED: Record<string, string> = { roofer: "2026-11-19", "
 
 type Entry = MetadataRoute.Sitemap[number];
 
+// Real last content change per path, from the built pages' text (scripts/content-dates.cjs, checked in CI).
+// [date, hash]; a null date means unchanged since the ledger baseline (main as of 2026-11-18), so the page keeps its own date.
+const CONTENT_DATES = contentDates as unknown as Record<string, [string | null, string]>;
+const newestDate = (...dates: (string | undefined | null)[]) => {
+  const lastModified = dates.filter((d): d is string => !!d).sort().at(-1);
+  return lastModified ? { lastModified } : {};
+};
+
 const depth = (url: string) => url.slice(BASE.length).split("/").filter(Boolean).length;
 
 function buildSections(): Record<SitemapSection, Entry[]> {
@@ -124,9 +133,8 @@ function buildSections(): Record<SitemapSection, Entry[]> {
   ].map(
     (slug) => ({
       url: `${BASE}/insurance/${slug}`,
-      ...(["pool", "remodeler"].includes(slug) ? { lastModified: "2026-09-15" } : {}),
-      ...(tradePriceUpdated(slug) ? { lastModified: tradePriceUpdated(slug) } : {}),
-      ...(CONTRACTOR_HUB_UPDATED[slug] ? { lastModified: CONTRACTOR_HUB_UPDATED[slug] } : {}),
+      // The newest dated field wins; a hand-set hub date never hides a later price release.
+      ...newestDate(["pool", "remodeler"].includes(slug) ? "2026-09-15" : undefined, tradePriceUpdated(slug), CONTRACTOR_HUB_UPDATED[slug]),
       changeFrequency: "monthly" as const,
     }),
   );
@@ -212,7 +220,10 @@ function buildSections(): Record<SitemapSection, Entry[]> {
       ? entry.lastModified.toISOString().slice(0, 10)
       : String(entry.lastModified ?? "").slice(0, 10);
     // The September metro release also names its parent hubs. It must not replace a later page edit.
-    return updated && updated > existing ? { ...entry, lastModified: updated } : entry;
+    // The page's real last content change (CONTENT_DATES) moves lastmod forward, never back.
+    const content = CONTENT_DATES[entry.url.slice(BASE.length) || "/"]?.[0];
+    const newest = [existing, updated, content].filter((d): d is string => !!d).sort().at(-1);
+    return newest && newest !== existing ? { ...entry, lastModified: newest } : entry;
   };
   // hreflang es-US <-> en-US (+ x-default English, matching the page <head>) on BOTH URLs of every Spanish page that has an English equivalent (lib/es/pages.ts),
   // so the English page carries the reciprocal alternate without touching its route.
